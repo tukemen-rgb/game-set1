@@ -1,32 +1,74 @@
-# game-set1 — Obstacle Dodge
+# game-set1 — いなかの夏（プロトタイプ）
 
-Godot 4 製のミニゲーム。上から降ってくる障害物を左右移動でかわして、
-スコア（生存時間）を伸ばすシンプルな 2D 避けゲーです。
+「ぼくのなつやすみ」風の夏休みゲーム。[Godogen](https://github.com/htdt/godogen)
+の Godot/Claude パイプライン（`CLAUDE.md` / `godot.md`）に沿って開発している。
+昭和の田舎を舞台に、8月1日〜31日をのんびり過ごす。
+
+![screenshot](https://raw.githubusercontent.com/tukemen-rgb/game-set1/claude/game-godot-setup-98dhue/docs/screenshot.png)
+
+## できていること
+
+- **固定カメラ 4 場面**（庭=斜め見下ろし / 田舎道=ローアングル望遠 /
+  川辺=対岸から広角 / 原っぱ=高め俯瞰）。プレイヤー位置で自動切替。
+  アングルの根拠は `docs/RESEARCH.md` のカメラ文法
+- **日数システム**: 8月1日(金)開始〜8月31日まで。19時に日没→その日の日記→翌朝
+- **時刻で変わる空**: 朝→昼→夕焼け（金色経由の補間）。太陽の角度・色も連動
+- **セミとり**: 毎日ランダムな木にセミが湧く。近づいてスペースで捕獲（成功率65%）
+- **世界**: 家と縁側・砂利道・ひまわり・川・入道雲・遠景の山。すべて
+  プロシージャル生成（外部アセットなし）
+- おまけ: 初代プロトタイプの 2D 避けゲー `scenes/main.tscn`（GDScript）も残置
+
+## まだのもの
+
+- 釣り・ラジオ体操スタンプ・会話などのアクティビティ追加
+- AI 生成アセットへの差し替え（水彩背景・キャラモデル。プロンプト集は
+  `docs/RESEARCH.md`。API キーを用意して Godogen の asset-gen スキルを導入する）
+- 音（セミの声・川のせせらぎ・BGM）
+- タイトル画面とセーブ
+
+## アセット表
+
+| アセット | 現状 | 置き換え予定 |
+| --- | --- | --- |
+| 地形・家・木・ひまわり | プロシージャル（BuildSummer.cs） | 水彩調テクスチャ or 生成背景 |
+| 主人公（麦わら帽子の男の子） | プリミティブ組み合わせ | Tripo3D リグ付きモデル |
+| セミ | 茶色の小箱 | 生成モデル or スプライト |
+| UI フォント | SystemFont（Noto Sans CJK ほか） | そのまま |
 
 ## 遊び方
 
 | 操作 | キー |
 | --- | --- |
-| 移動 | ← → （または A / D） |
-| スタート / リトライ | スペース または Enter |
+| 移動 | 矢印キー |
+| 虫あみ / 決定 | スペース / Enter |
 
-時間が経つほど障害物の落下速度と生成頻度が上がります。
+## 開発環境と実行
 
-## 実行方法
+必要なもの: **Godot 4.4 (.NET 版)** と **.NET SDK 8**。
 
-1. [Godot Engine 4.3 以降](https://godotengine.org/download/)（無料・オープンソース）を
-   **公式サイトから**ダウンロードする
-2. Godot を起動 → 「インポート」でこのフォルダの `project.godot` を選ぶ
-3. エディタ上部の ▶（実行）を押す
+```bash
+dotnet build                                # C# コンパイル
+godot --headless --path . --script res://scenes/BuildSummer.cs   # シーン再生成
+godot --path .                              # 実行（またはエディタで F5）
+```
 
-外部アセット・アドオンは一切使っていないので、クローンしてすぐ動きます。
+シーンは手書きせず `scenes/BuildSummer.cs`（ビルド時生成）が
+`scenes/summer_main.tscn` を出力する（`godot.md` の規約）。
+動作検証は `test/Presentation.cs` ＋ movie writer で行う:
+
+```bash
+xvfb-run -a godot --path . --write-movie screenshots/run/frame.png \
+  --fixed-fps 30 --quit-after 590 --script res://test/Presentation.cs
+```
 
 ## 構成
 
 ```
-project.godot        … プロジェクト設定（720x1280 / GL Compatibility）
-scenes/main.tscn     … メインシーン（進行管理・UI）
-scenes/player.tscn   … プレイヤー（青い三角形）
-scenes/obstacle.tscn … 障害物（赤い八角形）
-scripts/*.gd         … 各シーンの GDScript
+CLAUDE.md            … Godogen ランタイムマニフェスト（この環境向け注記つき）
+godot.md             … Godogen の Godot エンジンガイド
+docs/RESEARCH.md     … 本家の視覚文法の調査＋AI生成用プロンプト集
+scenes/BuildSummer.cs … シーンビルダー（summer_main.tscn を生成）
+scripts/SummerMain.cs … 進行管理（日数・空・カメラ・セミ・日記）
+scripts/PlayerController.cs … プレイヤー移動
+test/Presentation.cs  … キャプチャ用スクリプト
 ```

@@ -1,6 +1,13 @@
 # Godot 4 が自動生成するキャッシュ類（コミット不要）
 .godot/
 
+# .NET ビルド成果物
+bin/
+obj/
+
+# キャプチャ出力（godot.md の検証フロー用）
+screenshots/
+
 # エクスポート成果物
 export/
 *.tmp

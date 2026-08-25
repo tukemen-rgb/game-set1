@@ -1,0 +1,24 @@
+; Engine configuration file.
+; It's actually a "*.cfg" file with the format of an INI file.
+; Godot 4 のプロジェクト設定。Godot エディタで開くと自動で読み込まれる。
+
+config_version=5
+
+[application]
+
+config/name="Obstacle Dodge"
+run/main_scene="res://scenes/main.tscn"
+config/features=PackedStringArray("4.3")
+config/icon="res://icon.svg"
+
+[display]
+
+window/size/viewport_width=720
+window/size/viewport_height=1280
+window/stretch/mode="canvas_items"
+window/stretch/aspect="keep"
+
+[rendering]
+
+renderer/rendering_method="gl_compatibility"
+renderer/rendering_method.mobile="gl_compatibility"

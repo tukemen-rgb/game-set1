@@ -31,6 +31,7 @@ public partial class SummerMain : Node3D
     private PlayerController _player;
     private DirectionalLight3D _sun;
     private Godot.Environment _env;
+    private ProceduralSkyMaterial _sky;
     private Label _dateLabel;
     private Label _bugLabel;
     private Label _messageLabel;
@@ -46,6 +47,7 @@ public partial class SummerMain : Node3D
         _player = GetNode<PlayerController>("Player");
         _sun = GetNode<DirectionalLight3D>("Sun");
         _env = GetNode<WorldEnvironment>("Env").Environment;
+        _sky = (ProceduralSkyMaterial)_env.Sky.SkyMaterial;
         _dateLabel = GetNode<Label>("UI/DateLabel");
         _bugLabel = GetNode<Label>("UI/BugLabel");
         _messageLabel = GetNode<Label>("UI/MessageLabel");
@@ -103,28 +105,39 @@ public partial class SummerMain : Node3D
     private void UpdateSky()
     {
         float t = Mathf.Clamp((float)((_hour - 6.0) / 13.0), 0f, 1f);
-        var morning = new Color(0.72f, 0.82f, 0.95f);
-        var noon = new Color(0.45f, 0.72f, 0.95f);
-        var sunset = new Color(0.97f, 0.55f, 0.35f);
-        var gold = new Color(0.93f, 0.75f, 0.48f);
-        Color sky;
+        // 天頂と地平線の2色をそれぞれ時刻で補間してグラデーション空を作る
+        var topMorning = new Color(0.4f, 0.55f, 0.85f);
+        var topNoon = new Color(0.2f, 0.45f, 0.85f);
+        var topSunset = new Color(0.3f, 0.26f, 0.5f);
+        var horMorning = new Color(0.85f, 0.87f, 0.9f);
+        var horNoon = new Color(0.65f, 0.82f, 0.95f);
+        var horGold = new Color(0.95f, 0.78f, 0.5f);
+        var horSunset = new Color(0.98f, 0.5f, 0.28f);
+        Color top;
+        Color hor;
         if (_hour < 9.0)
         {
-            sky = morning.Lerp(noon, Mathf.Clamp((float)((_hour - 6.0) / 3.0), 0f, 1f));
+            float u = Mathf.Clamp((float)((_hour - 6.0) / 3.0), 0f, 1f);
+            top = topMorning.Lerp(topNoon, u);
+            hor = horMorning.Lerp(horNoon, u);
         }
         else if (_hour < 16.0)
         {
-            sky = noon;
+            top = topNoon;
+            hor = horNoon;
         }
         else
         {
-            // 青→橙を直接補間すると灰色に濁るので、金色を経由して夕焼けにする
+            // 青→橙を直接補間すると灰色に濁るので、地平線は金色を経由して夕焼けにする
             float u = Mathf.Clamp((float)((_hour - 16.0) / 3.0), 0f, 1f);
-            sky = u < 0.5f ? noon.Lerp(gold, u * 2f) : gold.Lerp(sunset, (u - 0.5f) * 2f);
+            top = topNoon.Lerp(topSunset, u);
+            hor = u < 0.5f ? horNoon.Lerp(horGold, u * 2f) : horGold.Lerp(horSunset, (u - 0.5f) * 2f);
         }
-        _env.BackgroundColor = sky;
-        _env.FogLightColor = sky;
-        _env.AmbientLightColor = sky.Lerp(Colors.White, 0.45f) * 0.8f;
+        _sky.SkyTopColor = top;
+        _sky.SkyHorizonColor = hor;
+        _sky.GroundHorizonColor = hor;
+        _env.FogLightColor = hor;
+        _env.AmbientLightColor = hor.Lerp(Colors.White, 0.45f) * 0.8f;
         float arc = Mathf.Sin(t * Mathf.Pi);
         _sun.RotationDegrees = new Vector3(-10f - 60f * arc, -150f + 120f * t, 0f);
         _sun.LightEnergy = 0.55f + 0.65f * arc;

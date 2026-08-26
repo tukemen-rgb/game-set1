@@ -16,6 +16,50 @@ set -euo pipefail
 cd "$(dirname "$0")/.."
 GODOT="${GODOT:-godot}"
 
+# --- URLS.txt があれば、まず URL から画像を落としてくる ---
+# 画像生成AIはバイナリを直接コミットできないが、テキストなら書ける。
+# 画像が公開URLに置ける場合は「ID = URL」を書いてもらえば人手が消える。
+# ChatGPT のチャット内画像URLは認証付きで外から取れないことが多いので、
+# その場合は MAP.txt 方式（社長がドラッグ&ドロップ）にフォールバックする。
+urls_file="incoming/URLS.txt"
+if [ -f "$urls_file" ]; then
+    got=0
+    failed=0
+    while IFS= read -r line || [ -n "$line" ]; do
+        line="${line%$'\r'}"
+        case "$line" in ''|'#'*) continue ;; esac
+        # 区切りは最初の = 。URL 側にも = が入りうるので ID を左に置く規則
+        case "$line" in *"="*) ;; *) continue ;; esac
+        id="${line%%=*}"
+        url="${line#*=}"
+        id="$(printf '%s' "$id" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')"
+        url="$(printf '%s' "$url" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//' -e 's/^"//' -e 's/"$//')"
+        if [ -z "$id" ] || [ -z "$url" ]; then
+            continue
+        fi
+        # 拡張子は URL のパス部分から拾う（クエリは捨てる）。既定は png
+        ext="$(printf '%s' "${url%%\?*}" | sed -n 's/.*\.\([A-Za-z]\{3,4\}\)$/\1/p' | tr 'A-Z' 'a-z')"
+        case "$ext" in png|jpg|jpeg|webp) ;; *) ext="png" ;; esac
+        out="incoming/${id}.${ext}"
+        if curl -fsSL --max-time 120 --max-filesize 20000000 -o "$out" "$url"; then
+            # 先頭バイトで本当に画像か確かめる（HTMLのエラーページを掴んでいないか）
+            if python3 tools/is_image.py "$out"; then
+                echo "ingest: download $id <- $url"
+                got=$((got + 1))
+            else
+                echo "ingest: $id のURLが画像でない（認証ページ？）-> 破棄"
+                rm -f "$out"
+                failed=$((failed + 1))
+            fi
+        else
+            echo "ingest: $id のダウンロード失敗 -> $url"
+            failed=$((failed + 1))
+        fi
+    done < "$urls_file"
+    rm -f "$urls_file"
+    echo "ingest: URLS.txt 取得 $got 件 / 失敗 $failed 件（適用後に削除）"
+fi
+
 # --- MAP.txt があれば、先にファイル名を ID へ直す ---
 # 画像生成AIは「生成画像のバイナリ」を GitHub へ直接置けないが、
 # テキストファイルなら直接コミットできる。そこで AI 側に

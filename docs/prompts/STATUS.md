@@ -1,7 +1,7 @@
 # 画像の入荷状況
 
-- 揃った: **0 / 80**
-- 未着: 80
+- 揃った: **0 / 113**
+- 未着: 113
 - `incoming/` に未処理: 0
 
 `tools/ingest_images.sh` が自動更新する。手で編集しない。
@@ -56,6 +56,14 @@
 - `TEX-shutter` — テクスチャ / シャッター
 - `TEX-chain_link` — テクスチャ / 金網フェンス
 - `TEX-roof_gravel` — テクスチャ / 屋上の砂利防水
+- `TEX-curb_stone` — テクスチャ / 縁石
+- `TEX-manhole` — テクスチャ / マンホール
+- `TEX-side_gutter` — テクスチャ / 側溝のふた
+- `TEX-playground_rubber` — テクスチャ / 遊具下のゴム舗装
+- `TEX-mosaic_tile` — テクスチャ / モザイクタイル
+- `TEX-stucco_spray` — テクスチャ / 吹付けタイル
+- `TEX-hedge` — テクスチャ / 植え込み
+- `TEX-fallen_leaves` — テクスチャ / 落ち葉
 - `CHR-boy_front` — キャラクター / 主人公・正面
 - `CHR-boy_side` — キャラクター / 主人公・側面
 - `CHR-boy_back` — キャラクター / 主人公・背面
@@ -66,6 +74,11 @@
 - `CHR-mother` — キャラクター / お母さん
 - `CHR-shopkeeper` — キャラクター / 駄菓子屋のおばあさん
 - `CHR-cicada` — キャラクター / セミ
+- `CHR-boy_squat` — キャラクター / 主人公・しゃがむ
+- `CHR-boy_look_up` — キャラクター / 主人公・見上げる
+- `CHR-boy_sleep` — キャラクター / 主人公・寝る
+- `CHR-beetle` — キャラクター / カブトムシ
+- `CHR-stray_cat` — キャラクター / 野良猫
 - `PROP-insect_net` — 小物 / 虫あみ
 - `PROP-insect_cage` — 小物 / 虫かご
 - `PROP-vending_machine` — 小物 / 自販機
@@ -82,6 +95,26 @@
 - `PROP-water_tower` — 小物 / 給水塔
 - `PROP-watermelon` — 小物 / スイカ
 - `PROP-kayari` — 小物 / 蚊取り線香
+- `PROP-mailboxes` — 小物 / 集合郵便受け
+- `PROP-notice_board` — 小物 / 掲示板
+- `PROP-laundry_pole` — 小物 / 物干し竿
+- `PROP-aircon_unit` — 小物 / 室外機
+- `PROP-curve_mirror` — 小物 / カーブミラー
+- `PROP-trash_point` — 小物 / ゴミ集積所
+- `PROP-flower_bed` — 小物 / 花壇
+- `PROP-bike_rack` — 小物 / 自転車置き場
+- `PROP-water_faucet` — 小物 / 公園の水飲み場
+- `PROP-bench_engawa` — 小物 / 縁台
+- `DET-rain_streak` — ディテール・汚し / 雨だれ
+- `DET-crack_wall` — ディテール・汚し / 壁のひび
+- `DET-patch_repair` — ディテール・汚し / 補修跡
+- `DET-moss_corner` — ディテール・汚し / 苔
+- `DET-rust_stain` — ディテール・汚し / 錆の垂れ
+- `DET-road_crack` — ディテール・汚し / 路面のひび
+- `DET-puddle` — ディテール・汚し / 水たまり
+- `DET-chalk_drawing` — ディテール・汚し / ろう石の落書き
+- `DET-tire_mark` — ディテール・汚し / タイヤ痕
+- `DET-shadow_leaves` — ディテール・汚し / 木漏れ日
 - `UI-title_key` — UI・キーアート / タイトル用キーアート
 - `UI-diary_paper` — UI・キーアート / 日記の紙
 - `UI-bug_book` — UI・キーアート / セミ図鑑のページ

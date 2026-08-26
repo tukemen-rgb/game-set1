@@ -8,6 +8,7 @@
 #   SKY-*  -> assets/sky/           空パノラマ（同上）
 #   TEX-*  -> assets/textures/gen/  タイル用テクスチャ（同上）
 #   UI-*   -> assets/ui/            UI・キーアート（同上）
+#   DET-*  -> assets/textures/decals/ 汚しデカール（同上）
 #   CHR-*  -> refs/characters/      3D化の元にする参考画像（実行時は読まない）
 #   PROP-* -> refs/props/           同上
 set -euo pipefail
@@ -30,6 +31,7 @@ for f in "${files[@]}"; do
         SKY)  dest="assets/sky" ;;
         TEX)  dest="assets/textures/gen" ;;
         UI)   dest="assets/ui" ;;
+        DET)  dest="assets/textures/decals" ;;
         CHR)  dest="refs/characters" ;;
         PROP) dest="refs/props" ;;
         *)

@@ -10,7 +10,7 @@ from pathlib import Path
 
 DEST = {
     "BG": "assets/plates", "SKY": "assets/sky", "TEX": "assets/textures/gen",
-    "UI": "assets/ui", "CHR": "refs/characters", "PROP": "refs/props",
+    "UI": "assets/ui", "DET": "assets/textures/decals", "CHR": "refs/characters", "PROP": "refs/props",
 }
 EXTS = (".png", ".jpg", ".jpeg", ".webp")
 

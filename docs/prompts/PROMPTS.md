@@ -1,6 +1,6 @@
 # 画像生成プロンプト集
 
-全 80 件。`tools/gen_prompts.py` が自動生成する（手で編集せず、スクリプト側を直して再実行）。
+全 113 件。`tools/gen_prompts.py` が自動生成する（手で編集せず、スクリプト側を直して再実行）。
 
 **共通ルール**: 人物を背景に入れない / 文字・ロゴを入れない /
 実在の建物をそのまま写さない / 生成物は `incoming/` に置く。
@@ -324,7 +324,7 @@ A wide panoramic view of summer night sky with faint stars and the milky way, de
 A wide panoramic view of dramatic dark storm clouds before a typhoon, greenish grey, seen from a suburban Japanese housing estate. Only sky and a low distant skyline of apartment blocks and hills. Photorealistic, no people, no text or lettering, no watermark, no logo, do not copy any real existing building.
 ```
 
-## タイル用テクスチャ（16件）
+## タイル用テクスチャ（24件）
 
 ### `TEX-wall_danchi` — テクスチャ / 団地の外壁
 
@@ -470,7 +470,79 @@ A seamless tileable texture of chain link fence mesh, galvanised steel, flat fro
 A seamless tileable texture of rooftop ballast gravel waterproofing layer seen from above, grey pebbles. Flat orthographic view straight on, evenly lit, no perspective, no cast shadows, no vignette, edges must tile seamlessly. Photorealistic, no people, no text or lettering, no watermark, no logo, do not copy any real existing building.
 ```
 
-## キャラクター（10件）
+### `TEX-curb_stone` — テクスチャ / 縁石
+
+- **アスペクト比**: 1:1
+- **出力ファイル名**: `TEX-curb_stone.png`
+
+```
+A seamless tileable texture of a concrete kerb stone edge, weathered, faint tyre scuffs. Flat orthographic view straight on, evenly lit, no perspective, no cast shadows, no vignette, edges must tile seamlessly. Photorealistic, no people, no text or lettering, no watermark, no logo, do not copy any real existing building.
+```
+
+### `TEX-manhole` — テクスチャ / マンホール
+
+- **アスペクト比**: 1:1
+- **出力ファイル名**: `TEX-manhole.png`
+
+```
+A seamless tileable texture of a Japanese cast iron manhole cover with a geometric non-textual pattern, seen straight down. Flat orthographic view straight on, evenly lit, no perspective, no cast shadows, no vignette, edges must tile seamlessly. Photorealistic, no people, no text or lettering, no watermark, no logo, do not copy any real existing building.
+```
+
+### `TEX-side_gutter` — テクスチャ / 側溝のふた
+
+- **アスペクト比**: 1:1
+- **出力ファイル名**: `TEX-side_gutter.png`
+
+```
+A seamless tileable texture of a concrete side gutter with slotted drainage covers, seen straight down. Flat orthographic view straight on, evenly lit, no perspective, no cast shadows, no vignette, edges must tile seamlessly. Photorealistic, no people, no text or lettering, no watermark, no logo, do not copy any real existing building.
+```
+
+### `TEX-playground_rubber` — テクスチャ / 遊具下のゴム舗装
+
+- **アスペクト比**: 1:1
+- **出力ファイル名**: `TEX-playground_rubber.png`
+
+```
+A seamless tileable texture of soft rubber safety surfacing of a playground, faded green, fine speckles. Flat orthographic view straight on, evenly lit, no perspective, no cast shadows, no vignette, edges must tile seamlessly. Photorealistic, no people, no text or lettering, no watermark, no logo, do not copy any real existing building.
+```
+
+### `TEX-mosaic_tile` — テクスチャ / モザイクタイル
+
+- **アスペクト比**: 1:1
+- **出力ファイル名**: `TEX-mosaic_tile.png`
+
+```
+A seamless tileable texture of small square mosaic wall tiles from a 1970s Japanese building, muted beige and brown, visible grout. Flat orthographic view straight on, evenly lit, no perspective, no cast shadows, no vignette, edges must tile seamlessly. Photorealistic, no people, no text or lettering, no watermark, no logo, do not copy any real existing building.
+```
+
+### `TEX-stucco_spray` — テクスチャ / 吹付けタイル
+
+- **アスペクト比**: 1:1
+- **出力ファイル名**: `TEX-stucco_spray.png`
+
+```
+A seamless tileable texture of sprayed stucco exterior wall finish of a Japanese apartment, fine bumpy texture, cream colour. Flat orthographic view straight on, evenly lit, no perspective, no cast shadows, no vignette, edges must tile seamlessly. Photorealistic, no people, no text or lettering, no watermark, no logo, do not copy any real existing building.
+```
+
+### `TEX-hedge` — テクスチャ / 植え込み
+
+- **アスペクト比**: 1:1
+- **出力ファイル名**: `TEX-hedge.png`
+
+```
+A seamless tileable texture of a dense clipped evergreen hedge seen straight on, small glossy leaves. Flat orthographic view straight on, evenly lit, no perspective, no cast shadows, no vignette, edges must tile seamlessly. Photorealistic, no people, no text or lettering, no watermark, no logo, do not copy any real existing building.
+```
+
+### `TEX-fallen_leaves` — テクスチャ / 落ち葉
+
+- **アスペクト比**: 1:1
+- **出力ファイル名**: `TEX-fallen_leaves.png`
+
+```
+A seamless tileable texture of scattered dry fallen leaves on concrete, seen straight down. Flat orthographic view straight on, evenly lit, no perspective, no cast shadows, no vignette, edges must tile seamlessly. Photorealistic, no people, no text or lettering, no watermark, no logo, do not copy any real existing building.
+```
+
+## キャラクター（15件）
 
 ### `CHR-boy_front` — キャラクター / 主人公・正面
 
@@ -562,7 +634,52 @@ an elderly Japanese woman in a simple summer cardigan sitting, kind expression, 
 a large brown Japanese cicada (minmin-zemi) clinging to a tree trunk, side view, detailed wings. Simple flat cel-shaded toon style with minimal lines, about 4 heads tall, full body visible, standing on a plain flat mid-grey background, even lighting, no shadow on the background. no text or lettering, no watermark, no logo, do not copy any real existing building.
 ```
 
-## 小物（16件）
+### `CHR-boy_squat` — キャラクター / 主人公・しゃがむ
+
+- **アスペクト比**: 1:1
+- **出力ファイル名**: `CHR-boy_squat.png`
+
+```
+the same boy squatting down to look at something on the ground, side view. Simple flat cel-shaded toon style with minimal lines, about 4 heads tall, full body visible, standing on a plain flat mid-grey background, even lighting, no shadow on the background. no text or lettering, no watermark, no logo, do not copy any real existing building.
+```
+
+### `CHR-boy_look_up` — キャラクター / 主人公・見上げる
+
+- **アスペクト比**: 1:1
+- **出力ファイル名**: `CHR-boy_look_up.png`
+
+```
+the same boy looking up at a tree, three-quarter view. Simple flat cel-shaded toon style with minimal lines, about 4 heads tall, full body visible, standing on a plain flat mid-grey background, even lighting, no shadow on the background. no text or lettering, no watermark, no logo, do not copy any real existing building.
+```
+
+### `CHR-boy_sleep` — キャラクター / 主人公・寝る
+
+- **アスペクト比**: 1:1
+- **出力ファイル名**: `CHR-boy_sleep.png`
+
+```
+the same boy lying asleep on a futon, seen from above. Simple flat cel-shaded toon style with minimal lines, about 4 heads tall, full body visible, standing on a plain flat mid-grey background, even lighting, no shadow on the background. no text or lettering, no watermark, no logo, do not copy any real existing building.
+```
+
+### `CHR-beetle` — キャラクター / カブトムシ
+
+- **アスペクト比**: 1:1
+- **出力ファイル名**: `CHR-beetle.png`
+
+```
+a Japanese rhinoceros beetle on a tree trunk, three-quarter view, detailed horn. Simple flat cel-shaded toon style with minimal lines, about 4 heads tall, full body visible, standing on a plain flat mid-grey background, even lighting, no shadow on the background. no text or lettering, no watermark, no logo, do not copy any real existing building.
+```
+
+### `CHR-stray_cat` — キャラクター / 野良猫
+
+- **アスペクト比**: 1:1
+- **出力ファイル名**: `CHR-stray_cat.png`
+
+```
+a calico cat sitting in the shade, side view. Simple flat cel-shaded toon style with minimal lines, about 4 heads tall, full body visible, standing on a plain flat mid-grey background, even lighting, no shadow on the background. no text or lettering, no watermark, no logo, do not copy any real existing building.
+```
+
+## 小物（26件）
 
 ### `PROP-insect_net` — 小物 / 虫あみ
 
@@ -706,6 +823,188 @@ a cut Japanese watermelon on a plate, top down. A single object centred on a pla
 
 ```
 a Japanese mosquito coil in a ceramic holder, thin smoke rising. A single object centred on a plain flat mid-grey background, even studio lighting, no shadow on the background. Photorealistic, no people, no text or lettering, no watermark, no logo, do not copy any real existing building.
+```
+
+### `PROP-mailboxes` — 小物 / 集合郵便受け
+
+- **アスペクト比**: 1:1
+- **出力ファイル名**: `PROP-mailboxes.png`
+
+```
+a wall of aluminium apartment mailboxes, front view, blank name plates. A single object centred on a plain flat mid-grey background, even studio lighting, no shadow on the background. Photorealistic, no people, no text or lettering, no watermark, no logo, do not copy any real existing building.
+```
+
+### `PROP-notice_board` — 小物 / 掲示板
+
+- **アスペクト比**: 1:1
+- **出力ファイル名**: `PROP-notice_board.png`
+
+```
+a wooden community notice board with a small roof, empty cork surface, three-quarter view. A single object centred on a plain flat mid-grey background, even studio lighting, no shadow on the background. Photorealistic, no people, no text or lettering, no watermark, no logo, do not copy any real existing building.
+```
+
+### `PROP-laundry_pole` — 小物 / 物干し竿
+
+- **アスペクト比**: 1:1
+- **出力ファイル名**: `PROP-laundry_pole.png`
+
+```
+a balcony laundry pole rack with plain towels hanging, three-quarter view. A single object centred on a plain flat mid-grey background, even studio lighting, no shadow on the background. Photorealistic, no people, no text or lettering, no watermark, no logo, do not copy any real existing building.
+```
+
+### `PROP-aircon_unit` — 小物 / 室外機
+
+- **アスペクト比**: 1:1
+- **出力ファイル名**: `PROP-aircon_unit.png`
+
+```
+an outdoor air conditioner condenser unit from around 2000, beige, front view. A single object centred on a plain flat mid-grey background, even studio lighting, no shadow on the background. Photorealistic, no people, no text or lettering, no watermark, no logo, do not copy any real existing building.
+```
+
+### `PROP-curve_mirror` — 小物 / カーブミラー
+
+- **アスペクト比**: 1:1
+- **出力ファイル名**: `PROP-curve_mirror.png`
+
+```
+an orange framed convex traffic mirror on a pole, three-quarter view. A single object centred on a plain flat mid-grey background, even studio lighting, no shadow on the background. Photorealistic, no people, no text or lettering, no watermark, no logo, do not copy any real existing building.
+```
+
+### `PROP-trash_point` — 小物 / ゴミ集積所
+
+- **アスペクト比**: 1:1
+- **出力ファイル名**: `PROP-trash_point.png`
+
+```
+a small neighbourhood rubbish collection point with a green net over bags, three-quarter view. A single object centred on a plain flat mid-grey background, even studio lighting, no shadow on the background. Photorealistic, no people, no text or lettering, no watermark, no logo, do not copy any real existing building.
+```
+
+### `PROP-flower_bed` — 小物 / 花壇
+
+- **アスペクト比**: 1:1
+- **出力ファイル名**: `PROP-flower_bed.png`
+
+```
+a small concrete block flower bed with summer marigolds, three-quarter view. A single object centred on a plain flat mid-grey background, even studio lighting, no shadow on the background. Photorealistic, no people, no text or lettering, no watermark, no logo, do not copy any real existing building.
+```
+
+### `PROP-bike_rack` — 小物 / 自転車置き場
+
+- **アスペクト比**: 1:1
+- **出力ファイル名**: `PROP-bike_rack.png`
+
+```
+a simple steel bicycle parking rack with a corrugated roof, three-quarter view. A single object centred on a plain flat mid-grey background, even studio lighting, no shadow on the background. Photorealistic, no people, no text or lettering, no watermark, no logo, do not copy any real existing building.
+```
+
+### `PROP-water_faucet` — 小物 / 公園の水飲み場
+
+- **アスペクト比**: 1:1
+- **出力ファイル名**: `PROP-water_faucet.png`
+
+```
+a public park drinking fountain with a stainless basin on a concrete post, three-quarter view. A single object centred on a plain flat mid-grey background, even studio lighting, no shadow on the background. Photorealistic, no people, no text or lettering, no watermark, no logo, do not copy any real existing building.
+```
+
+### `PROP-bench_engawa` — 小物 / 縁台
+
+- **アスペクト比**: 1:1
+- **出力ファイル名**: `PROP-bench_engawa.png`
+
+```
+a low wooden bench for sitting outside on a summer evening, three-quarter view. A single object centred on a plain flat mid-grey background, even studio lighting, no shadow on the background. Photorealistic, no people, no text or lettering, no watermark, no logo, do not copy any real existing building.
+```
+
+## ディテール・汚しデカール（10件）
+
+### `DET-rain_streak` — ディテール・汚し / 雨だれ
+
+- **アスペクト比**: 1:1
+- **出力ファイル名**: `DET-rain_streak.png`
+
+```
+A close-up photograph of vertical rain streak stains running down a concrete wall, filling the frame, shot straight on, evenly lit, isolated on a plain flat mid-grey background around it. Photorealistic, no people, no text or lettering, no watermark, no logo, do not copy any real existing building.
+```
+
+### `DET-crack_wall` — ディテール・汚し / 壁のひび
+
+- **アスペクト比**: 1:1
+- **出力ファイル名**: `DET-crack_wall.png`
+
+```
+A close-up photograph of a fine branching crack in a concrete wall, filling the frame, shot straight on, evenly lit, isolated on a plain flat mid-grey background around it. Photorealistic, no people, no text or lettering, no watermark, no logo, do not copy any real existing building.
+```
+
+### `DET-patch_repair` — ディテール・汚し / 補修跡
+
+- **アスペクト比**: 1:1
+- **出力ファイル名**: `DET-patch_repair.png`
+
+```
+A close-up photograph of a rectangular mortar patch repair on a concrete wall, slightly different colour, filling the frame, shot straight on, evenly lit, isolated on a plain flat mid-grey background around it. Photorealistic, no people, no text or lettering, no watermark, no logo, do not copy any real existing building.
+```
+
+### `DET-moss_corner` — ディテール・汚し / 苔
+
+- **アスペクト比**: 1:1
+- **出力ファイル名**: `DET-moss_corner.png`
+
+```
+A close-up photograph of green moss growing in the damp corner of concrete, filling the frame, shot straight on, evenly lit, isolated on a plain flat mid-grey background around it. Photorealistic, no people, no text or lettering, no watermark, no logo, do not copy any real existing building.
+```
+
+### `DET-rust_stain` — ディテール・汚し / 錆の垂れ
+
+- **アスペクト比**: 1:1
+- **出力ファイル名**: `DET-rust_stain.png`
+
+```
+A close-up photograph of a rust stain running down from a steel fixing on concrete, filling the frame, shot straight on, evenly lit, isolated on a plain flat mid-grey background around it. Photorealistic, no people, no text or lettering, no watermark, no logo, do not copy any real existing building.
+```
+
+### `DET-road_crack` — ディテール・汚し / 路面のひび
+
+- **アスペクト比**: 1:1
+- **出力ファイル名**: `DET-road_crack.png`
+
+```
+A close-up photograph of cracked asphalt with black tar repair lines, filling the frame, shot straight on, evenly lit, isolated on a plain flat mid-grey background around it. Photorealistic, no people, no text or lettering, no watermark, no logo, do not copy any real existing building.
+```
+
+### `DET-puddle` — ディテール・汚し / 水たまり
+
+- **アスペクト比**: 1:1
+- **出力ファイル名**: `DET-puddle.png`
+
+```
+A close-up photograph of a shallow puddle on asphalt after rain, seen from above, filling the frame, shot straight on, evenly lit, isolated on a plain flat mid-grey background around it. Photorealistic, no people, no text or lettering, no watermark, no logo, do not copy any real existing building.
+```
+
+### `DET-chalk_drawing` — ディテール・汚し / ろう石の落書き
+
+- **アスペクト比**: 1:1
+- **出力ファイル名**: `DET-chalk_drawing.png`
+
+```
+A close-up photograph of faded chalk scribbles of simple shapes on concrete pavement, no letters or numbers, filling the frame, shot straight on, evenly lit, isolated on a plain flat mid-grey background around it. Photorealistic, no people, no text or lettering, no watermark, no logo, do not copy any real existing building.
+```
+
+### `DET-tire_mark` — ディテール・汚し / タイヤ痕
+
+- **アスペクト比**: 1:1
+- **出力ファイル名**: `DET-tire_mark.png`
+
+```
+A close-up photograph of a faint tyre scuff mark on asphalt, filling the frame, shot straight on, evenly lit, isolated on a plain flat mid-grey background around it. Photorealistic, no people, no text or lettering, no watermark, no logo, do not copy any real existing building.
+```
+
+### `DET-shadow_leaves` — ディテール・汚し / 木漏れ日
+
+- **アスペクト比**: 1:1
+- **出力ファイル名**: `DET-shadow_leaves.png`
+
+```
+A close-up photograph of dappled shadow of tree leaves cast on a flat pale surface, filling the frame, shot straight on, evenly lit, isolated on a plain flat mid-grey background around it. Photorealistic, no people, no text or lettering, no watermark, no logo, do not copy any real existing building.
 ```
 
 ## UI・キーアート（6件）

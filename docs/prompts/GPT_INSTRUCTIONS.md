@@ -27,8 +27,9 @@ https://github.com/tukemen-rgb/game-set1/blob/claude/game-godot-setup-98dhue/doc
   1. `BG-*`（背景プレート）— これが一番効きます
   2. `SKY-*`（空・遠景）
   3. `TEX-*`（テクスチャ）
-  4. `CHR-*` / `PROP-*`（キャラ・小物）
-  5. `UI-*`
+  4. `DET-*`（汚し・ディテール）
+  5. `CHR-*` / `PROP-*`（キャラ・小物）
+  6. `UI-*`
 
 ## 3. 作り方の注意
 
@@ -56,7 +57,7 @@ https://github.com/tukemen-rgb/game-set1/tree/claude/game-godot-setup-98dhue/inc
 https://github.com/tukemen-rgb/game-set1/upload/claude/game-godot-setup-98dhue/incoming
 
 **ファイル名は必ずプロンプトのIDと同じにしてください。**
-例: `BG-danchi-morning.png` / `TEX-wall_danchi.png` / `CHR-boy_front.png`
+例: `BG-danchi-morning.png` / `TEX-wall_danchi.png` / `DET-rain_streak.png`
 
 同じIDを作り直したときは `BG-danchi-morning_v2.png` のように末尾を足します。
 名前が違うと自動振り分けができず、そこで止まります。

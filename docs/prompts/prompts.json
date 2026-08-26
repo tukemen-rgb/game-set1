@@ -386,6 +386,70 @@
       "prompt": "A seamless tileable texture of rooftop ballast gravel waterproofing layer seen from above, grey pebbles. Flat orthographic view straight on, evenly lit, no perspective, no cast shadows, no vignette, edges must tile seamlessly. Photorealistic, no people, no text or lettering, no watermark, no logo, do not copy any real existing building."
     },
     {
+      "id": "TEX-curb_stone",
+      "category": "texture",
+      "ja": "テクスチャ / 縁石",
+      "ref": null,
+      "aspect": "1:1",
+      "prompt": "A seamless tileable texture of a concrete kerb stone edge, weathered, faint tyre scuffs. Flat orthographic view straight on, evenly lit, no perspective, no cast shadows, no vignette, edges must tile seamlessly. Photorealistic, no people, no text or lettering, no watermark, no logo, do not copy any real existing building."
+    },
+    {
+      "id": "TEX-manhole",
+      "category": "texture",
+      "ja": "テクスチャ / マンホール",
+      "ref": null,
+      "aspect": "1:1",
+      "prompt": "A seamless tileable texture of a Japanese cast iron manhole cover with a geometric non-textual pattern, seen straight down. Flat orthographic view straight on, evenly lit, no perspective, no cast shadows, no vignette, edges must tile seamlessly. Photorealistic, no people, no text or lettering, no watermark, no logo, do not copy any real existing building."
+    },
+    {
+      "id": "TEX-side_gutter",
+      "category": "texture",
+      "ja": "テクスチャ / 側溝のふた",
+      "ref": null,
+      "aspect": "1:1",
+      "prompt": "A seamless tileable texture of a concrete side gutter with slotted drainage covers, seen straight down. Flat orthographic view straight on, evenly lit, no perspective, no cast shadows, no vignette, edges must tile seamlessly. Photorealistic, no people, no text or lettering, no watermark, no logo, do not copy any real existing building."
+    },
+    {
+      "id": "TEX-playground_rubber",
+      "category": "texture",
+      "ja": "テクスチャ / 遊具下のゴム舗装",
+      "ref": null,
+      "aspect": "1:1",
+      "prompt": "A seamless tileable texture of soft rubber safety surfacing of a playground, faded green, fine speckles. Flat orthographic view straight on, evenly lit, no perspective, no cast shadows, no vignette, edges must tile seamlessly. Photorealistic, no people, no text or lettering, no watermark, no logo, do not copy any real existing building."
+    },
+    {
+      "id": "TEX-mosaic_tile",
+      "category": "texture",
+      "ja": "テクスチャ / モザイクタイル",
+      "ref": null,
+      "aspect": "1:1",
+      "prompt": "A seamless tileable texture of small square mosaic wall tiles from a 1970s Japanese building, muted beige and brown, visible grout. Flat orthographic view straight on, evenly lit, no perspective, no cast shadows, no vignette, edges must tile seamlessly. Photorealistic, no people, no text or lettering, no watermark, no logo, do not copy any real existing building."
+    },
+    {
+      "id": "TEX-stucco_spray",
+      "category": "texture",
+      "ja": "テクスチャ / 吹付けタイル",
+      "ref": null,
+      "aspect": "1:1",
+      "prompt": "A seamless tileable texture of sprayed stucco exterior wall finish of a Japanese apartment, fine bumpy texture, cream colour. Flat orthographic view straight on, evenly lit, no perspective, no cast shadows, no vignette, edges must tile seamlessly. Photorealistic, no people, no text or lettering, no watermark, no logo, do not copy any real existing building."
+    },
+    {
+      "id": "TEX-hedge",
+      "category": "texture",
+      "ja": "テクスチャ / 植え込み",
+      "ref": null,
+      "aspect": "1:1",
+      "prompt": "A seamless tileable texture of a dense clipped evergreen hedge seen straight on, small glossy leaves. Flat orthographic view straight on, evenly lit, no perspective, no cast shadows, no vignette, edges must tile seamlessly. Photorealistic, no people, no text or lettering, no watermark, no logo, do not copy any real existing building."
+    },
+    {
+      "id": "TEX-fallen_leaves",
+      "category": "texture",
+      "ja": "テクスチャ / 落ち葉",
+      "ref": null,
+      "aspect": "1:1",
+      "prompt": "A seamless tileable texture of scattered dry fallen leaves on concrete, seen straight down. Flat orthographic view straight on, evenly lit, no perspective, no cast shadows, no vignette, edges must tile seamlessly. Photorealistic, no people, no text or lettering, no watermark, no logo, do not copy any real existing building."
+    },
+    {
       "id": "CHR-boy_front",
       "category": "character",
       "ja": "キャラクター / 主人公・正面",
@@ -464,6 +528,46 @@
       "ref": null,
       "aspect": "1:1",
       "prompt": "a large brown Japanese cicada (minmin-zemi) clinging to a tree trunk, side view, detailed wings. Simple flat cel-shaded toon style with minimal lines, about 4 heads tall, full body visible, standing on a plain flat mid-grey background, even lighting, no shadow on the background. no text or lettering, no watermark, no logo, do not copy any real existing building."
+    },
+    {
+      "id": "CHR-boy_squat",
+      "category": "character",
+      "ja": "キャラクター / 主人公・しゃがむ",
+      "ref": null,
+      "aspect": "1:1",
+      "prompt": "the same boy squatting down to look at something on the ground, side view. Simple flat cel-shaded toon style with minimal lines, about 4 heads tall, full body visible, standing on a plain flat mid-grey background, even lighting, no shadow on the background. no text or lettering, no watermark, no logo, do not copy any real existing building."
+    },
+    {
+      "id": "CHR-boy_look_up",
+      "category": "character",
+      "ja": "キャラクター / 主人公・見上げる",
+      "ref": null,
+      "aspect": "1:1",
+      "prompt": "the same boy looking up at a tree, three-quarter view. Simple flat cel-shaded toon style with minimal lines, about 4 heads tall, full body visible, standing on a plain flat mid-grey background, even lighting, no shadow on the background. no text or lettering, no watermark, no logo, do not copy any real existing building."
+    },
+    {
+      "id": "CHR-boy_sleep",
+      "category": "character",
+      "ja": "キャラクター / 主人公・寝る",
+      "ref": null,
+      "aspect": "1:1",
+      "prompt": "the same boy lying asleep on a futon, seen from above. Simple flat cel-shaded toon style with minimal lines, about 4 heads tall, full body visible, standing on a plain flat mid-grey background, even lighting, no shadow on the background. no text or lettering, no watermark, no logo, do not copy any real existing building."
+    },
+    {
+      "id": "CHR-beetle",
+      "category": "character",
+      "ja": "キャラクター / カブトムシ",
+      "ref": null,
+      "aspect": "1:1",
+      "prompt": "a Japanese rhinoceros beetle on a tree trunk, three-quarter view, detailed horn. Simple flat cel-shaded toon style with minimal lines, about 4 heads tall, full body visible, standing on a plain flat mid-grey background, even lighting, no shadow on the background. no text or lettering, no watermark, no logo, do not copy any real existing building."
+    },
+    {
+      "id": "CHR-stray_cat",
+      "category": "character",
+      "ja": "キャラクター / 野良猫",
+      "ref": null,
+      "aspect": "1:1",
+      "prompt": "a calico cat sitting in the shade, side view. Simple flat cel-shaded toon style with minimal lines, about 4 heads tall, full body visible, standing on a plain flat mid-grey background, even lighting, no shadow on the background. no text or lettering, no watermark, no logo, do not copy any real existing building."
     },
     {
       "id": "PROP-insect_net",
@@ -592,6 +696,166 @@
       "ref": null,
       "aspect": "1:1",
       "prompt": "a Japanese mosquito coil in a ceramic holder, thin smoke rising. A single object centred on a plain flat mid-grey background, even studio lighting, no shadow on the background. Photorealistic, no people, no text or lettering, no watermark, no logo, do not copy any real existing building."
+    },
+    {
+      "id": "PROP-mailboxes",
+      "category": "prop",
+      "ja": "小物 / 集合郵便受け",
+      "ref": null,
+      "aspect": "1:1",
+      "prompt": "a wall of aluminium apartment mailboxes, front view, blank name plates. A single object centred on a plain flat mid-grey background, even studio lighting, no shadow on the background. Photorealistic, no people, no text or lettering, no watermark, no logo, do not copy any real existing building."
+    },
+    {
+      "id": "PROP-notice_board",
+      "category": "prop",
+      "ja": "小物 / 掲示板",
+      "ref": null,
+      "aspect": "1:1",
+      "prompt": "a wooden community notice board with a small roof, empty cork surface, three-quarter view. A single object centred on a plain flat mid-grey background, even studio lighting, no shadow on the background. Photorealistic, no people, no text or lettering, no watermark, no logo, do not copy any real existing building."
+    },
+    {
+      "id": "PROP-laundry_pole",
+      "category": "prop",
+      "ja": "小物 / 物干し竿",
+      "ref": null,
+      "aspect": "1:1",
+      "prompt": "a balcony laundry pole rack with plain towels hanging, three-quarter view. A single object centred on a plain flat mid-grey background, even studio lighting, no shadow on the background. Photorealistic, no people, no text or lettering, no watermark, no logo, do not copy any real existing building."
+    },
+    {
+      "id": "PROP-aircon_unit",
+      "category": "prop",
+      "ja": "小物 / 室外機",
+      "ref": null,
+      "aspect": "1:1",
+      "prompt": "an outdoor air conditioner condenser unit from around 2000, beige, front view. A single object centred on a plain flat mid-grey background, even studio lighting, no shadow on the background. Photorealistic, no people, no text or lettering, no watermark, no logo, do not copy any real existing building."
+    },
+    {
+      "id": "PROP-curve_mirror",
+      "category": "prop",
+      "ja": "小物 / カーブミラー",
+      "ref": null,
+      "aspect": "1:1",
+      "prompt": "an orange framed convex traffic mirror on a pole, three-quarter view. A single object centred on a plain flat mid-grey background, even studio lighting, no shadow on the background. Photorealistic, no people, no text or lettering, no watermark, no logo, do not copy any real existing building."
+    },
+    {
+      "id": "PROP-trash_point",
+      "category": "prop",
+      "ja": "小物 / ゴミ集積所",
+      "ref": null,
+      "aspect": "1:1",
+      "prompt": "a small neighbourhood rubbish collection point with a green net over bags, three-quarter view. A single object centred on a plain flat mid-grey background, even studio lighting, no shadow on the background. Photorealistic, no people, no text or lettering, no watermark, no logo, do not copy any real existing building."
+    },
+    {
+      "id": "PROP-flower_bed",
+      "category": "prop",
+      "ja": "小物 / 花壇",
+      "ref": null,
+      "aspect": "1:1",
+      "prompt": "a small concrete block flower bed with summer marigolds, three-quarter view. A single object centred on a plain flat mid-grey background, even studio lighting, no shadow on the background. Photorealistic, no people, no text or lettering, no watermark, no logo, do not copy any real existing building."
+    },
+    {
+      "id": "PROP-bike_rack",
+      "category": "prop",
+      "ja": "小物 / 自転車置き場",
+      "ref": null,
+      "aspect": "1:1",
+      "prompt": "a simple steel bicycle parking rack with a corrugated roof, three-quarter view. A single object centred on a plain flat mid-grey background, even studio lighting, no shadow on the background. Photorealistic, no people, no text or lettering, no watermark, no logo, do not copy any real existing building."
+    },
+    {
+      "id": "PROP-water_faucet",
+      "category": "prop",
+      "ja": "小物 / 公園の水飲み場",
+      "ref": null,
+      "aspect": "1:1",
+      "prompt": "a public park drinking fountain with a stainless basin on a concrete post, three-quarter view. A single object centred on a plain flat mid-grey background, even studio lighting, no shadow on the background. Photorealistic, no people, no text or lettering, no watermark, no logo, do not copy any real existing building."
+    },
+    {
+      "id": "PROP-bench_engawa",
+      "category": "prop",
+      "ja": "小物 / 縁台",
+      "ref": null,
+      "aspect": "1:1",
+      "prompt": "a low wooden bench for sitting outside on a summer evening, three-quarter view. A single object centred on a plain flat mid-grey background, even studio lighting, no shadow on the background. Photorealistic, no people, no text or lettering, no watermark, no logo, do not copy any real existing building."
+    },
+    {
+      "id": "DET-rain_streak",
+      "category": "detail",
+      "ja": "ディテール・汚し / 雨だれ",
+      "ref": null,
+      "aspect": "1:1",
+      "prompt": "A close-up photograph of vertical rain streak stains running down a concrete wall, filling the frame, shot straight on, evenly lit, isolated on a plain flat mid-grey background around it. Photorealistic, no people, no text or lettering, no watermark, no logo, do not copy any real existing building."
+    },
+    {
+      "id": "DET-crack_wall",
+      "category": "detail",
+      "ja": "ディテール・汚し / 壁のひび",
+      "ref": null,
+      "aspect": "1:1",
+      "prompt": "A close-up photograph of a fine branching crack in a concrete wall, filling the frame, shot straight on, evenly lit, isolated on a plain flat mid-grey background around it. Photorealistic, no people, no text or lettering, no watermark, no logo, do not copy any real existing building."
+    },
+    {
+      "id": "DET-patch_repair",
+      "category": "detail",
+      "ja": "ディテール・汚し / 補修跡",
+      "ref": null,
+      "aspect": "1:1",
+      "prompt": "A close-up photograph of a rectangular mortar patch repair on a concrete wall, slightly different colour, filling the frame, shot straight on, evenly lit, isolated on a plain flat mid-grey background around it. Photorealistic, no people, no text or lettering, no watermark, no logo, do not copy any real existing building."
+    },
+    {
+      "id": "DET-moss_corner",
+      "category": "detail",
+      "ja": "ディテール・汚し / 苔",
+      "ref": null,
+      "aspect": "1:1",
+      "prompt": "A close-up photograph of green moss growing in the damp corner of concrete, filling the frame, shot straight on, evenly lit, isolated on a plain flat mid-grey background around it. Photorealistic, no people, no text or lettering, no watermark, no logo, do not copy any real existing building."
+    },
+    {
+      "id": "DET-rust_stain",
+      "category": "detail",
+      "ja": "ディテール・汚し / 錆の垂れ",
+      "ref": null,
+      "aspect": "1:1",
+      "prompt": "A close-up photograph of a rust stain running down from a steel fixing on concrete, filling the frame, shot straight on, evenly lit, isolated on a plain flat mid-grey background around it. Photorealistic, no people, no text or lettering, no watermark, no logo, do not copy any real existing building."
+    },
+    {
+      "id": "DET-road_crack",
+      "category": "detail",
+      "ja": "ディテール・汚し / 路面のひび",
+      "ref": null,
+      "aspect": "1:1",
+      "prompt": "A close-up photograph of cracked asphalt with black tar repair lines, filling the frame, shot straight on, evenly lit, isolated on a plain flat mid-grey background around it. Photorealistic, no people, no text or lettering, no watermark, no logo, do not copy any real existing building."
+    },
+    {
+      "id": "DET-puddle",
+      "category": "detail",
+      "ja": "ディテール・汚し / 水たまり",
+      "ref": null,
+      "aspect": "1:1",
+      "prompt": "A close-up photograph of a shallow puddle on asphalt after rain, seen from above, filling the frame, shot straight on, evenly lit, isolated on a plain flat mid-grey background around it. Photorealistic, no people, no text or lettering, no watermark, no logo, do not copy any real existing building."
+    },
+    {
+      "id": "DET-chalk_drawing",
+      "category": "detail",
+      "ja": "ディテール・汚し / ろう石の落書き",
+      "ref": null,
+      "aspect": "1:1",
+      "prompt": "A close-up photograph of faded chalk scribbles of simple shapes on concrete pavement, no letters or numbers, filling the frame, shot straight on, evenly lit, isolated on a plain flat mid-grey background around it. Photorealistic, no people, no text or lettering, no watermark, no logo, do not copy any real existing building."
+    },
+    {
+      "id": "DET-tire_mark",
+      "category": "detail",
+      "ja": "ディテール・汚し / タイヤ痕",
+      "ref": null,
+      "aspect": "1:1",
+      "prompt": "A close-up photograph of a faint tyre scuff mark on asphalt, filling the frame, shot straight on, evenly lit, isolated on a plain flat mid-grey background around it. Photorealistic, no people, no text or lettering, no watermark, no logo, do not copy any real existing building."
+    },
+    {
+      "id": "DET-shadow_leaves",
+      "category": "detail",
+      "ja": "ディテール・汚し / 木漏れ日",
+      "ref": null,
+      "aspect": "1:1",
+      "prompt": "A close-up photograph of dappled shadow of tree leaves cast on a flat pale surface, filling the frame, shot straight on, evenly lit, isolated on a plain flat mid-grey background around it. Photorealistic, no people, no text or lettering, no watermark, no logo, do not copy any real existing building."
     },
     {
       "id": "UI-title_key",

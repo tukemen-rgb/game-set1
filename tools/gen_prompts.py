@@ -184,6 +184,83 @@ UI_ITEMS = [
 ]
 
 
+# --- 追加バッチ（ループが少しずつ足していく。上のリストへ継ぎ足す形） ---
+
+TEXTURES += [
+    ("curb_stone", "縁石", "a concrete kerb stone edge, weathered, faint tyre "
+     "scuffs"),
+    ("manhole", "マンホール", "a Japanese cast iron manhole cover with a "
+     "geometric non-textual pattern, seen straight down"),
+    ("side_gutter", "側溝のふた", "a concrete side gutter with slotted "
+     "drainage covers, seen straight down"),
+    ("playground_rubber", "遊具下のゴム舗装", "soft rubber safety surfacing "
+     "of a playground, faded green, fine speckles"),
+    ("mosaic_tile", "モザイクタイル", "small square mosaic wall tiles from a "
+     "1970s Japanese building, muted beige and brown, visible grout"),
+    ("stucco_spray", "吹付けタイル", "sprayed stucco exterior wall finish of a "
+     "Japanese apartment, fine bumpy texture, cream colour"),
+    ("hedge", "植え込み", "a dense clipped evergreen hedge seen straight on, "
+     "small glossy leaves"),
+    ("fallen_leaves", "落ち葉", "scattered dry fallen leaves on concrete, "
+     "seen straight down"),
+]
+
+PROPS += [
+    ("mailboxes", "集合郵便受け", "a wall of aluminium apartment mailboxes, "
+     "front view, blank name plates"),
+    ("notice_board", "掲示板", "a wooden community notice board with a small "
+     "roof, empty cork surface, three-quarter view"),
+    ("laundry_pole", "物干し竿", "a balcony laundry pole rack with plain "
+     "towels hanging, three-quarter view"),
+    ("aircon_unit", "室外機", "an outdoor air conditioner condenser unit from "
+     "around 2000, beige, front view"),
+    ("curve_mirror", "カーブミラー", "an orange framed convex traffic mirror "
+     "on a pole, three-quarter view"),
+    ("trash_point", "ゴミ集積所", "a small neighbourhood rubbish collection "
+     "point with a green net over bags, three-quarter view"),
+    ("flower_bed", "花壇", "a small concrete block flower bed with summer "
+     "marigolds, three-quarter view"),
+    ("bike_rack", "自転車置き場", "a simple steel bicycle parking rack with a "
+     "corrugated roof, three-quarter view"),
+    ("water_faucet", "公園の水飲み場", "a public park drinking fountain with "
+     "a stainless basin on a concrete post, three-quarter view"),
+    ("bench_engawa", "縁台", "a low wooden bench for sitting outside on a "
+     "summer evening, three-quarter view"),
+]
+
+CHARACTERS += [
+    ("boy_squat", "主人公・しゃがむ", "the same boy squatting down to look at "
+     "something on the ground, side view"),
+    ("boy_look_up", "主人公・見上げる", "the same boy looking up at a tree, "
+     "three-quarter view"),
+    ("boy_sleep", "主人公・寝る", "the same boy lying asleep on a futon, "
+     "seen from above"),
+    ("beetle", "カブトムシ", "a Japanese rhinoceros beetle on a tree trunk, "
+     "three-quarter view, detailed horn"),
+    ("stray_cat", "野良猫", "a calico cat sitting in the shade, side view"),
+]
+
+# --- ディテール（汚しデカール。3Dに重ねて情報量を足す） ---
+DETAILS = [
+    ("rain_streak", "雨だれ", "vertical rain streak stains running down a "
+     "concrete wall"),
+    ("crack_wall", "壁のひび", "a fine branching crack in a concrete wall"),
+    ("patch_repair", "補修跡", "a rectangular mortar patch repair on a "
+     "concrete wall, slightly different colour"),
+    ("moss_corner", "苔", "green moss growing in the damp corner of concrete"),
+    ("rust_stain", "錆の垂れ", "a rust stain running down from a steel "
+     "fixing on concrete"),
+    ("road_crack", "路面のひび", "cracked asphalt with black tar repair lines"),
+    ("puddle", "水たまり", "a shallow puddle on asphalt after rain, seen "
+     "from above"),
+    ("chalk_drawing", "ろう石の落書き", "faded chalk scribbles of simple "
+     "shapes on concrete pavement, no letters or numbers"),
+    ("tire_mark", "タイヤ痕", "a faint tyre scuff mark on asphalt"),
+    ("shadow_leaves", "木漏れ日", "dappled shadow of tree leaves cast on a "
+     "flat pale surface"),
+]
+
+
 def build():
     items = []
 
@@ -263,6 +340,20 @@ def build():
             ),
         })
 
+    for det_id, ja, desc in DETAILS:
+        items.append({
+            "id": f"DET-{det_id}",
+            "category": "detail",
+            "ja": f"ディテール・汚し / {ja}",
+            "ref": None,
+            "aspect": "1:1",
+            "prompt": (
+                f"A close-up photograph of {desc}, filling the frame, shot "
+                "straight on, evenly lit, isolated on a plain flat mid-grey "
+                f"background around it. Photorealistic, {COMMON_RULES}."
+            ),
+        })
+
     for ui_id, ja, desc in UI_ITEMS:
         items.append({
             "id": f"UI-{ui_id}",
@@ -293,6 +384,7 @@ def write(items):
         "character": "キャラクター",
         "prop": "小物",
         "ui": "UI・キーアート",
+        "detail": "ディテール・汚しデカール",
     }
 
     lines = [

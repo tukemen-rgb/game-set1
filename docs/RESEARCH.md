@@ -1,4 +1,57 @@
-# 「ぼくのなつやすみ」風ゲーム — 情報収集ノート
+# 夏休みゲーム — 情報収集ノート
+
+## ★ コンセプト v2（現行）: 2000年・ニュータウンの夏
+
+権利面の安全のため、本家の「1975年・田舎」から**独自設定**に変更した。
+「30代のサラリーマンが、2000年ごろの子供時代——ニュータウンの夏休み——に
+戻る」ゲーム。面白さの構造（有限の31日・固定カメラ・小さな遊び・日記）は
+ジャンルの文法として借りつつ、舞台・年代・意匠はオリジナル。
+
+### 舞台モデル: 千里ニュータウン（大阪・1962年〜日本初の大規模NT）
+
+出典: [千里ニュータウン - Wikipedia](https://ja.wikipedia.org/wiki/千里ニュータウン) /
+[千里ニュータウン情報館](https://senri-nt.com/ourtown/ja/) /
+[UR 団地最前線](https://www.ur-net.go.jp/aboutus/publication/web-urpress64/danchi_saizensen.html) /
+[ディスカバー千里](https://discover-senri.com/senri-newtown)
+
+- **住区制**: 「近隣住区論」で計画され、各住区の中心に**近隣センター**
+  （商店街・郵便局・集会所）と小学校。ゲームの舞台単位はこの「1住区」が
+  ちょうど良い＝ぼくなつ級の広さ
+- **団地**: 中層（4〜5階）の板状住棟が並行配置。ベランダの連続、
+  外階段、棟間の広場と遊具。**給水塔**（キノコ型）が住区のランドマーク
+- **緑**: 緑被率21%と NT としては豊富。街路樹・緑道・公園が多い。
+  公園の池・セミの多い樹木
+- **2000年ごろの記号**: 自販機、商店街のアーケードとテント庇、
+  シャッターの降り始めた個人商店、公園の象形すべり台・ブランコ・砂場、
+  空き地の土管、ゲームボーイ/カードゲーム世代の子供たち
+
+### ゲーム内エリア構成（80m×80m ≒ ぼくなつ級）
+
+| 場面 | 内容 | カメラ |
+| --- | --- | --- |
+| 団地の広場 | 板状住棟2棟・給水塔・広場 | 中庭を斜めに見下ろす 45° |
+| 商店街 | 近隣センター。両側に店・アーケード屋根 | 通りの軸で望遠 20°（圧縮の画） |
+| 公園 | 池・すべり台・ブランコ・砂場・木 | 池の対岸から広角 55° |
+| 大通りと空き地 | 横断歩道・自販機・土管のある空き地 | 高め俯瞰 50° |
+
+### AI 生成用プロンプト（v2 舞台向け）
+
+背景（共通スタイル）:
+
+> Japanese new town suburb in summer 2000, mid-rise danchi apartment
+> blocks with balconies, mushroom-shaped water tower, shopping arcade
+> with colorful awnings, hand-painted anime background style, warm
+> nostalgic light, cumulonimbus clouds, no people
+
+キャラクター:
+
+> A Japanese boy around 10 years old in year 2000: baseball cap,
+> white T-shirt, navy shorts, sneakers, cel-shaded toon style,
+> 4 heads tall, rigged biped, T-pose
+
+---
+
+# （v1 資料）「ぼくのなつやすみ」風 — 田舎編の調査
 
 AI 生成（Godogen / Gemini / Tripo3D など）に **モデル・背景・カメラアングルを
 インプットするための資料**。実装（`scenes/summer/`）もこの仕様に沿っている。

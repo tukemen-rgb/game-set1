@@ -1,43 +1,46 @@
-# game-set1 — いなかの夏（プロトタイプ）
+# game-set1 — ニュータウンの夏（プロトタイプ）
 
-「ぼくのなつやすみ」風の夏休みゲーム。[Godogen](https://github.com/htdt/godogen)
-の Godot/Claude パイプライン（`CLAUDE.md` / `godot.md`）に沿って開発している。
-昭和の田舎を舞台に、8月1日〜31日をのんびり過ごす。
+**30代のサラリーマンが、2000年ごろの子供時代——ニュータウンの夏休み——に
+戻る**ゲーム。[Godogen](https://github.com/htdt/godogen) の Godot/Claude
+パイプライン（`CLAUDE.md` / `godot.md`）で開発している。
+舞台は千里ニュータウンを参考にした架空の1住区（団地・商店街・公園・空き地）。
+「夏休みもの」の文法（有限の31日・固定カメラ・小さな遊び・日記）は使うが、
+舞台・年代・意匠はオリジナル（経緯は `docs/RESEARCH.md` コンセプト v2）。
 
 ![screenshot](https://raw.githubusercontent.com/tukemen-rgb/game-set1/claude/game-godot-setup-98dhue/docs/screenshot.png)
 
 ## できていること
 
-- **固定カメラ 4 場面**（庭=斜め見下ろし / 田舎道=ローアングル望遠 /
-  川辺=対岸から広角 / 原っぱ=高め俯瞰）。プレイヤー位置で自動切替。
-  アングルの根拠は `docs/RESEARCH.md` のカメラ文法
-- **日数システム**: 8月1日(金)開始〜8月31日まで。19時に日没→その日の日記→翌朝
-- **時刻で変わる空**: 朝→昼→夕焼け（金色経由の補間）。太陽の角度・色も連動
-- **セミとり**: 毎日ランダムな木にセミが湧く。近づいてスペースで捕獲（成功率65%）
-- **世界**: 漆喰壁と瓦屋根の家・縁側・砂利道・電柱・田んぼ・ひまわり・
-  掘り下げた川と土手・入道雲・遠景の山。すべてプロシージャル生成（外部アセットなし）
-- **プロシージャルテクスチャ**: `scenes/BuildTextures.cs` がノイズから
-  草地・砂利・田んぼ・葉・漆喰・瓦・水面法線マップの PNG を焼き込む。
-  空は ProceduralSky のグラデーション（時刻で天頂と地平線の色が変化、太陽つき）
-- おまけ: 初代プロトタイプの 2D 避けゲー `scenes/main.tscn`（GDScript）も残置
+- **固定カメラ4場面**: 団地の広場（斜め見下ろし45°）/ 商店街（通りの軸で
+  望遠20°）/ 公園（池の対岸から広角55°）/ 大通りと空き地（高め俯瞰50°）。
+  プレイヤー位置で自動切替
+- **日数システム**: 2000年8月1日(火)〜8月31日。19時に日没→日記→翌朝
+- **時刻で変わる空**: ProceduralSky の天頂・地平線2色を時刻で補間。
+  夕方は金色経由で夕焼けに。太陽・霧・環境光も連動
+- **セミとり**: 毎日ランダムな木にセミが湧く。スペースで捕獲（成功率65%）
+- **世界（すべてプロシージャル・外部アセットなし）**:
+  - 団地: 板状住棟2棟（窓とベランダは生成テクスチャ）・キノコ型給水塔・広場
+  - 商店街: 近隣センター風。両側の店（テント庇・看板・ガラス戸とシャッター）、
+    半透明アーケード屋根、自販機。大通りからの入口ギャップあり
+  - 公園: 池（さざ波の法線マップ＋土手リング）・すべり台・ブランコ・砂場・ベンチ
+  - 大通り: アスファルト・歩道タイル・横断歩道・電柱
+  - 空き地の土管、遠景の高層住宅スカイラインと丘、入道雲
 
 ## まだのもの
 
-- 釣り・ラジオ体操スタンプ・会話などのアクティビティ追加
-- AI 生成アセットへの差し替え（水彩背景・キャラモデル。プロンプト集は
-  `docs/RESEARCH.md`。API キーを用意して Godogen の asset-gen スキルを導入する）
-- 音（セミの声・川のせせらぎ・BGM）
-- タイトル画面とセーブ
+- 商店街での買い物・会話、ラジオ体操、日付固定イベント（お祭りなど）
+- 「30代が子供に戻る」導入・エンディングの演出
+- AI 生成アセットへの差し替え（プロンプト集は `docs/RESEARCH.md`。
+  API キーを用意して Godogen の asset-gen スキルを導入する）
+- 音（セミの声・商店街の環境音・BGM）、タイトル画面とセーブ
 
 ## アセット表
 
 | アセット | 現状 | 置き換え予定 |
 | --- | --- | --- |
-| 地形・家・木・ひまわり・電柱・田んぼ | プロシージャル（BuildSummer.cs） | 生成背景・GLBモデル |
-| テクスチャ（草・砂利・田・葉・漆喰・瓦・水面法線） | ノイズ焼き込み PNG（BuildTextures.cs） | 生成テクスチャ |
-| 主人公（麦わら帽子の男の子） | プリミティブ組み合わせ | Tripo3D リグ付きモデル |
-| セミ | 茶色の小箱 | 生成モデル or スプライト |
-| UI フォント | SystemFont（Noto Sans CJK ほか） | そのまま |
+| 団地・商店街・公園・道路の造形 | プロシージャル（BuildSummer.cs） | 生成背景・GLBモデル |
+| テクスチャ（外壁・草・舗装・アスファルト・葉・水面法線ほか） | ノイズ＋矩形描画の焼き込み PNG（BuildTextures.cs） | 生成テクスチャ |
+| 主人公（キャップの少年） | プリミティブ組み合わせ | Tripo3D リグ付きモデル |
 
 ## 遊び方
 
@@ -60,21 +63,25 @@ godot --path .                              # 実行（またはエディタで 
 
 シーンは手書きせず `scenes/BuildSummer.cs`（ビルド時生成）が
 `scenes/summer_main.tscn` を出力する（`godot.md` の規約）。
-動作検証は `test/Presentation.cs` ＋ movie writer で行う:
+動作検証は `test/Presentation.cs` ＋ movie writer:
 
 ```bash
 xvfb-run -a godot --path . --write-movie screenshots/run/frame.png \
-  --fixed-fps 30 --quit-after 590 --script res://test/Presentation.cs
+  --fixed-fps 30 --quit-after 700 --script res://test/Presentation.cs
 ```
+
+キャプチャの再現性が要るときは `test/SeedProbe.cs` で乱数シードを探し、
+`Presentation.cs` の `RngSeed` に渡す。
 
 ## 構成
 
 ```
-CLAUDE.md            … Godogen ランタイムマニフェスト（この環境向け注記つき）
-godot.md             … Godogen の Godot エンジンガイド
-docs/RESEARCH.md     … 本家の視覚文法の調査＋AI生成用プロンプト集
-scenes/BuildSummer.cs … シーンビルダー（summer_main.tscn を生成）
-scripts/SummerMain.cs … 進行管理（日数・空・カメラ・セミ・日記）
-scripts/PlayerController.cs … プレイヤー移動
-test/Presentation.cs  … キャプチャ用スクリプト
+CLAUDE.md             … Godogen ランタイムマニフェスト（この環境向け注記つき）
+godot.md              … Godogen の Godot エンジンガイド
+docs/RESEARCH.md      … コンセプト v2（千里NT調査・プロンプト集）＋ v1 資料
+scenes/BuildTextures.cs … プロシージャルテクスチャ焼き込み
+scenes/BuildSummer.cs  … シーンビルダー（summer_main.tscn を生成）
+scripts/SummerMain.cs  … 進行管理（日数・空・カメラ・セミ・日記）
+scripts/PlayerController.cs … プレイヤー移動（池・マップ境界のクランプ）
+test/Presentation.cs   … キャプチャ用スクリプト / test/SeedProbe.cs … シード探索
 ```

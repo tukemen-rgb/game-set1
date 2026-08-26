@@ -14,6 +14,10 @@ public partial class SummerMain : Node3D
     [Export]
     public double SecondsPerHour { get; set; } = 20.0;
 
+    /// <summary>0 以外ならセミ配置などの乱数を固定する（決定的キャプチャ用）。</summary>
+    [Export]
+    public int RngSeed { get; set; }
+
     private const double DayStartHour = 8.0;
     private const double DayEndHour = 19.0;
     private const int LastDay = 31;
@@ -58,10 +62,13 @@ public partial class SummerMain : Node3D
             if (child is Node3D tree)
                 _treeSpots.Add(tree.Position);
         }
-        _rng.Randomize();
+        if (RngSeed != 0)
+            _rng.Seed = (ulong)RngSeed;
+        else
+            _rng.Randomize();
         RespawnCicadas();
         UpdateCamera(force: true);
-        ShowMessage("8月1日。いなかの なつやすみが はじまった！", 4.0);
+        ShowMessage("2000年8月1日。ニュータウンの なつやすみが はじまった！", 4.0);
     }
 
     public override void _Process(double delta)
@@ -82,13 +89,13 @@ public partial class SummerMain : Node3D
 
     private string ZoneFor(Vector3 p)
     {
-        if (p.X < -5f && p.Z < 6f)
-            return "CamYard";   // 家の庭：斜め見下ろし
-        if (p.Z > 4.5f)
-            return "CamRoad";   // 田舎道：ローアングル望遠
+        if (p.Z > 11.5f)
+            return "CamStreet"; // 商店街：通りの軸で望遠
         if (p.Z < -6f)
-            return "CamRiver";  // 川辺：対岸からの引き
-        return "CamField";      // 原っぱ：高め俯瞰
+            return "CamPark";   // 公園：池の対岸から広角
+        if (p.X < -10f)
+            return "CamDanchi"; // 団地の広場：斜め見下ろし
+        return "CamPlaza";      // 大通りと空き地：高め俯瞰
     }
 
     private void UpdateCamera(bool force = false)
@@ -146,8 +153,8 @@ public partial class SummerMain : Node3D
 
     private string Weekday()
     {
-        // 1975年8月1日は金曜日
-        string[] youbi = { "金", "土", "日", "月", "火", "水", "木" };
+        // 2000年8月1日は火曜日
+        string[] youbi = { "火", "水", "木", "金", "土", "日", "月" };
         return youbi[(_day - 1) % 7];
     }
 
@@ -278,7 +285,7 @@ public partial class SummerMain : Node3D
         _day++;
         _hour = DayStartHour;
         _todayCaught = 0;
-        _player.Position = new Vector3(-6f, 0.1f, 4f);
+        _player.Position = new Vector3(-14f, 0.1f, 0f); // 団地の広場から一日開始
         RespawnCicadas();
         _messageLabel.Text = "";
         Tween fadeIn = CreateTween();

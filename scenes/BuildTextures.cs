@@ -74,6 +74,27 @@ public partial class BuildTextures : SceneTree
             },
             (x, y, v) => (y % 24) < 3 ? v * 0.45f : v);
 
+        // アスファルト: 暗いグレーの粒
+        SaveRamp("asphalt", Noise(404, 0.2f), 256,
+            new[]
+            {
+                (0.0f, new Color(0.22f, 0.22f, 0.24f)),
+                (0.6f, new Color(0.3f, 0.3f, 0.33f)),
+                (1.0f, new Color(0.38f, 0.39f, 0.42f)),
+            });
+
+        // 歩道タイル: 明るいグレー＋目地の格子
+        SaveRamp("paving", Noise(77, 0.08f), 256,
+            new[]
+            {
+                (0.0f, new Color(0.5f, 0.48f, 0.45f)),
+                (1.0f, new Color(0.66f, 0.64f, 0.6f)),
+            },
+            (x, y, v) => (x % 64) < 2 || (y % 64) < 2 ? v * 0.55f : v);
+
+        // 団地の外壁: 1タイル = 1住戸1フロア（窓＋ベランダ帯）。建物側でタイルする
+        SaveFacade();
+
         // 水面の法線マップ: ノイズ高さ場から変換
         Image waterHeight = Noise(1203, 0.02f).GetSeamlessImage(256, 256);
         waterHeight.BumpMapToNormalMap(4f);
@@ -86,6 +107,48 @@ public partial class BuildTextures : SceneTree
     private static FastNoiseLite Noise(int seed, float freq)
     {
         return new FastNoiseLite { Seed = seed, Frequency = freq };
+    }
+
+    private static void SaveFacade()
+    {
+        const int size = 128;
+        var img = Image.CreateEmpty(size, size, false, Image.Format.Rgb8);
+        var concrete = new Color(0.72f, 0.7f, 0.66f);
+        var concreteDark = new Color(0.62f, 0.6f, 0.56f);
+        var windowGlass = new Color(0.2f, 0.26f, 0.32f);
+        var windowFrame = new Color(0.85f, 0.85f, 0.85f);
+        var rail = new Color(0.5f, 0.52f, 0.54f);
+        FillRect(img, 0, 0, size, size, concrete);
+        FillRect(img, 0, 0, size, 6, concreteDark);            // 階の境目（上端）
+        FillRect(img, 22, 14, 84, 58, windowFrame);            // 窓枠
+        FillRect(img, 26, 18, 76, 50, windowGlass);            // ガラス
+        FillRect(img, 63, 18, 3, 50, windowFrame);             // 引き違いの桟
+        FillRect(img, 0, 80, size, 40, rail);                  // ベランダ手すり帯
+        for (int x = 0; x < size; x += 10)
+            FillRect(img, x, 82, 2, 36, concreteDark);         // 手すりの縦格子
+        FillRect(img, 0, 78, size, 3, windowFrame);            // 手すり上端
+        // コンクリートの汚れ（簡易スペックル）
+        for (int y = 0; y < size; y++)
+        {
+            for (int x = 0; x < size; x++)
+            {
+                if ((x * 31 + y * 17) % 23 == 0)
+                {
+                    Color c = img.GetPixel(x, y);
+                    img.SetPixel(x, y, c * 0.93f);
+                }
+            }
+        }
+        img.SavePng("res://assets/textures/facade.png");
+    }
+
+    private static void FillRect(Image img, int x, int y, int w, int h, Color c)
+    {
+        int x2 = Mathf.Min(x + w, img.GetWidth());
+        int y2 = Mathf.Min(y + h, img.GetHeight());
+        for (int yy = Mathf.Max(y, 0); yy < y2; yy++)
+            for (int xx = Mathf.Max(x, 0); xx < x2; xx++)
+                img.SetPixel(xx, yy, c);
     }
 
     private static void SaveRamp(

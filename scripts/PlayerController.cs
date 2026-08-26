@@ -28,10 +28,17 @@ public partial class PlayerController : CharacterBody3D
         Velocity = v;
         MoveAndSlide();
 
-        // マップ外（川の中含む）へ出ない
+        // マップ外へ出ない・公園の池に入らない
         Vector3 p = Position;
-        p.X = Mathf.Clamp(p.X, -30f, 30f);
-        p.Z = Mathf.Clamp(p.Z, -12f, 28f);
+        p.X = Mathf.Clamp(p.X, -28f, 28f);
+        p.Z = Mathf.Clamp(p.Z, -19.5f, 17.5f);
+        var fromPond = new Vector2(p.X - 6f, p.Z + 15f);
+        if (fromPond.Length() < 6.9f)
+        {
+            fromPond = fromPond.Normalized() * 6.9f;
+            p.X = 6f + fromPond.X;
+            p.Z = -15f + fromPond.Y;
+        }
         Position = p;
 
         var dir = new Vector3(input.X, 0f, input.Y);

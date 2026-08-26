@@ -6,7 +6,7 @@ config_version=5
 
 [application]
 
-config/name="Inaka Summer"
+config/name="Newtown Summer"
 run/main_scene="res://scenes/summer_main.tscn"
 config/features=PackedStringArray("4.4", "C#")
 config/icon="res://icon.svg"

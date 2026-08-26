@@ -1,14 +1,10 @@
 # 画像の入荷状況
 
-- 揃った: **1 / 113**
-- 未着: 112
+- 揃った: **0 / 113**
+- 未着: 113
 - `incoming/` に未処理: 0
 
 `tools/ingest_images.sh` が自動更新する。手で編集しない。
-
-## 取り込み済み
-
-- `TEX-wall_danchi` — テクスチャ / 団地の外壁 → `assets/textures/gen/TEX-wall_danchi.jpg`
 
 ## 未着（この ID の画像がまだ無い）
 
@@ -44,6 +40,7 @@
 - `SKY-dusk` — 空・遠景 / 薄暮
 - `SKY-starry` — 空・遠景 / 夏の星空
 - `SKY-typhoon` — 空・遠景 / 台風前
+- `TEX-wall_danchi` — テクスチャ / 団地の外壁
 - `TEX-concrete_raw` — テクスチャ / 打ち放しコンクリート
 - `TEX-asphalt` — テクスチャ / アスファルト
 - `TEX-paving_tile` — テクスチャ / 歩道の平板

@@ -14,22 +14,21 @@
 
 https://github.com/tukemen-rgb/game-set1/blob/claude/game-godot-setup-98dhue/docs/prompts/PROMPTS.md
 
-まだ作られていない画像の一覧はこちら（自動更新されます）。
+まだ作られていない画像の一覧はこちら（5分ごとに自動更新されます）。
 **毎回ここを見て、未着のものから順に作ってください。**
 
 https://github.com/tukemen-rgb/game-set1/blob/claude/game-godot-setup-98dhue/docs/prompts/STATUS.md
 
-## 2. 作る頻度とペース
+## 2. 進め方とペース
 
-- **5分に1組**のペースで進めます。1組 = 3〜5枚。
-- 1組できたら、次の指示を待たずに続けて次の組に進んでください。
-- 優先順位は上から順に:
-  1. `BG-*`（背景プレート）— これが一番効きます
-  2. `SKY-*`（空・遠景）
-  3. `TEX-*`（テクスチャ）
-  4. `DET-*`（汚し・ディテール）
-  5. `CHR-*` / `PROP-*`（キャラ・小物）
-  6. `UI-*`
+- **1組 3〜5枚**ずつ、この会話の中で生成してください。自動実行は不要です。
+- 1組できたら、続けて次の組に進んでください。
+- 順番は次の通り。**まず背景24枚を最優先**で片付けます。
+  1. `BG-danchi-*`（団地の広場・6種）
+  2. `BG-street-*`（商店街・6種）
+  3. `BG-park-*`（公園・6種）
+  4. `BG-plaza-*`（大通り・6種）
+  5. `SKY-*` → `TEX-*` → `DET-*` → `CHR-*` / `PROP-*` → `UI-*`
 
 ## 3. 作り方の注意
 
@@ -37,32 +36,55 @@ https://github.com/tukemen-rgb/game-set1/blob/claude/game-godot-setup-98dhue/doc
   各プロンプトに下絵のURLが書いてあります。下絵の**構図・カメラ角度・
   建物と木の位置と輪郭を一切変えず**、質感だけ写真のようにしてください。
   ゼロから描くと3Dキャラと遠近が合わず使えません。
-- `BG-*` を2枚目以降作るときは、**前に作った画像も一緒に添付**して
-  「これと同じ町・同じ画風・同じ光で」と揃えてください。バラバラの町に
-  見えると全部使えなくなります。
+- `BG-*` の2枚目以降は、**前に作った画像も一緒に添付**して
+  「これと同じ町・同じ画風で、光だけ変える」と揃えてください。
+  同じ場所の6種（朝・昼・夕・曇り・雨上がり・夜）は、**同じ町の同じ建物**に
+  見えないと使えません。バラバラだと全部やり直しになります。
 - 全画像の共通ルール:
   - 人物を背景に入れない（キャラは3Dで動かすため）
   - 文字・看板の文字・ロゴ・透かしを入れない
   - 実在の建物をそのまま写さない
   - アスペクト比はプロンプトの指定通り（16:9 か 1:1）
 
-## 4. 格納先
+## 4. 渡し方（ここが重要）
 
-作った画像は GitHub のこのフォルダに入れてください。
+画像そのものは社長が GitHub にアップロードします。あなたは**テキストの
+対応表だけ**を GitHub に直接コミットしてください。これで社長はファイル名を
+変えずにドラッグ＆ドロップするだけで済みます。
 
-https://github.com/tukemen-rgb/game-set1/tree/claude/game-godot-setup-98dhue/incoming
+1. 1組生成したら、社長に画像を渡す
+2. 社長がここへドラッグ＆ドロップして Commit する（名前はそのままでよい）
+   https://github.com/tukemen-rgb/game-set1/upload/claude/game-godot-setup-98dhue/incoming
+3. **あなたは同じブランチに `incoming/MAP.txt` を作成／上書きコミットする。**
+   中身は「アップロードされたファイル名 = プロンプトID」を1行ずつ:
 
-アップロード用の直リンク（ここにドラッグ＆ドロップして Commit changes）:
+```
+# アップロードしたファイル名 = プロンプトID
+ChatGPT Image Aug 26, 2026, 10_32_11 AM.png = BG-danchi-morning
+ChatGPT Image Aug 26, 2026, 10_35_02 AM.png = BG-danchi-noon
+ChatGPT Image Aug 26, 2026, 10_37_48 AM.png = BG-danchi-evening
+```
 
-https://github.com/tukemen-rgb/game-set1/upload/claude/game-godot-setup-98dhue/incoming
+   - 区切りは `=`（`->` でも可）。`#` で始まる行はコメント
+   - 拡張子は元のファイル名のものが引き継がれます
+   - このファイルは取り込み時に自動で消えます。組ごとに作り直してください
+   - ファイル名が分からなければ社長に聞いてください
 
-**ファイル名は必ずプロンプトのIDと同じにしてください。**
-例: `BG-danchi-morning.png` / `TEX-wall_danchi.png` / `DET-rain_streak.png`
+もし画像の名前を社長が `BG-danchi-morning.png` のように付け替えて
+アップロードした場合は、MAP.txt は不要です。
 
-同じIDを作り直したときは `BG-danchi-morning_v2.png` のように末尾を足します。
-名前が違うと自動振り分けができず、そこで止まります。
+## 5. 触ってはいけないファイル
 
-## 5. 取り込み
+次は自動生成なので、編集しても5分後に上書きされます。**編集しないでください。**
+
+- `docs/prompts/PROMPTS.md`
+- `docs/prompts/prompts.json`
+- `docs/prompts/STATUS.md`
+
+伝えたいことがあれば `docs/prompts/GPT_NOTES.md` に自由に書いてください。
+（プロンプトの改善案、生成できなかったもの、気づいた点など。ここは読みます）
+
+## 6. 取り込み
 
 `incoming/` に入った画像は**5分ごとに自動で取り込まれ**、正しい場所へ
 振り分けられて `STATUS.md` が更新されます。社長側の追加作業は不要です。
@@ -71,8 +93,11 @@ https://github.com/tukemen-rgb/game-set1/upload/claude/game-godot-setup-98dhue/i
 
 ## 補足（社長向け・GPTには貼らなくてよい）
 
-- ChatGPT 自体は GitHub に直接コミットできません（コネクタ未設定の場合）。
-  **生成された画像をダウンロード → 上の「アップロード用の直リンク」に
-  ドラッグ＆ドロップ → Commit changes** の3手で入ります。
-- GitHub コネクタや MCP を設定済みなら、GPT に直接コミットさせても構いません。
+- **画像のバイナリだけは手作業**です。GPT が生成 → 社長がダウンロード →
+  上の直リンクにドラッグ＆ドロップ → Commit changes。
+  **リネームは不要**（GPT が `incoming/MAP.txt` を書くため）。
+- GPT 側の自動タスクは最短1時間間隔なので、5分ごとの自走はできません。
+  ただし**取り込み側（Claude）は5分ごとに動いている**ので、社長が
+  アップロードした瞬間から5分以内に反映されます。ペースが合わなくても
+  問題ありません。
 - 進捗は `docs/prompts/STATUS.md` を見れば「何枚揃って何が未着か」が分かります。

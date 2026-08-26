@@ -16,6 +16,44 @@ set -euo pipefail
 cd "$(dirname "$0")/.."
 GODOT="${GODOT:-godot}"
 
+# --- MAP.txt があれば、先にファイル名を ID へ直す ---
+# 画像生成AIは「生成画像のバイナリ」を GitHub へ直接置けないが、
+# テキストファイルなら直接コミットできる。そこで AI 側に
+# 「元のファイル名 = プロンプトID」の対応表だけ書いてもらう。
+# こうすると社長は落とした画像を名前を変えずにドラッグ&ドロップするだけでよい。
+map_file="incoming/MAP.txt"
+if [ -f "$map_file" ]; then
+    renamed=0
+    while IFS= read -r line || [ -n "$line" ]; do
+        line="${line%$'\r'}"
+        case "$line" in ''|'#'*) continue ;; esac
+        if [[ "$line" == *"->"* ]]; then
+            src="${line%%->*}"; dst="${line#*->}"
+        elif [[ "$line" == *"="* ]]; then
+            src="${line%%=*}"; dst="${line#*=}"
+        else
+            continue
+        fi
+        trim() { printf '%s' "$1" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//' -e 's/^"//' -e 's/"$//'; }
+        src="$(trim "$src")"
+        dst="$(trim "$dst")"
+        if [ -z "$src" ] || [ -z "$dst" ]; then
+            continue
+        fi
+        if [ ! -f "incoming/$src" ]; then
+            echo "ingest: MAP の $src が incoming/ に無い（未アップロード？）"
+            continue
+        fi
+        ext="${src##*.}"
+        dst="${dst%.*}"
+        mv -f "incoming/$src" "incoming/${dst}.${ext}"
+        echo "ingest: rename '$src' -> ${dst}.${ext}"
+        renamed=$((renamed + 1))
+    done < "$map_file"
+    rm -f "$map_file"
+    echo "ingest: MAP.txt を適用 $renamed 件（適用後に削除）"
+fi
+
 shopt -s nullglob nocaseglob
 files=(incoming/*.png incoming/*.jpg incoming/*.jpeg incoming/*.webp)
 shopt -u nocaseglob

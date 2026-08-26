@@ -1,0 +1,645 @@
+{
+  "branch": "claude/game-godot-setup-98dhue",
+  "items": [
+    {
+      "id": "BG-danchi-morning",
+      "category": "background",
+      "ja": "背景プレート / 団地の広場 / 夏の朝 8時",
+      "ref": "https://raw.githubusercontent.com/tukemen-rgb/game-set1/claude/game-godot-setup-98dhue/docs/plates/ref_1_danchi.png",
+      "aspect": "16:9",
+      "prompt": "Redraw this 3D rough as a photorealistic image. Keep the composition, camera angle, and the position and outline of every building and tree EXACTLY as in the rough. A Japanese new town suburb in the year 2000: five-storey Japanese danchi apartment blocks with deep balconies, handrails, weathered concrete, a mushroom-shaped water tower behind, street trees, power lines. Lighting: early summer morning around 8am, clear sky, long soft shadows, fresh light. Photorealistic, no people, no text or lettering, no watermark, no logo, do not copy any real existing building."
+    },
+    {
+      "id": "BG-danchi-noon",
+      "category": "background",
+      "ja": "背景プレート / 団地の広場 / 真夏の正午",
+      "ref": "https://raw.githubusercontent.com/tukemen-rgb/game-set1/claude/game-godot-setup-98dhue/docs/plates/ref_1_danchi.png",
+      "aspect": "16:9",
+      "prompt": "Redraw this 3D rough as a photorealistic image. Keep the composition, camera angle, and the position and outline of every building and tree EXACTLY as in the rough. A Japanese new town suburb in the year 2000: five-storey Japanese danchi apartment blocks with deep balconies, handrails, weathered concrete, a mushroom-shaped water tower behind, street trees, power lines. Lighting: high summer noon, harsh overhead sunlight, deep short shadows, towering cumulonimbus clouds. Photorealistic, no people, no text or lettering, no watermark, no logo, do not copy any real existing building."
+    },
+    {
+      "id": "BG-danchi-evening",
+      "category": "background",
+      "ja": "背景プレート / 団地の広場 / 夕方 18時",
+      "ref": "https://raw.githubusercontent.com/tukemen-rgb/game-set1/claude/game-godot-setup-98dhue/docs/plates/ref_1_danchi.png",
+      "aspect": "16:9",
+      "prompt": "Redraw this 3D rough as a photorealistic image. Keep the composition, camera angle, and the position and outline of every building and tree EXACTLY as in the rough. A Japanese new town suburb in the year 2000: five-storey Japanese danchi apartment blocks with deep balconies, handrails, weathered concrete, a mushroom-shaped water tower behind, street trees, power lines. Lighting: summer evening around 6pm, golden hour, warm orange light raking across the surfaces. Photorealistic, no people, no text or lettering, no watermark, no logo, do not copy any real existing building."
+    },
+    {
+      "id": "BG-danchi-overcast",
+      "category": "background",
+      "ja": "背景プレート / 団地の広場 / 曇天",
+      "ref": "https://raw.githubusercontent.com/tukemen-rgb/game-set1/claude/game-godot-setup-98dhue/docs/plates/ref_1_danchi.png",
+      "aspect": "16:9",
+      "prompt": "Redraw this 3D rough as a photorealistic image. Keep the composition, camera angle, and the position and outline of every building and tree EXACTLY as in the rough. A Japanese new town suburb in the year 2000: five-storey Japanese danchi apartment blocks with deep balconies, handrails, weathered concrete, a mushroom-shaped water tower behind, street trees, power lines. Lighting: overcast summer day, flat soft diffused light, no cast shadows, pale grey sky. Photorealistic, no people, no text or lettering, no watermark, no logo, do not copy any real existing building."
+    },
+    {
+      "id": "BG-danchi-rain",
+      "category": "background",
+      "ja": "背景プレート / 団地の広場 / 雨上がり",
+      "ref": "https://raw.githubusercontent.com/tukemen-rgb/game-set1/claude/game-godot-setup-98dhue/docs/plates/ref_1_danchi.png",
+      "aspect": "16:9",
+      "prompt": "Redraw this 3D rough as a photorealistic image. Keep the composition, camera angle, and the position and outline of every building and tree EXACTLY as in the rough. A Japanese new town suburb in the year 2000: five-storey Japanese danchi apartment blocks with deep balconies, handrails, weathered concrete, a mushroom-shaped water tower behind, street trees, power lines. Lighting: just after summer rain, wet reflective ground, puddles, damp concrete, breaking clouds. Photorealistic, no people, no text or lettering, no watermark, no logo, do not copy any real existing building."
+    },
+    {
+      "id": "BG-danchi-night",
+      "category": "background",
+      "ja": "背景プレート / 団地の広場 / 夜",
+      "ref": "https://raw.githubusercontent.com/tukemen-rgb/game-set1/claude/game-godot-setup-98dhue/docs/plates/ref_1_danchi.png",
+      "aspect": "16:9",
+      "prompt": "Redraw this 3D rough as a photorealistic image. Keep the composition, camera angle, and the position and outline of every building and tree EXACTLY as in the rough. A Japanese new town suburb in the year 2000: five-storey Japanese danchi apartment blocks with deep balconies, handrails, weathered concrete, a mushroom-shaped water tower behind, street trees, power lines. Lighting: summer night, windows glowing warm, street lights, dark blue sky. Photorealistic, no people, no text or lettering, no watermark, no logo, do not copy any real existing building."
+    },
+    {
+      "id": "BG-street-morning",
+      "category": "background",
+      "ja": "背景プレート / 商店街 / 夏の朝 8時",
+      "ref": "https://raw.githubusercontent.com/tukemen-rgb/game-set1/claude/game-godot-setup-98dhue/docs/plates/ref_2_street.png",
+      "aspect": "16:9",
+      "prompt": "Redraw this 3D rough as a photorealistic image. Keep the composition, camera angle, and the position and outline of every building and tree EXACTLY as in the rough. A Japanese new town suburb in the year 2000: a covered shopping arcade of a Japanese neighbourhood centre, small shops with fabric awnings, shutters half down, a vending machine, translucent arcade roof, long telephoto compression down the street. Lighting: early summer morning around 8am, clear sky, long soft shadows, fresh light. Photorealistic, no people, no text or lettering, no watermark, no logo, do not copy any real existing building."
+    },
+    {
+      "id": "BG-street-noon",
+      "category": "background",
+      "ja": "背景プレート / 商店街 / 真夏の正午",
+      "ref": "https://raw.githubusercontent.com/tukemen-rgb/game-set1/claude/game-godot-setup-98dhue/docs/plates/ref_2_street.png",
+      "aspect": "16:9",
+      "prompt": "Redraw this 3D rough as a photorealistic image. Keep the composition, camera angle, and the position and outline of every building and tree EXACTLY as in the rough. A Japanese new town suburb in the year 2000: a covered shopping arcade of a Japanese neighbourhood centre, small shops with fabric awnings, shutters half down, a vending machine, translucent arcade roof, long telephoto compression down the street. Lighting: high summer noon, harsh overhead sunlight, deep short shadows, towering cumulonimbus clouds. Photorealistic, no people, no text or lettering, no watermark, no logo, do not copy any real existing building."
+    },
+    {
+      "id": "BG-street-evening",
+      "category": "background",
+      "ja": "背景プレート / 商店街 / 夕方 18時",
+      "ref": "https://raw.githubusercontent.com/tukemen-rgb/game-set1/claude/game-godot-setup-98dhue/docs/plates/ref_2_street.png",
+      "aspect": "16:9",
+      "prompt": "Redraw this 3D rough as a photorealistic image. Keep the composition, camera angle, and the position and outline of every building and tree EXACTLY as in the rough. A Japanese new town suburb in the year 2000: a covered shopping arcade of a Japanese neighbourhood centre, small shops with fabric awnings, shutters half down, a vending machine, translucent arcade roof, long telephoto compression down the street. Lighting: summer evening around 6pm, golden hour, warm orange light raking across the surfaces. Photorealistic, no people, no text or lettering, no watermark, no logo, do not copy any real existing building."
+    },
+    {
+      "id": "BG-street-overcast",
+      "category": "background",
+      "ja": "背景プレート / 商店街 / 曇天",
+      "ref": "https://raw.githubusercontent.com/tukemen-rgb/game-set1/claude/game-godot-setup-98dhue/docs/plates/ref_2_street.png",
+      "aspect": "16:9",
+      "prompt": "Redraw this 3D rough as a photorealistic image. Keep the composition, camera angle, and the position and outline of every building and tree EXACTLY as in the rough. A Japanese new town suburb in the year 2000: a covered shopping arcade of a Japanese neighbourhood centre, small shops with fabric awnings, shutters half down, a vending machine, translucent arcade roof, long telephoto compression down the street. Lighting: overcast summer day, flat soft diffused light, no cast shadows, pale grey sky. Photorealistic, no people, no text or lettering, no watermark, no logo, do not copy any real existing building."
+    },
+    {
+      "id": "BG-street-rain",
+      "category": "background",
+      "ja": "背景プレート / 商店街 / 雨上がり",
+      "ref": "https://raw.githubusercontent.com/tukemen-rgb/game-set1/claude/game-godot-setup-98dhue/docs/plates/ref_2_street.png",
+      "aspect": "16:9",
+      "prompt": "Redraw this 3D rough as a photorealistic image. Keep the composition, camera angle, and the position and outline of every building and tree EXACTLY as in the rough. A Japanese new town suburb in the year 2000: a covered shopping arcade of a Japanese neighbourhood centre, small shops with fabric awnings, shutters half down, a vending machine, translucent arcade roof, long telephoto compression down the street. Lighting: just after summer rain, wet reflective ground, puddles, damp concrete, breaking clouds. Photorealistic, no people, no text or lettering, no watermark, no logo, do not copy any real existing building."
+    },
+    {
+      "id": "BG-street-night",
+      "category": "background",
+      "ja": "背景プレート / 商店街 / 夜",
+      "ref": "https://raw.githubusercontent.com/tukemen-rgb/game-set1/claude/game-godot-setup-98dhue/docs/plates/ref_2_street.png",
+      "aspect": "16:9",
+      "prompt": "Redraw this 3D rough as a photorealistic image. Keep the composition, camera angle, and the position and outline of every building and tree EXACTLY as in the rough. A Japanese new town suburb in the year 2000: a covered shopping arcade of a Japanese neighbourhood centre, small shops with fabric awnings, shutters half down, a vending machine, translucent arcade roof, long telephoto compression down the street. Lighting: summer night, windows glowing warm, street lights, dark blue sky. Photorealistic, no people, no text or lettering, no watermark, no logo, do not copy any real existing building."
+    },
+    {
+      "id": "BG-park-morning",
+      "category": "background",
+      "ja": "背景プレート / 公園と池 / 夏の朝 8時",
+      "ref": "https://raw.githubusercontent.com/tukemen-rgb/game-set1/claude/game-godot-setup-98dhue/docs/plates/ref_3_park.png",
+      "aspect": "16:9",
+      "prompt": "Redraw this 3D rough as a photorealistic image. Keep the composition, camera angle, and the position and outline of every building and tree EXACTLY as in the rough. A Japanese new town suburb in the year 2000: a neighbourhood park with a round pond, a slide, swings, a sandbox, benches, trees, danchi blocks visible beyond the trees. Lighting: early summer morning around 8am, clear sky, long soft shadows, fresh light. Photorealistic, no people, no text or lettering, no watermark, no logo, do not copy any real existing building."
+    },
+    {
+      "id": "BG-park-noon",
+      "category": "background",
+      "ja": "背景プレート / 公園と池 / 真夏の正午",
+      "ref": "https://raw.githubusercontent.com/tukemen-rgb/game-set1/claude/game-godot-setup-98dhue/docs/plates/ref_3_park.png",
+      "aspect": "16:9",
+      "prompt": "Redraw this 3D rough as a photorealistic image. Keep the composition, camera angle, and the position and outline of every building and tree EXACTLY as in the rough. A Japanese new town suburb in the year 2000: a neighbourhood park with a round pond, a slide, swings, a sandbox, benches, trees, danchi blocks visible beyond the trees. Lighting: high summer noon, harsh overhead sunlight, deep short shadows, towering cumulonimbus clouds. Photorealistic, no people, no text or lettering, no watermark, no logo, do not copy any real existing building."
+    },
+    {
+      "id": "BG-park-evening",
+      "category": "background",
+      "ja": "背景プレート / 公園と池 / 夕方 18時",
+      "ref": "https://raw.githubusercontent.com/tukemen-rgb/game-set1/claude/game-godot-setup-98dhue/docs/plates/ref_3_park.png",
+      "aspect": "16:9",
+      "prompt": "Redraw this 3D rough as a photorealistic image. Keep the composition, camera angle, and the position and outline of every building and tree EXACTLY as in the rough. A Japanese new town suburb in the year 2000: a neighbourhood park with a round pond, a slide, swings, a sandbox, benches, trees, danchi blocks visible beyond the trees. Lighting: summer evening around 6pm, golden hour, warm orange light raking across the surfaces. Photorealistic, no people, no text or lettering, no watermark, no logo, do not copy any real existing building."
+    },
+    {
+      "id": "BG-park-overcast",
+      "category": "background",
+      "ja": "背景プレート / 公園と池 / 曇天",
+      "ref": "https://raw.githubusercontent.com/tukemen-rgb/game-set1/claude/game-godot-setup-98dhue/docs/plates/ref_3_park.png",
+      "aspect": "16:9",
+      "prompt": "Redraw this 3D rough as a photorealistic image. Keep the composition, camera angle, and the position and outline of every building and tree EXACTLY as in the rough. A Japanese new town suburb in the year 2000: a neighbourhood park with a round pond, a slide, swings, a sandbox, benches, trees, danchi blocks visible beyond the trees. Lighting: overcast summer day, flat soft diffused light, no cast shadows, pale grey sky. Photorealistic, no people, no text or lettering, no watermark, no logo, do not copy any real existing building."
+    },
+    {
+      "id": "BG-park-rain",
+      "category": "background",
+      "ja": "背景プレート / 公園と池 / 雨上がり",
+      "ref": "https://raw.githubusercontent.com/tukemen-rgb/game-set1/claude/game-godot-setup-98dhue/docs/plates/ref_3_park.png",
+      "aspect": "16:9",
+      "prompt": "Redraw this 3D rough as a photorealistic image. Keep the composition, camera angle, and the position and outline of every building and tree EXACTLY as in the rough. A Japanese new town suburb in the year 2000: a neighbourhood park with a round pond, a slide, swings, a sandbox, benches, trees, danchi blocks visible beyond the trees. Lighting: just after summer rain, wet reflective ground, puddles, damp concrete, breaking clouds. Photorealistic, no people, no text or lettering, no watermark, no logo, do not copy any real existing building."
+    },
+    {
+      "id": "BG-park-night",
+      "category": "background",
+      "ja": "背景プレート / 公園と池 / 夜",
+      "ref": "https://raw.githubusercontent.com/tukemen-rgb/game-set1/claude/game-godot-setup-98dhue/docs/plates/ref_3_park.png",
+      "aspect": "16:9",
+      "prompt": "Redraw this 3D rough as a photorealistic image. Keep the composition, camera angle, and the position and outline of every building and tree EXACTLY as in the rough. A Japanese new town suburb in the year 2000: a neighbourhood park with a round pond, a slide, swings, a sandbox, benches, trees, danchi blocks visible beyond the trees. Lighting: summer night, windows glowing warm, street lights, dark blue sky. Photorealistic, no people, no text or lettering, no watermark, no logo, do not copy any real existing building."
+    },
+    {
+      "id": "BG-plaza-morning",
+      "category": "background",
+      "ja": "背景プレート / 大通りと空き地 / 夏の朝 8時",
+      "ref": "https://raw.githubusercontent.com/tukemen-rgb/game-set1/claude/game-godot-setup-98dhue/docs/plates/ref_4_plaza.png",
+      "aspect": "16:9",
+      "prompt": "Redraw this 3D rough as a photorealistic image. Keep the composition, camera angle, and the position and outline of every building and tree EXACTLY as in the rough. A Japanese new town suburb in the year 2000: a suburban main street seen from above, asphalt road, zebra crossing, paved sidewalks, telephone poles, a park with a pond on one side. Lighting: early summer morning around 8am, clear sky, long soft shadows, fresh light. Photorealistic, no people, no text or lettering, no watermark, no logo, do not copy any real existing building."
+    },
+    {
+      "id": "BG-plaza-noon",
+      "category": "background",
+      "ja": "背景プレート / 大通りと空き地 / 真夏の正午",
+      "ref": "https://raw.githubusercontent.com/tukemen-rgb/game-set1/claude/game-godot-setup-98dhue/docs/plates/ref_4_plaza.png",
+      "aspect": "16:9",
+      "prompt": "Redraw this 3D rough as a photorealistic image. Keep the composition, camera angle, and the position and outline of every building and tree EXACTLY as in the rough. A Japanese new town suburb in the year 2000: a suburban main street seen from above, asphalt road, zebra crossing, paved sidewalks, telephone poles, a park with a pond on one side. Lighting: high summer noon, harsh overhead sunlight, deep short shadows, towering cumulonimbus clouds. Photorealistic, no people, no text or lettering, no watermark, no logo, do not copy any real existing building."
+    },
+    {
+      "id": "BG-plaza-evening",
+      "category": "background",
+      "ja": "背景プレート / 大通りと空き地 / 夕方 18時",
+      "ref": "https://raw.githubusercontent.com/tukemen-rgb/game-set1/claude/game-godot-setup-98dhue/docs/plates/ref_4_plaza.png",
+      "aspect": "16:9",
+      "prompt": "Redraw this 3D rough as a photorealistic image. Keep the composition, camera angle, and the position and outline of every building and tree EXACTLY as in the rough. A Japanese new town suburb in the year 2000: a suburban main street seen from above, asphalt road, zebra crossing, paved sidewalks, telephone poles, a park with a pond on one side. Lighting: summer evening around 6pm, golden hour, warm orange light raking across the surfaces. Photorealistic, no people, no text or lettering, no watermark, no logo, do not copy any real existing building."
+    },
+    {
+      "id": "BG-plaza-overcast",
+      "category": "background",
+      "ja": "背景プレート / 大通りと空き地 / 曇天",
+      "ref": "https://raw.githubusercontent.com/tukemen-rgb/game-set1/claude/game-godot-setup-98dhue/docs/plates/ref_4_plaza.png",
+      "aspect": "16:9",
+      "prompt": "Redraw this 3D rough as a photorealistic image. Keep the composition, camera angle, and the position and outline of every building and tree EXACTLY as in the rough. A Japanese new town suburb in the year 2000: a suburban main street seen from above, asphalt road, zebra crossing, paved sidewalks, telephone poles, a park with a pond on one side. Lighting: overcast summer day, flat soft diffused light, no cast shadows, pale grey sky. Photorealistic, no people, no text or lettering, no watermark, no logo, do not copy any real existing building."
+    },
+    {
+      "id": "BG-plaza-rain",
+      "category": "background",
+      "ja": "背景プレート / 大通りと空き地 / 雨上がり",
+      "ref": "https://raw.githubusercontent.com/tukemen-rgb/game-set1/claude/game-godot-setup-98dhue/docs/plates/ref_4_plaza.png",
+      "aspect": "16:9",
+      "prompt": "Redraw this 3D rough as a photorealistic image. Keep the composition, camera angle, and the position and outline of every building and tree EXACTLY as in the rough. A Japanese new town suburb in the year 2000: a suburban main street seen from above, asphalt road, zebra crossing, paved sidewalks, telephone poles, a park with a pond on one side. Lighting: just after summer rain, wet reflective ground, puddles, damp concrete, breaking clouds. Photorealistic, no people, no text or lettering, no watermark, no logo, do not copy any real existing building."
+    },
+    {
+      "id": "BG-plaza-night",
+      "category": "background",
+      "ja": "背景プレート / 大通りと空き地 / 夜",
+      "ref": "https://raw.githubusercontent.com/tukemen-rgb/game-set1/claude/game-godot-setup-98dhue/docs/plates/ref_4_plaza.png",
+      "aspect": "16:9",
+      "prompt": "Redraw this 3D rough as a photorealistic image. Keep the composition, camera angle, and the position and outline of every building and tree EXACTLY as in the rough. A Japanese new town suburb in the year 2000: a suburban main street seen from above, asphalt road, zebra crossing, paved sidewalks, telephone poles, a park with a pond on one side. Lighting: summer night, windows glowing warm, street lights, dark blue sky. Photorealistic, no people, no text or lettering, no watermark, no logo, do not copy any real existing building."
+    },
+    {
+      "id": "SKY-clear_cumulonimbus",
+      "category": "sky",
+      "ja": "空・遠景 / 快晴・入道雲",
+      "ref": null,
+      "aspect": "16:9",
+      "prompt": "A wide panoramic view of clear blue summer sky with huge towering cumulonimbus clouds on the horizon, seen from a suburban Japanese housing estate. Only sky and a low distant skyline of apartment blocks and hills. Photorealistic, no people, no text or lettering, no watermark, no logo, do not copy any real existing building."
+    },
+    {
+      "id": "SKY-sunset",
+      "category": "sky",
+      "ja": "空・遠景 / 夕焼け",
+      "ref": null,
+      "aspect": "16:9",
+      "prompt": "A wide panoramic view of summer sunset sky, orange to violet gradient, scattered clouds lit from below, seen from a suburban Japanese housing estate. Only sky and a low distant skyline of apartment blocks and hills. Photorealistic, no people, no text or lettering, no watermark, no logo, do not copy any real existing building."
+    },
+    {
+      "id": "SKY-overcast",
+      "category": "sky",
+      "ja": "空・遠景 / 曇天",
+      "ref": null,
+      "aspect": "16:9",
+      "prompt": "A wide panoramic view of flat overcast summer sky, pale grey, soft texture, seen from a suburban Japanese housing estate. Only sky and a low distant skyline of apartment blocks and hills. Photorealistic, no people, no text or lettering, no watermark, no logo, do not copy any real existing building."
+    },
+    {
+      "id": "SKY-morning_haze",
+      "category": "sky",
+      "ja": "空・遠景 / 朝もや",
+      "ref": null,
+      "aspect": "16:9",
+      "prompt": "A wide panoramic view of hazy early morning sky, pale blue with warm haze near the horizon, seen from a suburban Japanese housing estate. Only sky and a low distant skyline of apartment blocks and hills. Photorealistic, no people, no text or lettering, no watermark, no logo, do not copy any real existing building."
+    },
+    {
+      "id": "SKY-after_rain",
+      "category": "sky",
+      "ja": "空・遠景 / 雨上がり",
+      "ref": null,
+      "aspect": "16:9",
+      "prompt": "A wide panoramic view of sky just after rain, breaking clouds with sunbeams, patches of blue, seen from a suburban Japanese housing estate. Only sky and a low distant skyline of apartment blocks and hills. Photorealistic, no people, no text or lettering, no watermark, no logo, do not copy any real existing building."
+    },
+    {
+      "id": "SKY-dusk",
+      "category": "sky",
+      "ja": "空・遠景 / 薄暮",
+      "ref": null,
+      "aspect": "16:9",
+      "prompt": "A wide panoramic view of deep blue dusk sky, the last warm glow at the horizon, seen from a suburban Japanese housing estate. Only sky and a low distant skyline of apartment blocks and hills. Photorealistic, no people, no text or lettering, no watermark, no logo, do not copy any real existing building."
+    },
+    {
+      "id": "SKY-starry",
+      "category": "sky",
+      "ja": "空・遠景 / 夏の星空",
+      "ref": null,
+      "aspect": "16:9",
+      "prompt": "A wide panoramic view of summer night sky with faint stars and the milky way, deep navy, seen from a suburban Japanese housing estate. Only sky and a low distant skyline of apartment blocks and hills. Photorealistic, no people, no text or lettering, no watermark, no logo, do not copy any real existing building."
+    },
+    {
+      "id": "SKY-typhoon",
+      "category": "sky",
+      "ja": "空・遠景 / 台風前",
+      "ref": null,
+      "aspect": "16:9",
+      "prompt": "A wide panoramic view of dramatic dark storm clouds before a typhoon, greenish grey, seen from a suburban Japanese housing estate. Only sky and a low distant skyline of apartment blocks and hills. Photorealistic, no people, no text or lettering, no watermark, no logo, do not copy any real existing building."
+    },
+    {
+      "id": "TEX-wall_danchi",
+      "category": "texture",
+      "ja": "テクスチャ / 団地の外壁",
+      "ref": null,
+      "aspect": "1:1",
+      "prompt": "A seamless tileable texture of weathered painted concrete wall of a 1970s Japanese apartment block, cream colour, vertical rain streaks, hairline cracks, patch repairs. Flat orthographic view straight on, evenly lit, no perspective, no cast shadows, no vignette, edges must tile seamlessly. Photorealistic, no people, no text or lettering, no watermark, no logo, do not copy any real existing building."
+    },
+    {
+      "id": "TEX-concrete_raw",
+      "category": "texture",
+      "ja": "テクスチャ / 打ち放しコンクリート",
+      "ref": null,
+      "aspect": "1:1",
+      "prompt": "A seamless tileable texture of raw board-formed concrete surface, form tie holes, subtle stains. Flat orthographic view straight on, evenly lit, no perspective, no cast shadows, no vignette, edges must tile seamlessly. Photorealistic, no people, no text or lettering, no watermark, no logo, do not copy any real existing building."
+    },
+    {
+      "id": "TEX-asphalt",
+      "category": "texture",
+      "ja": "テクスチャ / アスファルト",
+      "ref": null,
+      "aspect": "1:1",
+      "prompt": "A seamless tileable texture of old asphalt road surface, fine gravel aggregate, faint cracks and tar repair lines. Flat orthographic view straight on, evenly lit, no perspective, no cast shadows, no vignette, edges must tile seamlessly. Photorealistic, no people, no text or lettering, no watermark, no logo, do not copy any real existing building."
+    },
+    {
+      "id": "TEX-paving_tile",
+      "category": "texture",
+      "ja": "テクスチャ / 歩道の平板",
+      "ref": null,
+      "aspect": "1:1",
+      "prompt": "A seamless tileable texture of Japanese sidewalk concrete paving slabs, square grid joints, slightly stained. Flat orthographic view straight on, evenly lit, no perspective, no cast shadows, no vignette, edges must tile seamlessly. Photorealistic, no people, no text or lettering, no watermark, no logo, do not copy any real existing building."
+    },
+    {
+      "id": "TEX-paving_block",
+      "category": "texture",
+      "ja": "テクスチャ / インターロッキング",
+      "ref": null,
+      "aspect": "1:1",
+      "prompt": "A seamless tileable texture of interlocking paving blocks in a herringbone pattern, muted red and grey. Flat orthographic view straight on, evenly lit, no perspective, no cast shadows, no vignette, edges must tile seamlessly. Photorealistic, no people, no text or lettering, no watermark, no logo, do not copy any real existing building."
+    },
+    {
+      "id": "TEX-grass_summer",
+      "category": "texture",
+      "ja": "テクスチャ / 夏の芝生",
+      "ref": null,
+      "aspect": "1:1",
+      "prompt": "A seamless tileable texture of summer lawn grass seen from directly above, slightly dry patches, clover mixed in. Flat orthographic view straight on, evenly lit, no perspective, no cast shadows, no vignette, edges must tile seamlessly. Photorealistic, no people, no text or lettering, no watermark, no logo, do not copy any real existing building."
+    },
+    {
+      "id": "TEX-dirt_ground",
+      "category": "texture",
+      "ja": "テクスチャ / 土のグラウンド",
+      "ref": null,
+      "aspect": "1:1",
+      "prompt": "A seamless tileable texture of bare dry dirt playground ground, small pebbles, faint footprints. Flat orthographic view straight on, evenly lit, no perspective, no cast shadows, no vignette, edges must tile seamlessly. Photorealistic, no people, no text or lettering, no watermark, no logo, do not copy any real existing building."
+    },
+    {
+      "id": "TEX-sand_box",
+      "category": "texture",
+      "ja": "テクスチャ / 砂場の砂",
+      "ref": null,
+      "aspect": "1:1",
+      "prompt": "A seamless tileable texture of fine playground sand seen from above, small ridges and footprints. Flat orthographic view straight on, evenly lit, no perspective, no cast shadows, no vignette, edges must tile seamlessly. Photorealistic, no people, no text or lettering, no watermark, no logo, do not copy any real existing building."
+    },
+    {
+      "id": "TEX-water_pond",
+      "category": "texture",
+      "ja": "テクスチャ / 池の水面",
+      "ref": null,
+      "aspect": "1:1",
+      "prompt": "A seamless tileable texture of calm pond water surface seen from above, gentle ripples, slight green tint. Flat orthographic view straight on, evenly lit, no perspective, no cast shadows, no vignette, edges must tile seamlessly. Photorealistic, no people, no text or lettering, no watermark, no logo, do not copy any real existing building."
+    },
+    {
+      "id": "TEX-leaf_canopy",
+      "category": "texture",
+      "ja": "テクスチャ / 木の葉",
+      "ref": null,
+      "aspect": "1:1",
+      "prompt": "A seamless tileable texture of dense summer foliage of a broadleaf tree, layered green leaves, filtered light. Flat orthographic view straight on, evenly lit, no perspective, no cast shadows, no vignette, edges must tile seamlessly. Photorealistic, no people, no text or lettering, no watermark, no logo, do not copy any real existing building."
+    },
+    {
+      "id": "TEX-metasequoia",
+      "category": "texture",
+      "ja": "テクスチャ / メタセコイアの葉",
+      "ref": null,
+      "aspect": "1:1",
+      "prompt": "A seamless tileable texture of dense feathery foliage of a metasequoia conifer, fine bright green needles. Flat orthographic view straight on, evenly lit, no perspective, no cast shadows, no vignette, edges must tile seamlessly. Photorealistic, no people, no text or lettering, no watermark, no logo, do not copy any real existing building."
+    },
+    {
+      "id": "TEX-bark",
+      "category": "texture",
+      "ja": "テクスチャ / 木の幹",
+      "ref": null,
+      "aspect": "1:1",
+      "prompt": "A seamless tileable texture of bark of a mature street tree, vertical furrows. Flat orthographic view straight on, evenly lit, no perspective, no cast shadows, no vignette, edges must tile seamlessly. Photorealistic, no people, no text or lettering, no watermark, no logo, do not copy any real existing building."
+    },
+    {
+      "id": "TEX-roof_tile",
+      "category": "texture",
+      "ja": "テクスチャ / 瓦屋根",
+      "ref": null,
+      "aspect": "1:1",
+      "prompt": "A seamless tileable texture of Japanese grey ceramic roof tiles in rows. Flat orthographic view straight on, evenly lit, no perspective, no cast shadows, no vignette, edges must tile seamlessly. Photorealistic, no people, no text or lettering, no watermark, no logo, do not copy any real existing building."
+    },
+    {
+      "id": "TEX-shutter",
+      "category": "texture",
+      "ja": "テクスチャ / シャッター",
+      "ref": null,
+      "aspect": "1:1",
+      "prompt": "A seamless tileable texture of closed corrugated metal shop shutter, pale beige, small rust spots and scratches. Flat orthographic view straight on, evenly lit, no perspective, no cast shadows, no vignette, edges must tile seamlessly. Photorealistic, no people, no text or lettering, no watermark, no logo, do not copy any real existing building."
+    },
+    {
+      "id": "TEX-chain_link",
+      "category": "texture",
+      "ja": "テクスチャ / 金網フェンス",
+      "ref": null,
+      "aspect": "1:1",
+      "prompt": "A seamless tileable texture of chain link fence mesh, galvanised steel, flat frontal view. Flat orthographic view straight on, evenly lit, no perspective, no cast shadows, no vignette, edges must tile seamlessly. Photorealistic, no people, no text or lettering, no watermark, no logo, do not copy any real existing building."
+    },
+    {
+      "id": "TEX-roof_gravel",
+      "category": "texture",
+      "ja": "テクスチャ / 屋上の砂利防水",
+      "ref": null,
+      "aspect": "1:1",
+      "prompt": "A seamless tileable texture of rooftop ballast gravel waterproofing layer seen from above, grey pebbles. Flat orthographic view straight on, evenly lit, no perspective, no cast shadows, no vignette, edges must tile seamlessly. Photorealistic, no people, no text or lettering, no watermark, no logo, do not copy any real existing building."
+    },
+    {
+      "id": "CHR-boy_front",
+      "category": "character",
+      "ja": "キャラクター / 主人公・正面",
+      "ref": null,
+      "aspect": "1:1",
+      "prompt": "a cheerful Japanese boy about 10 years old in the year 2000, red baseball cap, white t-shirt, navy shorts, white sneakers, front view, arms slightly out, standing straight. Simple flat cel-shaded toon style with minimal lines, about 4 heads tall, full body visible, standing on a plain flat mid-grey background, even lighting, no shadow on the background. no text or lettering, no watermark, no logo, do not copy any real existing building."
+    },
+    {
+      "id": "CHR-boy_side",
+      "category": "character",
+      "ja": "キャラクター / 主人公・側面",
+      "ref": null,
+      "aspect": "1:1",
+      "prompt": "the same boy, exact side profile view, same clothes and proportions. Simple flat cel-shaded toon style with minimal lines, about 4 heads tall, full body visible, standing on a plain flat mid-grey background, even lighting, no shadow on the background. no text or lettering, no watermark, no logo, do not copy any real existing building."
+    },
+    {
+      "id": "CHR-boy_back",
+      "category": "character",
+      "ja": "キャラクター / 主人公・背面",
+      "ref": null,
+      "aspect": "1:1",
+      "prompt": "the same boy, exact back view, same clothes and proportions. Simple flat cel-shaded toon style with minimal lines, about 4 heads tall, full body visible, standing on a plain flat mid-grey background, even lighting, no shadow on the background. no text or lettering, no watermark, no logo, do not copy any real existing building."
+    },
+    {
+      "id": "CHR-boy_net",
+      "category": "character",
+      "ja": "キャラクター / 主人公・虫あみ",
+      "ref": null,
+      "aspect": "1:1",
+      "prompt": "the same boy holding a long insect net over his shoulder, three-quarter view. Simple flat cel-shaded toon style with minimal lines, about 4 heads tall, full body visible, standing on a plain flat mid-grey background, even lighting, no shadow on the background. no text or lettering, no watermark, no logo, do not copy any real existing building."
+    },
+    {
+      "id": "CHR-boy_run",
+      "category": "character",
+      "ja": "キャラクター / 主人公・走る",
+      "ref": null,
+      "aspect": "1:1",
+      "prompt": "the same boy running, side view, mid stride. Simple flat cel-shaded toon style with minimal lines, about 4 heads tall, full body visible, standing on a plain flat mid-grey background, even lighting, no shadow on the background. no text or lettering, no watermark, no logo, do not copy any real existing building."
+    },
+    {
+      "id": "CHR-girl_neighbour",
+      "category": "character",
+      "ja": "キャラクター / 近所の女の子",
+      "ref": null,
+      "aspect": "1:1",
+      "prompt": "a Japanese girl about 10 years old in the year 2000, straw hat, yellow sundress, sandals, front view. Simple flat cel-shaded toon style with minimal lines, about 4 heads tall, full body visible, standing on a plain flat mid-grey background, even lighting, no shadow on the background. no text or lettering, no watermark, no logo, do not copy any real existing building."
+    },
+    {
+      "id": "CHR-boy_friend",
+      "category": "character",
+      "ja": "キャラクター / 友達の男の子",
+      "ref": null,
+      "aspect": "1:1",
+      "prompt": "a chubby Japanese boy about 11, blue t-shirt, black shorts, holding a handheld game console, front view. Simple flat cel-shaded toon style with minimal lines, about 4 heads tall, full body visible, standing on a plain flat mid-grey background, even lighting, no shadow on the background. no text or lettering, no watermark, no logo, do not copy any real existing building."
+    },
+    {
+      "id": "CHR-mother",
+      "category": "character",
+      "ja": "キャラクター / お母さん",
+      "ref": null,
+      "aspect": "1:1",
+      "prompt": "a Japanese woman in her thirties in the year 2000, simple summer blouse and skirt, apron, front view. Simple flat cel-shaded toon style with minimal lines, about 4 heads tall, full body visible, standing on a plain flat mid-grey background, even lighting, no shadow on the background. no text or lettering, no watermark, no logo, do not copy any real existing building."
+    },
+    {
+      "id": "CHR-shopkeeper",
+      "category": "character",
+      "ja": "キャラクター / 駄菓子屋のおばあさん",
+      "ref": null,
+      "aspect": "1:1",
+      "prompt": "an elderly Japanese woman in a simple summer cardigan sitting, kind expression, front view. Simple flat cel-shaded toon style with minimal lines, about 4 heads tall, full body visible, standing on a plain flat mid-grey background, even lighting, no shadow on the background. no text or lettering, no watermark, no logo, do not copy any real existing building."
+    },
+    {
+      "id": "CHR-cicada",
+      "category": "character",
+      "ja": "キャラクター / セミ",
+      "ref": null,
+      "aspect": "1:1",
+      "prompt": "a large brown Japanese cicada (minmin-zemi) clinging to a tree trunk, side view, detailed wings. Simple flat cel-shaded toon style with minimal lines, about 4 heads tall, full body visible, standing on a plain flat mid-grey background, even lighting, no shadow on the background. no text or lettering, no watermark, no logo, do not copy any real existing building."
+    },
+    {
+      "id": "PROP-insect_net",
+      "category": "prop",
+      "ja": "小物 / 虫あみ",
+      "ref": null,
+      "aspect": "1:1",
+      "prompt": "a Japanese childrens insect net, bamboo pole, green mesh. A single object centred on a plain flat mid-grey background, even studio lighting, no shadow on the background. Photorealistic, no people, no text or lettering, no watermark, no logo, do not copy any real existing building."
+    },
+    {
+      "id": "PROP-insect_cage",
+      "category": "prop",
+      "ja": "小物 / 虫かご",
+      "ref": null,
+      "aspect": "1:1",
+      "prompt": "a green plastic Japanese insect cage with a hinged lid and carrying handle. A single object centred on a plain flat mid-grey background, even studio lighting, no shadow on the background. Photorealistic, no people, no text or lettering, no watermark, no logo, do not copy any real existing building."
+    },
+    {
+      "id": "PROP-vending_machine",
+      "category": "prop",
+      "ja": "小物 / 自販機",
+      "ref": null,
+      "aspect": "1:1",
+      "prompt": "a red Japanese drink vending machine from around 2000, front view, blank unbranded panels. A single object centred on a plain flat mid-grey background, even studio lighting, no shadow on the background. Photorealistic, no people, no text or lettering, no watermark, no logo, do not copy any real existing building."
+    },
+    {
+      "id": "PROP-post_box",
+      "category": "prop",
+      "ja": "小物 / 郵便ポスト",
+      "ref": null,
+      "aspect": "1:1",
+      "prompt": "a red cylindrical Japanese post box, front view. A single object centred on a plain flat mid-grey background, even studio lighting, no shadow on the background. Photorealistic, no people, no text or lettering, no watermark, no logo, do not copy any real existing building."
+    },
+    {
+      "id": "PROP-bicycle",
+      "category": "prop",
+      "ja": "小物 / 子供用自転車",
+      "ref": null,
+      "aspect": "1:1",
+      "prompt": "a childrens bicycle from around 2000 with a basket, side view. A single object centred on a plain flat mid-grey background, even studio lighting, no shadow on the background. Photorealistic, no people, no text or lettering, no watermark, no logo, do not copy any real existing building."
+    },
+    {
+      "id": "PROP-radio_card",
+      "category": "prop",
+      "ja": "小物 / ラジオ体操カード",
+      "ref": null,
+      "aspect": "1:1",
+      "prompt": "a paper Japanese radio exercise stamp card hanging from a string, blank grid of stamp squares. A single object centred on a plain flat mid-grey background, even studio lighting, no shadow on the background. Photorealistic, no people, no text or lettering, no watermark, no logo, do not copy any real existing building."
+    },
+    {
+      "id": "PROP-dagashi",
+      "category": "prop",
+      "ja": "小物 / 駄菓子の詰め合わせ",
+      "ref": null,
+      "aspect": "1:1",
+      "prompt": "an assortment of Japanese penny sweets in colourful blank wrappers, top down. A single object centred on a plain flat mid-grey background, even studio lighting, no shadow on the background. Photorealistic, no people, no text or lettering, no watermark, no logo, do not copy any real existing building."
+    },
+    {
+      "id": "PROP-handheld_game",
+      "category": "prop",
+      "ja": "小物 / 携帯ゲーム機",
+      "ref": null,
+      "aspect": "1:1",
+      "prompt": "a grey handheld game console from around 2000, unbranded, front view. A single object centred on a plain flat mid-grey background, even studio lighting, no shadow on the background. Photorealistic, no people, no text or lettering, no watermark, no logo, do not copy any real existing building."
+    },
+    {
+      "id": "PROP-card_game",
+      "category": "prop",
+      "ja": "小物 / カードゲームのカード",
+      "ref": null,
+      "aspect": "1:1",
+      "prompt": "a fan of blank collectible trading cards held in a hand. A single object centred on a plain flat mid-grey background, even studio lighting, no shadow on the background. Photorealistic, no people, no text or lettering, no watermark, no logo, do not copy any real existing building."
+    },
+    {
+      "id": "PROP-concrete_pipe",
+      "category": "prop",
+      "ja": "小物 / 土管",
+      "ref": null,
+      "aspect": "1:1",
+      "prompt": "large concrete drainage pipes stacked in an empty lot, weathered. A single object centred on a plain flat mid-grey background, even studio lighting, no shadow on the background. Photorealistic, no people, no text or lettering, no watermark, no logo, do not copy any real existing building."
+    },
+    {
+      "id": "PROP-bench_park",
+      "category": "prop",
+      "ja": "小物 / 公園のベンチ",
+      "ref": null,
+      "aspect": "1:1",
+      "prompt": "a weathered wooden park bench with concrete legs, three-quarter view. A single object centred on a plain flat mid-grey background, even studio lighting, no shadow on the background. Photorealistic, no people, no text or lettering, no watermark, no logo, do not copy any real existing building."
+    },
+    {
+      "id": "PROP-swing_set",
+      "category": "prop",
+      "ja": "小物 / ブランコ",
+      "ref": null,
+      "aspect": "1:1",
+      "prompt": "a pale blue steel swing set with two wooden seats, three-quarter view. A single object centred on a plain flat mid-grey background, even studio lighting, no shadow on the background. Photorealistic, no people, no text or lettering, no watermark, no logo, do not copy any real existing building."
+    },
+    {
+      "id": "PROP-slide",
+      "category": "prop",
+      "ja": "小物 / すべり台",
+      "ref": null,
+      "aspect": "1:1",
+      "prompt": "a small childrens slide with concrete steps and a metal chute, three-quarter view. A single object centred on a plain flat mid-grey background, even studio lighting, no shadow on the background. Photorealistic, no people, no text or lettering, no watermark, no logo, do not copy any real existing building."
+    },
+    {
+      "id": "PROP-water_tower",
+      "category": "prop",
+      "ja": "小物 / 給水塔",
+      "ref": null,
+      "aspect": "1:1",
+      "prompt": "a mushroom-shaped concrete water tower of a Japanese housing estate, weathered, full view against sky. A single object centred on a plain flat mid-grey background, even studio lighting, no shadow on the background. Photorealistic, no people, no text or lettering, no watermark, no logo, do not copy any real existing building."
+    },
+    {
+      "id": "PROP-watermelon",
+      "category": "prop",
+      "ja": "小物 / スイカ",
+      "ref": null,
+      "aspect": "1:1",
+      "prompt": "a cut Japanese watermelon on a plate, top down. A single object centred on a plain flat mid-grey background, even studio lighting, no shadow on the background. Photorealistic, no people, no text or lettering, no watermark, no logo, do not copy any real existing building."
+    },
+    {
+      "id": "PROP-kayari",
+      "category": "prop",
+      "ja": "小物 / 蚊取り線香",
+      "ref": null,
+      "aspect": "1:1",
+      "prompt": "a Japanese mosquito coil in a ceramic holder, thin smoke rising. A single object centred on a plain flat mid-grey background, even studio lighting, no shadow on the background. Photorealistic, no people, no text or lettering, no watermark, no logo, do not copy any real existing building."
+    },
+    {
+      "id": "UI-title_key",
+      "category": "ui",
+      "ja": "UI・キーアート / タイトル用キーアート",
+      "ref": null,
+      "aspect": "16:9",
+      "prompt": "a nostalgic key illustration for a summer holiday game: a Japanese housing estate in summer seen from a low angle, huge cumulonimbus clouds, warm light, painterly. no people, no text or lettering, no watermark, no logo, do not copy any real existing building."
+    },
+    {
+      "id": "UI-diary_paper",
+      "category": "ui",
+      "ja": "UI・キーアート / 日記の紙",
+      "ref": null,
+      "aspect": "16:9",
+      "prompt": "a blank sheet of Japanese childrens summer diary paper with a faint grid, slightly aged, flat top down. no people, no text or lettering, no watermark, no logo, do not copy any real existing building."
+    },
+    {
+      "id": "UI-bug_book",
+      "category": "ui",
+      "ja": "UI・キーアート / セミ図鑑のページ",
+      "ref": null,
+      "aspect": "16:9",
+      "prompt": "a blank illustrated field guide page layout for insects, empty frames, flat top down. no people, no text or lettering, no watermark, no logo, do not copy any real existing building."
+    },
+    {
+      "id": "UI-calendar",
+      "category": "ui",
+      "ja": "UI・キーアート / 8月のカレンダー",
+      "ref": null,
+      "aspect": "16:9",
+      "prompt": "a blank paper calendar page layout for one month, empty grid squares, flat top down. no people, no text or lettering, no watermark, no logo, do not copy any real existing building."
+    },
+    {
+      "id": "UI-frame_wood",
+      "category": "ui",
+      "ja": "UI・キーアート / UIの木枠",
+      "ref": null,
+      "aspect": "16:9",
+      "prompt": "a simple wooden frame border for a game interface panel, seamless edges, flat. no people, no text or lettering, no watermark, no logo, do not copy any real existing building."
+    },
+    {
+      "id": "UI-map_estate",
+      "category": "ui",
+      "ja": "UI・キーアート / 住区の地図",
+      "ref": null,
+      "aspect": "16:9",
+      "prompt": "a simple hand drawn map of a Japanese housing estate neighbourhood, blocks, park, shopping street, top down. no people, no text or lettering, no watermark, no logo, do not copy any real existing building."
+    }
+  ]
+}

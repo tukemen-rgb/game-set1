@@ -3,7 +3,7 @@ using Godot;
 /// <summary>
 /// summer_main.tscn をヘッドレスで生成するビルダー。実行方法:
 ///   godot --headless --path . --script res://scenes/BuildTextures.cs   （テクスチャ生成）
-///   godot --headless --import                                          （PNG 取り込み）
+///   godot --headless --import                                          （PNG/JPG 取り込み）
 ///   godot --headless --path . --script res://scenes/BuildSummer.cs     （このスクリプト）
 /// ランタイムロジックは一切持たない（godot.md の規約）。
 ///
@@ -11,7 +11,10 @@ using Godot;
 /// docs/RESEARCH.md コンセプト v2）:
 ///   西=板状住棟の団地と給水塔 / 北=近隣センターの商店街（アーケード）/
 ///   南=池とすべり台のある公園 / 東=土管のある空き地。中央に大通りと横断歩道。
-/// カメラは場面ごとの固定4台。
+/// 実写リアリティの要素（航空写真の分析より）:
+///   彫りの深いベランダ・階段室・パラペット・布団と室外機・雨どい・電線・
+///   メタセコイア並木・遠景の団地群とゴルフ練習場のネット。
+/// 外壁・舗装は Poly Haven の CC0 実写テクスチャ（assets/textures/photo/）。
 /// </summary>
 public partial class BuildSummer : SceneTree
 {
@@ -21,6 +24,13 @@ public partial class BuildSummer : SceneTree
     private static readonly Color Stone = new(0.58f, 0.58f, 0.6f);
     private static readonly Color Concrete = new(0.7f, 0.68f, 0.64f);
     private static readonly Color ConcreteDark = new(0.55f, 0.54f, 0.51f);
+    private static readonly Color ShadowGlass = new(0.3f, 0.31f, 0.33f);
+    private static readonly Color RailPanel = new(0.78f, 0.76f, 0.71f);
+    private static readonly Color WireColor = new(0.14f, 0.14f, 0.15f);
+    private static readonly Color[] FutonColors =
+    {
+        new(0.75f, 0.4f, 0.42f), new(0.4f, 0.5f, 0.7f), new(0.85f, 0.8f, 0.65f),
+    };
 
     public override void _Initialize()
     {
@@ -39,8 +49,6 @@ public partial class BuildSummer : SceneTree
         BuildCameras(root);
         BuildUi(root);
 
-        // スクリプトは最後に付ける（SetScript は C# ラッパーを破棄するため、
-        // ルートは一時ノード経由で付け直して取得し直す）
         var temp = new Node();
         temp.AddChild(root);
         root.SetScript(GD.Load<CSharpScript>("res://scripts/SummerMain.cs"));
@@ -105,11 +113,14 @@ public partial class BuildSummer : SceneTree
         return m;
     }
 
-    private static StandardMaterial3D TexMat(string tex, Vector2 uvScale, float roughness = 1f)
+    /// <summary>拡張子つきなら photo/ 等の相対名をそのまま、無印なら .png を補って読む。</summary>
+    private static StandardMaterial3D TexMat(string tex, Vector2 uvScale, Color? tint = null, float roughness = 1f)
     {
+        string file = tex.Contains('.') ? tex : tex + ".png";
         return new StandardMaterial3D
         {
-            AlbedoTexture = GD.Load<Texture2D>($"res://assets/textures/{tex}.png"),
+            AlbedoTexture = GD.Load<Texture2D>($"res://assets/textures/{file}"),
+            AlbedoColor = tint ?? Colors.White,
             Roughness = roughness,
             Uv1Scale = new Vector3(uvScale.X, uvScale.Y, 1f),
         };
@@ -188,19 +199,19 @@ public partial class BuildSummer : SceneTree
         var ground = new StaticBody3D { Name = "Ground" };
         ground.AddChild(new CollisionShape3D
         {
-            Shape = new BoxShape3D { Size = new Vector3(80f, 1f, 80f) },
+            Shape = new BoxShape3D { Size = new Vector3(120f, 1f, 120f) },
             Position = new Vector3(0f, -0.5f, 0f),
         });
-        ground.AddChild(MeshI(new PlaneMesh { Size = new Vector2(80f, 80f) }, Vector3.Zero,
-            TexMat("grass", new Vector2(14f, 14f))));
+        ground.AddChild(MeshI(new PlaneMesh { Size = new Vector2(120f, 120f) }, Vector3.Zero,
+            TexMat("grass", new Vector2(20f, 20f))));
         root.AddChild(ground);
 
         var roads = new Node3D { Name = "Roads" };
-        // 大通り（東西、z=8）
-        roads.AddChild(TexBox(new Vector3(80f, 0.06f, 4f), new Vector3(0f, 0.03f, 8f), "asphalt", new Vector2(20f, 1f)));
-        // 歩道（両側）
-        roads.AddChild(TexBox(new Vector3(80f, 0.08f, 1.6f), new Vector3(0f, 0.04f, 5.4f), "paving", new Vector2(50f, 1f)));
-        roads.AddChild(TexBox(new Vector3(80f, 0.08f, 1.6f), new Vector3(0f, 0.04f, 10.6f), "paving", new Vector2(50f, 1f)));
+        // 大通り（東西、z=8）— 実写アスファルト
+        roads.AddChild(TexBox(new Vector3(80f, 0.06f, 4f), new Vector3(0f, 0.03f, 8f), "photo/asphalt_02.jpg", new Vector2(16f, 0.8f)));
+        // 歩道（両側）— 実写コンクリ床
+        roads.AddChild(TexBox(new Vector3(80f, 0.08f, 1.6f), new Vector3(0f, 0.04f, 5.4f), "photo/concrete_floor_01.jpg", new Vector2(40f, 0.8f)));
+        roads.AddChild(TexBox(new Vector3(80f, 0.08f, 1.6f), new Vector3(0f, 0.04f, 10.6f), "photo/concrete_floor_01.jpg", new Vector2(40f, 0.8f)));
         // 横断歩道（x=2）
         for (int i = 0; i < 5; i++)
         {
@@ -208,47 +219,105 @@ public partial class BuildSummer : SceneTree
                 new Vector3(2f, 0.065f, 6.5f + i * 0.78f), new Color(0.88f, 0.88f, 0.86f)));
         }
         // 団地へ入る小道と公園への小道
-        roads.AddChild(TexBox(new Vector3(2f, 0.05f, 10f), new Vector3(-12f, 0.025f, 0f), "paving", new Vector2(2f, 12f)));
-        roads.AddChild(TexBox(new Vector3(2f, 0.05f, 12f), new Vector3(2f, 0.05f, -1f), "paving", new Vector2(2f, 14f)));
+        roads.AddChild(TexBox(new Vector3(2f, 0.05f, 10f), new Vector3(-12f, 0.025f, 0f), "photo/concrete_floor_01.jpg", new Vector2(1.6f, 8f)));
+        roads.AddChild(TexBox(new Vector3(2f, 0.05f, 12f), new Vector3(2f, 0.05f, -1f), "photo/concrete_floor_01.jpg", new Vector2(1.6f, 10f)));
         root.AddChild(roads);
     }
 
-    // --- 団地（板状住棟2棟＋給水塔＋広場） ---
+    // --- 団地（彫りの深い板状住棟＋給水塔＋広場） ---
+
+    /// <summary>
+    /// 板状住棟。+z 面がベランダ側、-z 面が階段室側。
+    /// detailed=false は遠景用の簡易版（テクスチャのみ）。
+    /// </summary>
+    private static Node3D DanchiBlock(Vector3 pos, float rotY, int floors, float length, bool detailed)
+    {
+        const float FloorH = 2.7f;
+        float height = floors * FloorH;
+        var b = new Node3D { Position = pos, RotationDegrees = new Vector3(0f, rotY, 0f) };
+
+        if (!detailed)
+        {
+            b.AddChild(MeshI(new BoxMesh { Size = new Vector3(length, height, 5f) },
+                new Vector3(0f, height / 2f, 0f), TexMat("facade", new Vector2(length / 2f, floors))));
+            b.AddChild(Box(new Vector3(length + 0.4f, 0.4f, 5.4f), new Vector3(0f, height + 0.2f, 0f), ConcreteDark));
+            return b;
+        }
+
+        // 本体（実写コンクリ＋雨だれ）と屋上（砂利防水・パラペット・塔屋・アンテナ）
+        b.AddChild(MeshI(new BoxMesh { Size = new Vector3(length, height, 5f) },
+            new Vector3(0f, height / 2f, 0f), TexMat("wall_weathered", new Vector2(4f, 3f))));
+        b.AddChild(MeshI(new BoxMesh { Size = new Vector3(length + 0.4f, 0.3f, 5.6f) },
+            new Vector3(0f, height + 0.15f, 0f), TexMat("photo/gravel_concrete.jpg", new Vector2(4f, 1.4f))));
+        b.AddChild(Box(new Vector3(length + 0.5f, 0.5f, 0.15f), new Vector3(0f, height + 0.45f, 2.75f), Concrete));
+        b.AddChild(Box(new Vector3(length + 0.5f, 0.5f, 0.15f), new Vector3(0f, height + 0.45f, -2.75f), Concrete));
+        b.AddChild(Box(new Vector3(0.15f, 0.5f, 5.6f), new Vector3(-length / 2f - 0.17f, height + 0.45f, 0f), Concrete));
+        b.AddChild(Box(new Vector3(0.15f, 0.5f, 5.6f), new Vector3(length / 2f + 0.17f, height + 0.45f, 0f), Concrete));
+        b.AddChild(Box(new Vector3(2f, 1.5f, 2f), new Vector3(length / 2f - 2.2f, height + 1.05f, 0f), Concrete));
+        b.AddChild(MeshI(new CylinderMesh { TopRadius = 0.03f, BottomRadius = 0.03f, Height = 2.4f },
+            new Vector3(-length / 2f + 2f, height + 1.5f, 0f), ConcreteDark));
+
+        // ベランダ側（+z）: 各階に床スラブ・手すり・奥の影帯・仕切り・布団・室外機
+        for (int f = 0; f < floors; f++)
+        {
+            float y = f * FloorH;
+            b.AddChild(Box(new Vector3(length + 0.2f, 0.16f, 0.85f), new Vector3(0f, y + 0.08f, 2.85f), Concrete));
+            b.AddChild(Box(new Vector3(length + 0.1f, 1.02f, 0.07f), new Vector3(0f, y + 0.67f, 3.24f), RailPanel));
+            b.AddChild(Box(new Vector3(length, FloorH - 1.25f, 0.12f), new Vector3(0f, y + 1.88f, 2.56f), ShadowGlass));
+            for (int d = 0; d <= 4; d++)
+            {
+                b.AddChild(Box(new Vector3(0.08f, 2.3f, 0.8f),
+                    new Vector3(-length / 2f + d * (length / 4f), y + 1.25f, 2.85f), Concrete));
+            }
+            if ((f * 7 + (int)Mathf.Abs(pos.Z)) % 3 == 0)
+            {
+                float fx = -length / 2f + 2f + (f * 5f) % (length - 4f);
+                b.AddChild(Box(new Vector3(1.3f, 0.85f, 0.12f), new Vector3(fx, y + 0.72f, 3.32f), FutonColors[f % FutonColors.Length]));
+            }
+            if ((f * 5 + (int)Mathf.Abs(pos.X)) % 4 == 0)
+            {
+                float ax = length / 2f - 2.5f - (f * 3f) % (length - 5f);
+                b.AddChild(Box(new Vector3(0.6f, 0.5f, 0.28f), new Vector3(ax, y + 0.42f, 3.0f), new Color(0.82f, 0.82f, 0.8f)));
+            }
+        }
+
+        // 階段室側（-z）: 窓テクスチャ＋階段室3本（縦スリット窓）
+        b.AddChild(MeshI(new BoxMesh { Size = new Vector3(length, height, 0.06f) },
+            new Vector3(0f, height / 2f, -2.54f), TexMat("facade", new Vector2(length / 2f, floors))));
+        foreach (float sx in new[] { -length / 3f, 0f, length / 3f })
+        {
+            b.AddChild(Box(new Vector3(2f, height + 0.25f, 1f), new Vector3(sx, (height + 0.25f) / 2f, -3.05f), Concrete));
+            b.AddChild(Box(new Vector3(0.7f, height - 1.2f, 0.08f), new Vector3(sx, height / 2f, -3.6f), ShadowGlass));
+            b.AddChild(Box(new Vector3(1.4f, 2.1f, 0.2f), new Vector3(sx, 1.05f, -3.62f), ShadowGlass));
+        }
+        // 妻面の雨どい
+        foreach (float ex in new[] { -length / 2f - 0.08f, length / 2f + 0.08f })
+        {
+            b.AddChild(MeshI(new CylinderMesh { TopRadius = 0.06f, BottomRadius = 0.06f, Height = height },
+                new Vector3(ex, height / 2f, 1.9f), ConcreteDark));
+        }
+        b.AddChild(Collider(new Vector3(length, height, 6.8f), new Vector3(0f, height / 2f, 0.3f)));
+        return b;
+    }
 
     private static void BuildDanchi(Node3D root)
     {
         var danchi = new Node3D { Name = "Danchi", Position = new Vector3(-19f, 0f, 0f) };
+        // ベランダ面（+z）をカメラ側（-z）へ向けるため 180° 回す。2棟とも同じ向き（南面平行配置）
+        danchi.AddChild(DanchiBlock(new Vector3(0f, 0f, -6f), 180f, 5, 16f, detailed: true));
+        danchi.AddChild(DanchiBlock(new Vector3(0f, 0f, 6f), 180f, 5, 16f, detailed: true));
 
-        foreach (float z in new[] { -6f, 6f })
-        {
-            var block = new Node3D { Position = new Vector3(0f, 0f, z) };
-            // 住棟本体（外壁テクスチャ: 横8戸×5階でタイル）
-            block.AddChild(MeshI(new BoxMesh { Size = new Vector3(16f, 13.5f, 5f) },
-                new Vector3(0f, 6.75f, 0f), TexMat("facade", new Vector2(8f, 5f))));
-            // 屋上スラブと基礎
-            block.AddChild(Box(new Vector3(16.4f, 0.5f, 5.4f), new Vector3(0f, 13.75f, 0f), ConcreteDark));
-            block.AddChild(Box(new Vector3(16.4f, 0.6f, 5.4f), new Vector3(0f, 0.3f, 0f), ConcreteDark));
-            // 入口ポーチ（南面に3つ）
-            foreach (float px in new[] { -5f, 0f, 5f })
-            {
-                block.AddChild(Box(new Vector3(1.8f, 2.4f, 0.6f), new Vector3(px, 1.2f, 2.75f), Concrete));
-                block.AddChild(Box(new Vector3(1.4f, 2f, 0.2f), new Vector3(px, 1f, 3.0f), new Color(0.25f, 0.28f, 0.3f)));
-            }
-            block.AddChild(Collider(new Vector3(16f, 13.5f, 5f), new Vector3(0f, 6.75f, 0f)));
-            danchi.AddChild(block);
-        }
-
-        // 給水塔（キノコ型: 柱＋タンク＋丸屋根）。商店街の正面軸から外した位置
+        // 給水塔（キノコ型）
         var tower = new Node3D { Position = new Vector3(-11f, 0f, 21f) };
         tower.AddChild(MeshI(new CylinderMesh { TopRadius = 1.3f, BottomRadius = 1.5f, Height = 9f },
-            new Vector3(0f, 4.5f, 0f), Concrete));
+            new Vector3(0f, 4.5f, 0f), TexMat("wall_weathered", new Vector2(2f, 2f))));
         tower.AddChild(MeshI(new CylinderMesh { TopRadius = 3.4f, BottomRadius = 3.4f, Height = 3.2f },
             new Vector3(0f, 10.6f, 0f), Concrete));
         tower.AddChild(MeshI(new SphereMesh { Radius = 3.4f, Height = 2.4f },
             new Vector3(0f, 12.2f, 0f), ConcreteDark));
         danchi.AddChild(tower);
 
-        // 広場のベンチと物干し場らしき柵
+        // 広場のベンチ
         danchi.AddChild(Box(new Vector3(1.8f, 0.4f, 0.5f), new Vector3(4.5f, 0.35f, -1f), DarkWood));
         danchi.AddChild(Box(new Vector3(1.8f, 0.4f, 0.5f), new Vector3(4.5f, 0.35f, 1.5f), DarkWood));
         root.AddChild(danchi);
@@ -259,8 +328,7 @@ public partial class BuildSummer : SceneTree
     private static void BuildShotengai(Node3D root)
     {
         var street = new Node3D { Name = "Shotengai" };
-        // 通路の舗装
-        street.AddChild(TexBox(new Vector3(36f, 0.07f, 6.4f), new Vector3(-2f, 0.035f, 15.9f), "paving", new Vector2(22f, 4f)));
+        street.AddChild(TexBox(new Vector3(36f, 0.07f, 6.4f), new Vector3(-2f, 0.035f, 15.9f), "photo/concrete_floor_01.jpg", new Vector2(18f, 3.2f)));
 
         Color[] awnings =
         {
@@ -268,8 +336,6 @@ public partial class BuildSummer : SceneTree
             new(0.3f, 0.45f, 0.7f), new(0.45f, 0.6f, 0.3f), new(0.85f, 0.5f, 0.55f),
             new(0.6f, 0.4f, 0.65f),
         };
-        // 南列（z=12.9, 通路に向いて北向き）と北列（z=19, 南向き）。
-        // 南列の i=3（x=-4）は抜いて大通りからの入口にする
         for (int i = 0; i < 7; i++)
         {
             float x = -16f + i * 4f;
@@ -280,10 +346,8 @@ public partial class BuildSummer : SceneTree
         street.AddChild(Collider(new Vector3(12f, 3f, 3f), new Vector3(-12f, 1.5f, 12.7f)));
         street.AddChild(Collider(new Vector3(12f, 3f, 3f), new Vector3(4f, 1.5f, 12.7f)));
         street.AddChild(Collider(new Vector3(28f, 3f, 3f), new Vector3(-4f, 1.5f, 19.1f)));
-        // 入口の舗装
-        street.AddChild(TexBox(new Vector3(2.6f, 0.05f, 3.6f), new Vector3(-4f, 0.045f, 12.6f), "paving", new Vector2(2f, 3f)));
+        street.AddChild(TexBox(new Vector3(2.6f, 0.05f, 3.6f), new Vector3(-4f, 0.045f, 12.6f), "photo/concrete_floor_01.jpg", new Vector2(1.8f, 2.4f)));
 
-        // アーケード屋根（半透明・影は落とさない）
         var roofMat = new StandardMaterial3D
         {
             AlbedoColor = new Color(0.95f, 0.9f, 0.8f, 0.45f),
@@ -300,7 +364,6 @@ public partial class BuildSummer : SceneTree
             street.AddChild(Box(new Vector3(0.15f, 4.4f, 0.15f), new Vector3(x, 2.2f, 18.3f), ConcreteDark));
         }
 
-        // 自販機（大通り角）
         var vending = new Node3D { Position = new Vector3(14.5f, 0f, 10.8f) };
         vending.AddChild(Box(new Vector3(0.95f, 1.8f, 0.8f), new Vector3(0f, 0.9f, 0f), new Color(0.8f, 0.15f, 0.15f)));
         vending.AddChild(Box(new Vector3(0.8f, 0.9f, 0.05f), new Vector3(0f, 1.25f, -0.41f), new Color(0.9f, 0.9f, 0.92f)));
@@ -310,12 +373,10 @@ public partial class BuildSummer : SceneTree
 
     private static Node3D BuildShop(Vector3 pos, int facing, Color awning, bool glassFront)
     {
-        // facing: +1 = 通路が +z 側（南列）、-1 = 通路が -z 側（北列）
         var shop = new Node3D { Position = pos };
         shop.AddChild(TexBox(new Vector3(3.9f, 3.1f, 3f), new Vector3(0f, 1.55f, 0f), "plaster", new Vector2(2f, 2f)));
         shop.AddChild(Box(new Vector3(3.9f, 0.3f, 3.1f), new Vector3(0f, 3.2f, 0f), ConcreteDark));
         float front = 1.55f * facing;
-        // 店先（ガラス戸とシャッターを交互に）・テント庇・看板
         Color frontColor = glassFront ? new Color(0.22f, 0.26f, 0.3f) : new Color(0.66f, 0.62f, 0.56f);
         shop.AddChild(Box(new Vector3(2.6f, 2.2f, 0.12f), new Vector3(0f, 1.1f, front), frontColor));
         var tent = MeshI(new BoxMesh { Size = new Vector3(3.6f, 0.08f, 1.1f) },
@@ -333,7 +394,6 @@ public partial class BuildSummer : SceneTree
     {
         var park = new Node3D { Name = "Park" };
 
-        // 池（掘り下げ＋縁石）
         var waterMat = new StandardMaterial3D
         {
             AlbedoColor = new Color(0.25f, 0.45f, 0.6f),
@@ -344,16 +404,11 @@ public partial class BuildSummer : SceneTree
             NormalScale = 1.6f,
             Uv1Scale = new Vector3(3f, 3f, 1f),
         };
-        // 水面は地面よりわずかに上（地面平面に隠れないように）
-        var pond = MeshI(new CylinderMesh { TopRadius = 6.4f, BottomRadius = 6.4f, Height = 0.1f },
-            new Vector3(6f, -0.02f, -15f), waterMat);
-        park.AddChild(pond);
-        // 土手はリング（トーラス）。円柱だと上面の円盤が水面に蓋をしてしまう
-        var rim = MeshI(new TorusMesh { InnerRadius = 6.2f, OuterRadius = 7f },
-            new Vector3(6f, 0f, -15f), TexMat("dirt", new Vector2(8f, 1f)));
-        park.AddChild(rim);
+        park.AddChild(MeshI(new CylinderMesh { TopRadius = 6.4f, BottomRadius = 6.4f, Height = 0.1f },
+            new Vector3(6f, -0.02f, -15f), waterMat));
+        park.AddChild(MeshI(new TorusMesh { InnerRadius = 6.2f, OuterRadius = 7f },
+            new Vector3(6f, 0f, -15f), TexMat("dirt", new Vector2(8f, 1f))));
 
-        // すべり台（階段＋斜面）
         var slide = new Node3D { Position = new Vector3(-6f, 0f, -11f) };
         slide.AddChild(Box(new Vector3(1f, 0.25f, 0.8f), new Vector3(0f, 0.55f, 0.9f), Stone));
         slide.AddChild(Box(new Vector3(1f, 0.25f, 0.8f), new Vector3(0f, 1.05f, 0.3f), Stone));
@@ -364,7 +419,6 @@ public partial class BuildSummer : SceneTree
         slide.AddChild(chute);
         park.AddChild(slide);
 
-        // ブランコ（フレーム＋座板2つ）
         var swing = new Node3D { Position = new Vector3(-2f, 0f, -17f) };
         var frame = new Color(0.35f, 0.55f, 0.65f);
         swing.AddChild(Box(new Vector3(0.15f, 2.4f, 0.15f), new Vector3(-1.6f, 1.2f, 0f), frame));
@@ -378,7 +432,6 @@ public partial class BuildSummer : SceneTree
         }
         park.AddChild(swing);
 
-        // 砂場（木枠）とベンチ
         var sandbox = new Node3D { Position = new Vector3(13f, 0f, -8f) };
         sandbox.AddChild(TexBox(new Vector3(3.6f, 0.08f, 3.6f), new Vector3(0f, 0.05f, 0f), "dirt", new Vector2(3f, 3f)));
         sandbox.AddChild(Box(new Vector3(4f, 0.25f, 0.25f), new Vector3(0f, 0.12f, -1.9f), DarkWood));
@@ -402,7 +455,7 @@ public partial class BuildSummer : SceneTree
     private static void BuildVacantLot(Node3D root)
     {
         var lot = new Node3D { Name = "VacantLot", Position = new Vector3(23f, 0f, 0f) };
-        StandardMaterial3D pipeMat = Mat(Concrete);
+        StandardMaterial3D pipeMat = TexMat("wall_weathered", new Vector2(1.5f, 1.5f));
         for (int i = 0; i < 3; i++)
         {
             Vector3 pos = i < 2
@@ -416,7 +469,41 @@ public partial class BuildSummer : SceneTree
         root.AddChild(lot);
     }
 
-    // --- 街路樹と公園の木（セミの湧き先 = Trees 直下のノード位置） ---
+    // --- 樹木（3種: 広葉樹・メタセコイア・イチョウ）。セミの湧き先は Trees 直下 ---
+
+    private static Node3D MakeTree(int i, Vector3 pos)
+    {
+        float s = 0.85f + (i * 37 % 4) * 0.13f;
+        var tree = new Node3D
+        {
+            Position = pos,
+            RotationDegrees = new Vector3(0f, i * 47f, 0f),
+            Scale = new Vector3(s, s, s),
+        };
+        int species = i % 3;
+        if (species == 1)
+        {
+            // メタセコイア（円錐の針葉樹）
+            var dark = TexMat("leaf", new Vector2(3f, 3f), new Color(0.55f, 0.75f, 0.55f));
+            tree.AddChild(MeshI(new CylinderMesh { TopRadius = 0.12f, BottomRadius = 0.28f, Height = 4f },
+                new Vector3(0f, 2f, 0f), Trunk));
+            tree.AddChild(MeshI(new CylinderMesh { TopRadius = 0.15f, BottomRadius = 1.5f, Height = 3f },
+                new Vector3(0f, 3.2f, 0f), dark));
+            tree.AddChild(MeshI(new CylinderMesh { TopRadius = 0.05f, BottomRadius = 1.1f, Height = 2.6f },
+                new Vector3(0f, 5.2f, 0f), dark));
+        }
+        else
+        {
+            Color? tint = species == 2 ? new Color(1.15f, 1.2f, 0.6f) : null; // イチョウは黄緑
+            var leaf = TexMat("leaf", new Vector2(3f, 3f), tint);
+            tree.AddChild(MeshI(new CylinderMesh { TopRadius = 0.22f, BottomRadius = 0.38f, Height = 3f },
+                new Vector3(0f, 1.5f, 0f), Trunk));
+            tree.AddChild(MeshI(new SphereMesh { Radius = 1.8f, Height = 3.2f }, new Vector3(0f, 3.9f, 0f), leaf));
+            tree.AddChild(MeshI(new SphereMesh { Radius = 1.2f, Height = 2.2f }, new Vector3(0.9f, 3.1f, 0.4f), leaf));
+            tree.AddChild(MeshI(new SphereMesh { Radius = 1.0f, Height = 1.8f }, new Vector3(-0.8f, 3.3f, -0.4f), leaf));
+        }
+        return tree;
+    }
 
     private static void BuildTrees(Node3D root)
     {
@@ -430,70 +517,127 @@ public partial class BuildSummer : SceneTree
             new(15f, 0f, -13f), new(0f, 0f, -20f),
             new(19f, 0f, 5f), new(27f, 0f, -4f),     // 空き地まわり
         };
-        StandardMaterial3D leaf = TexMat("leaf", new Vector2(3f, 3f));
         for (int i = 0; i < spots.Length; i++)
-        {
-            float s = 0.85f + (i * 37 % 4) * 0.13f;
-            var tree = new Node3D
-            {
-                Position = spots[i],
-                RotationDegrees = new Vector3(0f, i * 47f, 0f),
-                Scale = new Vector3(s, s, s),
-            };
-            tree.AddChild(MeshI(new CylinderMesh { TopRadius = 0.22f, BottomRadius = 0.38f, Height = 3f },
-                new Vector3(0f, 1.5f, 0f), Trunk));
-            tree.AddChild(MeshI(new SphereMesh { Radius = 1.8f, Height = 3.2f }, new Vector3(0f, 3.9f, 0f), leaf));
-            tree.AddChild(MeshI(new SphereMesh { Radius = 1.2f, Height = 2.2f }, new Vector3(0.9f, 3.1f, 0.4f), leaf));
-            tree.AddChild(MeshI(new SphereMesh { Radius = 1.0f, Height = 1.8f }, new Vector3(-0.8f, 3.3f, -0.4f), leaf));
-            trees.AddChild(tree);
-        }
+            trees.AddChild(MakeTree(i, spots[i]));
         root.AddChild(trees);
+
+        // セミの湧かない飾りの木（メタセコイア並木と植え込み）
+        var deco = new Node3D { Name = "DecoTrees" };
+        for (int k = 0; k < 5; k++)
+            deco.AddChild(MakeTree(k * 3 + 1, new Vector3(-27f + k * 3.4f, 0f, -3.2f))); // 団地南の並木
+        for (int k = 0; k < 4; k++)
+            deco.AddChild(MakeTree(k * 3 + 1, new Vector3(-30f, 0f, 4f + k * 4f)));      // 西縁の並木
+        deco.AddChild(MakeTree(6, new Vector3(-24f, 0f, 16f)));
+        deco.AddChild(MakeTree(8, new Vector3(24f, 0f, 14f)));
+        root.AddChild(deco);
     }
 
-    // --- 電柱（大通り沿い） ---
+    // --- 電柱と電線（大通り沿い） ---
+
+    private static void AddWireSegment(Node3D parent, Vector3 a, Vector3 b)
+    {
+        var seg = new MeshInstance3D
+        {
+            Mesh = new CylinderMesh { TopRadius = 0.022f, BottomRadius = 0.022f, Height = a.DistanceTo(b) },
+            MaterialOverride = Mat(WireColor),
+            CastShadow = GeometryInstance3D.ShadowCastingSetting.Off,
+        };
+        Vector3 dir = (b - a).Normalized();
+        seg.Transform = new Transform3D(new Basis(new Quaternion(Vector3.Up, dir)), (a + b) / 2f);
+        parent.AddChild(seg);
+    }
 
     private static void BuildPoles(Node3D root)
     {
         var poles = new Node3D { Name = "Poles" };
-        var poleColor = new Color(0.45f, 0.44f, 0.42f); // コンクリート柱
-        foreach (float x in new[] { -20f, -6f, 10f, 24f })
+        var poleColor = new Color(0.45f, 0.44f, 0.42f);
+        float[] xs = { -20f, -6f, 10f, 24f };
+        const float armY = 6.2f;
+        const float z = 11.6f;
+        foreach (float x in xs)
         {
-            var pole = new Node3D { Position = new Vector3(x, 0f, 11.6f) };
+            var pole = new Node3D { Position = new Vector3(x, 0f, z) };
             pole.AddChild(MeshI(new CylinderMesh { TopRadius = 0.1f, BottomRadius = 0.14f, Height = 7f },
                 new Vector3(0f, 3.5f, 0f), poleColor));
-            pole.AddChild(Box(new Vector3(1.8f, 0.13f, 0.13f), new Vector3(0f, 6.2f, 0f), poleColor));
+            pole.AddChild(Box(new Vector3(1.8f, 0.13f, 0.13f), new Vector3(0f, armY, 0f), poleColor));
             poles.AddChild(pole);
+        }
+        // 電線（隣り合う電柱の腕木の両端をたるませて結ぶ）
+        for (int i = 0; i < xs.Length - 1; i++)
+        {
+            foreach (float off in new[] { -0.7f, 0.7f })
+            {
+                var a = new Vector3(xs[i] + off, armY, z);
+                var b = new Vector3(xs[i + 1] + off, armY, z);
+                Vector3 mid = (a + b) / 2f + Vector3.Down * 0.55f;
+                AddWireSegment(poles, a, mid);
+                AddWireSegment(poles, mid, b);
+            }
         }
         root.AddChild(poles);
     }
 
-    // --- 遠景（マンション群のスカイラインと丘） ---
+    // --- 遠景（団地群・スカイライン・ゴルフ練習場・丘） ---
 
     private static void BuildBackdrop(Node3D root)
     {
         var backdrop = new Node3D { Name = "Backdrop" };
+
+        // 西〜北西の遠景団地群（簡易版住棟。写真の「団地の海」）
+        (Vector3 pos, float rot, int floors, float len)[] blocks =
+        {
+            (new Vector3(-44f, 0f, -12f), 0f, 5, 18f),
+            (new Vector3(-46f, 0f, 0f), 0f, 4, 16f),
+            (new Vector3(-44f, 0f, 12f), 0f, 5, 18f),
+            (new Vector3(-38f, 0f, 26f), 20f, 4, 14f),
+            (new Vector3(-16f, 0f, 30f), 0f, 5, 16f),
+            (new Vector3(4f, 0f, 33f), -12f, 4, 16f),
+            (new Vector3(26f, 0f, 30f), 8f, 5, 14f),
+        };
+        foreach (var (pos, rot, floors, len) in blocks)
+            backdrop.AddChild(DanchiBlock(pos, rot, floors, len, detailed: false));
+
         // 北の遠景: 高層住宅のシルエット
         (float x, float h, float w)[] towers =
         {
-            (-30f, 16f, 8f), (-18f, 24f, 7f), (-4f, 14f, 10f), (10f, 28f, 8f), (24f, 18f, 9f), (36f, 22f, 7f),
+            (-30f, 16f, 8f), (-4f, 14f, 10f), (12f, 28f, 8f), (36f, 22f, 7f),
         };
         var towerColor = new Color(0.6f, 0.64f, 0.7f);
         foreach (var (x, h, w) in towers)
-            backdrop.AddChild(Box(new Vector3(w, h, 6f), new Vector3(x, h / 2f, 44f), towerColor));
+            backdrop.AddChild(Box(new Vector3(w, h, 6f), new Vector3(x, h / 2f, 48f), towerColor));
+
+        // ゴルフ練習場（緑のネットと支柱。写真右上のランドマーク）
+        var golf = new Node3D { Position = new Vector3(44f, 0f, 18f) };
+        var netMat = new StandardMaterial3D
+        {
+            AlbedoColor = new Color(0.25f, 0.5f, 0.3f, 0.55f),
+            Transparency = BaseMaterial3D.TransparencyEnum.Alpha,
+            Roughness = 1f,
+        };
+        var net = MeshI(new BoxMesh { Size = new Vector3(0.2f, 18f, 26f) }, new Vector3(0f, 9f, 0f), netMat);
+        net.CastShadow = GeometryInstance3D.ShadowCastingSetting.Off;
+        golf.AddChild(net);
+        for (int i = 0; i < 4; i++)
+        {
+            golf.AddChild(MeshI(new CylinderMesh { TopRadius = 0.12f, BottomRadius = 0.18f, Height = 19f },
+                new Vector3(0f, 9.5f, -12f + i * 8f), ConcreteDark));
+        }
+        backdrop.AddChild(golf);
+
         // 南の丘（千里丘陵ふう、霞んだ緑）
         (Vector3 pos, float r, float h, Color c)[] hills =
         {
-            (new Vector3(-18f, 0f, -46f), 22f, 12f, new Color(0.42f, 0.55f, 0.5f)),
-            (new Vector3(14f, 0f, -48f), 26f, 15f, new Color(0.5f, 0.62f, 0.62f)),
-            (new Vector3(42f, 0f, -40f), 16f, 9f, new Color(0.44f, 0.57f, 0.5f)),
+            (new Vector3(-18f, 0f, -50f), 22f, 12f, new Color(0.42f, 0.55f, 0.5f)),
+            (new Vector3(14f, 0f, -52f), 26f, 15f, new Color(0.5f, 0.62f, 0.62f)),
+            (new Vector3(44f, 0f, -44f), 16f, 9f, new Color(0.44f, 0.57f, 0.5f)),
         };
         foreach (var (pos, r, h, c) in hills)
         {
             backdrop.AddChild(MeshI(new CylinderMesh { TopRadius = 0f, BottomRadius = r, Height = h },
                 pos + new Vector3(0f, h / 2f, 0f), c));
         }
-        // 入道雲（ライティングに影響されない・影も落とさない）
-        Vector3[] clouds = { new(-20f, 21f, -32f), new(8f, 24f, -36f), new(30f, 20f, -26f), new(-6f, 25f, 30f) };
+        // 入道雲
+        Vector3[] clouds = { new(-24f, 22f, -36f), new(8f, 25f, -40f), new(34f, 21f, -30f), new(-8f, 26f, 36f) };
         foreach (Vector3 pos in clouds)
         {
             var cloud = new Node3D { Position = pos };
@@ -517,13 +661,13 @@ public partial class BuildSummer : SceneTree
         });
         var cap = new Color(0.8f, 0.2f, 0.2f);
         player.AddChild(MeshI(new CapsuleMesh { Radius = 0.3f, Height = 0.9f },
-            new Vector3(0f, 0.55f, 0f), Colors.White));                       // 白T
-        player.AddChild(Box(new Vector3(0.5f, 0.35f, 0.32f), new Vector3(0f, 0.2f, 0f), new Color(0.2f, 0.28f, 0.5f))); // 半ズボン
+            new Vector3(0f, 0.55f, 0f), Colors.White));
+        player.AddChild(Box(new Vector3(0.5f, 0.35f, 0.32f), new Vector3(0f, 0.2f, 0f), new Color(0.2f, 0.28f, 0.5f)));
         player.AddChild(MeshI(new SphereMesh { Radius = 0.28f, Height = 0.56f },
-            new Vector3(0f, 1.22f, 0f), Skin));                               // 顔
+            new Vector3(0f, 1.22f, 0f), Skin));
         player.AddChild(MeshI(new SphereMesh { Radius = 0.29f, Height = 0.32f },
-            new Vector3(0f, 1.42f, 0.02f), cap));                             // キャップの山
-        player.AddChild(Box(new Vector3(0.34f, 0.04f, 0.3f), new Vector3(0f, 1.4f, -0.3f), cap)); // つば（前 = -Z）
+            new Vector3(0f, 1.42f, 0.02f), cap));
+        player.AddChild(Box(new Vector3(0.34f, 0.04f, 0.3f), new Vector3(0f, 1.4f, -0.3f), cap));
         root.AddChild(player);
     }
 

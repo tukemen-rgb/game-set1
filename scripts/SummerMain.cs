@@ -18,6 +18,10 @@ public partial class SummerMain : Node3D
     [Export]
     public int RngSeed { get; set; }
 
+    /// <summary>true なら曇天（柔らかい光・影なし・灰色の空）。</summary>
+    [Export]
+    public bool Overcast { get; set; }
+
     private const double DayStartHour = 8.0;
     private const double DayEndHour = 19.0;
     private const int LastDay = 31;
@@ -112,6 +116,24 @@ public partial class SummerMain : Node3D
     private void UpdateSky()
     {
         float t = Mathf.Clamp((float)((_hour - 6.0) / 13.0), 0f, 1f);
+        if (Overcast)
+        {
+            var overTop = new Color(0.6f, 0.66f, 0.71f);
+            var overHor = new Color(0.85f, 0.87f, 0.89f);
+            _sky.SkyTopColor = overTop;
+            _sky.SkyHorizonColor = overHor;
+            _sky.GroundHorizonColor = overHor;
+            _env.FogLightColor = overHor;
+            _env.FogDensity = 0.0035f;
+            _env.AmbientLightColor = new Color(0.74f, 0.76f, 0.78f);
+            _sun.ShadowEnabled = false;
+            _sun.LightEnergy = 0.55f;
+            _sun.LightColor = new Color(0.95f, 0.96f, 0.98f);
+            _sun.RotationDegrees = new Vector3(-60f, -40f, 0f);
+            return;
+        }
+        _sun.ShadowEnabled = true;
+        _env.FogDensity = 0.006f;
         // 天頂と地平線の2色をそれぞれ時刻で補間してグラデーション空を作る
         var topMorning = new Color(0.4f, 0.55f, 0.85f);
         var topNoon = new Color(0.2f, 0.45f, 0.85f);

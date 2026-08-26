@@ -95,6 +95,9 @@ public partial class BuildTextures : SceneTree
         // 団地の外壁: 1タイル = 1住戸1フロア（窓＋ベランダ帯）。建物側でタイルする
         SaveFacade();
 
+        // 実写コンクリ（Poly Haven CC0）に雨だれの縦スジを焼き込んだ外壁
+        SaveWeatheredWall();
+
         // 水面の法線マップ: ノイズ高さ場から変換
         Image waterHeight = Noise(1203, 0.02f).GetSeamlessImage(256, 256);
         waterHeight.BumpMapToNormalMap(4f);
@@ -140,6 +143,29 @@ public partial class BuildTextures : SceneTree
             }
         }
         img.SavePng("res://assets/textures/facade.png");
+    }
+
+    private static void SaveWeatheredWall()
+    {
+        Image src = Image.LoadFromFile("res://assets/textures/photo/concrete_wall_004.jpg");
+        src.Convert(Image.Format.Rgb8);
+        src.Resize(512, 512);
+        var streak = new FastNoiseLite { Seed = 9, Frequency = 0.02f };
+        for (int x = 0; x < 512; x++)
+        {
+            float sv = Mathf.Max(0f, streak.GetNoise2D(x, 0f)); // 縦スジは列単位の強度
+            for (int y = 0; y < 512; y++)
+            {
+                Color c = src.GetPixel(x, y);
+                float f = 1f - 0.3f * sv;
+                // わずかにクリーム色へ寄せる（団地の吹付け塗装ふう）
+                src.SetPixel(x, y, new Color(
+                    Mathf.Clamp(c.R * f * 1.08f, 0f, 1f),
+                    Mathf.Clamp(c.G * f * 1.05f, 0f, 1f),
+                    Mathf.Clamp(c.B * f * 0.98f, 0f, 1f)));
+            }
+        }
+        src.SavePng("res://assets/textures/wall_weathered.png");
     }
 
     private static void FillRect(Image img, int x, int y, int w, int h, Color c)

@@ -31,6 +31,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 PROMPTS = ROOT / "docs" / "prompts" / "prompts.json"
 LEDGER = ROOT / "docs" / "prompts" / "spend_log.json"
+REDO = ROOT / "docs" / "prompts" / "REDO.txt"
 INCOMING = ROOT / "incoming"
 API = "https://api.openai.com/v1"
 
@@ -60,6 +61,38 @@ def already_done(item_id):
             if p.is_file() and (p.stem == item_id or p.stem.startswith(item_id + "_")):
                 return True
     return False
+
+
+def apply_redo():
+    """REDO.txt に書かれた ID の既存画像を退避し、作り直し対象に戻す。
+
+    スマホからでも「この画像だけ作り直して」を指示できるようにするための口。
+    退避先は refs/superseded/ なので、消える訳ではない。
+    """
+    if not REDO.is_file():
+        return 0
+    moved = 0
+    graveyard = ROOT / "refs" / "superseded"
+    for raw in REDO.read_text(encoding="utf-8").splitlines():
+        item_id = raw.strip()
+        if not item_id or item_id.startswith("#"):
+            continue
+        prefix = item_id.split("-")[0]
+        if prefix not in DEST:
+            log(f"REDO: 知らないID -> {item_id}")
+            continue
+        for d in (ROOT / DEST[prefix], INCOMING):
+            if not d.is_dir():
+                continue
+            for f in list(d.iterdir()):
+                if f.is_file() and (f.stem == item_id or f.stem.startswith(item_id + "_")):
+                    graveyard.mkdir(parents=True, exist_ok=True)
+                    f.replace(graveyard / f.name)
+                    log(f"REDO: {f.name} を refs/superseded/ へ退避")
+                    moved += 1
+    REDO.unlink()
+    log(f"REDO.txt を適用（{moved} 件退避、ファイルは削除）")
+    return moved
 
 
 def load_ledger():
@@ -155,6 +188,8 @@ def main():
     quality = os.environ.get("IMAGE_QUALITY", "medium")
     max_images = int(os.environ.get("MAX_IMAGES", "2"))
     total_cap = int(os.environ.get("TOTAL_CAP", "150"))
+
+    apply_redo()
 
     ledger = load_ledger()
     if ledger["generated"] >= total_cap:

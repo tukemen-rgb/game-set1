@@ -1,52 +1,68 @@
 # スマホだけで進める手順
 
-社長がPCを使えないときの操作。**タップ数が少ない順**に並べてある。
-上から試して、動いたところで止まればよい。
+自動生成パイプラインを入れたので、**社長の作業は最初の1回だけ**になった。
+以降は画像のダウンロードもアップロードも不要。
 
-## 手順0: 社長は何もしない（まずこれを試す）
+## 1回だけやること: APIキーを登録する
 
-GPT に URLS.txt を1件だけ書かせる。社長の操作は**GPTに一言頼むだけ**。
+これを登録した時点から、1時間ごとに勝手に画像が増えていく。
 
-> incoming/URLS.txt に BG-danchi-morning = <生成画像の公開URL> を
-> 1行だけ書いてコミットして
+### (a) OpenAI の APIキーを作る
 
-5分以内に自動でダウンロードを試み、結果が `STATUS.md` に出る。
-取得できれば**以降113枚すべて社長の操作ゼロ**で進む。
-ChatGPT の画像URLは認証付きで外から取れない可能性があるが、
-失敗しても自動で破棄されるだけなので害はない。
+1. スマホのブラウザで https://platform.openai.com/api-keys を開く
+2. ログイン →「Create new secret key」→ 名前は何でもよい
+3. **表示された `sk-...` をコピー**（この画面を閉じると二度と見られない）
+4. 支払い方法が未設定なら Billing で登録する（従量課金）
 
-## 手順1: スマホから GitHub にアップロード（手順0が失敗したら）
+### (b) GitHub に登録する
 
-クラウドストレージ不要。iPhone / Android どちらも同じ。
-
-1. ChatGPT アプリで画像を長押し → **保存**（写真アプリに入る）
-2. スマホのブラウザでこのリンクを開く
-   https://github.com/tukemen-rgb/game-set1/upload/claude/game-godot-setup-98dhue/incoming
-3. **デスクトップ用サイトに切り替える**
+1. スマホのブラウザでこのリンクを開く
+   https://github.com/tukemen-rgb/game-set1/settings/secrets/actions
+2. 開けない場合は**デスクトップ表示に切り替える**
    - iPhone Safari: アドレスバー左の「ぁあ」→「デスクトップ用Webサイトを表示」
-   - Android Chrome: 右上の︙→「PC版サイト」にチェック
-4. 「choose your files」をタップ → **フォトライブラリ**から画像を選ぶ
-5. 下までスクロールして **Commit changes** をタップ
-6. GPT に「アップした、MAP.txt 書いて」と伝える（ファイル名はそのままでよい）
+   - Android Chrome: 右上の︙→「PC版サイト」
+3. 「New repository secret」をタップ
+4. Name に **`OPENAI_API_KEY`**（この綴りちょうど）
+5. Secret に (a) でコピーした `sk-...` を貼る
+6. 「Add secret」をタップ
 
-※ デスクトップ表示に切り替えないとアップロード欄が出ないことがある。
+これで完了。毎時17分に自動で動き出す。
 
-## 手順2: リンクを Claude に貼るだけ（上が両方ダメなら）
+## 最初の1枚だけ手動で回す（推奨）
 
-1. 画像を Dropbox か Google ドライブのアプリに保存
-2. 共有リンクを作成してコピー
-3. **そのリンクをこのチャットに貼る**（IDも一緒に。例「BG-danchi-morning これ→ https://…」）
+いきなり113枚に走らせず、**まず1枚だけ作って見た目を確認**する。
 
-あとは Claude 側でダウンロードからコミットまで全部やる。
-リンクの形式が直リンクでなくても Claude 側で変換を試すので、
-**うまくいかない心配はしなくてよい**。
+1. https://github.com/tukemen-rgb/game-set1/actions/workflows/generate-images.yml
+2. 「Run workflow」をタップ
+3. `この実行で生成する枚数` に **1** を入れる
+4. 「Run workflow」で実行
+5. 2〜3分待つ
 
-参考（直リンクへの変換）:
-- Dropbox: 末尾の `?dl=0` を `?raw=1` に変える
-- Google ドライブ: `.../file/d/【ID】/view` → `https://drive.google.com/uc?export=download&id=【ID】`
+できた画像は Claude 側で検証して、遠近が合っているか・プロンプトを直すべきかを報告する。
 
-## 進捗の見かた（スマホでOK）
+## 日々の操作（ほぼゼロ）
 
-https://github.com/tukemen-rgb/game-set1/blob/claude/game-godot-setup-98dhue/docs/prompts/STATUS.md
+| やりたいこと | 操作 |
+| --- | --- |
+| 進捗を見る | Claude に「今日どこまでできた？」と聞く |
+| 進捗を自分で見る | [STATUS.md](https://github.com/tukemen-rgb/game-set1/blob/claude/game-godot-setup-98dhue/docs/prompts/STATUS.md) を開く |
+| この画像を作り直したい | Claude か GPT に「◯◯を作り直して」と言う（REDO.txt に書かれる） |
+| 今すぐ止めたい | `incoming/STOP` という空ファイルを作る（下記） |
+| 再開したい | `incoming/STOP` を削除する |
 
-「揃った ◯ / 113」が増えていれば取り込めている。
+### 緊急停止のしかた（スマホ）
+
+1. https://github.com/tukemen-rgb/game-set1/new/claude/game-godot-setup-98dhue/incoming
+2. ファイル名に `STOP` と入力（中身は空でよい）
+3. 「Commit changes」
+
+次の実行から生成が止まる。課金も止まる。
+
+## 課金の安全装置（最初から入っている）
+
+- **1回あたり2枚まで**（毎時17分 × 2枚 = 1日48枚が上限）
+- **通算150枚で自動停止**（113枚 + 作り直しの余裕）
+- `incoming/STOP` で即時停止
+- 1枚ごとに `docs/prompts/spend_log.json` に記録が残る
+
+上限を変えたいときは Claude に言えば調整する。

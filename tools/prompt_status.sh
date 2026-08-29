@@ -31,7 +31,22 @@ for it in items:
 pending = len(list(Path("incoming").glob("*"))) - 1  # README.md を除く
 pending = max(pending, 0)
 
+p1 = [(it, hit) for it, hit in done if it.get("phase") == 1]
+p1_todo = [(it, hit) for it, hit in todo if it.get("phase") == 1]
+n1 = len(p1) + len(p1_todo)
+
 print("# 画像の入荷状況")
+print()
+print(f"## ★ フェーズ1（まずこれだけ）: **{len(p1)} / {n1}**")
+print()
+if p1_todo:
+    print("残り:")
+    for it, _ in p1_todo:
+        print(f"- `{it['id']}` — {it['ja']}")
+else:
+    print("フェーズ1は完了。")
+print()
+print("## 全体")
 print()
 print(f"- 揃った: **{len(done)} / {len(items)}**")
 print(f"- 未着: {len(todo)}")

@@ -202,7 +202,10 @@ def main():
     # （= 場所ごとに 朝→昼→夕→曇→雨上がり→夜。英字順にすると意図と変わる）
     seq = {it["id"]: i for i, it in enumerate(items)}
     pending = [it for it in items if not already_done(it["id"])]
-    pending.sort(key=lambda it: (order.get(it["id"].split("-")[0], 99), seq[it["id"]]))
+    # フェーズ1（必須15枚）を最優先。その中はカテゴリ順・プロンプト集の並び順
+    pending.sort(key=lambda it: (it.get("phase", 2),
+                                 order.get(it["id"].split("-")[0], 99),
+                                 seq[it["id"]]))
 
     if not pending:
         log("未生成なし。全部そろっている")

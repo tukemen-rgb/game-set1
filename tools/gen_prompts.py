@@ -261,6 +261,30 @@ DETAILS = [
 ]
 
 
+# --- フェーズ1: これだけあればゲームの見た目が変わる15枚 ---
+# 手作業で受け渡す前提（ChatGPT の定額プランで作る）なので、
+# 「1枚あたりの効き」が大きいものだけに絞る。
+#
+# 背景は各カメラ「昼」と「夜」の2枚だけ作り、朝・夕・曇り・雨上がりは
+# エンジン側の色調整で作る（元々ゲーム内で空と光を時刻補間しているので、
+# 同じ仕組みをプレートにも掛ければよい）。夜だけは窓の灯りが要るので別撮り。
+PHASE1 = {
+    # 背景プレート 8枚（4カメラ × 昼/夜）
+    "BG-danchi-noon", "BG-danchi-night",
+    "BG-street-noon", "BG-street-night",
+    "BG-park-noon", "BG-park-night",
+    "BG-plaza-noon", "BG-plaza-night",
+    # 空 2枚（入道雲と夕焼け。遠景の情報量が一番上がる）
+    "SKY-clear_cumulonimbus", "SKY-sunset",
+    # テクスチャ 2枚（実写CC0で代用できていない、今いちばん安っぽい2つ）
+    "TEX-grass_summer", "TEX-leaf_canopy",
+    # 汚し 2枚（3Dに重ねるだけで効く）
+    "DET-rain_streak", "DET-shadow_leaves",
+    # キーアート 1枚
+    "UI-title_key",
+}
+
+
 def build():
     items = []
 
@@ -367,6 +391,15 @@ def build():
     return items
 
 
+def assign_phases(items):
+    for it in items:
+        it["phase"] = 1 if it["id"] in PHASE1 else 2
+    known = {it["id"] for it in items}
+    for missing in sorted(PHASE1 - known):
+        raise SystemExit(f"PHASE1 に存在しないID: {missing}")
+    return items
+
+
 def write(items):
     OUT_DIR.mkdir(parents=True, exist_ok=True)
     (OUT_DIR / "prompts.json").write_text(
@@ -387,11 +420,21 @@ def write(items):
         "detail": "ディテール・汚しデカール",
     }
 
+    n1 = sum(1 for it in items if it["phase"] == 1)
     lines = [
         "# 画像生成プロンプト集",
         "",
         f"全 {len(items)} 件。`tools/gen_prompts.py` が自動生成する"
         "（手で編集せず、スクリプト側を直して再実行）。",
+        "",
+        f"## ★ まずこの {n1} 枚だけ作る（フェーズ1）",
+        "",
+        "全部作る必要はない。下の★印の付いた "
+        f"**{n1} 枚**だけでゲームの見た目は変わる。",
+        "背景は各場所の「昼」と「夜」だけ作れば、朝・夕・曇り・雨上がりは"
+        "エンジン側の色調整で作れる。残りは後回しでよい。",
+        "",
+        "★フェーズ1: " + " / ".join(sorted(it["id"] for it in items if it["phase"] == 1)),
         "",
         "**共通ルール**: 人物を背景に入れない / 文字・ロゴを入れない /",
         "実在の建物をそのまま写さない / 生成物は `incoming/` に置く。",
@@ -404,7 +447,8 @@ def write(items):
         lines.append(f"## {cat_ja.get(cat, cat)}（{len(cat_items)}件）")
         lines.append("")
         for it in cat_items:
-            lines.append(f"### `{it['id']}` — {it['ja']}")
+            star = "★ " if it["phase"] == 1 else ""
+            lines.append(f"### {star}`{it['id']}` — {it['ja']}")
             lines.append("")
             if it["ref"]:
                 lines.append(f"- **添付する下絵**: {it['ref']}")
@@ -420,5 +464,5 @@ def write(items):
 
 
 if __name__ == "__main__":
-    n = write(build())
+    n = write(assign_phases(build()))
     print(f"generated {n} prompts -> docs/prompts/")

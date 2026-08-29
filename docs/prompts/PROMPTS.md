@@ -2,6 +2,13 @@
 
 全 113 件。`tools/gen_prompts.py` が自動生成する（手で編集せず、スクリプト側を直して再実行）。
 
+## ★ まずこの 15 枚だけ作る（フェーズ1）
+
+全部作る必要はない。下の★印の付いた **15 枚**だけでゲームの見た目は変わる。
+背景は各場所の「昼」と「夜」だけ作れば、朝・夕・曇り・雨上がりはエンジン側の色調整で作れる。残りは後回しでよい。
+
+★フェーズ1: BG-danchi-night / BG-danchi-noon / BG-park-night / BG-park-noon / BG-plaza-night / BG-plaza-noon / BG-street-night / BG-street-noon / DET-rain_streak / DET-shadow_leaves / SKY-clear_cumulonimbus / SKY-sunset / TEX-grass_summer / TEX-leaf_canopy / UI-title_key
+
 **共通ルール**: 人物を背景に入れない / 文字・ロゴを入れない /
 実在の建物をそのまま写さない / 生成物は `incoming/` に置く。
 
@@ -20,7 +27,7 @@
 Redraw this 3D rough as a photorealistic image. Keep the composition, camera angle, and the position and outline of every building and tree EXACTLY as in the rough. A Japanese new town suburb in the year 2000: five-storey Japanese danchi apartment blocks with deep balconies, handrails, weathered concrete, a mushroom-shaped water tower behind, street trees, power lines. Lighting: early summer morning around 8am, clear sky, long soft shadows, fresh light. Photorealistic, no people, no text or lettering, no watermark, no logo, do not copy any real existing building.
 ```
 
-### `BG-danchi-noon` — 背景プレート / 団地の広場 / 真夏の正午
+### ★ `BG-danchi-noon` — 背景プレート / 団地の広場 / 真夏の正午
 
 - **添付する下絵**: https://raw.githubusercontent.com/tukemen-rgb/game-set1/claude/game-godot-setup-98dhue/docs/plates/ref_1_danchi.png
 - **アスペクト比**: 16:9
@@ -60,7 +67,7 @@ Redraw this 3D rough as a photorealistic image. Keep the composition, camera ang
 Redraw this 3D rough as a photorealistic image. Keep the composition, camera angle, and the position and outline of every building and tree EXACTLY as in the rough. A Japanese new town suburb in the year 2000: five-storey Japanese danchi apartment blocks with deep balconies, handrails, weathered concrete, a mushroom-shaped water tower behind, street trees, power lines. Lighting: just after summer rain, wet reflective ground, puddles, damp concrete, breaking clouds. Photorealistic, no people, no text or lettering, no watermark, no logo, do not copy any real existing building.
 ```
 
-### `BG-danchi-night` — 背景プレート / 団地の広場 / 夜
+### ★ `BG-danchi-night` — 背景プレート / 団地の広場 / 夜
 
 - **添付する下絵**: https://raw.githubusercontent.com/tukemen-rgb/game-set1/claude/game-godot-setup-98dhue/docs/plates/ref_1_danchi.png
 - **アスペクト比**: 16:9
@@ -80,7 +87,7 @@ Redraw this 3D rough as a photorealistic image. Keep the composition, camera ang
 Redraw this 3D rough as a photorealistic image. Keep the composition, camera angle, and the position and outline of every building and tree EXACTLY as in the rough. A Japanese new town suburb in the year 2000: a covered shopping arcade of a Japanese neighbourhood centre, small shops with fabric awnings, shutters half down, a vending machine, translucent arcade roof, long telephoto compression down the street. Lighting: early summer morning around 8am, clear sky, long soft shadows, fresh light. Photorealistic, no people, no text or lettering, no watermark, no logo, do not copy any real existing building.
 ```
 
-### `BG-street-noon` — 背景プレート / 商店街 / 真夏の正午
+### ★ `BG-street-noon` — 背景プレート / 商店街 / 真夏の正午
 
 - **添付する下絵**: https://raw.githubusercontent.com/tukemen-rgb/game-set1/claude/game-godot-setup-98dhue/docs/plates/ref_2_street.png
 - **アスペクト比**: 16:9
@@ -120,7 +127,7 @@ Redraw this 3D rough as a photorealistic image. Keep the composition, camera ang
 Redraw this 3D rough as a photorealistic image. Keep the composition, camera angle, and the position and outline of every building and tree EXACTLY as in the rough. A Japanese new town suburb in the year 2000: a covered shopping arcade of a Japanese neighbourhood centre, small shops with fabric awnings, shutters half down, a vending machine, translucent arcade roof, long telephoto compression down the street. Lighting: just after summer rain, wet reflective ground, puddles, damp concrete, breaking clouds. Photorealistic, no people, no text or lettering, no watermark, no logo, do not copy any real existing building.
 ```
 
-### `BG-street-night` — 背景プレート / 商店街 / 夜
+### ★ `BG-street-night` — 背景プレート / 商店街 / 夜
 
 - **添付する下絵**: https://raw.githubusercontent.com/tukemen-rgb/game-set1/claude/game-godot-setup-98dhue/docs/plates/ref_2_street.png
 - **アスペクト比**: 16:9
@@ -140,7 +147,7 @@ Redraw this 3D rough as a photorealistic image. Keep the composition, camera ang
 Redraw this 3D rough as a photorealistic image. Keep the composition, camera angle, and the position and outline of every building and tree EXACTLY as in the rough. A Japanese new town suburb in the year 2000: a neighbourhood park with a round pond, a slide, swings, a sandbox, benches, trees, danchi blocks visible beyond the trees. Lighting: early summer morning around 8am, clear sky, long soft shadows, fresh light. Photorealistic, no people, no text or lettering, no watermark, no logo, do not copy any real existing building.
 ```
 
-### `BG-park-noon` — 背景プレート / 公園と池 / 真夏の正午
+### ★ `BG-park-noon` — 背景プレート / 公園と池 / 真夏の正午
 
 - **添付する下絵**: https://raw.githubusercontent.com/tukemen-rgb/game-set1/claude/game-godot-setup-98dhue/docs/plates/ref_3_park.png
 - **アスペクト比**: 16:9
@@ -180,7 +187,7 @@ Redraw this 3D rough as a photorealistic image. Keep the composition, camera ang
 Redraw this 3D rough as a photorealistic image. Keep the composition, camera angle, and the position and outline of every building and tree EXACTLY as in the rough. A Japanese new town suburb in the year 2000: a neighbourhood park with a round pond, a slide, swings, a sandbox, benches, trees, danchi blocks visible beyond the trees. Lighting: just after summer rain, wet reflective ground, puddles, damp concrete, breaking clouds. Photorealistic, no people, no text or lettering, no watermark, no logo, do not copy any real existing building.
 ```
 
-### `BG-park-night` — 背景プレート / 公園と池 / 夜
+### ★ `BG-park-night` — 背景プレート / 公園と池 / 夜
 
 - **添付する下絵**: https://raw.githubusercontent.com/tukemen-rgb/game-set1/claude/game-godot-setup-98dhue/docs/plates/ref_3_park.png
 - **アスペクト比**: 16:9
@@ -200,7 +207,7 @@ Redraw this 3D rough as a photorealistic image. Keep the composition, camera ang
 Redraw this 3D rough as a photorealistic image. Keep the composition, camera angle, and the position and outline of every building and tree EXACTLY as in the rough. A Japanese new town suburb in the year 2000: a suburban main street seen from above, asphalt road, zebra crossing, paved sidewalks, telephone poles, a park with a pond on one side. Lighting: early summer morning around 8am, clear sky, long soft shadows, fresh light. Photorealistic, no people, no text or lettering, no watermark, no logo, do not copy any real existing building.
 ```
 
-### `BG-plaza-noon` — 背景プレート / 大通りと空き地 / 真夏の正午
+### ★ `BG-plaza-noon` — 背景プレート / 大通りと空き地 / 真夏の正午
 
 - **添付する下絵**: https://raw.githubusercontent.com/tukemen-rgb/game-set1/claude/game-godot-setup-98dhue/docs/plates/ref_4_plaza.png
 - **アスペクト比**: 16:9
@@ -240,7 +247,7 @@ Redraw this 3D rough as a photorealistic image. Keep the composition, camera ang
 Redraw this 3D rough as a photorealistic image. Keep the composition, camera angle, and the position and outline of every building and tree EXACTLY as in the rough. A Japanese new town suburb in the year 2000: a suburban main street seen from above, asphalt road, zebra crossing, paved sidewalks, telephone poles, a park with a pond on one side. Lighting: just after summer rain, wet reflective ground, puddles, damp concrete, breaking clouds. Photorealistic, no people, no text or lettering, no watermark, no logo, do not copy any real existing building.
 ```
 
-### `BG-plaza-night` — 背景プレート / 大通りと空き地 / 夜
+### ★ `BG-plaza-night` — 背景プレート / 大通りと空き地 / 夜
 
 - **添付する下絵**: https://raw.githubusercontent.com/tukemen-rgb/game-set1/claude/game-godot-setup-98dhue/docs/plates/ref_4_plaza.png
 - **アスペクト比**: 16:9
@@ -252,7 +259,7 @@ Redraw this 3D rough as a photorealistic image. Keep the composition, camera ang
 
 ## 空・遠景パノラマ（8件）
 
-### `SKY-clear_cumulonimbus` — 空・遠景 / 快晴・入道雲
+### ★ `SKY-clear_cumulonimbus` — 空・遠景 / 快晴・入道雲
 
 - **アスペクト比**: 16:9
 - **出力ファイル名**: `SKY-clear_cumulonimbus.png`
@@ -261,7 +268,7 @@ Redraw this 3D rough as a photorealistic image. Keep the composition, camera ang
 A wide panoramic view of clear blue summer sky with huge towering cumulonimbus clouds on the horizon, seen from a suburban Japanese housing estate. Only sky and a low distant skyline of apartment blocks and hills. Photorealistic, no people, no text or lettering, no watermark, no logo, do not copy any real existing building.
 ```
 
-### `SKY-sunset` — 空・遠景 / 夕焼け
+### ★ `SKY-sunset` — 空・遠景 / 夕焼け
 
 - **アスペクト比**: 16:9
 - **出力ファイル名**: `SKY-sunset.png`
@@ -371,7 +378,7 @@ A seamless tileable texture of Japanese sidewalk concrete paving slabs, square g
 A seamless tileable texture of interlocking paving blocks in a herringbone pattern, muted red and grey. Flat orthographic view straight on, evenly lit, no perspective, no cast shadows, no vignette, edges must tile seamlessly. Photorealistic, no people, no text or lettering, no watermark, no logo, do not copy any real existing building.
 ```
 
-### `TEX-grass_summer` — テクスチャ / 夏の芝生
+### ★ `TEX-grass_summer` — テクスチャ / 夏の芝生
 
 - **アスペクト比**: 1:1
 - **出力ファイル名**: `TEX-grass_summer.png`
@@ -407,7 +414,7 @@ A seamless tileable texture of fine playground sand seen from above, small ridge
 A seamless tileable texture of calm pond water surface seen from above, gentle ripples, slight green tint. Flat orthographic view straight on, evenly lit, no perspective, no cast shadows, no vignette, edges must tile seamlessly. Photorealistic, no people, no text or lettering, no watermark, no logo, do not copy any real existing building.
 ```
 
-### `TEX-leaf_canopy` — テクスチャ / 木の葉
+### ★ `TEX-leaf_canopy` — テクスチャ / 木の葉
 
 - **アスペクト比**: 1:1
 - **出力ファイル名**: `TEX-leaf_canopy.png`
@@ -917,7 +924,7 @@ a low wooden bench for sitting outside on a summer evening, three-quarter view. 
 
 ## ディテール・汚しデカール（10件）
 
-### `DET-rain_streak` — ディテール・汚し / 雨だれ
+### ★ `DET-rain_streak` — ディテール・汚し / 雨だれ
 
 - **アスペクト比**: 1:1
 - **出力ファイル名**: `DET-rain_streak.png`
@@ -998,7 +1005,7 @@ A close-up photograph of faded chalk scribbles of simple shapes on concrete pave
 A close-up photograph of a faint tyre scuff mark on asphalt, filling the frame, shot straight on, evenly lit, isolated on a plain flat mid-grey background around it. Photorealistic, no people, no text or lettering, no watermark, no logo, do not copy any real existing building.
 ```
 
-### `DET-shadow_leaves` — ディテール・汚し / 木漏れ日
+### ★ `DET-shadow_leaves` — ディテール・汚し / 木漏れ日
 
 - **アスペクト比**: 1:1
 - **出力ファイル名**: `DET-shadow_leaves.png`
@@ -1009,7 +1016,7 @@ A close-up photograph of dappled shadow of tree leaves cast on a flat pale surfa
 
 ## UI・キーアート（6件）
 
-### `UI-title_key` — UI・キーアート / タイトル用キーアート
+### ★ `UI-title_key` — UI・キーアート / タイトル用キーアート
 
 - **アスペクト比**: 16:9
 - **出力ファイル名**: `UI-title_key.png`

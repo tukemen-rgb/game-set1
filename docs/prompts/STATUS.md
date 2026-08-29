@@ -1,5 +1,26 @@
 # 画像の入荷状況
 
+## ★ フェーズ1（まずこれだけ）: **0 / 15**
+
+残り:
+- `BG-danchi-noon` — 背景プレート / 団地の広場 / 真夏の正午
+- `BG-danchi-night` — 背景プレート / 団地の広場 / 夜
+- `BG-street-noon` — 背景プレート / 商店街 / 真夏の正午
+- `BG-street-night` — 背景プレート / 商店街 / 夜
+- `BG-park-noon` — 背景プレート / 公園と池 / 真夏の正午
+- `BG-park-night` — 背景プレート / 公園と池 / 夜
+- `BG-plaza-noon` — 背景プレート / 大通りと空き地 / 真夏の正午
+- `BG-plaza-night` — 背景プレート / 大通りと空き地 / 夜
+- `SKY-clear_cumulonimbus` — 空・遠景 / 快晴・入道雲
+- `SKY-sunset` — 空・遠景 / 夕焼け
+- `TEX-grass_summer` — テクスチャ / 夏の芝生
+- `TEX-leaf_canopy` — テクスチャ / 木の葉
+- `DET-rain_streak` — ディテール・汚し / 雨だれ
+- `DET-shadow_leaves` — ディテール・汚し / 木漏れ日
+- `UI-title_key` — UI・キーアート / タイトル用キーアート
+
+## 全体
+
 - 揃った: **0 / 113**
 - 未着: 113
 - `incoming/` に未処理: 0

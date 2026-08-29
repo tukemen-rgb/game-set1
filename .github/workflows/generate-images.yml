@@ -1,0 +1,79 @@
+# 未生成のプロンプトを1時間ごとに数枚ずつ画像化し、取り込んでコミットする。
+#
+# 必要な設定: リポジトリの Secrets に OPENAI_API_KEY を登録する
+#   Settings > Secrets and variables > Actions > New repository secret
+# 鍵が無い間は何もせず正常終了するので、登録前でも安全に回せる。
+#
+# 緊急停止: incoming/STOP という空ファイルを作るとその回から生成しない。
+name: generate-images
+
+on:
+  schedule:
+    # 毎時17分（:00 は世界中の job が集中するので避ける）
+    - cron: '17 * * * *'
+  workflow_dispatch:
+    inputs:
+      max_images:
+        description: 'この実行で生成する枚数'
+        required: false
+        default: '2'
+      quality:
+        description: '画質 low / medium / high'
+        required: false
+        default: 'medium'
+
+# 実行が重なると同じIDを二重生成したり push が衝突するので直列化する
+concurrency:
+  group: generate-images
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: 画像を生成して incoming/ に置く
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          IMAGE_MODEL: ${{ vars.IMAGE_MODEL || 'gpt-image-2' }}
+          IMAGE_QUALITY: ${{ inputs.quality || 'medium' }}
+          MAX_IMAGES: ${{ inputs.max_images || '2' }}
+          TOTAL_CAP: ${{ vars.TOTAL_CAP || '150' }}
+        run: python3 tools/generate_images.py
+
+      - name: 振り分けて STATUS.md を更新
+        # Godot はランナーに無いので import 段階は自動でスキップされる
+        run: bash tools/ingest_images.sh
+
+      - name: 変更をコミットして push
+        run: |
+          if [ -z "$(git status --porcelain)" ]; then
+            echo "変更なし"
+            exit 0
+          fi
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "自動生成: 画像を追加し STATUS を更新"
+          # 直列化していても他所からの push と競合しうるので rebase して再試行
+          for i in 1 2 3; do
+            git pull --rebase origin "${GITHUB_REF_NAME}" && git push origin "HEAD:${GITHUB_REF_NAME}" && exit 0
+            sleep $((i * 5))
+          done
+          exit 1
+
+      - name: 進捗をサマリに出す
+        if: always()
+        run: |
+          {
+            echo '## 画像の入荷状況'
+            head -6 docs/prompts/STATUS.md
+          } >> "$GITHUB_STEP_SUMMARY"

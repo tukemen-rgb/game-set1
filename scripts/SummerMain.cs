@@ -56,6 +56,28 @@ public partial class SummerMain : Node3D
     /// 季節が動かないため天候で差を作る。
     /// </summary>
     private enum Weather { Sunny, Cloudy, Rainy }
+
+    /// <summary>
+    /// 日付が決まっている行事。天候だけでは「今日と明日の違い」しか作れず、
+    /// 「あと3日で祭り」という**待ち遠しさ**が生まれない。
+    /// 8月という月に山をつけるための仕掛け。
+    /// </summary>
+    private readonly record struct Event(string Morning, string Diary);
+
+    private static readonly System.Collections.Generic.Dictionary<int, Event> Events = new()
+    {
+        [7] = new("きょうで ラジオたいそうは おしまい。\nはんこが ぜんぶ そろった。",
+                  "ラジオたいそうの さいごの日。はんこが そろった。"),
+        [13] = new("おぼんが はじまった。\nどこの まども、いつもより あかるい。",
+                   "おぼん。だんちじゅうの まどが あかるかった。"),
+        [16] = new("おくりびの ひ。\nかえって いく ひとたちが いるらしい。",
+                   "おくりび。なつが すこし とおのいた 気がした。"),
+        [24] = new("きょうは なつまつり。\n夕方に はなびが 上がるらしい。",
+                   "なつまつりの はなび。ずっと 見あげて いた。"),
+    };
+
+    private const int FestivalDay = 24;
+    private const double FireworkFromHour = 17.5;
     private const float DiscoverRange = 3.2f;
 
     /// <summary>
@@ -104,6 +126,9 @@ public partial class SummerMain : Node3D
     private Weather _weather = Weather.Sunny;
     private AudioStreamPlayer _rainVoice;
     private CpuParticles3D _rainFx;
+    private CpuParticles3D _fireworkFx;
+    private AudioStreamPlayer _sfxFirework;
+    private double _nextFirework;
     private readonly List<Vector3> _treeSpots = new();
     private readonly AudioStreamPlayer[] _cicadaVoices = new AudioStreamPlayer[3];
     // 遠景（実写パノラマ・入道雲）は Unshaded なのでライトが当たらない。
@@ -138,6 +163,7 @@ public partial class SummerMain : Node3D
             _rng.Randomize();
         SetupAudio();
         SetupRainFx();
+        SetupFireworkFx();
         if (_rainFx != null)
             _rainFx.Emitting = _weather == Weather.Rainy;
         CollectSkyTinted(GetNodeOrNull("Backdrop"));
@@ -162,6 +188,7 @@ public partial class SummerMain : Node3D
         UpdateCamera();
         UpdateMessages(delta);
         AnimateCicadas();
+        UpdateFireworks(delta);
         if (PhaseOfHour() != _spawnedPhase)
         {
             RespawnCicadas();
@@ -350,6 +377,7 @@ public partial class SummerMain : Node3D
             _rainVoice.Play();
         }
 
+        _sfxFirework = MakeSfx("sfx_firework", -4f);
         _sfxSwing = MakeSfx("sfx_swing", -10f);
         _sfxCatch = MakeSfx("sfx_catch", -6f);
         _sfxEscape = MakeSfx("sfx_escape", -8f);
@@ -394,6 +422,65 @@ public partial class SummerMain : Node3D
             ShadingMode = BaseMaterial3D.ShadingModeEnum.Unshaded,
         };
         AddChild(_rainFx);
+    }
+
+    /// <summary>花火。空の高いところで一発ずつ開かせる。</summary>
+    private void SetupFireworkFx()
+    {
+        _fireworkFx = new CpuParticles3D
+        {
+            Name = "FireworkFx",
+            Amount = 260,
+            Lifetime = 2.2f,
+            OneShot = true,
+            Explosiveness = 1f,
+            Emitting = false,
+            Direction = Vector3.Up,
+            Spread = 180f,
+            InitialVelocityMin = 6f,
+            InitialVelocityMax = 11f,
+            Gravity = new Vector3(0f, -4.5f, 0f),
+            ScaleAmountMin = 0.5f,
+            ScaleAmountMax = 1.1f,
+            Mesh = new SphereMesh { Radius = 0.16f, Height = 0.32f, RadialSegments = 5, Rings = 3 },
+        };
+        _fireworkFx.MaterialOverride = new StandardMaterial3D
+        {
+            AlbedoColor = new Color(1f, 0.85f, 0.5f),
+            ShadingMode = BaseMaterial3D.ShadingModeEnum.Unshaded,
+            Transparency = BaseMaterial3D.TransparencyEnum.Alpha,
+        };
+        AddChild(_fireworkFx);
+    }
+
+    /// <summary>
+    /// 祭りの日の夕方だけ、数秒おきに一発ずつ打ち上げる。
+    /// 色と位置を毎回変えて、同じ絵が続かないようにする。
+    /// </summary>
+    private void UpdateFireworks(double delta)
+    {
+        if (_fireworkFx == null || _day != FestivalDay || _hour < FireworkFromHour)
+            return;
+        _nextFirework -= delta;
+        if (_nextFirework > 0.0)
+            return;
+        _nextFirework = _rng.RandfRange(2.2f, 4.0f);
+        // ワールド座標で決め打ちにすると、見下ろしの固定カメラでは空が映らず
+        // 一発も見えない。いま使っているカメラの前方・上方に置いて必ず見せる。
+        // 花火は遠くの空の出来事なので、この置き方で不自然にはならない。
+        Camera3D cam = _cameras.GetNode<Camera3D>(_zone);
+        var local = new Vector3(_rng.RandfRange(-14f, 14f), _rng.RandfRange(7f, 15f),
+                                -_rng.RandfRange(28f, 44f));
+        _fireworkFx.Position = cam.GlobalTransform * local;
+        Color[] hues =
+        {
+            new(1f, 0.85f, 0.5f), new(1f, 0.5f, 0.55f), new(0.6f, 0.85f, 1f),
+            new(0.7f, 1f, 0.7f), new(1f, 0.7f, 0.95f),
+        };
+        ((StandardMaterial3D)_fireworkFx.MaterialOverride).AlbedoColor =
+            hues[(int)(_rng.Randi() % (uint)hues.Length)];
+        _fireworkFx.Restart();
+        PlaySfx(_sfxFirework);
     }
 
     private AudioStreamPlayer MakeSfx(string file, float db)
@@ -790,6 +877,15 @@ public partial class SummerMain : Node3D
         // 日記は達成表ではなく、その日の思い出として書く。
         if (_weather == Weather.Rainy)
             line = "あめ。セミは 一ぴきも 鳴かなかった。";
+        if (Events.TryGetValue(_day, out Event todayEvent))
+            return $"【日記】8月{_day}日({Weekday()})\n{line}\n{todayEvent.Diary}\nあしたは なにを しようかな。";
+
+        // 祭りが近づくと日記が数え始める。これが「待ち遠しさ」になる
+        int toFestival = FestivalDay - _day;
+        if (toFestival is > 0 and <= 5)
+            return $"【日記】8月{_day}日({Weekday()})\n{line}\n" +
+                   $"あと {toFestival}日で なつまつり。\nあしたは なにを しようかな。";
+
         string extra = _todayFound != ""
             ? _todayFound
             : "とくべつな ことは なかった。それも わるくない。";
@@ -827,6 +923,8 @@ public partial class SummerMain : Node3D
         await ToSignal(fadeIn, Tween.SignalName.Finished);
         _player.Frozen = false;
         _transitioning = false;
-        ShowMessage($"8月{_day}日の あさ。ラジオたいそう おわり！", 3.0);
+        ShowMessage(Events.TryGetValue(_day, out Event ev)
+            ? ev.Morning
+            : $"8月{_day}日の あさ。ラジオたいそう おわり！", ev.Morning != null ? 4.5 : 3.0);
     }
 }

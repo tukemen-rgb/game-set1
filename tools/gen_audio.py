@@ -186,6 +186,26 @@ def rain(buf):
             buf[i0 + j] += rng.uniform(-1.0, 1.0) * math.exp(-t * 260.0) * 0.5
 
 
+def sfx_firework(buf, n):
+    """打ち上げ花火。低い ドン のあと、遅れて パチパチ が散る。"""
+    rng = random.Random(77)
+    for i in range(n):
+        t = i / RATE
+        # 破裂の胴鳴り
+        if t < 0.9:
+            env = math.exp(-t * 5.5) * min(1.0, t / 0.003)
+            buf[i] += (math.sin(math.tau * (58.0 - 22.0 * t) * t) * 0.9
+                       + rng.uniform(-1.0, 1.0) * 0.35) * env
+    # 遅れて広がる火の粉
+    for k in range(90):
+        i0 = int(rng.uniform(0.18, 0.85) * RATE)
+        for j in range(int(RATE * 0.02)):
+            if i0 + j >= n:
+                break
+            tt = j / RATE
+            buf[i0 + j] += rng.uniform(-1.0, 1.0) * math.exp(-tt * 180.0) * 0.28
+
+
 def save(name, fill):
     buf = [0.0] * N
     wind_bed(buf)
@@ -208,6 +228,7 @@ if __name__ == "__main__":
     save("cicada_day", day)
     save("cicada_evening", evening)
     save("rain", rain)
+    save_oneshot("sfx_firework", sfx_firework, 1.6)
     save_oneshot("sfx_swing", sfx_swing, 0.30)
     save_oneshot("sfx_catch", sfx_catch, 0.55)
     save_oneshot("sfx_escape", sfx_escape, 0.60)

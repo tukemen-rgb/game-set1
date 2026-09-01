@@ -134,6 +134,7 @@ public partial class SummerMain : Node3D
         UpdateLabels();
         UpdateCamera();
         UpdateMessages(delta);
+        AnimateCicadas();
         if (PhaseOfHour() != _spawnedPhase)
         {
             RespawnCicadas();
@@ -410,13 +411,7 @@ public partial class SummerMain : Node3D
         {
             int sp = pool[(int)(_rng.Randi() % (uint)pool.Count)];
             var spot = new Node3D { Position = _treeSpots[indices[k]] };
-            var body = new MeshInstance3D
-            {
-                Mesh = new BoxMesh { Size = new Vector3(0.16f, 0.26f, 0.12f) },
-                MaterialOverride = new StandardMaterial3D { AlbedoColor = AllSpecies[sp].Color, Roughness = 1f },
-                Position = new Vector3(0.34f, 1.7f, 0f),
-            };
-            spot.AddChild(body);
+            spot.AddChild(MakeCicadaBody(AllSpecies[sp], indices[k] + k));
             AddChild(spot);
             _cicadas.Add(spot);
             _cicadaSpecies.Add(sp);
@@ -426,6 +421,69 @@ public partial class SummerMain : Node3D
 
     /// <summary>朝=0 / 昼=1 / 夕=2。変わったら顔ぶれを入れ替える。</summary>
     private int PhaseOfHour() => _hour < 11.0 ? 0 : _hour < 16.0 ? 1 : 2;
+
+    /// <summary>木にとまったセミ1匹。頭を上にして幹に貼りつく本物の姿勢で作る。</summary>
+    private static Node3D MakeCicadaBody(Species sp, int variant)
+    {
+        var root = new Node3D
+        {
+            // 高さ 1.25m。広葉樹の樹冠は 2.1m から、メタセコイアの円錐は
+            // 1.7m から始まるので、それより下でないと葉に埋もれて見つけられない
+            Position = new Vector3(0.32f, 1.25f, 0f),
+            // 幹に沿って少し傾ける。個体ごとに向きを変えて並びの単調さを消す
+            RotationDegrees = new Vector3(-14f, (variant * 53) % 360, 0f),
+        };
+        var shell = new StandardMaterial3D { AlbedoColor = sp.Color, Roughness = 0.65f };
+        var dark = new StandardMaterial3D { AlbedoColor = sp.Color * 0.55f, Roughness = 0.6f };
+
+        root.AddChild(new MeshInstance3D
+        {
+            Mesh = new CapsuleMesh { Radius = 0.045f, Height = 0.24f },
+            MaterialOverride = shell,
+        });
+        root.AddChild(new MeshInstance3D
+        {
+            Name = "Head",
+            Mesh = new SphereMesh { Radius = 0.055f, Height = 0.09f },
+            MaterialOverride = dark,
+            Position = new Vector3(0f, 0.11f, 0f),
+        });
+        foreach (float ex in new[] { -0.042f, 0.042f })
+        {
+            root.AddChild(new MeshInstance3D
+            {
+                Mesh = new SphereMesh { Radius = 0.019f, Height = 0.034f },
+                MaterialOverride = new StandardMaterial3D
+                {
+                    AlbedoColor = new Color(0.06f, 0.05f, 0.05f),
+                    Roughness = 0.3f,
+                },
+                Position = new Vector3(ex, 0.13f, 0.028f),
+            });
+        }
+
+        // 翅。半透明にして重なりが透けるようにする（セミらしさはここで決まる）
+        var wingMat = new StandardMaterial3D
+        {
+            AlbedoColor = new Color(0.78f, 0.77f, 0.72f, 0.42f),
+            Transparency = BaseMaterial3D.TransparencyEnum.Alpha,
+            CullMode = BaseMaterial3D.CullModeEnum.Disabled,
+            Roughness = 0.35f,
+        };
+        var wings = new Node3D { Name = "Wings" };
+        foreach (float side in new[] { -1f, 1f })
+        {
+            wings.AddChild(new MeshInstance3D
+            {
+                Mesh = new QuadMesh { Size = new Vector2(0.1f, 0.3f) },
+                MaterialOverride = wingMat,
+                Position = new Vector3(side * 0.05f, -0.03f, -0.035f),
+                RotationDegrees = new Vector3(0f, side * 18f, side * 6f),
+            });
+        }
+        root.AddChild(wings);
+        return root;
+    }
 
     /// <summary>捕獲圏内で一番近いセミの添字。無ければ -1。</summary>
     private int NearestCicada()
@@ -473,6 +531,27 @@ public partial class SummerMain : Node3D
         {
             PlaySfx(_sfxEscape);
             ShowMessage($"あっ、{species.Name}に にげられた……");
+        }
+    }
+
+    /// <summary>
+    /// 数秒おきに小刻みに震わせる。木にとまった置物ではなく
+    /// 「いま鳴いている生き物」に見せるための最小限の動き。
+    /// </summary>
+    private void AnimateCicadas()
+    {
+        double now = Time.GetTicksMsec() / 1000.0;
+        for (int i = 0; i < _cicadas.Count; i++)
+        {
+            if (_cicadas[i].GetChildCount() == 0)
+                continue;
+            var body = _cicadas[i].GetChild<Node3D>(0);
+            // 個体ごとに周期をずらし、5秒に1回ほど1秒だけ鳴く
+            double cycle = (now + i * 1.7) % 5.0;
+            float call = cycle < 1.0 ? Mathf.Sin((float)cycle * Mathf.Pi) : 0f;
+            Vector3 rot = body.RotationDegrees;
+            rot.Z = Mathf.Sin((float)now * 26f + i) * 4.5f * call;
+            body.RotationDegrees = rot;
         }
     }
 

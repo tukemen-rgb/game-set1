@@ -22,6 +22,10 @@ public partial class SummerMain : Node3D
     [Export]
     public bool Overcast { get; set; }
 
+    /// <summary>true なら導入を飛ばす（キャプチャ用。人が遊ぶときは常に false）。</summary>
+    [Export]
+    public bool SkipIntro { get; set; }
+
     private const double DayStartHour = 8.0;
     private const double DayEndHour = 19.0;
     private const int LastDay = 31;
@@ -121,7 +125,10 @@ public partial class SummerMain : Node3D
             _nightPano = np.MaterialOverride as StandardMaterial3D;
         RespawnCicadas();
         UpdateCamera(force: true);
-        ShowMessage("2000年8月1日。ニュータウンの なつやすみが はじまった！", 4.0);
+        if (SkipIntro)
+            ShowMessage("2000年8月1日。ニュータウンの なつやすみが はじまった！", 4.0);
+        else
+            _ = PlayIntro();
     }
 
     public override void _Process(double delta)
@@ -166,6 +173,48 @@ public partial class SummerMain : Node3D
             return;
         _zone = zone;
         _cameras.GetNode<Camera3D>(zone).MakeCurrent();
+    }
+
+    // --- 導入（このゲームが何の話なのかを最初に渡す） ---
+
+    /// <summary>
+    /// 「30代のサラリーマンが2000年の夏に戻る」という企画の核は、
+    /// 遊びの中だけでは絶対に伝わらない。最初に言葉で渡しておく。
+    /// 現代の3行を淡々と、そこから音だけが先に夏になる構成にした。
+    /// </summary>
+    private async Task PlayIntro()
+    {
+        _transitioning = true;
+        _player.Frozen = true;
+        _fade.Color = new Color(0f, 0f, 0f, 1f);
+        var ui = GetNode<CanvasLayer>("UI");
+        _dateLabel.Visible = false;
+        _bugLabel.Visible = false;
+
+        (string Text, double Hold)[] lines =
+        {
+            ("二〇二六年。会議、見積、終電。", 3.2),
+            ("気づけば、夏を まるごと 忘れていた。", 3.2),
+            ("その夜、ひどく つかれて 眠った。", 3.0),
+            ("——目が さめると、", 2.4),
+            ("セミの こえが していた。", 3.0),
+        };
+        foreach ((string text, double hold) in lines)
+        {
+            _messageLabel.Text = text;
+            await ToSignal(GetTree().CreateTimer(hold), SceneTreeTimer.SignalName.Timeout);
+        }
+
+        _messageLabel.Text = "";
+        Tween fadeIn = CreateTween();
+        fadeIn.TweenProperty(_fade, "color:a", 0.0f, 2.4);
+        await ToSignal(fadeIn, Tween.SignalName.Finished);
+
+        _dateLabel.Visible = true;
+        _bugLabel.Visible = true;
+        _player.Frozen = false;
+        _transitioning = false;
+        ShowMessage("2000年8月1日（火）。\n10さいの ぼくの、なつやすみが はじまった。", 5.0);
     }
 
     // --- 遠景の色を時刻に合わせる ---

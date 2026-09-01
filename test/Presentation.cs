@@ -33,7 +33,8 @@ public partial class Presentation : SceneTree
         var packed = GD.Load<PackedScene>("res://scenes/summer_main.tscn");
         Node main = packed.Instantiate();
         main.Set("SecondsPerHour", 1.7); // 1.7秒 = ゲーム内1時間 → 1日 ≒ 18.7秒
-        main.Set("RngSeed", 2); // 動線上の木にセミが湧き捕獲成功する seed（test/SeedProbe.cs で探索）
+        main.Set("RngSeed", 2);        // 動線上の木にセミが湧き捕獲成功する seed（test/SeedProbe.cs で探索）
+        main.Set("SkipIntro", true);   // 検査では導入を飛ばす
         Root.AddChild(main);
     }
 

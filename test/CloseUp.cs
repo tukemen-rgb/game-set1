@@ -18,6 +18,7 @@ public partial class CloseUp : SceneTree
         Node main = packed.Instantiate();
         main.Set("SecondsPerHour", 100000.0);  // 時刻を止める
         main.Set("RngSeed", 2);
+        main.Set("SkipIntro", true);   // 検査では導入を飛ばす
         Root.AddChild(main);
         ((CanvasLayer)main.GetNode("UI")).Visible = false;
 

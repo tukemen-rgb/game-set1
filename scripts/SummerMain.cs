@@ -91,6 +91,7 @@ public partial class SummerMain : Node3D
     // 遠景（実写パノラマ・入道雲）は Unshaded なのでライトが当たらない。
     // 時刻に合わせて手で色を掛けないと、夕焼けの世界に真昼の空が残ってしまう。
     private readonly List<(StandardMaterial3D Mat, Color Base)> _skyTinted = new();
+    private StandardMaterial3D _nightPano;   // 夕方から重なってくる夜の遠景
     private readonly RandomNumberGenerator _rng = new();
 
     public override void _Ready()
@@ -115,6 +116,8 @@ public partial class SummerMain : Node3D
             _rng.Randomize();
         SetupAudio();
         CollectSkyTinted(GetNodeOrNull("Backdrop"));
+        if (GetNodeOrNull("Backdrop/PanoramaNight") is MeshInstance3D np)
+            _nightPano = np.MaterialOverride as StandardMaterial3D;
         RespawnCicadas();
         UpdateCamera(force: true);
         ShowMessage("2000年8月1日。ニュータウンの なつやすみが はじまった！", 4.0);
@@ -170,7 +173,8 @@ public partial class SummerMain : Node3D
     {
         if (node == null)
             return;
-        if (node is MeshInstance3D mi && mi.MaterialOverride is StandardMaterial3D m
+        if (node.Name != "PanoramaNight"
+            && node is MeshInstance3D mi && mi.MaterialOverride is StandardMaterial3D m
             && m.ShadingMode == BaseMaterial3D.ShadingModeEnum.Unshaded
             && !_skyTinted.Exists(e => e.Mat == m))
         {
@@ -299,6 +303,14 @@ public partial class SummerMain : Node3D
         var sunTint = new Color(1f, 0.72f + 0.26f * arc, 0.55f + 0.4f * arc);
         float bright = 0.45f + 0.55f * arc;
         ApplySkyTint(Colors.White.Lerp(sunTint, 0.65f) * bright);
+
+        // 夜の遠景（窓に灯りが点いた同じ町）を17時から重ねていく。
+        // 昼版を暗くするだけでは窓の灯りは作れないので、別撮りを混ぜる
+        if (_nightPano != null)
+        {
+            float nightAlpha = Mathf.Clamp((float)((_hour - 17.0) / 2.0), 0f, 1f);
+            _nightPano.AlbedoColor = new Color(1f, 1f, 1f, nightAlpha);
+        }
     }
 
     private string Weekday()

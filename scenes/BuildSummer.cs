@@ -759,6 +759,36 @@ public partial class BuildSummer : SceneTree
                 Position = new Vector3(0f, 20f, 0f), // 上端(y=43)を各カメラの画角外へ
             };
             backdrop.AddChild(pano);
+
+            // 夜版が届いていれば、少し内側に重ねて時刻で透明度を動かす。
+            // GPT は下絵には追従しないが、自分が作った昼と夜では
+            // 同じ町・同じ建物を保っていたので、この2枚は対にして使える。
+            const string NightPath = "res://assets/plates/BG-danchi-night.jpg";
+            if (ResourceLoader.Exists(NightPath))
+            {
+                var nightMat = new StandardMaterial3D
+                {
+                    AlbedoTexture = GD.Load<Texture2D>(NightPath),
+                    ShadingMode = BaseMaterial3D.ShadingModeEnum.Unshaded,
+                    CullMode = BaseMaterial3D.CullModeEnum.Disabled,
+                    Transparency = BaseMaterial3D.TransparencyEnum.Alpha,
+                    AlbedoColor = new Color(1f, 1f, 1f, 0f), // 昼は完全に透明
+                    Uv1Scale = new Vector3(5f, 0.72f, 1f),
+                };
+                var night = new MeshInstance3D
+                {
+                    Name = "PanoramaNight",
+                    Mesh = new CylinderMesh
+                    {
+                        TopRadius = 61.5f, BottomRadius = 61.5f, Height = 46f,
+                        RadialSegments = 48, CapTop = false, CapBottom = false,
+                    },
+                    MaterialOverride = nightMat,
+                    CastShadow = GeometryInstance3D.ShadowCastingSetting.Off,
+                    Position = new Vector3(0f, 20f, 0f),
+                };
+                backdrop.AddChild(night);
+            }
         }
 
         // 西〜北西の遠景団地群（簡易版住棟）。マット絵がある側は間引く

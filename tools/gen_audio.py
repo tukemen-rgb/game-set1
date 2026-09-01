@@ -99,6 +99,72 @@ def evening(buf):
         add_tone(buf, 6200 + s * 300, 0.0, DUR, 0.018, mod_hz=33.0, mod_depth=0.6, seed=600 + s)
 
 
+# --- 効果音（一発もの。ループしない） ---
+
+def save_oneshot(name, fill, dur):
+    """短い効果音を書き出す。DUR とは長さが違うので専用の経路にする。"""
+    n = int(RATE * dur)
+    buf = [0.0] * n
+    fill(buf, n)
+    peak = max(1e-6, max(abs(v) for v in buf))
+    scale = 0.85 / peak
+    frames = b"".join(struct.pack("<h", int(max(-1.0, min(1.0, v * scale)) * 32767)) for v in buf)
+    OUT.mkdir(parents=True, exist_ok=True)
+    path = OUT / f"{name}.wav"
+    with wave.open(str(path), "wb") as w:
+        w.setnchannels(1)
+        w.setsampwidth(2)
+        w.setframerate(RATE)
+        w.writeframes(frames)
+    print(f"audio: {path.name}  {n} samples  ({dur:.2f}s)")
+
+
+def sfx_swing(buf, n):
+    """虫あみを振る音。空気を切る『ヒュッ』。"""
+    rng = random.Random(11)
+    prev = 0.0
+    for i in range(n):
+        t = i / RATE
+        white = rng.uniform(-1.0, 1.0)
+        # 帯域を時間で下げていくと「振り抜いた」感じになる
+        cutoff = 0.35 - 0.28 * (t / (n / RATE))
+        prev = prev * (1.0 - cutoff) + white * cutoff
+        env = math.sin(math.pi * min(1.0, t / (n / RATE))) ** 1.6
+        buf[i] += prev * env * 1.2
+
+
+def sfx_catch(buf, n):
+    """捕まえた音。明るい2音＋網の中でもがく音。"""
+    for freq, start, dur in ((880.0, 0.0, 0.28), (1320.0, 0.09, 0.30)):
+        i0 = int(start * RATE)
+        for k in range(int(dur * RATE)):
+            if i0 + k >= n:
+                break
+            t = k / RATE
+            env = math.exp(-t * 11.0) * min(1.0, t / 0.004)
+            buf[i0 + k] += (math.sin(math.tau * freq * t)
+                            + 0.3 * math.sin(math.tau * freq * 2 * t)) * env * 0.5
+    # 網の中の羽ばたき
+    rng = random.Random(23)
+    for i in range(n):
+        t = i / RATE
+        if t < 0.12:
+            continue
+        env = math.exp(-(t - 0.12) * 7.0)
+        buf[i] += rng.uniform(-1.0, 1.0) * env * 0.12 * (0.5 + 0.5 * math.sin(math.tau * 55 * t))
+
+
+def sfx_escape(buf, n):
+    """逃げられた音。ジジッと鳴いて遠ざかる。"""
+    for i in range(n):
+        t = i / RATE
+        freq = 200.0 + 260.0 * t          # 飛び去るので少しずつ高く
+        am = 0.5 + 0.5 * math.sin(math.tau * 62.0 * t)
+        env = math.exp(-t * 3.4) * min(1.0, t / 0.006)
+        buf[i] += (math.sin(math.tau * freq * t) * 0.6
+                   + math.sin(math.tau * freq * 3.1 * t) * 0.25) * am * env
+
+
 def save(name, fill):
     buf = [0.0] * N
     wind_bed(buf)
@@ -120,3 +186,6 @@ if __name__ == "__main__":
     save("cicada_morning", morning)
     save("cicada_day", day)
     save("cicada_evening", evening)
+    save_oneshot("sfx_swing", sfx_swing, 0.30)
+    save_oneshot("sfx_catch", sfx_catch, 0.55)
+    save_oneshot("sfx_escape", sfx_escape, 0.60)

@@ -92,6 +92,7 @@ public partial class SummerMain : Node3D
     // 時刻に合わせて手で色を掛けないと、夕焼けの世界に真昼の空が残ってしまう。
     private readonly List<(StandardMaterial3D Mat, Color Base)> _skyTinted = new();
     private StandardMaterial3D _nightPano;   // 夕方から重なってくる夜の遠景
+    private AudioStreamPlayer _sfxSwing, _sfxCatch, _sfxEscape;
     private readonly RandomNumberGenerator _rng = new();
 
     public override void _Ready()
@@ -220,6 +221,29 @@ public partial class SummerMain : Node3D
             player.Play();
             _cicadaVoices[i] = player;
         }
+
+        // 効果音。虫あみを振った瞬間・捕れた瞬間・逃げられた瞬間に手応えを返す
+        _sfxSwing = MakeSfx("sfx_swing", -10f);
+        _sfxCatch = MakeSfx("sfx_catch", -6f);
+        _sfxEscape = MakeSfx("sfx_escape", -8f);
+    }
+
+    private static void PlaySfx(AudioStreamPlayer p)
+    {
+        if (p == null)
+            return;
+        p.Stop();   // 連打しても頭から鳴り直す
+        p.Play();
+    }
+
+    private AudioStreamPlayer MakeSfx(string file, float db)
+    {
+        var stream = GD.Load<AudioStreamWav>($"res://assets/audio/{file}.wav");
+        if (stream == null)
+            return null;
+        var player = new AudioStreamPlayer { Name = file, Stream = stream, VolumeDb = db };
+        AddChild(player);
+        return player;
     }
 
     /// <summary>いまの時間帯の声だけを鳴らし、他は絞る（ぶつ切りにせず混ぜる）。</summary>
@@ -422,8 +446,12 @@ public partial class SummerMain : Node3D
 
     private void CheckCatch()
     {
+        if (!Input.IsActionJustPressed("ui_accept"))
+            return;
+        // セミが居なくても振った音は返す。無反応が一番よくない
+        PlaySfx(_sfxSwing);
         int idx = NearestCicada();
-        if (idx < 0 || !Input.IsActionJustPressed("ui_accept"))
+        if (idx < 0)
             return;
         int sp = _cicadaSpecies[idx];
         Species species = AllSpecies[sp];
@@ -435,6 +463,7 @@ public partial class SummerMain : Node3D
         {
             _totalCaught++;
             _todayCaught++;
+            PlaySfx(_sfxCatch);
             if (_collected.Add(sp))
                 ShowMessage($"{species.Name}を つかまえた！\nずかんに はじめて のった！", 3.5);
             else
@@ -442,6 +471,7 @@ public partial class SummerMain : Node3D
         }
         else
         {
+            PlaySfx(_sfxEscape);
             ShowMessage($"あっ、{species.Name}に にげられた……");
         }
     }

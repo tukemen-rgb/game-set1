@@ -317,6 +317,80 @@ public partial class BuildSummer : SceneTree
             new Vector3(0f, 12.2f, 0f), ConcreteDark));
         danchi.AddChild(tower);
 
+        // --- 棟間の広場（ここが芝のままだと「草原に建物を置いただけ」に見える） ---
+
+        // 棟間を東西に貫く舗装通路と、各棟の入口へ伸びる短い枝道
+        danchi.AddChild(TexBox(new Vector3(22f, 0.06f, 3.2f), new Vector3(0f, 0.03f, 0f),
+            "photo/concrete_floor_01.jpg", new Vector2(12f, 2f)));
+        foreach (float px in new[] { -5f, 0f, 5f })
+        {
+            foreach (float pz in new[] { -2.6f, 2.6f })
+            {
+                danchi.AddChild(TexBox(new Vector3(1.6f, 0.05f, 2.6f), new Vector3(px, 0.028f, pz),
+                    "photo/concrete_floor_01.jpg", new Vector2(1.2f, 2f)));
+            }
+        }
+
+        // 通路の両脇の植え込み（低く刈り込んだ生垣）
+        var hedge = new Color(0.24f, 0.4f, 0.22f);
+        for (int i = 0; i < 6; i++)
+        {
+            float hx = -9f + i * 3.6f;
+            danchi.AddChild(Box(new Vector3(3f, 0.6f, 0.55f), new Vector3(hx, 0.3f, -1.95f), hedge));
+            danchi.AddChild(Box(new Vector3(3f, 0.6f, 0.55f), new Vector3(hx, 0.3f, 1.95f), hedge * 1.1f));
+        }
+
+        // 駐輪場（波板の屋根とラック、自転車を数台）
+        var bikeShed = new Node3D { Position = new Vector3(-11.5f, 0f, 0f) };
+        var shedColor = new Color(0.62f, 0.64f, 0.66f);
+        foreach (float sx in new[] { -2.4f, 2.4f })
+        {
+            foreach (float sz in new[] { -1.3f, 1.3f })
+                bikeShed.AddChild(Box(new Vector3(0.12f, 2.3f, 0.12f), new Vector3(sx, 1.15f, sz), ConcreteDark));
+        }
+        bikeShed.AddChild(Box(new Vector3(5.4f, 0.1f, 3.2f), new Vector3(0f, 2.35f, 0f), shedColor));
+        for (int i = 0; i < 5; i++)
+        {
+            float bx = -1.9f + i * 0.95f;
+            var body = new Color(0.2f + (i % 3) * 0.22f, 0.24f, 0.3f);
+            bikeShed.AddChild(Box(new Vector3(0.08f, 0.55f, 1.3f), new Vector3(bx, 0.5f, 0f), body));   // フレーム
+            bikeShed.AddChild(Box(new Vector3(0.5f, 0.06f, 0.06f), new Vector3(bx, 0.95f, -0.5f), body)); // ハンドル
+            foreach (float wz in new[] { -0.55f, 0.55f })
+            {
+                var wheel = MeshI(new TorusMesh { InnerRadius = 0.24f, OuterRadius = 0.3f },
+                    new Vector3(bx, 0.3f, wz), new Color(0.14f, 0.14f, 0.15f));
+                wheel.RotationDegrees = new Vector3(90f, 0f, 0f);
+                bikeShed.AddChild(wheel);
+            }
+        }
+        danchi.AddChild(bikeShed);
+
+        // ゴミ集積所（緑のネットをかけた囲い）
+        var trash = new Node3D { Position = new Vector3(8.5f, 0f, -2.4f) };
+        trash.AddChild(Box(new Vector3(2.6f, 0.7f, 1.6f), new Vector3(0f, 0.35f, 0f), new Color(0.55f, 0.57f, 0.55f)));
+        var netMat = new StandardMaterial3D
+        {
+            AlbedoColor = new Color(0.25f, 0.5f, 0.3f, 0.6f),
+            Transparency = BaseMaterial3D.TransparencyEnum.Alpha,
+            Roughness = 1f,
+        };
+        var netBox = MeshI(new BoxMesh { Size = new Vector3(2.7f, 0.55f, 1.7f) }, new Vector3(0f, 0.95f, 0f), netMat);
+        netBox.CastShadow = GeometryInstance3D.ShadowCastingSetting.Off;
+        trash.AddChild(netBox);
+        danchi.AddChild(trash);
+
+        // 物干し場（棟の南側に竿を並べる。団地の記号）
+        foreach (float dz in new[] { -3.4f, 3.4f })
+        {
+            for (int i = 0; i < 2; i++)
+            {
+                float dx = -6f + i * 12f;
+                danchi.AddChild(Box(new Vector3(0.1f, 1.9f, 0.1f), new Vector3(dx - 1.4f, 0.95f, dz), Concrete));
+                danchi.AddChild(Box(new Vector3(0.1f, 1.9f, 0.1f), new Vector3(dx + 1.4f, 0.95f, dz), Concrete));
+                danchi.AddChild(Box(new Vector3(3f, 0.06f, 0.06f), new Vector3(dx, 1.85f, dz), Concrete));
+            }
+        }
+
         // 広場のベンチ
         danchi.AddChild(Box(new Vector3(1.8f, 0.4f, 0.5f), new Vector3(4.5f, 0.35f, -1f), DarkWood));
         danchi.AddChild(Box(new Vector3(1.8f, 0.4f, 0.5f), new Vector3(4.5f, 0.35f, 1.5f), DarkWood));
@@ -584,8 +658,8 @@ public partial class BuildSummer : SceneTree
         Vector3[] spots =
         {
             new(-12f, 0f, 4.2f),                     // 団地前の街路樹
-            new(-26f, 0f, 1f),
-            new(-8f, 0f, 4.2f), new(8f, 0f, 4.2f),   // 大通り沿い
+            new(-26f, 0f, -11f),   // 棟間の通路を塞ぐので南へ移動
+            new(-9.5f, 0f, 5.8f), new(8f, 0f, 4.2f), // 大通り沿い（棟間カメラの手前を塞がない位置へ）
             new(-4f, 0f, -9f), new(-8f, 0f, -18f),   // 公園
             new(15f, 0f, -13f), new(0f, 0f, -20f),
             new(19f, 0f, 5f), new(27f, 0f, -4f),     // 空き地まわり
@@ -597,7 +671,7 @@ public partial class BuildSummer : SceneTree
         // セミの湧かない飾りの木（メタセコイア並木と植え込み）
         var deco = new Node3D { Name = "DecoTrees" };
         for (int k = 0; k < 5; k++)
-            deco.AddChild(MakeTree(k * 3 + 1, new Vector3(-27f + k * 3.4f, 0f, -3.2f))); // 団地南の並木
+            deco.AddChild(MakeTree(k * 3 + 1, new Vector3(-27f + k * 3.4f, 0f, -11.5f))); // 団地南の並木
         for (int k = 0; k < 4; k++)
             deco.AddChild(MakeTree(k * 3 + 1, new Vector3(-30f, 0f, 4f + k * 4f)));      // 西縁の並木
         deco.AddChild(MakeTree(6, new Vector3(-24f, 0f, 16f)));
@@ -793,7 +867,9 @@ public partial class BuildSummer : SceneTree
     private static void BuildCameras(Node3D root)
     {
         var cams = new Node3D { Name = "Cameras" };
-        cams.AddChild(Cam("CamDanchi", new Vector3(5f, 13f, -11f), new Vector3(-19f, 3.5f, 3f), 45f, current: true));
+        // 棟間（2棟のあいだの広場）を東から覗き込む。妻面（のっぺりした横っ腹）を
+        // 正面に置くと広場も主人公も隠れてしまうので、通路の軸に沿わせる。
+        cams.AddChild(Cam("CamDanchi", new Vector3(-1.5f, 7.5f, 0.9f), new Vector3(-24f, 1.6f, 0.1f), 40f, current: true));
         cams.AddChild(Cam("CamStreet", new Vector3(25f, 1.7f, 16.2f), new Vector3(-6f, 1.3f, 15.8f), 20f));
         cams.AddChild(Cam("CamPark", new Vector3(17f, 3.2f, -21f), new Vector3(0f, 0.4f, -12f), 55f));
         cams.AddChild(Cam("CamPlaza", new Vector3(16f, 12f, 12f), new Vector3(0f, 0f, 2f), 50f));

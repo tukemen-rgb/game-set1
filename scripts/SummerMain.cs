@@ -49,6 +49,13 @@ public partial class SummerMain : Node3D
         new("ヒグラシ", new Color(0.45f, 0.28f, 0.22f), 17, 19, 0.4f),
     };
     private const float CatchRange = 2.2f;
+
+    /// <summary>
+    /// その日の天気。31日が全部同じだと3日で飽きるので、日ごとに変える。
+    /// 癒し系の長編で反復を防ぐ定石は季節・天候・行事だが、8月の1か月では
+    /// 季節が動かないため天候で差を作る。
+    /// </summary>
+    private enum Weather { Sunny, Cloudy, Rainy }
     private const float DiscoverRange = 3.2f;
 
     /// <summary>
@@ -94,6 +101,9 @@ public partial class SummerMain : Node3D
     private readonly HashSet<int> _found = new();        // 発見（日をまたいで残る）
     private string _todayFound = "";                     // その日 最初に見つけたもの
     private int _spawnedPhase = -1;                      // 何時台の顔ぶれで湧かせたか
+    private Weather _weather = Weather.Sunny;
+    private AudioStreamPlayer _rainVoice;
+    private CpuParticles3D _rainFx;
     private readonly List<Vector3> _treeSpots = new();
     private readonly AudioStreamPlayer[] _cicadaVoices = new AudioStreamPlayer[3];
     // 遠景（実写パノラマ・入道雲）は Unshaded なのでライトが当たらない。
@@ -120,18 +130,23 @@ public partial class SummerMain : Node3D
                 _treeSpots.Add(tree.Position);
         }
         _day = Mathf.Max(1, StartDay);
+        _weather = WeatherOfDay(_day);
+        Overcast = _weather != Weather.Sunny;
         if (RngSeed != 0)
             _rng.Seed = (ulong)RngSeed;
         else
             _rng.Randomize();
         SetupAudio();
+        SetupRainFx();
+        if (_rainFx != null)
+            _rainFx.Emitting = _weather == Weather.Rainy;
         CollectSkyTinted(GetNodeOrNull("Backdrop"));
         if (GetNodeOrNull("Backdrop/PanoramaNight") is MeshInstance3D np)
             _nightPano = np.MaterialOverride as StandardMaterial3D;
         RespawnCicadas();
         UpdateCamera(force: true);
         if (SkipIntro)
-            ShowMessage("2000年8月1日。ニュータウンの なつやすみが はじまった！", 4.0);
+            ShowMessage($"2000年8月{_day}日。ニュータウンの なつやすみ。", 4.0);
         else
             _ = PlayIntro();
     }
@@ -324,6 +339,17 @@ public partial class SummerMain : Node3D
         }
 
         // 効果音。虫あみを振った瞬間・捕れた瞬間・逃げられた瞬間に手応えを返す
+        var rainStream = GD.Load<AudioStreamWav>("res://assets/audio/rain.wav");
+        if (rainStream != null)
+        {
+            rainStream.LoopMode = AudioStreamWav.LoopModeEnum.Forward;
+            rainStream.LoopBegin = 0;
+            rainStream.LoopEnd = rainStream.Data.Length / 2;
+            _rainVoice = new AudioStreamPlayer { Name = "Rain", Stream = rainStream, VolumeDb = -60f };
+            AddChild(_rainVoice);
+            _rainVoice.Play();
+        }
+
         _sfxSwing = MakeSfx("sfx_swing", -10f);
         _sfxCatch = MakeSfx("sfx_catch", -6f);
         _sfxEscape = MakeSfx("sfx_escape", -8f);
@@ -335,6 +361,39 @@ public partial class SummerMain : Node3D
             return;
         p.Stop();   // 連打しても頭から鳴り直す
         p.Play();
+    }
+
+    /// <summary>
+    /// 雨粒。プレイ範囲の上空から落とす。ソフトウェア描画でも重くならないよう
+    /// 粒は少なめにして、代わりに縦に伸ばして線に見せる。
+    /// </summary>
+    private void SetupRainFx()
+    {
+        _rainFx = new CpuParticles3D
+        {
+            Name = "RainFx",
+            Amount = 900,
+            Lifetime = 1.4f,
+            Emitting = false,
+            Position = new Vector3(0f, 14f, 0f),
+            EmissionShape = CpuParticles3D.EmissionShapeEnum.Box,
+            EmissionBoxExtents = new Vector3(34f, 1f, 34f),
+            Direction = Vector3.Down,
+            Spread = 2f,
+            InitialVelocityMin = 16f,
+            InitialVelocityMax = 20f,
+            ScaleAmountMin = 1f,
+            ScaleAmountMax = 1f,
+            Mesh = new BoxMesh { Size = new Vector3(0.035f, 0.9f, 0.035f) },
+            Gravity = new Vector3(0f, -3f, 0f),
+        };
+        _rainFx.MaterialOverride = new StandardMaterial3D
+        {
+            AlbedoColor = new Color(0.82f, 0.88f, 0.95f, 0.75f),
+            Transparency = BaseMaterial3D.TransparencyEnum.Alpha,
+            ShadingMode = BaseMaterial3D.ShadingModeEnum.Unshaded,
+        };
+        AddChild(_rainFx);
     }
 
     private AudioStreamPlayer MakeSfx(string file, float db)
@@ -356,9 +415,15 @@ public partial class SummerMain : Node3D
             AudioStreamPlayer v = _cicadaVoices[i];
             if (v == null)
                 continue;
-            float target = i == phase ? -8f : -60f;
+            // 雨の日はセミが鳴かない。ここを変えるだけで一日の印象が別物になる
+            float target = (i == phase && _weather != Weather.Rainy) ? -8f : -60f;
             // 秒あたり約12dB で寄せる。時間帯の変わり目がゆっくり入れ替わる
             v.VolumeDb = Mathf.MoveToward(v.VolumeDb, target, (float)delta * 12f);
+        }
+        if (_rainVoice != null)
+        {
+            float rainTarget = _weather == Weather.Rainy ? -12f : -60f;
+            _rainVoice.VolumeDb = Mathf.MoveToward(_rainVoice.VolumeDb, rainTarget, (float)delta * 12f);
         }
     }
 
@@ -369,19 +434,26 @@ public partial class SummerMain : Node3D
         float t = Mathf.Clamp((float)((_hour - 6.0) / 13.0), 0f, 1f);
         if (Overcast)
         {
-            var overTop = new Color(0.6f, 0.66f, 0.71f);
-            var overHor = new Color(0.85f, 0.87f, 0.89f);
+            bool rainy = _weather == Weather.Rainy;
+            var overTop = rainy ? new Color(0.34f, 0.37f, 0.41f) : new Color(0.6f, 0.66f, 0.71f);
+            var overHor = rainy ? new Color(0.55f, 0.58f, 0.61f) : new Color(0.85f, 0.87f, 0.89f);
             _sky.SkyTopColor = overTop;
             _sky.SkyHorizonColor = overHor;
             _sky.GroundHorizonColor = overHor;
             _env.FogLightColor = overHor;
             _env.FogDensity = 0.0035f;
-            _env.AmbientLightColor = new Color(0.74f, 0.76f, 0.78f);
+            _env.AmbientLightColor = rainy
+                ? new Color(0.46f, 0.49f, 0.53f)
+                : new Color(0.74f, 0.76f, 0.78f);
             _sun.ShadowEnabled = false;
-            _sun.LightEnergy = 0.55f;
+            _sun.LightEnergy = rainy ? 0.3f : 0.55f;
             _sun.LightColor = new Color(0.95f, 0.96f, 0.98f);
             _sun.RotationDegrees = new Vector3(-60f, -40f, 0f);
-            ApplySkyTint(new Color(0.84f, 0.86f, 0.88f)); // 曇りは彩度を落として少し暗く
+            // 遠景は晴れの日に撮った実写なので、曇り・雨の日は強めに沈めないと
+            // 「空だけ晴れている」ちぐはぐな絵になる
+            ApplySkyTint(_weather == Weather.Rainy
+                ? new Color(0.42f, 0.46f, 0.52f)
+                : new Color(0.68f, 0.71f, 0.75f));
             return;
         }
         _sun.ShadowEnabled = true;
@@ -449,7 +521,13 @@ public partial class SummerMain : Node3D
     {
         int h = (int)_hour;
         int m = (int)((_hour - h) * 60.0);
-        _dateLabel.Text = $"8月{_day}日({Weekday()})  {h:D2}:{m:D2}";
+        string wx = _weather switch
+        {
+            Weather.Rainy => "雨",
+            Weather.Cloudy => "くもり",
+            _ => "はれ",
+        };
+        _dateLabel.Text = $"8月{_day}日({Weekday()})  {h:D2}:{m:D2}  {wx}";
         _bugLabel.Text = $"セミ ×{_totalCaught}   ずかん {_collected.Count}/{AllSpecies.Length}   " +
                          $"はっけん {_found.Count}/{Spots.Length}";
     }
@@ -506,7 +584,9 @@ public partial class SummerMain : Node3D
         if (pool.Count == 0)
             pool.Add(2); // 保険（アブラゼミ）
 
-        int count = Mathf.Min(CicadasPerDay, indices.Count);
+        // 雨の日はセミが鳴かない＝とれない。「今日は無理だ」も一日の表情
+        int count = _weather == Weather.Rainy ? 0 : Mathf.Min(CicadasPerDay, indices.Count);
+        count = Mathf.Min(count, indices.Count);
         for (int k = 0; k < count; k++)
         {
             int sp = pool[(int)(_rng.Randi() % (uint)pool.Count)];
@@ -517,6 +597,29 @@ public partial class SummerMain : Node3D
             _cicadaSpecies.Add(sp);
         }
         _spawnedPhase = PhaseOfHour();
+    }
+
+    /// <summary>
+    /// その日の天気を日付から決める。乱数を回さないので、
+    /// 同じ日は何度始めても同じ天気になる（日記の記述とも矛盾しない）。
+    /// 8月なので晴れが主、たまに曇り、時々 雨。
+    /// </summary>
+    private static Weather WeatherOfDay(int day)
+    {
+        int h = (day * 37 + 11) % 100;
+        if (h < 18)
+            return Weather.Rainy;
+        if (h < 40)
+            return Weather.Cloudy;
+        return Weather.Sunny;
+    }
+
+    private void ApplyWeather()
+    {
+        _weather = WeatherOfDay(_day);
+        Overcast = _weather != Weather.Sunny;
+        if (_rainFx != null)
+            _rainFx.Emitting = _weather == Weather.Rainy;
     }
 
     /// <summary>朝=0 / 昼=1 / 夕=2。変わったら顔ぶれを入れ替える。</summary>
@@ -685,6 +788,8 @@ public partial class SummerMain : Node3D
         // 「あと◯しゅるい」のような残数は書かない。
         // 締切に見えると、この手のゲームでは焦りになって台無しになる。
         // 日記は達成表ではなく、その日の思い出として書く。
+        if (_weather == Weather.Rainy)
+            line = "あめ。セミは 一ぴきも 鳴かなかった。";
         string extra = _todayFound != ""
             ? _todayFound
             : "とくべつな ことは なかった。それも わるくない。";
@@ -713,6 +818,7 @@ public partial class SummerMain : Node3D
         _hour = DayStartHour;
         _todayCaught = 0;
         _todayFound = "";
+        ApplyWeather();
         _player.Position = new Vector3(-14f, 0.1f, 0f); // 団地の広場から一日開始
         RespawnCicadas();
         _messageLabel.Text = "";

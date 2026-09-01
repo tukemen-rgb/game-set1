@@ -165,6 +165,27 @@ def sfx_escape(buf, n):
                    + math.sin(math.tau * freq * 3.1 * t) * 0.25) * am * env
 
 
+def rain(buf):
+    """雨。細かい粒の連続音に、時々 遠い雷。セミは鳴かない。"""
+    rng = random.Random(31)
+    lp = 0.0
+    hp_prev = 0.0
+    for i in range(N):
+        white = rng.uniform(-1.0, 1.0)
+        lp = lp * 0.6 + white * 0.4          # ざらつきを残しつつ角を取る
+        hp = lp - hp_prev
+        hp_prev = lp
+        buf[i] += hp * 0.55 + lp * 0.12
+    # 屋根や地面に当たる大粒を散らす
+    for k in range(220):
+        i0 = int(rng.uniform(0, N))
+        for j in range(int(RATE * 0.012)):
+            if i0 + j >= N:
+                break
+            t = j / RATE
+            buf[i0 + j] += rng.uniform(-1.0, 1.0) * math.exp(-t * 260.0) * 0.5
+
+
 def save(name, fill):
     buf = [0.0] * N
     wind_bed(buf)
@@ -186,6 +207,7 @@ if __name__ == "__main__":
     save("cicada_morning", morning)
     save("cicada_day", day)
     save("cicada_evening", evening)
+    save("rain", rain)
     save_oneshot("sfx_swing", sfx_swing, 0.30)
     save_oneshot("sfx_catch", sfx_catch, 0.55)
     save_oneshot("sfx_escape", sfx_escape, 0.60)

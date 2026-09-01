@@ -1,0 +1,4 @@
+# アップロードしたファイル名 = プロンプトID
+BG-park-night.jpg = BG-park-night
+BG-plaza-noon.jpg = BG-plaza-noon
+BG-plaza-night.jpg = BG-plaza-night

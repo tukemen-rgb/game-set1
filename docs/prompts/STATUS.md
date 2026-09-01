@@ -1,11 +1,8 @@
 # 画像の入荷状況
 
-## ★ フェーズ1（まずこれだけ）: **5 / 15**
+## ★ フェーズ1（まずこれだけ）: **8 / 15**
 
 残り:
-- `BG-park-night` — 背景プレート / 公園と池 / 夜
-- `BG-plaza-noon` — 背景プレート / 大通りと空き地 / 真夏の正午
-- `BG-plaza-night` — 背景プレート / 大通りと空き地 / 夜
 - `SKY-clear_cumulonimbus` — 空・遠景 / 快晴・入道雲
 - `SKY-sunset` — 空・遠景 / 夕焼け
 - `TEX-grass_summer` — テクスチャ / 夏の芝生
@@ -16,8 +13,8 @@
 
 ## 全体
 
-- 揃った: **5 / 113**
-- 未着: 108
+- 揃った: **8 / 113**
+- 未着: 105
 - `incoming/` に未処理: 0
 
 `tools/ingest_images.sh` が自動更新する。手で編集しない。
@@ -29,6 +26,9 @@
 - `BG-street-noon` — 背景プレート / 商店街 / 真夏の正午 → `assets/plates/BG-street-noon.jpg`
 - `BG-street-night` — 背景プレート / 商店街 / 夜 → `assets/plates/BG-street-night.jpg`
 - `BG-park-noon` — 背景プレート / 公園と池 / 真夏の正午 → `assets/plates/BG-park-noon.jpg`
+- `BG-park-night` — 背景プレート / 公園と池 / 夜 → `assets/plates/BG-park-night.jpg`
+- `BG-plaza-noon` — 背景プレート / 大通りと空き地 / 真夏の正午 → `assets/plates/BG-plaza-noon.jpg`
+- `BG-plaza-night` — 背景プレート / 大通りと空き地 / 夜 → `assets/plates/BG-plaza-night.jpg`
 
 ## 未着（この ID の画像がまだ無い）
 
@@ -44,13 +44,10 @@
 - `BG-park-evening` — 背景プレート / 公園と池 / 夕方 18時 ※下絵の添付が必要
 - `BG-park-overcast` — 背景プレート / 公園と池 / 曇天 ※下絵の添付が必要
 - `BG-park-rain` — 背景プレート / 公園と池 / 雨上がり ※下絵の添付が必要
-- `BG-park-night` — 背景プレート / 公園と池 / 夜 ※下絵の添付が必要
 - `BG-plaza-morning` — 背景プレート / 大通りと空き地 / 夏の朝 8時 ※下絵の添付が必要
-- `BG-plaza-noon` — 背景プレート / 大通りと空き地 / 真夏の正午 ※下絵の添付が必要
 - `BG-plaza-evening` — 背景プレート / 大通りと空き地 / 夕方 18時 ※下絵の添付が必要
 - `BG-plaza-overcast` — 背景プレート / 大通りと空き地 / 曇天 ※下絵の添付が必要
 - `BG-plaza-rain` — 背景プレート / 大通りと空き地 / 雨上がり ※下絵の添付が必要
-- `BG-plaza-night` — 背景プレート / 大通りと空き地 / 夜 ※下絵の添付が必要
 - `SKY-clear_cumulonimbus` — 空・遠景 / 快晴・入道雲
 - `SKY-sunset` — 空・遠景 / 夕焼け
 - `SKY-overcast` — 空・遠景 / 曇天

@@ -1,2 +1,0 @@
-# アップロードしたファイル名 = プロンプトID
-BG-danchi-noon.jpg = BG-danchi-noon

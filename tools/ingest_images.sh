@@ -90,6 +90,11 @@ if [ -f "$map_file" ]; then
         fi
         ext="${src##*.}"
         dst="${dst%.*}"
+        # 社長が既にIDの名前でアップした場合は改名不要（自己移動は mv がエラーになる）
+        if [ "$src" = "${dst}.${ext}" ]; then
+            echo "ingest: '$src' は既に正しい名前"
+            continue
+        fi
         mv -f "incoming/$src" "incoming/${dst}.${ext}"
         echo "ingest: rename '$src' -> ${dst}.${ext}"
         renamed=$((renamed + 1))

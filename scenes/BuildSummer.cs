@@ -583,7 +583,38 @@ public partial class BuildSummer : SceneTree
     {
         var backdrop = new Node3D { Name = "Backdrop" };
 
-        // 西〜北西の遠景団地群（簡易版住棟。写真の「団地の海」）
+        // 生成した実写写真が届いていれば、シーンを囲む円筒パノラマとして使う。
+        // 下絵と遠近が合わなかったので床に敷くプレートには使えないが、
+        // 遠景なら画角の一致は要らない。平面マット絵だと見下ろしカメラの
+        // 画角から外れるため、全カメラに効く円筒にする。
+        // UV は上半分（空と団地）だけを使い、写真の地面部分は捨てる。
+        const string PlatePath = "res://assets/plates/BG-danchi-noon.jpg";
+        bool hasPlate = ResourceLoader.Exists(PlatePath);
+        if (hasPlate)
+        {
+            var mat = new StandardMaterial3D
+            {
+                AlbedoTexture = GD.Load<Texture2D>(PlatePath),
+                ShadingMode = BaseMaterial3D.ShadingModeEnum.Unshaded,
+                CullMode = BaseMaterial3D.CullModeEnum.Disabled,
+                Uv1Scale = new Vector3(5f, 0.72f, 1f),   // 横に5回まわす / 縦は上72%だけ
+            };
+            var pano = new MeshInstance3D
+            {
+                Name = "Panorama",
+                Mesh = new CylinderMesh
+                {
+                    TopRadius = 62f, BottomRadius = 62f, Height = 46f,
+                    RadialSegments = 48, CapTop = false, CapBottom = false,
+                },
+                MaterialOverride = mat,
+                CastShadow = GeometryInstance3D.ShadowCastingSetting.Off,
+                Position = new Vector3(0f, 20f, 0f), // 上端(y=43)を各カメラの画角外へ
+            };
+            backdrop.AddChild(pano);
+        }
+
+        // 西〜北西の遠景団地群（簡易版住棟）。マット絵がある側は間引く
         (Vector3 pos, float rot, int floors, float len)[] blocks =
         {
             (new Vector3(-44f, 0f, -12f), 0f, 5, 18f),
@@ -595,7 +626,11 @@ public partial class BuildSummer : SceneTree
             (new Vector3(26f, 0f, 30f), 8f, 5, 14f),
         };
         foreach (var (pos, rot, floors, len) in blocks)
+        {
+            if (hasPlate && pos.X < -35f)
+                continue; // マット絵の手前に立って邪魔になる
             backdrop.AddChild(DanchiBlock(pos, rot, floors, len, detailed: false));
+        }
 
         // 北の遠景: 高層住宅のシルエット
         (float x, float h, float w)[] towers =

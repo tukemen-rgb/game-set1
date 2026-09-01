@@ -413,7 +413,9 @@ public partial class BuildSummer : SceneTree
         for (int i = 0; i < 7; i++)
         {
             float x = -16f + i * 4f;
-            if (i != 3)
+            if (i == 5)
+                street.AddChild(BuildDagashiya(new Vector3(x, 0f, 12.7f)));   // 開いている駄菓子屋
+            else if (i != 3)
                 street.AddChild(BuildShop(new Vector3(x, 0f, 12.7f), +1, awnings[i], i % 2 == 0, i));
             street.AddChild(BuildShop(new Vector3(x, 0f, 19.1f), -1, awnings[(i + 3) % 7], i % 2 == 1, i + 7));
         }
@@ -532,6 +534,66 @@ public partial class BuildSummer : SceneTree
             shop.AddChild(Box(new Vector3(0.5f, 0.3f, 0.4f), new Vector3(1.5f, 0.45f, front + 0.9f * f), crate * 1.15f));
         }
 
+        return shop;
+    }
+
+    /// <summary>
+    /// 駄菓子屋。商店街で唯一「中が見える・人がいる」店。
+    /// 店先をガラス戸で塞がず、台と瓶とおばあさんを置いて、
+    /// 近づいて話せる場所にする。町に人が一人もいないのが最大の嘘だった。
+    /// </summary>
+    private static Node3D BuildDagashiya(Vector3 pos)
+    {
+        var shop = new Node3D { Name = "Dagashiya", Position = pos };
+        var awning = new Color(0.9f, 0.55f, 0.2f);
+        float front = 1.55f;
+
+        shop.AddChild(TexBox(new Vector3(3.9f, 3.1f, 3f), new Vector3(0f, 1.55f, 0f), "plaster", new Vector2(2f, 2f)));
+        shop.AddChild(Box(new Vector3(3.9f, 0.3f, 3.1f), new Vector3(0f, 3.2f, 0f), ConcreteDark));
+
+        // 店先は開けっ放し。奥を暗くして「中がある」ことを見せる
+        shop.AddChild(Box(new Vector3(2.9f, 2.3f, 0.08f), new Vector3(0f, 1.15f, -0.6f), new Color(0.16f, 0.15f, 0.14f)));
+
+        // 駄菓子の台と、色とりどりの瓶
+        shop.AddChild(Box(new Vector3(2.9f, 0.1f, 0.85f), new Vector3(0f, 0.85f, front - 0.2f), DarkWood));
+        shop.AddChild(Box(new Vector3(2.9f, 0.75f, 0.1f), new Vector3(0f, 0.42f, front + 0.15f), DarkWood));
+        Color[] jars =
+        {
+            new(0.9f, 0.35f, 0.3f), new(0.95f, 0.8f, 0.25f), new(0.45f, 0.7f, 0.9f),
+            new(0.55f, 0.8f, 0.45f), new(0.9f, 0.6f, 0.8f), new(0.85f, 0.5f, 0.25f),
+        };
+        for (int i = 0; i < 6; i++)
+        {
+            shop.AddChild(MeshI(new CylinderMesh { TopRadius = 0.14f, BottomRadius = 0.14f, Height = 0.3f },
+                new Vector3(-1.15f + i * 0.46f, 1.05f, front - 0.2f), jars[i]));
+        }
+
+        // 日よけと看板
+        var tent = MeshI(new BoxMesh { Size = new Vector3(3.7f, 0.08f, 1.3f) },
+            new Vector3(0f, 2.5f, front + 0.6f), Mat(awning));
+        tent.RotationDegrees = new Vector3(14f, 0f, 0f);
+        shop.AddChild(tent);
+        shop.AddChild(Box(new Vector3(3.4f, 0.7f, 0.12f), new Vector3(0f, 2.85f, front + 0.05f),
+            awning.Lerp(Colors.White, 0.5f)));
+
+        // おばあさん。台の奥に座っている
+        var granny = new Node3D { Name = "Granny", Position = new Vector3(0.55f, 0f, front - 1.15f) };
+        var kimono = new Color(0.55f, 0.55f, 0.62f);
+        granny.AddChild(MeshI(new CapsuleMesh { Radius = 0.24f, Height = 0.62f },
+            new Vector3(0f, 0.72f, 0f), kimono));
+        granny.AddChild(MeshI(new SphereMesh { Radius = 0.21f, Height = 0.42f },
+            new Vector3(0f, 1.16f, 0f), Skin));
+        granny.AddChild(MeshI(new SphereMesh { Radius = 0.22f, Height = 0.26f },
+            new Vector3(0f, 1.26f, -0.01f), new Color(0.86f, 0.86f, 0.88f)));   // 白髪
+        foreach (float ex in new[] { -0.075f, 0.075f })
+        {
+            granny.AddChild(Box(new Vector3(0.07f, 0.012f, 0.03f), new Vector3(ex, 1.18f, 0.2f),
+                new Color(0.15f, 0.13f, 0.12f)));                               // 細めた目
+        }
+        granny.AddChild(Box(new Vector3(0.5f, 0.35f, 0.35f), new Vector3(0f, 0.22f, 0f), kimono * 0.85f));
+        shop.AddChild(granny);
+
+        shop.AddChild(Collider(new Vector3(3.9f, 3f, 3f), new Vector3(0f, 1.5f, 0f)));
         return shop;
     }
 

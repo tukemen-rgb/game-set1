@@ -76,6 +76,27 @@ public partial class SummerMain : Node3D
                    "なつまつりの はなび。ずっと 見あげて いた。"),
     };
 
+    /// <summary>駄菓子屋の店先。ここに立つと話しかけられる。</summary>
+    private static readonly Vector2 ShopPos = new(4f, 14.6f);
+    private const float TalkRange = 2.6f;
+
+    /// <summary>
+    /// おばあさんの一言。日替わりで変わるので、通うと違う話が聞ける。
+    /// 町に人が一人もいないのが最大の嘘だったので、まずこの一人を置く。
+    /// 30代の記憶という本作の枠に合わせ、子供には分からない言い方を混ぜてある。
+    /// </summary>
+    private static readonly string[] GrannyLines =
+    {
+        "「あついねえ。\nラムネ、ひやして あるよ」",
+        "「その あみ、じょうずに つかえるかい。\nむかしの 子は みんな もってた」",
+        "「きょうは 雨が くるよ。\n足が いたむ日は だいたい あたる」",
+        "「だんちの 子だろう。\nおかあさんに よろしくね」",
+        "「そこの 木は、まいとし よく 鳴くんだよ。\n毎年、おなじ 木でね」",
+        "「ゆっくり おいき。\n夏は、いそぐと おわるのが 早い」",
+        "「なつまつり、いくのかい。\nうちも 屋台を 出すよ」",
+        "「おや、また 来たね。\nおぼえて いてくれるのは うれしいもんだ」",
+    };
+
     private const int FestivalDay = 24;
     private const double FireworkFromHour = 17.5;
     private const float DiscoverRange = 3.2f;
@@ -129,6 +150,8 @@ public partial class SummerMain : Node3D
     private CpuParticles3D _fireworkFx;
     private AudioStreamPlayer _sfxFirework;
     private double _nextFirework;
+    private int _talkedDay = -1;      // 同じ日に何度も同じ話をしないため
+    private int _talkCount;           // 通った回数
     private readonly List<Vector3> _treeSpots = new();
     private readonly AudioStreamPlayer[] _cicadaVoices = new AudioStreamPlayer[3];
     // 遠景（実写パノラマ・入道雲）は Unshaded なのでライトが当たらない。
@@ -208,6 +231,7 @@ public partial class SummerMain : Node3D
             RespawnCicadas();
             ShowMessage("セミの こえが かわった……", 2.5);
         }
+        CheckShop();
         CheckCatch();
         CheckDiscovery();
         if (_hour >= DayEndHour)
@@ -668,6 +692,13 @@ public partial class SummerMain : Node3D
             _messageTimer -= delta;
             return;
         }
+        if (NearShop())
+        {
+            _messageLabel.Text = _talkedDay == _day
+                ? "だがしや"
+                : "だがしや　スペースで はなす";
+            return;
+        }
         int near = NearestCicada();
         if (near < 0)
         {
@@ -880,6 +911,29 @@ public partial class SummerMain : Node3D
         }
     }
 
+    // --- 駄菓子屋（町にいる ただ一人の相手） ---
+
+    private bool NearShop()
+    {
+        return new Vector2(_player.Position.X, _player.Position.Z).DistanceTo(ShopPos) < TalkRange;
+    }
+
+    private void CheckShop()
+    {
+        if (!NearShop() || !Input.IsActionJustPressed("ui_accept"))
+            return;
+        if (_talkedDay == _day)
+        {
+            ShowMessage("「もう 話したろう。\nまた あした おいで」", 3.0);
+            return;
+        }
+        _talkedDay = _day;
+        // 日替わりで話が変わる。8日周期なので31日で4周し、同じ話でも間が空く
+        string line = GrannyLines[(_day - 1) % GrannyLines.Length];
+        _talkCount++;
+        ShowMessage(line, 5.0);
+    }
+
     // --- 発見（締切も失敗も無い。歩けば増える） ---
 
     private void CheckDiscovery()
@@ -920,6 +974,10 @@ public partial class SummerMain : Node3D
         if (toFestival is > 0 and <= 5)
             return $"【日記】8月{_day}日({Weekday()})\n{line}\n" +
                    $"あと {toFestival}日で なつまつり。\nあしたは なにを しようかな。";
+
+        if (_talkedDay == _day)
+            return $"【日記】8月{_day}日({Weekday()})\n{line}\n" +
+                   $"だがしやの おばあさんと はなした。\nあしたは なにを しようかな。";
 
         string extra = _todayFound != ""
             ? _todayFound

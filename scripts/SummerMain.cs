@@ -88,6 +88,9 @@ public partial class SummerMain : Node3D
     private int _spawnedPhase = -1;                      // 何時台の顔ぶれで湧かせたか
     private readonly List<Vector3> _treeSpots = new();
     private readonly AudioStreamPlayer[] _cicadaVoices = new AudioStreamPlayer[3];
+    // 遠景（実写パノラマ・入道雲）は Unshaded なのでライトが当たらない。
+    // 時刻に合わせて手で色を掛けないと、夕焼けの世界に真昼の空が残ってしまう。
+    private readonly List<(StandardMaterial3D Mat, Color Base)> _skyTinted = new();
     private readonly RandomNumberGenerator _rng = new();
 
     public override void _Ready()
@@ -111,6 +114,7 @@ public partial class SummerMain : Node3D
         else
             _rng.Randomize();
         SetupAudio();
+        CollectSkyTinted(GetNodeOrNull("Backdrop"));
         RespawnCicadas();
         UpdateCamera(force: true);
         ShowMessage("2000年8月1日。ニュータウンの なつやすみが はじまった！", 4.0);
@@ -157,6 +161,32 @@ public partial class SummerMain : Node3D
             return;
         _zone = zone;
         _cameras.GetNode<Camera3D>(zone).MakeCurrent();
+    }
+
+    // --- 遠景の色を時刻に合わせる ---
+
+    /// <summary>Backdrop 配下の Unshaded なマテリアルを集める（実写パノラマと雲）。</summary>
+    private void CollectSkyTinted(Node node)
+    {
+        if (node == null)
+            return;
+        if (node is MeshInstance3D mi && mi.MaterialOverride is StandardMaterial3D m
+            && m.ShadingMode == BaseMaterial3D.ShadingModeEnum.Unshaded
+            && !_skyTinted.Exists(e => e.Mat == m))
+        {
+            _skyTinted.Add((m, m.AlbedoColor));
+        }
+        foreach (Node child in node.GetChildren())
+            CollectSkyTinted(child);
+    }
+
+    private void ApplySkyTint(Color tint)
+    {
+        foreach ((StandardMaterial3D mat, Color base_) in _skyTinted)
+        {
+            mat.AlbedoColor = new Color(base_.R * tint.R, base_.G * tint.G,
+                                        base_.B * tint.B, base_.A);
+        }
     }
 
     // --- 音（時間帯でセミの顔ぶれが変わるのを耳でも分かるようにする） ---
@@ -222,6 +252,7 @@ public partial class SummerMain : Node3D
             _sun.LightEnergy = 0.55f;
             _sun.LightColor = new Color(0.95f, 0.96f, 0.98f);
             _sun.RotationDegrees = new Vector3(-60f, -40f, 0f);
+            ApplySkyTint(new Color(0.84f, 0.86f, 0.88f)); // 曇りは彩度を落として少し暗く
             return;
         }
         _sun.ShadowEnabled = true;
@@ -263,6 +294,11 @@ public partial class SummerMain : Node3D
         _sun.RotationDegrees = new Vector3(-10f - 60f * arc, -150f + 120f * t, 0f);
         _sun.LightEnergy = 0.55f + 0.65f * arc;
         _sun.LightColor = new Color(1f, 0.72f + 0.26f * arc, 0.55f + 0.4f * arc);
+
+        // 遠景も同じ光の下に置く。真昼は素の色、朝夕は太陽の色に寄せて暗くする
+        var sunTint = new Color(1f, 0.72f + 0.26f * arc, 0.55f + 0.4f * arc);
+        float bright = 0.45f + 0.55f * arc;
+        ApplySkyTint(Colors.White.Lerp(sunTint, 0.65f) * bright);
     }
 
     private string Weekday()

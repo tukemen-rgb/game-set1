@@ -26,6 +26,20 @@ public partial class SummerMain : Node3D
     private const double DayEndHour = 19.0;
     private const int LastDay = 31;
     private const int CicadasPerDay = 4;
+
+    /// <summary>セミの種類。出る時間帯が違うので「夕方にしか採れない」動機が生まれる。</summary>
+    private readonly record struct Species(string Name, Color Color, int FromHour, int ToHour, float CatchRate);
+
+    // 時間帯で顔ぶれが変わる。難しい種ほど捕獲率が低い
+    private static readonly Species[] AllSpecies =
+    {
+        new("ニイニイゼミ", new Color(0.35f, 0.32f, 0.26f), 8, 11, 0.75f),
+        new("クマゼミ", new Color(0.16f, 0.17f, 0.19f), 8, 13, 0.5f),
+        new("アブラゼミ", new Color(0.36f, 0.24f, 0.13f), 10, 17, 0.7f),
+        new("ミンミンゼミ", new Color(0.2f, 0.42f, 0.3f), 10, 17, 0.6f),
+        new("ツクツクボウシ", new Color(0.28f, 0.3f, 0.22f), 15, 19, 0.55f),
+        new("ヒグラシ", new Color(0.45f, 0.28f, 0.22f), 17, 19, 0.4f),
+    };
     private const float CatchRange = 2.2f;
 
     private int _day = 1;
@@ -47,6 +61,9 @@ public partial class SummerMain : Node3D
     private Node3D _cameras;
     private string _zone = "";
     private readonly List<Node3D> _cicadas = new();
+    private readonly List<int> _cicadaSpecies = new();   // _cicadas と同じ並び
+    private readonly HashSet<int> _collected = new();    // 図鑑（日をまたいで残る）
+    private int _spawnedPhase = -1;                      // 何時台の顔ぶれで湧かせたか
     private readonly List<Vector3> _treeSpots = new();
     private readonly RandomNumberGenerator _rng = new();
 
@@ -84,6 +101,11 @@ public partial class SummerMain : Node3D
         UpdateLabels();
         UpdateCamera();
         UpdateMessages(delta);
+        if (PhaseOfHour() != _spawnedPhase)
+        {
+            RespawnCicadas();
+            ShowMessage("セミの こえが かわった……", 2.5);
+        }
         CheckCatch();
         if (_hour >= DayEndHour)
             _ = EndDay();
@@ -185,7 +207,7 @@ public partial class SummerMain : Node3D
         int h = (int)_hour;
         int m = (int)((_hour - h) * 60.0);
         _dateLabel.Text = $"8月{_day}日({Weekday()})  {h:D2}:{m:D2}";
-        _bugLabel.Text = $"セミ ×{_totalCaught}";
+        _bugLabel.Text = $"セミ ×{_totalCaught}   ずかん {_collected.Count}/{AllSpecies.Length}";
     }
 
     // --- メッセージ ---
@@ -203,7 +225,15 @@ public partial class SummerMain : Node3D
             _messageTimer -= delta;
             return;
         }
-        _messageLabel.Text = NearestCicada() != null ? "スペースで 虫あみを ふる！" : "";
+        int near = NearestCicada();
+        if (near < 0)
+        {
+            _messageLabel.Text = "";
+            return;
+        }
+        Species sp = AllSpecies[_cicadaSpecies[near]];
+        string mark = _collected.Contains(_cicadaSpecies[near]) ? "" : "  ★みつけていない！";
+        _messageLabel.Text = $"{sp.Name}だ！ スペースで 虫あみを ふる{mark}";
     }
 
     // --- セミとり ---
@@ -213,6 +243,7 @@ public partial class SummerMain : Node3D
         foreach (Node3D c in _cicadas)
             c.QueueFree();
         _cicadas.Clear();
+        _cicadaSpecies.Clear();
         var indices = new List<int>();
         for (int i = 0; i < _treeSpots.Count; i++)
             indices.Add(i);
@@ -221,33 +252,50 @@ public partial class SummerMain : Node3D
             int j = (int)(_rng.Randi() % (uint)(i + 1));
             (indices[i], indices[j]) = (indices[j], indices[i]);
         }
+        // いまの時刻に出ている種類だけを候補にする
+        var pool = new List<int>();
+        for (int i = 0; i < AllSpecies.Length; i++)
+        {
+            if (_hour >= AllSpecies[i].FromHour && _hour < AllSpecies[i].ToHour)
+                pool.Add(i);
+        }
+        if (pool.Count == 0)
+            pool.Add(2); // 保険（アブラゼミ）
+
         int count = Mathf.Min(CicadasPerDay, indices.Count);
         for (int k = 0; k < count; k++)
         {
+            int sp = pool[(int)(_rng.Randi() % (uint)pool.Count)];
             var spot = new Node3D { Position = _treeSpots[indices[k]] };
             var body = new MeshInstance3D
             {
                 Mesh = new BoxMesh { Size = new Vector3(0.16f, 0.26f, 0.12f) },
-                MaterialOverride = new StandardMaterial3D { AlbedoColor = new Color(0.28f, 0.2f, 0.1f), Roughness = 1f },
+                MaterialOverride = new StandardMaterial3D { AlbedoColor = AllSpecies[sp].Color, Roughness = 1f },
                 Position = new Vector3(0.34f, 1.7f, 0f),
             };
             spot.AddChild(body);
             AddChild(spot);
             _cicadas.Add(spot);
+            _cicadaSpecies.Add(sp);
         }
+        _spawnedPhase = PhaseOfHour();
     }
 
-    private Node3D NearestCicada()
+    /// <summary>朝=0 / 昼=1 / 夕=2。変わったら顔ぶれを入れ替える。</summary>
+    private int PhaseOfHour() => _hour < 11.0 ? 0 : _hour < 16.0 ? 1 : 2;
+
+    /// <summary>捕獲圏内で一番近いセミの添字。無ければ -1。</summary>
+    private int NearestCicada()
     {
-        Node3D best = null;
+        int best = -1;
         float bestDist = CatchRange;
-        foreach (Node3D c in _cicadas)
+        for (int i = 0; i < _cicadas.Count; i++)
         {
-            float d = _player.Position.DistanceTo(c.Position);
+            float d = _player.Position.DistanceTo(_cicadas[i].Position);
             if (d < bestDist)
             {
                 bestDist = d;
-                best = c;
+                best = i;
             }
         }
         return best;
@@ -255,20 +303,27 @@ public partial class SummerMain : Node3D
 
     private void CheckCatch()
     {
-        Node3D spot = NearestCicada();
-        if (spot == null || !Input.IsActionJustPressed("ui_accept"))
+        int idx = NearestCicada();
+        if (idx < 0 || !Input.IsActionJustPressed("ui_accept"))
             return;
-        _cicadas.Remove(spot);
-        spot.QueueFree();
-        if (_rng.Randf() < 0.65f)
+        int sp = _cicadaSpecies[idx];
+        Species species = AllSpecies[sp];
+        _cicadas[idx].QueueFree();
+        _cicadas.RemoveAt(idx);
+        _cicadaSpecies.RemoveAt(idx);
+
+        if (_rng.Randf() < species.CatchRate)
         {
             _totalCaught++;
             _todayCaught++;
-            ShowMessage("ミンミンゼミを つかまえた！");
+            if (_collected.Add(sp))
+                ShowMessage($"{species.Name}を つかまえた！\nずかんに はじめて のった！", 3.5);
+            else
+                ShowMessage($"{species.Name}を つかまえた！");
         }
         else
         {
-            ShowMessage("あっ、にげられた……");
+            ShowMessage($"あっ、{species.Name}に にげられた……");
         }
     }
 
@@ -282,7 +337,11 @@ public partial class SummerMain : Node3D
             1 => "セミを 1ぴき つかまえた。",
             _ => $"セミを {_todayCaught}ひきも つかまえた！",
         };
-        return $"【日記】8月{_day}日({Weekday()})\n{line}\nあしたは なにを しようかな。";
+        int left = AllSpecies.Length - _collected.Count;
+        string zukan = left == 0
+            ? "ずかんが ぜんぶ うまった！"
+            : $"ずかんは あと {left}しゅるい。";
+        return $"【日記】8月{_day}日({Weekday()})\n{line}\n{zukan}\nあしたは なにを しようかな。";
     }
 
     private async Task EndDay()
@@ -297,7 +356,8 @@ public partial class SummerMain : Node3D
         {
             _vacationOver = true;
             _messageLabel.Text =
-                $"8月31日。なつやすみが おわった。\nつかまえたセミ、ぜんぶで {_totalCaught}ひき。\nまた らいねん！";
+                $"8月31日。なつやすみが おわった。\nつかまえたセミ、ぜんぶで {_totalCaught}ひき。\n" +
+                $"ずかんは {_collected.Count}/{AllSpecies.Length}しゅるい。\nまた らいねん！";
             return;
         }
 

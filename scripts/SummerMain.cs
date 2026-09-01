@@ -830,7 +830,8 @@ public partial class SummerMain : Node3D
     {
         if (!Input.IsActionJustPressed("ui_accept"))
             return;
-        // セミが居なくても振った音は返す。無反応が一番よくない
+        // セミが居なくても振る。音だけでなく見た目でも操作に答える
+        _player.SwingNet();
         PlaySfx(_sfxSwing);
         int idx = NearestCicada();
         if (idx < 0)

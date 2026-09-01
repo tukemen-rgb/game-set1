@@ -903,6 +903,10 @@ public partial class BuildSummer : SceneTree
             var pivot = new Node3D { Name = name, Position = new Vector3(sx, 0.98f, 0f) };
             pivot.AddChild(MeshI(new CapsuleMesh { Radius = 0.068f, Height = 0.4f },
                 new Vector3(0f, -0.2f, 0f), Skin));
+            // 右手に虫あみ。腕の子にしてあるので、歩けば一緒に揺れ、
+            // 振れば一緒に振れる。持っていないのに音だけ鳴るのは嘘になる
+            if (name == "ArmR")
+                pivot.AddChild(BuildNet());
             player.AddChild(pivot);
         }
 
@@ -917,6 +921,31 @@ public partial class BuildSummer : SceneTree
         }
 
         root.AddChild(player);
+    }
+
+    /// <summary>虫あみ。竹の柄・輪っか・白い袋。腕にぶら下げて使う。</summary>
+    private static Node3D BuildNet()
+    {
+        // 柄は前方（-Z）へ向ける。X軸まわりに -75° 回すと局所+Yが前を向く
+        var net = new Node3D { Name = "Net", Position = new Vector3(0f, -0.42f, 0f) };
+        net.RotationDegrees = new Vector3(-75f, 0f, 0f);
+
+        var bamboo = new Color(0.78f, 0.7f, 0.42f);
+        net.AddChild(MeshI(new CylinderMesh { TopRadius = 0.018f, BottomRadius = 0.024f, Height = 0.92f },
+            new Vector3(0f, 0.46f, 0f), bamboo));
+        net.AddChild(MeshI(new TorusMesh { InnerRadius = 0.17f, OuterRadius = 0.2f },
+            new Vector3(0f, 0.96f, 0f), new Color(0.55f, 0.56f, 0.58f)));
+
+        var bagMat = new StandardMaterial3D
+        {
+            AlbedoColor = new Color(0.93f, 0.94f, 0.9f, 0.5f),
+            Transparency = BaseMaterial3D.TransparencyEnum.Alpha,
+            CullMode = BaseMaterial3D.CullModeEnum.Disabled,
+            Roughness = 1f,
+        };
+        net.AddChild(MeshI(new CylinderMesh { TopRadius = 0.185f, BottomRadius = 0.03f, Height = 0.3f },
+            new Vector3(0f, 1.12f, 0f), bagMat, noShadow: true));
+        return net;
     }
 
     private static Camera3D Cam(string name, Vector3 pos, Vector3 target, float fov, bool current = false)

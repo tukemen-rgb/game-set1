@@ -11,6 +11,8 @@ public partial class CloseUp : SceneTree
 {
     private Camera3D _cam;
     private Node3D _follow;   // CLOSEUP_WALK=1 のとき主人公を追って歩きを撮る
+    private bool _swingMode;  // CLOSEUP_SWING=1 のとき虫あみを振らせて撮る
+    private double _t;
 
     public override void _Initialize()
     {
@@ -33,8 +35,9 @@ public partial class CloseUp : SceneTree
 
         // 歩行の検査モード。主人公を歩かせて横から寄りで撮る。
         // 広角の固定カメラでは主人公が小さすぎて脚の動きを判定できないため。
-        if (OS.GetEnvironment("CLOSEUP_WALK") == "1")
+        if (OS.GetEnvironment("CLOSEUP_WALK") == "1" || OS.GetEnvironment("CLOSEUP_SWING") == "1")
             _follow = main.GetNode<Node3D>("Player");
+        _swingMode = OS.GetEnvironment("CLOSEUP_SWING") == "1";
 
         _cam = new Camera3D { Fov = 30f };
         Root.AddChild(_cam);
@@ -46,6 +49,23 @@ public partial class CloseUp : SceneTree
     public override bool _Process(double delta)
     {
         _cam.MakeCurrent();   // 固定カメラに毎フレーム奪い返される
+        if (_follow != null && _swingMode)
+        {
+            // 立ち止まったまま、1.2秒おきに虫あみを振らせる
+            _t += delta;
+            if (_t > 1.2)
+            {
+                _t = 0.0;
+                Input.ActionPress("ui_accept");
+            }
+            else if (_t > 0.05)
+            {
+                Input.ActionRelease("ui_accept");
+            }
+            Vector3 atS = _follow.GlobalPosition + new Vector3(0f, 0.85f, 0f);
+            _cam.LookAtFromPosition(atS + new Vector3(2.6f, 0.6f, 1.4f), atS, Vector3.Up);
+            return false;
+        }
         if (_follow != null)
         {
             Input.ActionPress("ui_right");

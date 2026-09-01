@@ -15,6 +15,8 @@ public partial class PlayerController : CharacterBody3D
     // 歩行アニメ用。腕と脚を肩／腰から振る
     private Node3D _armL, _armR, _legL, _legR;
     private float _walkPhase;
+    private float _swingLeft;      // 虫あみを振っている残り時間
+    private const float SwingTime = 0.42f;
 
     public override void _Ready()
     {
@@ -41,9 +43,28 @@ public partial class PlayerController : CharacterBody3D
         // 腕は脚と逆位相。歩きらしさはこの位相差から出る
         if (_armL != null)
             _armL.RotationDegrees = new Vector3(-swing * 0.75f, 0f, 0f);
-        if (_armR != null)
+
+        // 右腕は虫あみを持っているので、振っている間は歩きより優先する
+        if (_armR == null)
+            return;
+        if (_swingLeft > 0f)
+        {
+            _swingLeft = Mathf.Max(0f, _swingLeft - (float)delta);
+            float t = 1f - _swingLeft / SwingTime;          // 0→1
+            // 後ろへ振りかぶってから一気に前へ抜く
+            float arc = t < 0.3f
+                ? Mathf.Lerp(0f, 55f, t / 0.3f)
+                : Mathf.Lerp(55f, -125f, (t - 0.3f) / 0.7f);
+            _armR.RotationDegrees = new Vector3(arc, 0f, 0f);
+        }
+        else
+        {
             _armR.RotationDegrees = new Vector3(swing * 0.75f, 0f, 0f);
+        }
     }
+
+    /// <summary>虫あみを振る。捕獲の操作に見た目の答えを返すため。</summary>
+    public void SwingNet() => _swingLeft = SwingTime;
 
     public override void _PhysicsProcess(double delta)
     {

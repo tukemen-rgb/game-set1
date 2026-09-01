@@ -26,6 +26,10 @@ public partial class SummerMain : Node3D
     [Export]
     public bool SkipIntro { get; set; }
 
+    /// <summary>開始日。終わりの検査で31日目から始めるために使う。既定は1。</summary>
+    [Export]
+    public int StartDay { get; set; } = 1;
+
     private const double DayStartHour = 8.0;
     private const double DayEndHour = 19.0;
     private const int LastDay = 31;
@@ -115,6 +119,7 @@ public partial class SummerMain : Node3D
             if (child is Node3D tree)
                 _treeSpots.Add(tree.Position);
         }
+        _day = Mathf.Max(1, StartDay);
         if (RngSeed != 0)
             _rng.Seed = (ulong)RngSeed;
         else
@@ -215,6 +220,52 @@ public partial class SummerMain : Node3D
         _player.Frozen = false;
         _transitioning = false;
         ShowMessage("2000年8月1日（火）。\n10さいの ぼくの、なつやすみが はじまった。", 5.0);
+    }
+
+    /// <summary>
+    /// 終わり。導入で張った「2026年の疲れた大人」という糸を回収する。
+    /// 張った糸を回収しない物語は、張らなかったより悪い。
+    /// 夏の総括 → 目が覚める → 現代 → それでも何かが残っている、の順。
+    /// </summary>
+    private async Task PlayEnding()
+    {
+        _messageLabel.Text =
+            $"8月31日。なつやすみが おわった。\n" +
+            $"つかまえたセミ、ぜんぶで {_totalCaught}ひき。\n" +
+            $"ずかんは {_collected.Count}/{AllSpecies.Length}しゅるい。\n" +
+            $"おぼえて いる ばしょは {_found.Count}こ。";
+        await ToSignal(GetTree().CreateTimer(5.0), SceneTreeTimer.SignalName.Timeout);
+
+        _messageLabel.Text = "";
+        _dateLabel.Visible = false;
+        _bugLabel.Visible = false;
+
+        // セミの声を静かに引いていく。夏が遠ざかる音として使う
+        foreach (AudioStreamPlayer v in _cicadaVoices)
+        {
+            if (v == null)
+                continue;
+            Tween t = CreateTween();
+            t.TweenProperty(v, "volume_db", -60f, 6.0);
+        }
+
+        string[] lines =
+        {
+            "——目が さめる。",
+            "二〇二六年。いつもの 朝。",
+            "会議も 見積も、なにも 変わっていない。",
+            _found.Count > 0
+                ? "ただ、あの がっこうの 帰り道の においを、\nまだ おぼえて いる 気がした。"
+                : "ただ、どこかで セミが 鳴いている 気がした。",
+            "",
+            "（おわり）",
+        };
+        foreach (string line in lines)
+        {
+            _messageLabel.Text = line;
+            await ToSignal(GetTree().CreateTimer(line == "" ? 1.2 : 4.0),
+                           SceneTreeTimer.SignalName.Timeout);
+        }
     }
 
     // --- 遠景の色を時刻に合わせる ---
@@ -651,10 +702,7 @@ public partial class SummerMain : Node3D
         if (_day >= LastDay)
         {
             _vacationOver = true;
-            _messageLabel.Text =
-                $"8月31日。なつやすみが おわった。\nつかまえたセミ、ぜんぶで {_totalCaught}ひき。\n" +
-                $"ずかんは {_collected.Count}/{AllSpecies.Length}しゅるい。\n" +
-                $"おぼえて いる ばしょは {_found.Count}こ。\nまた らいねん！";
+            await PlayEnding();
             return;
         }
 

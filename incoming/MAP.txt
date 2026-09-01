@@ -1,5 +1,0 @@
-# アップロードしたファイル名 = プロンプトID
-BG-danchi-night.jpg = BG-danchi-night
-BG-street-noon.jpg = BG-street-noon
-BG-street-night.jpg = BG-street-night
-BG-park-noon.jpg = BG-park-noon

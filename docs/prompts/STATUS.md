@@ -1,12 +1,8 @@
 # 画像の入荷状況
 
-## ★ フェーズ1（まずこれだけ）: **1 / 15**
+## ★ フェーズ1（まずこれだけ）: **5 / 15**
 
 残り:
-- `BG-danchi-night` — 背景プレート / 団地の広場 / 夜
-- `BG-street-noon` — 背景プレート / 商店街 / 真夏の正午
-- `BG-street-night` — 背景プレート / 商店街 / 夜
-- `BG-park-noon` — 背景プレート / 公園と池 / 真夏の正午
 - `BG-park-night` — 背景プレート / 公園と池 / 夜
 - `BG-plaza-noon` — 背景プレート / 大通りと空き地 / 真夏の正午
 - `BG-plaza-night` — 背景プレート / 大通りと空き地 / 夜
@@ -20,8 +16,8 @@
 
 ## 全体
 
-- 揃った: **1 / 113**
-- 未着: 112
+- 揃った: **5 / 113**
+- 未着: 108
 - `incoming/` に未処理: 0
 
 `tools/ingest_images.sh` が自動更新する。手で編集しない。
@@ -29,6 +25,10 @@
 ## 取り込み済み
 
 - `BG-danchi-noon` — 背景プレート / 団地の広場 / 真夏の正午 → `assets/plates/BG-danchi-noon.jpg`
+- `BG-danchi-night` — 背景プレート / 団地の広場 / 夜 → `assets/plates/BG-danchi-night.jpg`
+- `BG-street-noon` — 背景プレート / 商店街 / 真夏の正午 → `assets/plates/BG-street-noon.jpg`
+- `BG-street-night` — 背景プレート / 商店街 / 夜 → `assets/plates/BG-street-night.jpg`
+- `BG-park-noon` — 背景プレート / 公園と池 / 真夏の正午 → `assets/plates/BG-park-noon.jpg`
 
 ## 未着（この ID の画像がまだ無い）
 
@@ -36,15 +36,11 @@
 - `BG-danchi-evening` — 背景プレート / 団地の広場 / 夕方 18時 ※下絵の添付が必要
 - `BG-danchi-overcast` — 背景プレート / 団地の広場 / 曇天 ※下絵の添付が必要
 - `BG-danchi-rain` — 背景プレート / 団地の広場 / 雨上がり ※下絵の添付が必要
-- `BG-danchi-night` — 背景プレート / 団地の広場 / 夜 ※下絵の添付が必要
 - `BG-street-morning` — 背景プレート / 商店街 / 夏の朝 8時 ※下絵の添付が必要
-- `BG-street-noon` — 背景プレート / 商店街 / 真夏の正午 ※下絵の添付が必要
 - `BG-street-evening` — 背景プレート / 商店街 / 夕方 18時 ※下絵の添付が必要
 - `BG-street-overcast` — 背景プレート / 商店街 / 曇天 ※下絵の添付が必要
 - `BG-street-rain` — 背景プレート / 商店街 / 雨上がり ※下絵の添付が必要
-- `BG-street-night` — 背景プレート / 商店街 / 夜 ※下絵の添付が必要
 - `BG-park-morning` — 背景プレート / 公園と池 / 夏の朝 8時 ※下絵の添付が必要
-- `BG-park-noon` — 背景プレート / 公園と池 / 真夏の正午 ※下絵の添付が必要
 - `BG-park-evening` — 背景プレート / 公園と池 / 夕方 18時 ※下絵の添付が必要
 - `BG-park-overcast` — 背景プレート / 公園と池 / 曇天 ※下絵の添付が必要
 - `BG-park-rain` — 背景プレート / 公園と池 / 雨上がり ※下絵の添付が必要

@@ -135,6 +135,18 @@ public partial class SummerMain : Node3D
     // 時刻に合わせて手で色を掛けないと、夕焼けの世界に真昼の空が残ってしまう。
     private readonly List<(StandardMaterial3D Mat, Color Base)> _skyTinted = new();
     private StandardMaterial3D _nightPano;   // 夕方から重なってくる夜の遠景
+    private StandardMaterial3D _dayPano;     // 昼の遠景
+    private string _panoZone = "";           // いま貼っている場所
+
+    // 場面ごとに実写が1枚ずつある。遠景もその場所のものに差し替える。
+    // 固定カメラはもともと場面が切り替わるので、同時に遠景が変わっても不自然にならない。
+    private static readonly System.Collections.Generic.Dictionary<string, string> ZonePlate = new()
+    {
+        ["CamDanchi"] = "danchi",
+        ["CamStreet"] = "street",
+        ["CamPark"] = "park",
+        ["CamPlaza"] = "plaza",
+    };
     private AudioStreamPlayer _sfxSwing, _sfxCatch, _sfxEscape;
     private readonly RandomNumberGenerator _rng = new();
 
@@ -169,6 +181,8 @@ public partial class SummerMain : Node3D
         CollectSkyTinted(GetNodeOrNull("Backdrop"));
         if (GetNodeOrNull("Backdrop/PanoramaNight") is MeshInstance3D np)
             _nightPano = np.MaterialOverride as StandardMaterial3D;
+        if (GetNodeOrNull("Backdrop/Panorama") is MeshInstance3D dp)
+            _dayPano = dp.MaterialOverride as StandardMaterial3D;
         RespawnCicadas();
         UpdateCamera(force: true);
         if (SkipIntro)
@@ -220,6 +234,7 @@ public partial class SummerMain : Node3D
             return;
         _zone = zone;
         _cameras.GetNode<Camera3D>(zone).MakeCurrent();
+        UpdatePanoramaPlate();
     }
 
     // --- 導入（このゲームが何の話なのかを最初に渡す） ---
@@ -512,6 +527,25 @@ public partial class SummerMain : Node3D
             float rainTarget = _weather == Weather.Rainy ? -12f : -60f;
             _rainVoice.VolumeDb = Mathf.MoveToward(_rainVoice.VolumeDb, rainTarget, (float)delta * 12f);
         }
+    }
+
+    /// <summary>
+    /// いまの場面の実写を遠景に貼る。昼と夜の2枚を同時に差し替える。
+    /// 無い場合は前の絵のままにする（届いていない場所があっても壊れない）。
+    /// </summary>
+    private void UpdatePanoramaPlate()
+    {
+        if (_zone == _panoZone || !ZonePlate.TryGetValue(_zone, out string place))
+            return;
+        var day = GD.Load<Texture2D>($"res://assets/plates/BG-{place}-noon.jpg");
+        var night = GD.Load<Texture2D>($"res://assets/plates/BG-{place}-night.jpg");
+        if (day == null && night == null)
+            return;
+        if (_dayPano != null && day != null)
+            _dayPano.AlbedoTexture = day;
+        if (_nightPano != null && night != null)
+            _nightPano.AlbedoTexture = night;
+        _panoZone = _zone;
     }
 
     // --- 時刻と空 ---

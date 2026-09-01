@@ -340,8 +340,8 @@ public partial class BuildSummer : SceneTree
         {
             float x = -16f + i * 4f;
             if (i != 3)
-                street.AddChild(BuildShop(new Vector3(x, 0f, 12.7f), +1, awnings[i], i % 2 == 0));
-            street.AddChild(BuildShop(new Vector3(x, 0f, 19.1f), -1, awnings[(i + 3) % 7], i % 2 == 1));
+                street.AddChild(BuildShop(new Vector3(x, 0f, 12.7f), +1, awnings[i], i % 2 == 0, i));
+            street.AddChild(BuildShop(new Vector3(x, 0f, 19.1f), -1, awnings[(i + 3) % 7], i % 2 == 1, i + 7));
         }
         street.AddChild(Collider(new Vector3(12f, 3f, 3f), new Vector3(-12f, 1.5f, 12.7f)));
         street.AddChild(Collider(new Vector3(12f, 3f, 3f), new Vector3(4f, 1.5f, 12.7f)));
@@ -371,20 +371,93 @@ public partial class BuildSummer : SceneTree
         root.AddChild(street);
     }
 
-    private static Node3D BuildShop(Vector3 pos, int facing, Color awning, bool glassFront)
+    private static Node3D BuildShop(Vector3 pos, int facing, Color awning, bool glassFront, int idx)
     {
+        // facing: +1 = 通路が +z 側（南列）、-1 = 通路が -z 側（北列）
+        // 望遠カメラでは店の壁が画面の大半を占めるので、無地にせず
+        // 「店先の情報」で埋める: 暖簾・平台と商品箱・縦看板・2階の窓・ビールケース。
         var shop = new Node3D { Position = pos };
+        float front = 1.55f * facing;
+        float f = facing;
+
         shop.AddChild(TexBox(new Vector3(3.9f, 3.1f, 3f), new Vector3(0f, 1.55f, 0f), "plaster", new Vector2(2f, 2f)));
         shop.AddChild(Box(new Vector3(3.9f, 0.3f, 3.1f), new Vector3(0f, 3.2f, 0f), ConcreteDark));
-        float front = 1.55f * facing;
-        Color frontColor = glassFront ? new Color(0.22f, 0.26f, 0.3f) : new Color(0.66f, 0.62f, 0.56f);
-        shop.AddChild(Box(new Vector3(2.6f, 2.2f, 0.12f), new Vector3(0f, 1.1f, front), frontColor));
+
+        // 店先: 開いている店はガラス戸、閉まっている店はシャッター（横筋つき）
+        if (glassFront)
+        {
+            shop.AddChild(Box(new Vector3(2.6f, 2.2f, 0.1f), new Vector3(0f, 1.1f, front), new Color(0.42f, 0.5f, 0.55f)));
+            shop.AddChild(Box(new Vector3(0.08f, 2.2f, 0.14f), new Vector3(0f, 1.1f, front + 0.03f * f), RailPanel));
+            shop.AddChild(Box(new Vector3(2.7f, 0.1f, 0.14f), new Vector3(0f, 2.2f, front + 0.03f * f), RailPanel));
+        }
+        else
+        {
+            var shutter = new Color(0.66f, 0.62f, 0.56f);
+            shop.AddChild(Box(new Vector3(2.6f, 2.2f, 0.1f), new Vector3(0f, 1.1f, front), shutter));
+            for (int i = 0; i < 7; i++)
+            {
+                shop.AddChild(Box(new Vector3(2.6f, 0.05f, 0.13f),
+                    new Vector3(0f, 0.25f + i * 0.3f, front + 0.02f * f), shutter * 0.82f));
+            }
+        }
+
+        // 日よけ（テント庇）と、その下の看板
         var tent = MeshI(new BoxMesh { Size = new Vector3(3.6f, 0.08f, 1.1f) },
-            new Vector3(0f, 2.55f, front + 0.5f * facing), Mat(awning));
+            new Vector3(0f, 2.55f, front + 0.5f * f), Mat(awning));
         tent.RotationDegrees = new Vector3(14f * facing, 0f, 0f);
         shop.AddChild(tent);
-        shop.AddChild(Box(new Vector3(3.4f, 0.65f, 0.12f), new Vector3(0f, 2.85f, front + 0.05f * facing),
+        shop.AddChild(Box(new Vector3(3.4f, 0.65f, 0.12f), new Vector3(0f, 2.85f, front + 0.05f * f),
             awning.Lerp(Colors.White, 0.55f)));
+
+        // 暖簾（庇の下に垂らす布）。開いている店だけ
+        if (glassFront)
+        {
+            for (int i = 0; i < 4; i++)
+            {
+                shop.AddChild(Box(new Vector3(0.62f, 0.55f, 0.03f),
+                    new Vector3(-1.05f + i * 0.7f, 2.2f, front + 0.9f * f),
+                    awning.Lerp(new Color(0.95f, 0.93f, 0.88f), 0.35f)));
+            }
+        }
+
+        // 縦看板（壁に貼る色帯）。店ごとに位置を変える
+        shop.AddChild(Box(new Vector3(0.42f, 1.5f, 0.08f),
+            new Vector3(idx % 2 == 0 ? -1.6f : 1.6f, 1.9f, front + 0.02f * f),
+            awning.Lerp(Colors.White, 0.2f)));
+
+        // 2階の窓（無地の壁を割る）
+        foreach (float wx in new[] { -1.1f, 1.1f })
+        {
+            shop.AddChild(Box(new Vector3(0.8f, 0.55f, 0.06f), new Vector3(wx, 2.72f, -front * 0.02f + front), ShadowGlass));
+        }
+
+        // 店先の平台と商品の箱（開いている店だけ）
+        if (glassFront)
+        {
+            shop.AddChild(Box(new Vector3(2.2f, 0.08f, 0.75f), new Vector3(0f, 0.72f, front + 0.75f * f), DarkWood));
+            shop.AddChild(Box(new Vector3(0.1f, 0.72f, 0.1f), new Vector3(-1f, 0.36f, front + 0.75f * f), DarkWood));
+            shop.AddChild(Box(new Vector3(0.1f, 0.72f, 0.1f), new Vector3(1f, 0.36f, front + 0.75f * f), DarkWood));
+            Color[] goods =
+            {
+                new(0.85f, 0.35f, 0.25f), new(0.95f, 0.8f, 0.3f), new(0.35f, 0.6f, 0.45f),
+                new(0.9f, 0.6f, 0.7f), new(0.4f, 0.55f, 0.8f),
+            };
+            for (int i = 0; i < 3; i++)
+            {
+                shop.AddChild(Box(new Vector3(0.55f, 0.22f, 0.5f),
+                    new Vector3(-0.75f + i * 0.75f, 0.87f, front + 0.75f * f),
+                    goods[(idx * 3 + i) % goods.Length]));
+            }
+        }
+
+        // 店先のビールケース（積み方を店ごとに変える）
+        if (idx % 3 == 0)
+        {
+            var crate = new Color(0.25f, 0.4f, 0.55f);
+            shop.AddChild(Box(new Vector3(0.5f, 0.3f, 0.4f), new Vector3(1.5f, 0.15f, front + 0.9f * f), crate));
+            shop.AddChild(Box(new Vector3(0.5f, 0.3f, 0.4f), new Vector3(1.5f, 0.45f, front + 0.9f * f), crate * 1.15f));
+        }
+
         return shop;
     }
 

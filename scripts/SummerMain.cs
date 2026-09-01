@@ -87,6 +87,7 @@ public partial class SummerMain : Node3D
     private string _todayFound = "";                     // その日 最初に見つけたもの
     private int _spawnedPhase = -1;                      // 何時台の顔ぶれで湧かせたか
     private readonly List<Vector3> _treeSpots = new();
+    private readonly AudioStreamPlayer[] _cicadaVoices = new AudioStreamPlayer[3];
     private readonly RandomNumberGenerator _rng = new();
 
     public override void _Ready()
@@ -109,6 +110,7 @@ public partial class SummerMain : Node3D
             _rng.Seed = (ulong)RngSeed;
         else
             _rng.Randomize();
+        SetupAudio();
         RespawnCicadas();
         UpdateCamera(force: true);
         ShowMessage("2000年8月1日。ニュータウンの なつやすみが はじまった！", 4.0);
@@ -120,6 +122,7 @@ public partial class SummerMain : Node3D
             return;
         _hour += delta / SecondsPerHour;
         UpdateSky();
+        UpdateAudio(delta);
         UpdateLabels();
         UpdateCamera();
         UpdateMessages(delta);
@@ -154,6 +157,50 @@ public partial class SummerMain : Node3D
             return;
         _zone = zone;
         _cameras.GetNode<Camera3D>(zone).MakeCurrent();
+    }
+
+    // --- 音（時間帯でセミの顔ぶれが変わるのを耳でも分かるようにする） ---
+
+    private void SetupAudio()
+    {
+        string[] files = { "cicada_morning", "cicada_day", "cicada_evening" };
+        for (int i = 0; i < files.Length; i++)
+        {
+            var stream = GD.Load<AudioStreamWav>($"res://assets/audio/{files[i]}.wav");
+            if (stream == null)
+                continue;
+            // 4秒の素材を途切れず回す。インポート設定に頼らずコード側で閉じる
+            stream.LoopMode = AudioStreamWav.LoopModeEnum.Forward;
+            stream.LoopBegin = 0;
+            stream.LoopEnd = stream.Data.Length / 2; // 16bit モノラル
+            var player = new AudioStreamPlayer
+            {
+                Name = $"Cicada{i}",
+                Stream = stream,
+                Autoplay = false,
+                // 開始時点の時間帯だけ最初から鳴らす。全部を無音から上げると
+                // ゲーム開始の数秒が無音になってしまう
+                VolumeDb = i == PhaseOfHour() ? -8f : -60f,
+            };
+            AddChild(player);
+            player.Play();
+            _cicadaVoices[i] = player;
+        }
+    }
+
+    /// <summary>いまの時間帯の声だけを鳴らし、他は絞る（ぶつ切りにせず混ぜる）。</summary>
+    private void UpdateAudio(double delta)
+    {
+        int phase = PhaseOfHour();
+        for (int i = 0; i < _cicadaVoices.Length; i++)
+        {
+            AudioStreamPlayer v = _cicadaVoices[i];
+            if (v == null)
+                continue;
+            float target = i == phase ? -8f : -60f;
+            // 秒あたり約12dB で寄せる。時間帯の変わり目がゆっくり入れ替わる
+            v.VolumeDb = Mathf.MoveToward(v.VolumeDb, target, (float)delta * 12f);
+        }
     }
 
     // --- 時刻と空 ---

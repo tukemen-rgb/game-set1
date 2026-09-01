@@ -825,7 +825,7 @@ public partial class BuildSummer : SceneTree
 
         Label bug = MakeLabel("BugLabel", 30);
         bug.SetAnchorsPreset(Control.LayoutPreset.TopRight);
-        bug.OffsetLeft = -280f;
+        bug.OffsetLeft = -660f;   // 「セミ／ずかん／はっけん」の3項目が入る幅
         bug.OffsetTop = 16f;
         bug.OffsetRight = -24f;
         bug.OffsetBottom = 60f;
@@ -843,7 +843,10 @@ public partial class BuildSummer : SceneTree
 
         Label message = MakeLabel("MessageLabel", 34);
         message.SetAnchorsPreset(Control.LayoutPreset.FullRect);
+        message.OffsetLeft = 80f;      // 左右に余白を取り、長い日記でも画面内に収める
+        message.OffsetRight = -80f;
         message.OffsetBottom = -36f;
+        message.AutowrapMode = TextServer.AutowrapMode.WordSmart;
         message.HorizontalAlignment = HorizontalAlignment.Center;
         message.VerticalAlignment = VerticalAlignment.Bottom;
         ui.AddChild(message);

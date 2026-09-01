@@ -41,6 +41,26 @@ public partial class SummerMain : Node3D
         new("ヒグラシ", new Color(0.45f, 0.28f, 0.22f), 17, 19, 0.4f),
     };
     private const float CatchRange = 2.2f;
+    private const float DiscoverRange = 3.2f;
+
+    /// <summary>
+    /// 立ち止まると何か思い出す場所。締切も失敗も無く、歩けば増える。
+    /// このゲームは「30代が2000年の子供に戻る」話なので、
+    /// 子供の目線に、かすかな既視感（大人の記憶）を一枚重ねる。
+    /// </summary>
+    private readonly record struct Spot(Vector2 Pos, string Text);
+
+    private static readonly Spot[] Spots =
+    {
+        new(new Vector2(-26f, 14f), "きゅうすいとうは いつも おなじ かたち。\nどうして だろう、と 思った ことも なかった。"),
+        new(new Vector2(22f, 0f), "どかんの なかは ひんやり している。\nここに かくれると、だれも 見つけられない。"),
+        new(new Vector2(6f, -8f), "いけの みずは にごって いて そこが 見えない。\nなにか いる きが する。ずっと そう 思って いた。"),
+        new(new Vector2(14f, 10.5f), "じはんきの したを のぞくと、ときどき 十円が おちて いる。\nきょうは なかった。"),
+        new(new Vector2(2f, 8f), "しんごうが ないから、みぎ ひだり みぎ。\nおかあさんに 百回 いわれた。"),
+        new(new Vector2(-6f, -11f), "すべりだいは まなつに さわると あつい。\nしっている のに まいかい さわって しまう。"),
+        new(new Vector2(-2f, -17f), "ブランコを こぎながら 空を 見ると、\nくもが すごい はやさで うごいて 見える。"),
+        new(new Vector2(-4f, 13f), "しょうてんがいの したは いつも すずしい。\nそとの あつさが、きゅうに とおくなる。"),
+    };
 
     private int _day = 1;
     private double _hour = DayStartHour;
@@ -63,6 +83,8 @@ public partial class SummerMain : Node3D
     private readonly List<Node3D> _cicadas = new();
     private readonly List<int> _cicadaSpecies = new();   // _cicadas と同じ並び
     private readonly HashSet<int> _collected = new();    // 図鑑（日をまたいで残る）
+    private readonly HashSet<int> _found = new();        // 発見（日をまたいで残る）
+    private string _todayFound = "";                     // その日 最初に見つけたもの
     private int _spawnedPhase = -1;                      // 何時台の顔ぶれで湧かせたか
     private readonly List<Vector3> _treeSpots = new();
     private readonly RandomNumberGenerator _rng = new();
@@ -107,6 +129,7 @@ public partial class SummerMain : Node3D
             ShowMessage("セミの こえが かわった……", 2.5);
         }
         CheckCatch();
+        CheckDiscovery();
         if (_hour >= DayEndHour)
             _ = EndDay();
     }
@@ -207,7 +230,8 @@ public partial class SummerMain : Node3D
         int h = (int)_hour;
         int m = (int)((_hour - h) * 60.0);
         _dateLabel.Text = $"8月{_day}日({Weekday()})  {h:D2}:{m:D2}";
-        _bugLabel.Text = $"セミ ×{_totalCaught}   ずかん {_collected.Count}/{AllSpecies.Length}";
+        _bugLabel.Text = $"セミ ×{_totalCaught}   ずかん {_collected.Count}/{AllSpecies.Length}   " +
+                         $"はっけん {_found.Count}/{Spots.Length}";
     }
 
     // --- メッセージ ---
@@ -327,6 +351,23 @@ public partial class SummerMain : Node3D
         }
     }
 
+    // --- 発見（締切も失敗も無い。歩けば増える） ---
+
+    private void CheckDiscovery()
+    {
+        var here = new Vector2(_player.Position.X, _player.Position.Z);
+        for (int i = 0; i < Spots.Length; i++)
+        {
+            if (_found.Contains(i) || here.DistanceTo(Spots[i].Pos) > DiscoverRange)
+                continue;
+            _found.Add(i);
+            if (_todayFound == "")
+                _todayFound = Spots[i].Text.Replace("\n", "");
+            ShowMessage(Spots[i].Text, 5.0);
+            return;
+        }
+    }
+
     // --- 1日の終わり（日記→翌朝） ---
 
     private string DiaryText()
@@ -337,11 +378,13 @@ public partial class SummerMain : Node3D
             1 => "セミを 1ぴき つかまえた。",
             _ => $"セミを {_todayCaught}ひきも つかまえた！",
         };
-        int left = AllSpecies.Length - _collected.Count;
-        string zukan = left == 0
-            ? "ずかんが ぜんぶ うまった！"
-            : $"ずかんは あと {left}しゅるい。";
-        return $"【日記】8月{_day}日({Weekday()})\n{line}\n{zukan}\nあしたは なにを しようかな。";
+        // 「あと◯しゅるい」のような残数は書かない。
+        // 締切に見えると、この手のゲームでは焦りになって台無しになる。
+        // 日記は達成表ではなく、その日の思い出として書く。
+        string extra = _todayFound != ""
+            ? _todayFound
+            : "とくべつな ことは なかった。それも わるくない。";
+        return $"【日記】8月{_day}日({Weekday()})\n{line}\n{extra}\nあしたは なにを しようかな。";
     }
 
     private async Task EndDay()
@@ -357,7 +400,8 @@ public partial class SummerMain : Node3D
             _vacationOver = true;
             _messageLabel.Text =
                 $"8月31日。なつやすみが おわった。\nつかまえたセミ、ぜんぶで {_totalCaught}ひき。\n" +
-                $"ずかんは {_collected.Count}/{AllSpecies.Length}しゅるい。\nまた らいねん！";
+                $"ずかんは {_collected.Count}/{AllSpecies.Length}しゅるい。\n" +
+                $"おぼえて いる ばしょは {_found.Count}こ。\nまた らいねん！";
             return;
         }
 
@@ -367,6 +411,7 @@ public partial class SummerMain : Node3D
         _day++;
         _hour = DayStartHour;
         _todayCaught = 0;
+        _todayFound = "";
         _player.Position = new Vector3(-14f, 0.1f, 0f); // 団地の広場から一日開始
         RespawnCicadas();
         _messageLabel.Text = "";

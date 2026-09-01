@@ -865,21 +865,57 @@ public partial class BuildSummer : SceneTree
 
     private static void BuildPlayer(Node3D root)
     {
+        // プレイヤーが一番長く見るものなので、町と同じだけ手を入れる。
+        // 腕と脚は「振る根元」を Node3D で作り、その下にぶら下げる。
+        // こうしないと歩行アニメで肩や腰から回せない。
         var player = new CharacterBody3D { Name = "Player", Position = new Vector3(-14f, 0.1f, 0f) };
         player.AddChild(new CollisionShape3D
         {
             Shape = new CapsuleShape3D { Radius = 0.35f, Height = 1.2f },
             Position = new Vector3(0f, 0.6f, 0f),
         });
+
         var cap = new Color(0.8f, 0.2f, 0.2f);
-        player.AddChild(MeshI(new CapsuleMesh { Radius = 0.3f, Height = 0.9f },
-            new Vector3(0f, 0.55f, 0f), Colors.White));
-        player.AddChild(Box(new Vector3(0.5f, 0.35f, 0.32f), new Vector3(0f, 0.2f, 0f), new Color(0.2f, 0.28f, 0.5f)));
-        player.AddChild(MeshI(new SphereMesh { Radius = 0.28f, Height = 0.56f },
-            new Vector3(0f, 1.22f, 0f), Skin));
-        player.AddChild(MeshI(new SphereMesh { Radius = 0.29f, Height = 0.32f },
-            new Vector3(0f, 1.42f, 0.02f), cap));
-        player.AddChild(Box(new Vector3(0.34f, 0.04f, 0.3f), new Vector3(0f, 1.4f, -0.3f), cap));
+        var shirt = new Color(0.97f, 0.97f, 0.98f);
+        var shorts = new Color(0.2f, 0.28f, 0.5f);
+        var shoe = new Color(0.92f, 0.92f, 0.93f);
+
+        player.AddChild(MeshI(new CapsuleMesh { Radius = 0.28f, Height = 0.78f },
+            new Vector3(0f, 0.72f, 0f), shirt));                              // 白T
+        player.AddChild(Box(new Vector3(0.48f, 0.3f, 0.3f), new Vector3(0f, 0.4f, 0f), shorts)); // 半ズボン
+        player.AddChild(MeshI(new SphereMesh { Radius = 0.26f, Height = 0.52f },
+            new Vector3(0f, 1.24f, 0f), Skin));                               // 顔
+        player.AddChild(MeshI(new SphereMesh { Radius = 0.27f, Height = 0.3f },
+            new Vector3(0f, 1.4f, 0.02f), cap));                              // キャップの山
+        player.AddChild(Box(new Vector3(0.32f, 0.04f, 0.28f), new Vector3(0f, 1.38f, -0.28f), cap)); // つば
+
+        // 目。正面（-Z）が分かるようになり、後ろ姿との区別がつく
+        var eye = new Color(0.09f, 0.08f, 0.09f);
+        foreach (float ex in new[] { -0.095f, 0.095f })
+        {
+            player.AddChild(MeshI(new SphereMesh { Radius = 0.033f, Height = 0.058f },
+                new Vector3(ex, 1.25f, -0.235f), eye));
+        }
+
+        // 腕（肩を支点に振る）
+        foreach ((string name, float sx) in new[] { ("ArmL", -0.31f), ("ArmR", 0.31f) })
+        {
+            var pivot = new Node3D { Name = name, Position = new Vector3(sx, 0.98f, 0f) };
+            pivot.AddChild(MeshI(new CapsuleMesh { Radius = 0.068f, Height = 0.4f },
+                new Vector3(0f, -0.2f, 0f), Skin));
+            player.AddChild(pivot);
+        }
+
+        // 脚（腰を支点に振る）。足先だけ靴の色にして地面との接点を見せる
+        foreach ((string name, float sx) in new[] { ("LegL", -0.13f), ("LegR", 0.13f) })
+        {
+            var pivot = new Node3D { Name = name, Position = new Vector3(sx, 0.4f, 0f) };
+            pivot.AddChild(MeshI(new CapsuleMesh { Radius = 0.075f, Height = 0.36f },
+                new Vector3(0f, -0.18f, 0f), Skin));
+            pivot.AddChild(Box(new Vector3(0.16f, 0.08f, 0.24f), new Vector3(0f, -0.36f, -0.03f), shoe));
+            player.AddChild(pivot);
+        }
+
         root.AddChild(player);
     }
 

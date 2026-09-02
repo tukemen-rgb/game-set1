@@ -206,6 +206,18 @@ def sfx_firework(buf, n):
             buf[i0 + j] += rng.uniform(-1.0, 1.0) * math.exp(-tt * 180.0) * 0.28
 
 
+def sfx_step(buf, n):
+    """足音。砂利を踏む短い ザッ。低い胴と高い粒を重ねる。"""
+    rng = random.Random(101)
+    for i in range(n):
+        t = i / RATE
+        env = math.exp(-t * 42.0) * min(1.0, t / 0.002)
+        # 低い方は靴底、高い方は砂利
+        low = math.sin(math.tau * 95.0 * t) * 0.35
+        grit = rng.uniform(-1.0, 1.0)
+        buf[i] += (low + grit * 0.8) * env
+
+
 def save(name, fill):
     buf = [0.0] * N
     wind_bed(buf)
@@ -229,6 +241,7 @@ if __name__ == "__main__":
     save("cicada_evening", evening)
     save("rain", rain)
     save_oneshot("sfx_firework", sfx_firework, 1.6)
+    save_oneshot("sfx_step", sfx_step, 0.14)
     save_oneshot("sfx_swing", sfx_swing, 0.30)
     save_oneshot("sfx_catch", sfx_catch, 0.55)
     save_oneshot("sfx_escape", sfx_escape, 0.60)

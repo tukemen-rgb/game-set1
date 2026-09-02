@@ -16,6 +16,9 @@ public partial class PlayerController : CharacterBody3D
     private Node3D _armL, _armR, _legL, _legR;
     private float _walkPhase;
     private float _swingLeft;      // 虫あみを振っている残り時間
+    private AudioStreamPlayer _step;
+    private int _lastStep = -1;    // 直近で鳴らした歩数（同じ歩で二重に鳴らさない）
+    private int _stepCount;
     private const float SwingTime = 0.42f;
 
     public override void _Ready()
@@ -24,6 +27,13 @@ public partial class PlayerController : CharacterBody3D
         _armR = GetNodeOrNull<Node3D>("ArmR");
         _legL = GetNodeOrNull<Node3D>("LegL");
         _legR = GetNodeOrNull<Node3D>("LegR");
+
+        var stream = GD.Load<AudioStreamWav>("res://assets/audio/sfx_step.wav");
+        if (stream != null)
+        {
+            _step = new AudioStreamPlayer { Name = "Step", Stream = stream, VolumeDb = -7f };
+            AddChild(_step);
+        }
     }
 
     /// <summary>
@@ -36,6 +46,19 @@ public partial class PlayerController : CharacterBody3D
         float amount = Mathf.Clamp(speed / Speed, 0f, 1f);
         _walkPhase += (float)delta * (6.0f + 4.0f * amount) * amount;
         float swing = Mathf.Sin(_walkPhase) * 34f * amount;
+
+        // 足が地面に着くのは脚の振りが端に来た瞬間＝半周ごと。
+        // 位相を半周単位で数えて、変わったときだけ鳴らす
+        int stepIndex = Mathf.FloorToInt(_walkPhase / Mathf.Pi);
+        if (_step != null && amount > 0.15f && stepIndex != _lastStep)
+        {
+            _lastStep = stepIndex;
+            _step.PitchScale = 0.92f + GD.Randf() * 0.16f;   // 毎回わずかに変える
+            _step.Play();
+            // 波形だけではセミの合唱と区別しにくいので、検査用に回数を出せるようにする
+            if (OS.GetEnvironment("DEBUG_STEPS") == "1")
+                GD.Print($"[step] {++_stepCount} 歩目");
+        }
         if (_legL != null)
             _legL.RotationDegrees = new Vector3(swing, 0f, 0f);
         if (_legR != null)

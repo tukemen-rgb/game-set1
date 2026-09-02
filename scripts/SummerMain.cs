@@ -205,6 +205,11 @@ public partial class SummerMain : Node3D
         ["CamPark"] = "park",
         ["CamPlaza"] = "plaza",
     };
+    private CanvasLayer _title;
+    private Label _titlePrompt;
+    private bool _atTitle;          // タイトルで入力待ち
+    private bool _titleContinued;   // セーブがあるか（プロンプトの文言を変える）
+    private double _titleBlink;
     private AudioStreamPlayer _sfxSwing, _sfxCatch, _sfxEscape;
     private readonly RandomNumberGenerator _rng = new();
 
@@ -219,6 +224,8 @@ public partial class SummerMain : Node3D
         _messageLabel = GetNode<Label>("UI/MessageLabel");
         _fade = GetNode<ColorRect>("UI/Fade");
         _cameras = GetNode<Node3D>("Cameras");
+        _title = GetNodeOrNull<CanvasLayer>("Title");
+        _titlePrompt = GetNodeOrNull<Label>("Title/Prompt");
         foreach (Node child in GetNode("Trees").GetChildren())
         {
             if (child is Node3D tree)
@@ -248,6 +255,20 @@ public partial class SummerMain : Node3D
             _duskSky = sk.MaterialOverride as StandardMaterial3D;
         RespawnCicadas();
         UpdateCamera(force: true);
+        // 検査（SkipIntro）ではタイトルを出さない。人のセーブも導入も触らない
+        _titleContinued = continued;
+        if (_title != null)
+            _title.Visible = !SkipIntro;
+        _atTitle = !SkipIntro;
+        if (_atTitle)
+        {
+            _player.Frozen = true;
+            GetNode<CanvasLayer>("UI").Visible = false;
+            if (_titlePrompt != null)
+                _titlePrompt.Text = continued ? "スペースで つづきから" : "スペースで はじめる";
+            return;
+        }
+
         if (SkipIntro)
             ShowMessage($"2000年8月{_day}日。ニュータウンの なつやすみ。", 4.0);
         else if (continued)
@@ -259,6 +280,11 @@ public partial class SummerMain : Node3D
 
     public override void _Process(double delta)
     {
+        if (_atTitle)
+        {
+            UpdateTitle(delta);
+            return;
+        }
         if (_vacationOver || _transitioning)
             return;
         _hour += delta / SecondsPerHour;
@@ -286,6 +312,30 @@ public partial class SummerMain : Node3D
         CheckDiscovery();
         if (_hour >= DayEndHour)
             _ = EndDay();
+    }
+
+    // --- タイトル ---
+
+    /// <summary>
+    /// 押すまで待つ。押されたら UI を戻して、導入（初回）か本編（つづき）へ。
+    /// </summary>
+    private void UpdateTitle(double delta)
+    {
+        _titleBlink += delta;
+        if (_titlePrompt != null)
+            _titlePrompt.Modulate = new Color(1f, 1f, 1f, 0.45f + 0.55f * (float)((Mathf.Sin(_titleBlink * 2.4) + 1.0) * 0.5));
+        if (!Input.IsActionJustPressed("ui_accept"))
+            return;
+
+        _atTitle = false;
+        if (_title != null)
+            _title.Visible = false;
+        GetNode<CanvasLayer>("UI").Visible = true;
+        _player.Frozen = false;
+        if (_titleContinued)
+            ShowMessage($"8月{_day}日。\nつづきから はじめる。", 4.0);
+        else
+            _ = PlayIntro();
     }
 
     // --- 固定カメラ（場面ごとに1アングル、位置で自動切替） ---

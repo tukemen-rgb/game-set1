@@ -24,6 +24,11 @@ public partial class SaveCheck : SceneTree
     public override bool _Process(double delta)
     {
         _t += delta;
+        // タイトルで入力待ちになるので、まず決定を押して本編へ入れる
+        if (_t > 0.4 && _t < 0.5)
+            Input.ActionPress("ui_accept");
+        else
+            Input.ActionRelease("ui_accept");
         if (_t > 1.0)
         {
             _t = -1e9;

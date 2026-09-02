@@ -1223,5 +1223,79 @@ public partial class BuildSummer : SceneTree
         ui.AddChild(message);
 
         root.AddChild(ui);
+
+        // --- タイトル画面 ---
+        // 届いたキーアート（UI-title_key.jpg）を出す場所がここしかない。
+        // 起動していきなり導入が始まると、何のゲームか分からないまま黒画面が続く。
+        var title = new CanvasLayer { Name = "Title", Layer = 2 };
+        if (ResourceLoader.Exists("res://assets/ui/UI-title_key.jpg"))
+        {
+            var art = new TextureRect
+            {
+                Name = "Art",
+                Texture = GD.Load<Texture2D>("res://assets/ui/UI-title_key.jpg"),
+                StretchMode = TextureRect.StretchModeEnum.KeepAspectCovered,
+            };
+            art.SetAnchorsPreset(Control.LayoutPreset.FullRect);
+            title.AddChild(art);
+        }
+        else
+        {
+            var bg = new ColorRect { Name = "Art", Color = new Color(0.06f, 0.08f, 0.12f) };
+            bg.SetAnchorsPreset(Control.LayoutPreset.FullRect);
+            title.AddChild(bg);
+        }
+
+        // 文字を写真の上に置くので、下側を暗く落として可読性を確保する。
+        // 単色の矩形だと境目に一本線が入って写真が切れて見えるので、縦グラデにする
+        var grad = new Gradient();
+        grad.SetColor(0, new Color(0f, 0f, 0f, 0f));
+        grad.SetColor(1, new Color(0f, 0f, 0f, 0.55f));
+        var scrim = new TextureRect
+        {
+            Name = "Scrim",
+            Texture = new GradientTexture2D
+            {
+                Gradient = grad,
+                Width = 8,
+                Height = 256,
+                Fill = GradientTexture2D.FillEnum.Linear,
+                FillFrom = new Vector2(0f, 0f),
+                FillTo = new Vector2(0f, 1f),
+            },
+            StretchMode = TextureRect.StretchModeEnum.Scale,
+        };
+        scrim.SetAnchorsPreset(Control.LayoutPreset.FullRect);
+        scrim.OffsetTop = 210f;
+        title.AddChild(scrim);
+
+        Label heading = MakeLabel("Heading", 72);
+        heading.SetAnchorsPreset(Control.LayoutPreset.FullRect);
+        heading.OffsetTop = 330f;
+        heading.OffsetBottom = -180f;
+        heading.HorizontalAlignment = HorizontalAlignment.Center;
+        heading.VerticalAlignment = VerticalAlignment.Center;
+        heading.Text = "ニュータウンの なつやすみ";
+        title.AddChild(heading);
+
+        Label sub = MakeLabel("Sub", 26);
+        sub.SetAnchorsPreset(Control.LayoutPreset.FullRect);
+        sub.OffsetTop = 430f;
+        sub.OffsetBottom = -120f;
+        sub.HorizontalAlignment = HorizontalAlignment.Center;
+        sub.VerticalAlignment = VerticalAlignment.Center;
+        sub.Text = "二〇〇〇年 八月";
+        title.AddChild(sub);
+
+        Label prompt = MakeLabel("Prompt", 30);
+        prompt.SetAnchorsPreset(Control.LayoutPreset.FullRect);
+        prompt.OffsetTop = 520f;
+        prompt.OffsetBottom = -40f;
+        prompt.HorizontalAlignment = HorizontalAlignment.Center;
+        prompt.VerticalAlignment = VerticalAlignment.Center;
+        prompt.Text = "スペースで はじめる";
+        title.AddChild(prompt);
+
+        root.AddChild(title);
     }
 }

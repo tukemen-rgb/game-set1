@@ -12,7 +12,10 @@ public partial class Festival : SceneTree
     {
         var packed = GD.Load<PackedScene>("res://scenes/summer_main.tscn");
         Node main = packed.Instantiate();
-        main.Set("SecondsPerHour", 0.8 * Slow);   // 8:00 から 17:30 まで（歩き速度に合わせて引き伸ばし）
+        // 8時から早回しすると、花火の時間帯（17:30〜19:00）が2秒しか無く
+        // 数発しか撮れなかった。StartHour で夕方から始めて、時計はゆっくり進める
+        main.Set("StartHour", 17.4);
+        main.Set("SecondsPerHour", 40.0);
         main.Set("RngSeed", 2);
         main.Set("SkipIntro", true);
         main.Set("StartDay", 24);

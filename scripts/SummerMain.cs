@@ -763,28 +763,37 @@ public partial class SummerMain : Node3D
     /// <summary>花火。空の高いところで一発ずつ開かせる。</summary>
     private void SetupFireworkFx()
     {
+        // 花火は 70〜95m 先の空に上がる。玉が小さいと点にしか映らないので、
+        // 距離に合わせて玉も広がりも大きく取る（半径0.16では点だった）
+        var fade = new Gradient();
+        fade.SetColor(0, new Color(1f, 1f, 1f, 1f));      // 開いた瞬間は白く光る
+        fade.SetColor(1, new Color(1f, 1f, 1f, 0f));      // 尾を引いて消える
+        fade.AddPoint(0.25f, new Color(1f, 1f, 1f, 0.95f));
         _fireworkFx = new CpuParticles3D
         {
             Name = "FireworkFx",
-            Amount = 260,
-            Lifetime = 2.2f,
+            Amount = 420,
+            Lifetime = 2.6f,
             OneShot = true,
             Explosiveness = 1f,
             Emitting = false,
             Direction = Vector3.Up,
             Spread = 180f,
-            InitialVelocityMin = 6f,
-            InitialVelocityMax = 11f,
+            InitialVelocityMin = 9f,
+            InitialVelocityMax = 16f,
             Gravity = new Vector3(0f, -4.5f, 0f),
-            ScaleAmountMin = 0.5f,
-            ScaleAmountMax = 1.1f,
-            Mesh = new SphereMesh { Radius = 0.16f, Height = 0.32f, RadialSegments = 5, Rings = 3 },
+            ScaleAmountMin = 1.1f,
+            ScaleAmountMax = 2.4f,
+            ColorRamp = fade,
+            Mesh = new SphereMesh { Radius = 0.5f, Height = 1f, RadialSegments = 5, Rings = 3 },
         };
         _fireworkFx.MaterialOverride = new StandardMaterial3D
         {
-            AlbedoColor = new Color(1f, 0.85f, 0.5f),
+            AlbedoColor = new Color(1f, 1f, 1f),
+            VertexColorUseAsAlbedo = true,   // 粒ごとの色（Color と ColorRamp）を使う
             ShadingMode = BaseMaterial3D.ShadingModeEnum.Unshaded,
             Transparency = BaseMaterial3D.TransparencyEnum.Alpha,
+            BlendMode = BaseMaterial3D.BlendModeEnum.Add,   // 光なので加算
         };
         AddChild(_fireworkFx);
     }
@@ -805,16 +814,22 @@ public partial class SummerMain : Node3D
         // 一発も見えない。いま使っているカメラの前方・上方に置いて必ず見せる。
         // 花火は遠くの空の出来事なので、この置き方で不自然にはならない。
         Camera3D cam = _cameras.GetNode<Camera3D>(_zone);
-        var local = new Vector3(_rng.RandfRange(-14f, 14f), _rng.RandfRange(7f, 15f),
-                                -_rng.RandfRange(28f, 44f));
+        // 置き方は画角から決める。28〜44m では団地（カメラから20m前後）の壁に
+        // 重なって点にしか見えず、逆に高く上げすぎると画面の上に外れる。
+        // カメラ前方 z に対して高さ y を比で取り、仰角を 12〜19° に収める。
+        // （固定カメラの縦画角は 40〜55° なので、この比なら必ず画面に入る）
+        float dist = _rng.RandfRange(58f, 78f);
+        float rise = dist * _rng.RandfRange(0.21f, 0.34f);
+        var local = new Vector3(_rng.RandfRange(-22f, 22f), rise, -dist);
         _fireworkFx.Position = cam.GlobalTransform * local;
         Color[] hues =
         {
             new(1f, 0.85f, 0.5f), new(1f, 0.5f, 0.55f), new(0.6f, 0.85f, 1f),
             new(0.7f, 1f, 0.7f), new(1f, 0.7f, 0.95f),
         };
-        ((StandardMaterial3D)_fireworkFx.MaterialOverride).AlbedoColor =
-            hues[(int)(_rng.Randi() % (uint)hues.Length)];
+        _fireworkFx.Color = hues[(int)(_rng.Randi() % (uint)hues.Length)];
+        if (OS.GetEnvironment("DEBUG_FIREWORK") == "1")
+            GD.Print($"[hanabi] {_zone} local={local} world={_fireworkFx.Position}");
         _fireworkFx.Restart();
         PlaySfx(_sfxFirework);
     }

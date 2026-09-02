@@ -1000,7 +1000,7 @@ public partial class SummerMain : Node3D
             _rainVoice.Play();
         }
 
-        _sfxFirework = MakeSfx("sfx_firework", -4f);
+        _sfxFirework = MakeSfx("sfx_firework", -6f);   // 祭りの録音のピークが -2.5dBFS だった。余裕を残す
         // 音量はミックス内で実測して決めた（docs/audit/audio.md）。
         // 振る音はセミの床から +4dB しか出ておらず、聞こえない手応えだった
         _sfxSwing = MakeSfx("sfx_swing", -5f);
@@ -2323,6 +2323,7 @@ public partial class SummerMain : Node3D
             ["folkTalks"] = _folkTalks,
             ["goldfish"] = _goldfish,
             ["coins"] = _coinsFound,
+            ["toldStartle"] = _toldStartle,   // 再開後にもう一度「そっと ちかづかないと」と教え直さない
             ["foundLater"] = FromSet(_foundLater),
             ["collected"] = FromSet(_collected),
             ["found"] = FromSet(_found),
@@ -2362,6 +2363,7 @@ public partial class SummerMain : Node3D
             _folkTalks = Int(data, "folkTalks", 0);
             _goldfish = Int(data, "goldfish", 0);
             _coinsFound = Int(data, "coins", 0);
+            _toldStartle = data.ContainsKey("toldStartle") && (bool)data["toldStartle"];
             ToSet(data, "foundLater", _foundLater);
             ToSet(data, "collected", _collected);
             ToSet(data, "found", _found);

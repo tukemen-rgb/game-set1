@@ -235,6 +235,7 @@ public partial class SummerMain : Node3D
     private int _day = 1;
     private double _hour = DayStartHour;
     private int _totalCaught;
+    private int _todayOther;     // その日に捕ったセミ以外（日記で「セミを」と書かないため）
     private int _todayCaught;
     private bool _transitioning;
     private bool _vacationOver;
@@ -867,6 +868,8 @@ public partial class SummerMain : Node3D
             extra += $"\nあさがおが 咲いた朝を {_bloomSeen}回 見た。";
         if (_folkTalks > 0)
             extra += $"\n町の人と {_folkTalks}回 立ち話を した。";
+        if (_talkCount > 0)
+            extra += $"\nだがしやには {_talkCount}回 かよった。";
         if (_goldfish > 0)
             extra += $"\n金魚は {_goldfish}ひき つれて かえった。";
         if (_coinsFound > 0)
@@ -2118,7 +2121,7 @@ public partial class SummerMain : Node3D
     /// <summary>池のふちに立っているか。ふちから離れると糸は自動で切れる。</summary>
     private bool AtPond()
     {
-        float d = new Vector2(_player.Position.X, _player.Position.Z).DistanceTo(PondCenter);
+        float d = PlayerXZ().DistanceTo(PondCenter);
         return d >= PondEdgeIn && d <= PondEdgeOut;
     }
 
@@ -2172,7 +2175,7 @@ public partial class SummerMain : Node3D
             _biteUntil = 0.0;
             // ウキは水面（半径6.4・y=0.03）の内側に落とす。
             // プレイヤーから池の中心へ向かって取ると、どこに立っても水の上になる
-            var toCenter = (PondCenter - new Vector2(_player.Position.X, _player.Position.Z)).Normalized();
+            var toCenter = (PondCenter - PlayerXZ()).Normalized();
             Vector2 bob = PondCenter - toCenter * 5.5f;
             _player.SetFishing(true, new Vector3(bob.X, 0.05f, bob.Y));   // 虫あみ → 竿
             _player.SwingNet();
@@ -2201,6 +2204,7 @@ public partial class SummerMain : Node3D
         {
             _totalCaught++;
             _todayCaught++;
+            _todayOther++;
             PlaySfx(_sfxCatch);
             if (_collected.Add(CrayfishIndex))
                 ShowMessage($"{cray.Name}を つりあげた！\nずかんに はじめて のった！", 3.5, immediate: true);
@@ -2257,6 +2261,8 @@ public partial class SummerMain : Node3D
         {
             _totalCaught++;
             _todayCaught++;
+            if (species.RainOnly || species.SapOnly)
+                _todayOther++;
             PlaySfx(_sfxCatch);
             if (_collected.Add(sp))
                 ShowMessage($"{species.Name}を つかまえた！\nずかんに はじめて のった！", 3.5);
@@ -2305,12 +2311,6 @@ public partial class SummerMain : Node3D
     {
         if (SkipIntro)
             return;   // 検査実行では書かない
-        var collected = new Godot.Collections.Array();
-        foreach (int i in _collected)
-            collected.Add(i);
-        var found = new Godot.Collections.Array();
-        foreach (int i in _found)
-            found.Add(i);
         var data = new Godot.Collections.Dictionary
         {
             ["day"] = _day,
@@ -2324,8 +2324,8 @@ public partial class SummerMain : Node3D
             ["goldfish"] = _goldfish,
             ["coins"] = _coinsFound,
             ["foundLater"] = FromSet(_foundLater),
-            ["collected"] = collected,
-            ["found"] = found,
+            ["collected"] = FromSet(_collected),
+            ["found"] = FromSet(_found),
         };
         using FileAccess f = FileAccess.Open(SavePath, FileAccess.ModeFlags.Write);
         if (f == null)
@@ -2348,31 +2348,42 @@ public partial class SummerMain : Node3D
         if (parsed.VariantType != Variant.Type.Dictionary)
             return false;
         var data = parsed.AsGodotDictionary();
-
-        _day = Mathf.Clamp((int)data["day"], 1, LastDay);
-        _totalCaught = (int)data["totalCaught"];
-        _talkCount = (int)data["talkCount"];
-        // 古いセーブには入っていないので、無ければ既定に戻す
-        _money = data.ContainsKey("money") ? (int)data["money"] : DailyAllowance;
-        _marbles = data.ContainsKey("marbles") ? (int)data["marbles"] : 0;
-        _stamps = data.ContainsKey("stamps") ? (int)data["stamps"] : 0;
-        _bloomSeen = data.ContainsKey("bloomSeen") ? (int)data["bloomSeen"] : 0;
-        _folkTalks = data.ContainsKey("folkTalks") ? (int)data["folkTalks"] : 0;
-        _goldfish = data.ContainsKey("goldfish") ? (int)data["goldfish"] : 0;
-        _coinsFound = data.ContainsKey("coins") ? (int)data["coins"] : 0;
-        _foundLater.Clear();
-        if (data.ContainsKey("foundLater"))
+        // 壊れたセーブで起動できなくなるより、新しい夏を始めるほうがいい
+        try
         {
-            foreach (Variant v in data["foundLater"].AsGodotArray())
-                _foundLater.Add((int)v);
+            _day = Mathf.Clamp(Int(data, "day", 1), 1, LastDay);
+            _totalCaught = Int(data, "totalCaught", 0);
+            _talkCount = Int(data, "talkCount", 0);
+            // 古いセーブには入っていないので、無ければ既定に戻す
+            _money = Int(data, "money", DailyAllowance);
+            _marbles = Int(data, "marbles", 0);
+            _stamps = Int(data, "stamps", 0);
+            _bloomSeen = Int(data, "bloomSeen", 0);
+            _folkTalks = Int(data, "folkTalks", 0);
+            _goldfish = Int(data, "goldfish", 0);
+            _coinsFound = Int(data, "coins", 0);
+            ToSet(data, "foundLater", _foundLater);
+            ToSet(data, "collected", _collected);
+            ToSet(data, "found", _found);
         }
-        _collected.Clear();
-        foreach (Variant v in data["collected"].AsGodotArray())
-            _collected.Add((int)v);
-        _found.Clear();
-        foreach (Variant v in data["found"].AsGodotArray())
-            _found.Add((int)v);
+        catch (System.Exception e)
+        {
+            GD.PushWarning($"セーブが読めないので新しく始める: {e.Message}");
+            return false;
+        }
         return true;
+    }
+
+    private static int Int(Godot.Collections.Dictionary data, string key, int fallback)
+        => data.ContainsKey(key) ? (int)data[key] : fallback;
+
+    private static void ToSet(Godot.Collections.Dictionary data, string key, HashSet<int> set)
+    {
+        set.Clear();
+        if (!data.ContainsKey(key))
+            return;
+        foreach (Variant v in data[key].AsGodotArray())
+            set.Add((int)v);
     }
 
     // --- 駄菓子屋（町にいる ただ一人の相手） ---
@@ -2382,7 +2393,7 @@ public partial class SummerMain : Node3D
     {
         if (_day > RadioLastDay || _hour < RadioFromHour || _hour >= RadioToHour)
             return false;
-        return new Vector2(_player.Position.X, _player.Position.Z).DistanceTo(RadioPos) < 2.6f;
+        return Near(RadioPos, 2.6f);
     }
 
     /// <summary>その日 咲いている花の数。日付から決まるので毎回同じ。</summary>
@@ -2403,7 +2414,7 @@ public partial class SummerMain : Node3D
     /// </summary>
     private void UpdateAsagao()
     {
-        if (_asagaoVine == null)
+        if (_asagaoVine == null || _asagaoBuds == null || _asagaoFlowers == null)
             return;
         // 8/1 から一節は出しておく（何も無いのに「ふたばが 出て いる」と
         // 言っていた）。8/25 ごろに12節そろう
@@ -2427,7 +2438,7 @@ public partial class SummerMain : Node3D
     /// <summary>いちばん近い町の人。範囲外なら -1。</summary>
     private int NearestFolk()
     {
-        var p = new Vector2(_player.Position.X, _player.Position.Z);
+        var p = PlayerXZ();
         int best = -1;
         float bestDist = FolkRange;
         for (int i = 0; i < Folks.Length; i++)
@@ -2520,7 +2531,7 @@ public partial class SummerMain : Node3D
 
     private bool AtAsagao()
     {
-        return new Vector2(_player.Position.X, _player.Position.Z).DistanceTo(AsagaoPos) < 2.2f;
+        return Near(AsagaoPos, 2.2f);
     }
 
     /// <summary>あさがおを見る。日に一度だけ、その日の姿を言葉にする。</summary>
@@ -2783,7 +2794,7 @@ public partial class SummerMain : Node3D
 
     private void CheckDiscovery()
     {
-        var here = new Vector2(_player.Position.X, _player.Position.Z);
+        var here = PlayerXZ();
         for (int i = 0; i < Spots.Length; i++)
         {
             if (here.DistanceTo(Spots[i].Pos) > DiscoverRange)
@@ -2817,11 +2828,13 @@ public partial class SummerMain : Node3D
 
     private string DiaryText()
     {
+        // ザリガニや甲虫も「セミ」と書いていた。セミ以外が混じる日は「むし」
+        string what = _todayOther > 0 ? "むし" : "セミ";
         string line = _todayCaught switch
         {
             0 => "きょうは セミが とれなかった。",
-            1 => "セミを 1ぴき つかまえた。",
-            _ => $"セミを {_todayCaught}ひきも つかまえた！",
+            1 => $"{what}を 1ぴき つかまえた。",
+            _ => $"{what}を {_todayCaught}ひきも つかまえた！",
         };
         // 「あと◯しゅるい」のような残数は書かない。
         // 締切に見えると、この手のゲームでは焦りになって台無しになる。
@@ -2931,6 +2944,7 @@ public partial class SummerMain : Node3D
         _day++;
         _hour = DayStartHour;
         _todayCaught = 0;
+        _todayOther = 0;
         _todayFound = "";
         _todayBought = "";
         _foundToday.Clear();

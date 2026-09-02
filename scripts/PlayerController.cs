@@ -197,6 +197,7 @@ public partial class PlayerController : CharacterBody3D
         if (Frozen)
         {
             Velocity = Vector3.Zero;
+            Running = false;   // 走りながら固まると true が残り、近くの虫が逃げ続ける
             Animate(0f, delta);
             return;
         }

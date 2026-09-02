@@ -42,6 +42,7 @@ public partial class BuildSummer : SceneTree
         BuildShotengai(root);
         BuildRadioTaiso(root);
         BuildPuddles(root);
+        BuildAsagao(root);
         BuildPark(root);
         BuildVacantLot(root);
         BuildTrees(root);
@@ -728,6 +729,102 @@ public partial class BuildSummer : SceneTree
         t.AddChild(Box(new Vector3(0.3f, 0.1f, 0.22f), new Vector3(0.35f, 0.8f, 0f), new Color(0.9f, 0.88f, 0.8f)));
         t.AddChild(Box(new Vector3(0.09f, 0.05f, 0.09f), new Vector3(0.62f, 0.77f, 0.05f), new Color(0.7f, 0.15f, 0.15f)));
         root.AddChild(t);
+    }
+
+    /// <summary>
+    /// あさがおの鉢（夏休みの観察日記）。8/7 でラジオ体操が終わると
+    /// 朝にすることが無くなるので、31日かけて育つものを置く。
+    /// 段階ごとの部品を全部作っておき、SummerMain がその日の分だけ表示する。
+    /// </summary>
+    private static void BuildAsagao(Node3D root)
+    {
+        // 生垣（z=±1.95）の外に置くと、寄って見ることも近づくこともできない。
+        // 通路の中、北の生垣のすぐ手前に置く
+        var a = new Node3D { Name = "Asagao", Position = new Vector3(-13.6f, 0f, 1.35f) };
+        var terracotta = new Color(0.66f, 0.36f, 0.24f);
+
+        // 鉢と土（いつでも出す）
+        a.AddChild(MeshI(new CylinderMesh { TopRadius = 0.32f, BottomRadius = 0.24f, Height = 0.34f },
+            new Vector3(0f, 0.17f, 0f), terracotta));
+        a.AddChild(MeshI(new CylinderMesh { TopRadius = 0.34f, BottomRadius = 0.34f, Height = 0.05f },
+            new Vector3(0f, 0.345f, 0f), terracotta * 0.9f));
+        a.AddChild(MeshI(new CylinderMesh { TopRadius = 0.29f, BottomRadius = 0.29f, Height = 0.03f },
+            new Vector3(0f, 0.35f, 0f), TexMat("dirt", new Vector2(1f, 1f))));
+
+        // 支柱（あんどん仕立ての3本）。つるが伸びてから出す
+        var poles = new Node3D { Name = "Poles" };
+        for (int i = 0; i < 3; i++)
+        {
+            float th = i * Mathf.Tau / 3f;
+            var pole = MeshI(new CylinderMesh { TopRadius = 0.012f, BottomRadius = 0.014f, Height = 1.15f },
+                new Vector3(Mathf.Cos(th) * 0.2f, 0.92f, Mathf.Sin(th) * 0.2f),
+                new Color(0.72f, 0.64f, 0.42f));
+            pole.RotationDegrees = new Vector3(Mathf.Sin(th) * 5f, 0f, -Mathf.Cos(th) * 5f);
+            poles.AddChild(pole);
+        }
+        a.AddChild(poles);
+
+        // 双葉。芽が出た直後の姿。つるが伸びるまでの数日はこれだけ
+        var futaba = new Node3D { Name = "Futaba" };
+        futaba.AddChild(MeshI(new CylinderMesh { TopRadius = 0.008f, BottomRadius = 0.01f, Height = 0.1f },
+            new Vector3(0f, 0.41f, 0f), new Color(0.45f, 0.6f, 0.34f)));
+        foreach (float fx in new[] { -0.06f, 0.06f })
+        {
+            var leaf = MeshI(new SphereMesh { Radius = 0.055f, Height = 0.02f },
+                new Vector3(fx, 0.46f, 0f), new Color(0.52f, 0.72f, 0.4f));
+            leaf.Scale = new Vector3(1f, 1f, 0.7f);
+            futaba.AddChild(leaf);
+        }
+        a.AddChild(futaba);
+
+        // つる。下から順に見せていくので、1節ずつ別ノードにする
+        var vine = new Node3D { Name = "Vine" };
+        var leafMat = TexMat(BestTex("gen/TEX-leaf_canopy.jpg", "leaf"), new Vector2(1f, 1f),
+                             new Color(0.5f, 0.72f, 0.42f));
+        for (int i = 0; i < 12; i++)
+        {
+            float t = i / 12f;
+            float th = t * Mathf.Tau * 1.6f;
+            float y = 0.4f + t * 1.25f;
+            var node = new Node3D { Name = $"V{i}", Position = new Vector3(Mathf.Cos(th) * 0.19f, y, Mathf.Sin(th) * 0.19f) };
+            node.AddChild(MeshI(new CylinderMesh { TopRadius = 0.011f, BottomRadius = 0.013f, Height = 0.14f },
+                Vector3.Zero, new Color(0.42f, 0.58f, 0.32f)));
+            // 葉は交互に外へ振り出す
+            var leaf = MeshI(new BoxMesh { Size = new Vector3(0.2f, 0.012f, 0.17f) },
+                new Vector3(Mathf.Cos(th) * 0.14f, 0.03f, Mathf.Sin(th) * 0.14f), leafMat);
+            leaf.RotationDegrees = new Vector3(-18f, th * 57.3f, 0f);
+            node.AddChild(leaf);
+            vine.AddChild(node);
+        }
+        a.AddChild(vine);
+
+        // つぼみと花。日付で数を変えるので、こちらも1つずつ別ノード
+        var buds = new Node3D { Name = "Buds" };
+        var flowers = new Node3D { Name = "Flowers" };
+        Color[] petal = { new(0.45f, 0.4f, 0.78f), new(0.72f, 0.45f, 0.8f), new(0.4f, 0.55f, 0.85f) };
+        for (int i = 0; i < 5; i++)
+        {
+            float th = i * 1.31f;
+            var at = new Vector3(Mathf.Cos(th) * 0.24f, 1.02f + (i % 3) * 0.16f, Mathf.Sin(th) * 0.24f);
+
+            var bud = MeshI(new CapsuleMesh { Radius = 0.026f, Height = 0.1f }, at, new Color(0.5f, 0.62f, 0.4f));
+            bud.RotationDegrees = new Vector3(28f, 0f, 0f);
+            bud.Name = $"B{i}";
+            buds.AddChild(bud);
+
+            var f = new Node3D { Name = $"F{i}", Position = at };
+            // 朝顔はラッパ。上が開いた円錐で表す
+            var cup = MeshI(new CylinderMesh { TopRadius = 0.105f, BottomRadius = 0.012f, Height = 0.11f },
+                new Vector3(0f, 0.05f, 0f), petal[i % 3]);
+            cup.RotationDegrees = new Vector3(20f, 0f, 0f);
+            f.AddChild(cup);
+            f.AddChild(MeshI(new CylinderMesh { TopRadius = 0.045f, BottomRadius = 0.01f, Height = 0.03f },
+                new Vector3(0f, 0.1f, 0f), new Color(0.95f, 0.95f, 0.9f)));
+            flowers.AddChild(f);
+        }
+        a.AddChild(buds);
+        a.AddChild(flowers);
+        root.AddChild(a);
     }
 
     /// <summary>

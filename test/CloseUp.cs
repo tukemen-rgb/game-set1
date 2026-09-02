@@ -46,7 +46,17 @@ public partial class CloseUp : SceneTree
         Root.AddChild(_cam);
         // 木の葉（樹冠は y=2.1 付近から始まる）に潜り込まないよう、
         // 低く・少し離れた位置から見る
-        _cam.LookAtFromPosition(target + new Vector3(2.5f, 0.18f, 1.9f), target, Vector3.Up);
+        // 既定の寄り位置（対象の右手前）は、団地の中では壁や生垣の内側に入る。
+        // CLOSEUP_EYE="x,y,z" で寄る向きを差し替えられるようにする
+        var eye = new Vector3(2.5f, 0.18f, 1.9f);
+        string ev = OS.GetEnvironment("CLOSEUP_EYE");
+        if (ev != "")
+        {
+            string[] ep = ev.Split(',');
+            if (ep.Length == 3)
+                eye = new Vector3(ep[0].ToFloat(), ep[1].ToFloat(), ep[2].ToFloat());
+        }
+        _cam.LookAtFromPosition(target + eye, target, Vector3.Up);
     }
 
     public override bool _Process(double delta)

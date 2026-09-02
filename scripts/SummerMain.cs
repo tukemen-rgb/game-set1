@@ -218,6 +218,14 @@ public partial class SummerMain : Node3D
     };
     // 木漏れ日。曇りと雨では薄れ、朝夕は寝るので、濃さを時刻と天気で動かす
     private readonly List<StandardMaterial3D> _komorebi = new();
+    // --- あさがおの観察 ---
+    // ラジオ体操が 8/7 で終わると、朝にすることが無くなる。
+    // 31日かけて育つものを1つ置いて、「毎朝ちょっと見に行く」を残す。
+    private static readonly Vector2 AsagaoPos = new(-13.6f, 1.35f);
+    private Node3D _asagaoVine, _asagaoBuds, _asagaoFlowers, _asagaoPoles, _asagaoFutaba;
+    private int _watchedDay = -1;      // その日 観察したか
+    private int _bloomSeen;            // 花が咲いた日を見た回数
+
     // --- ラジオ体操 ---
     // 8/7 の朝に「はんこが ぜんぶ そろった」と言っておきながら、
     // 押す場所がどこにも無かった。game が自分で吐いた嘘を本当にする。
@@ -310,6 +318,11 @@ public partial class SummerMain : Node3D
         CollectSkyTinted(GetNodeOrNull("Backdrop"));
         CollectGround(this);
         _puddles = GetNodeOrNull<Node3D>("Puddles");
+        _asagaoVine = GetNodeOrNull<Node3D>("Asagao/Vine");
+        _asagaoBuds = GetNodeOrNull<Node3D>("Asagao/Buds");
+        _asagaoFlowers = GetNodeOrNull<Node3D>("Asagao/Flowers");
+        _asagaoPoles = GetNodeOrNull<Node3D>("Asagao/Poles");
+        _asagaoFutaba = GetNodeOrNull<Node3D>("Asagao/Futaba");
         if (GetNodeOrNull("Backdrop/PanoramaNight") is MeshInstance3D np)
             _nightPano = np.MaterialOverride as StandardMaterial3D;
         if (GetNodeOrNull("Backdrop/Panorama") is MeshInstance3D dp)
@@ -372,6 +385,7 @@ public partial class SummerMain : Node3D
             ShowMessage("セミの こえが かわった……", 2.5);
         }
         CheckRadio();
+        CheckAsagao();
         CheckShop();
         _fishClock += delta;
         if (_fishingPutAwayAt > 0.0 && _fishClock >= _fishingPutAwayAt)
@@ -591,6 +605,8 @@ public partial class SummerMain : Node3D
             extra += $"\nラジオたいそうの はんこは {_stamps}こ。";
         if (_marbles > 0)
             extra += $"\nビー玉は {_marbles}こ たまった。";
+        if (_bloomSeen > 0)
+            extra += $"\nあさがおが 咲いた朝を {_bloomSeen}回 見た。";
         _messageLabel.Text =
             $"8月31日。なつやすみが おわった。\n" +
             $"つかまえた むし、ぜんぶで {_totalCaught}ひき。\n" +
@@ -988,6 +1004,13 @@ public partial class SummerMain : Node3D
             _messageLabel.Text = "だがしや　スペースで はなす・かう";
             return;
         }
+        if (AtAsagao())
+        {
+            _messageLabel.Text = _watchedDay == _day
+                ? "あさがお"
+                : "あさがお　スペースで みる";
+            return;
+        }
         if (AtRadio())
         {
             _messageLabel.Text = _stampedDay == _day
@@ -1131,6 +1154,7 @@ public partial class SummerMain : Node3D
             _rainSky.AlbedoColor = new Color(1f, 1f, 1f, a);
         }
         ApplyWetGround(_weather == Weather.Rainy);
+        UpdateAsagao();
     }
 
     /// <summary>朝=0 / 昼=1 / 夕=2。変わったら顔ぶれを入れ替える。</summary>
@@ -1453,6 +1477,7 @@ public partial class SummerMain : Node3D
             ["money"] = _money,
             ["marbles"] = _marbles,
             ["stamps"] = _stamps,
+            ["bloomSeen"] = _bloomSeen,
             ["collected"] = collected,
             ["found"] = found,
         };
@@ -1485,6 +1510,7 @@ public partial class SummerMain : Node3D
         _money = data.ContainsKey("money") ? (int)data["money"] : DailyAllowance;
         _marbles = data.ContainsKey("marbles") ? (int)data["marbles"] : 0;
         _stamps = data.ContainsKey("stamps") ? (int)data["stamps"] : 0;
+        _bloomSeen = data.ContainsKey("bloomSeen") ? (int)data["bloomSeen"] : 0;
         _collected.Clear();
         foreach (Variant v in data["collected"].AsGodotArray())
             _collected.Add((int)v);
@@ -1502,6 +1528,84 @@ public partial class SummerMain : Node3D
         if (_day > RadioLastDay || _hour < RadioFromHour || _hour >= RadioToHour)
             return false;
         return new Vector2(_player.Position.X, _player.Position.Z).DistanceTo(RadioPos) < 2.6f;
+    }
+
+    /// <summary>その日 咲いている花の数。日付から決まるので毎回同じ。</summary>
+    private int BloomCount(int day)
+    {
+        if (day < 16)
+            return 0;
+        // 咲かない朝もある。毎朝必ず咲くと「見に行く意味」が薄れる
+        int h = (day * 53 + 17) % 7;
+        if (h == 0)
+            return 0;
+        return Mathf.Min(1 + (day - 16) / 4, 5);
+    }
+
+    /// <summary>
+    /// その日の姿にする。つるは節を下から出し、つぼみと花は数で見せる。
+    /// 一日ぶんずつしか変わらないので、毎朝見に来ないと変化に気づけない。
+    /// </summary>
+    private void UpdateAsagao()
+    {
+        if (_asagaoVine == null)
+            return;
+        // 8/1 から一節は出しておく（何も無いのに「ふたばが 出て いる」と
+        // 言っていた）。8/25 ごろに12節そろう
+        int segs = Mathf.Clamp((_day + 1) / 2, 1, 12);
+        if (_asagaoFutaba != null)
+            _asagaoFutaba.Visible = _day < 9;
+        for (int i = 0; i < _asagaoVine.GetChildCount(); i++)
+            ((Node3D)_asagaoVine.GetChild(i)).Visible = i < segs;
+        if (_asagaoPoles != null)
+            _asagaoPoles.Visible = _day >= 6;
+
+        int blooms = BloomCount(_day);
+        // つぼみは花になる前の数日だけ。咲いた花のぶんは引く
+        int buds = _day >= 13 ? Mathf.Clamp((_day - 12) / 3, 0, 5) : 0;
+        for (int i = 0; i < _asagaoBuds.GetChildCount(); i++)
+            ((Node3D)_asagaoBuds.GetChild(i)).Visible = i < buds && i >= blooms;
+        for (int i = 0; i < _asagaoFlowers.GetChildCount(); i++)
+            ((Node3D)_asagaoFlowers.GetChild(i)).Visible = i < blooms;
+    }
+
+    private bool AtAsagao()
+    {
+        return new Vector2(_player.Position.X, _player.Position.Z).DistanceTo(AsagaoPos) < 2.2f;
+    }
+
+    /// <summary>あさがおを見る。日に一度だけ、その日の姿を言葉にする。</summary>
+    private void CheckAsagao()
+    {
+        if (!AtAsagao() || !Input.IsActionJustPressed("ui_accept"))
+            return;
+        if (_watchedDay == _day)
+        {
+            ShowMessage("あさがお。けさは もう 見た。", 2.0);
+            return;
+        }
+        _watchedDay = _day;
+        int blooms = BloomCount(_day);
+        string line;
+        if (_day <= 3)
+            line = "ふたばが 出て いる。\nまだ これだけ。";
+        else if (_day < 6)
+            line = "ほんばが 一まい ふえた。";
+        else if (_day < 13)
+            line = "つるが しちゅうに まきついて いる。\nひだり まわりだ。";
+        else if (blooms == 0 && _day < 16)
+            line = "つぼみが ついた。\nまだ かたい。";
+        else if (blooms == 0)
+            line = "きょうは ひとつも 咲いて いない。\nそういう 朝も ある。";
+        else
+        {
+            _bloomSeen++;
+            line = blooms == 1
+                ? "ひとつ 咲いて いた。\nむらさきだった。"
+                : $"{blooms}つ 咲いて いた。\nあさの うちだけの 色だ。";
+        }
+        PlaySfx(_sfxCatch);
+        ShowMessage(line, 3.5);
     }
 
     private void CheckRadio()
@@ -1671,6 +1775,11 @@ public partial class SummerMain : Node3D
         if (toFestival is > 0 and <= 5)
             return $"【日記】8月{_day}日({Weekday()})\n{line}\n" +
                    $"あと {toFestival}日で なつまつり。\nあしたは なにを しようかな。";
+
+        if (_watchedDay == _day && BloomCount(_day) > 0)
+            return $"【日記】8月{_day}日({Weekday()})\n{line}\n" +
+                   $"あさがおが {BloomCount(_day)}つ 咲いて いた。\n" +
+                   "あしたは なにを しようかな。";
 
         if (_stampedDay == _day && _day < RadioLastDay)
             return $"【日記】8月{_day}日({Weekday()})\n{line}\n" +

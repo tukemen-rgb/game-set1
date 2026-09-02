@@ -70,6 +70,8 @@ public partial class SummerMain : Node3D
         new("クワガタ", new Color(0.13f, 0.11f, 0.1f), 8, 19, 0.45f, SapOnly: true),
     };
     private const float CatchRange = 2.2f;
+    private string _phaseSpecies = "セミ";   // いまの時間帯を代表する種
+    private readonly HashSet<int> _prevPool = new();   // 前の時間帯に出ていた種
     // 走って近づくと虫は逃げる。歩きを既定にした（イテレーション24）意味を
     // 遊びの側にも通す。走るのが速いだけなら、歩く理由が絵にしか無い
     private const float StartleRange = 4.0f;
@@ -478,7 +480,11 @@ public partial class SummerMain : Node3D
         if (PhaseOfHour() != _spawnedPhase)
         {
             RespawnCicadas();
-            ShowMessage("セミの こえが かわった……", 2.5);
+            // 「こえが かわった」だけでは、何が変わったのか分からない。
+            // その時間帯の主を名指しすると、時刻と種類のつながりが伝わる
+            ShowMessage(_weather == Weather.Rainy
+                ? "雨の おとが かわった……"
+                : $"{_phaseSpecies}が 鳴きはじめた。", 3.0);
         }
         CheckRadio();
         CheckFolk();
@@ -1266,6 +1272,27 @@ public partial class SummerMain : Node3D
         }
         if (pool.Count == 0)
             pool.Add(2); // 保険（アブラゼミ）
+
+        // その時間帯を一番よく表す種を選ぶ。**前の時間帯には居なかった種**を
+        // 優先する（11時に「クマゼミが 鳴きはじめた」と言われても、
+        // クマゼミは朝から鳴いていたので嘘になる）。同点なら出ている時間が
+        // 短いほう＝その時間にしか会えないほうを採る
+        int signature = -1;
+        foreach (int i in pool)
+        {
+            bool isNew = !_prevPool.Contains(i);
+            bool bestIsNew = signature >= 0 && !_prevPool.Contains(signature);
+            if (signature < 0
+                || (isNew && !bestIsNew)
+                || (isNew == bestIsNew &&
+                    AllSpecies[i].ToHour - AllSpecies[i].FromHour <
+                    AllSpecies[signature].ToHour - AllSpecies[signature].FromHour))
+                signature = i;
+        }
+        _phaseSpecies = AllSpecies[signature].Name;
+        _prevPool.Clear();
+        foreach (int i in pool)
+            _prevPool.Add(i);
 
         int count = Mathf.Min(CicadasPerDay, indices.Count);
         for (int k = 0; k < count; k++)

@@ -1271,8 +1271,10 @@ public partial class BuildSummer : SceneTree
             NormalScale = 1.6f,
             Uv1Scale = new Vector3(3f, 3f, 1f),
         };
-        park.AddChild(MeshI(new CylinderMesh { TopRadius = 6.4f, BottomRadius = 6.4f, Height = 0.1f },
-            new Vector3(6f, -0.02f, -15f), waterMat));
+        var water = MeshI(new CylinderMesh { TopRadius = 6.4f, BottomRadius = 6.4f, Height = 0.1f },
+            new Vector3(6f, -0.02f, -15f), waterMat);
+        water.Name = "PondWater";   // SummerMain が時刻で色を掛ける
+        park.AddChild(water);
         park.AddChild(MeshI(new TorusMesh { InnerRadius = 6.2f, OuterRadius = 7f },
             new Vector3(6f, 0f, -15f), TexMat("dirt", new Vector2(8f, 1f))));
 

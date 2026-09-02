@@ -334,6 +334,9 @@ public partial class SummerMain : Node3D
     private Node3D _radioBanners;     // ラジオ体操ののぼり（8/1〜8/7 だけ立てる）
     private Node3D _streetLights;     // アーケードの蛍光灯（夕方から点ける）
     private StandardMaterial3D _vendingPanel;
+    // 池の水。金属寄りの材質なので、放っておくと夕方でも真昼の青のまま残る
+    private StandardMaterial3D _pondWater;
+    private Color _pondWaterBase;
     private const int OkuribiDay = 16;
 
     private const int DailyAllowance = 100;
@@ -435,6 +438,12 @@ public partial class SummerMain : Node3D
                     lm.EmissionEnergyMultiplier = 0f;
                 }
             }
+        }
+        if (GetNodeOrNull("Park/PondWater") is MeshInstance3D pw &&
+            pw.MaterialOverride is StandardMaterial3D pm)
+        {
+            _pondWater = pm;
+            _pondWaterBase = pm.AlbedoColor;
         }
         if (GetNodeOrNull("Shotengai/VendingPanel") is MeshInstance3D vp &&
             vp.MaterialOverride is StandardMaterial3D vm)
@@ -1160,6 +1169,16 @@ public partial class SummerMain : Node3D
         // 「夕方らしさ」は色の傾きで作るもので、暗くして作るものではない
         _env.AmbientLightColor = ambient.Lerp(new Color(0.62f, 0.5f, 0.44f), Mathf.Min(warm, 0.7f) * 0.75f)
                                  * (1f - 0.16f * warm);
+
+        // 池の水。夕方の絵の中で、ここだけ真昼の青が残って穴に見えていた
+        // （8/24 の夕方を撮って気づいた）。太陽の色を掛けて沈める
+        if (_pondWater != null)
+        {
+            Color tint = Colors.White.Lerp(sunColor, 0.8f);
+            _pondWater.AlbedoColor = new Color(
+                _pondWaterBase.R * tint.R, _pondWaterBase.G * tint.G, _pondWaterBase.B * tint.B)
+                * (1f - 0.3f * warm);
+        }
 
         // 遠景も同じ光の下に置く。真昼は素の色、朝夕は太陽の色に寄せて暗くする
         Color sunTint = sunColor;

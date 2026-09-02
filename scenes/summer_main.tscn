@@ -1,7 +1,7 @@
 [gd_scene load_steps=1252 format=3]
 
 [ext_resource type="Script" path="res://scripts/SummerMain.cs" id="1_cmtcd"]
-[ext_resource type="Texture2D" path="res://assets/textures/grass.png" id="2_permi"]
+[ext_resource type="Texture2D" path="res://assets/textures/gen/TEX-grass_summer.jpg" id="2_permi"]
 [ext_resource type="Texture2D" path="res://assets/textures/photo/asphalt_02.jpg" id="3_8laxt"]
 [ext_resource type="Texture2D" path="res://assets/textures/photo/concrete_floor_01.jpg" id="4_ykh51"]
 [ext_resource type="Texture2D" path="res://assets/textures/wall_weathered.png" id="5_2bjud"]
@@ -10,7 +10,7 @@
 [ext_resource type="Texture2D" path="res://assets/textures/plaster.png" id="8_346dn"]
 [ext_resource type="Texture2D" path="res://assets/textures/water_normal.png" id="9_imidp"]
 [ext_resource type="Texture2D" path="res://assets/textures/dirt.png" id="10_kqhle"]
-[ext_resource type="Texture2D" path="res://assets/textures/leaf.png" id="11_8hp1h"]
+[ext_resource type="Texture2D" path="res://assets/textures/gen/TEX-leaf_canopy.jpg" id="11_8hp1h"]
 [ext_resource type="Texture2D" path="res://assets/plates/BG-danchi-noon.jpg" id="12_5mp0n"]
 [ext_resource type="Texture2D" path="res://assets/plates/BG-danchi-night.jpg" id="13_vpj7p"]
 [ext_resource type="Script" path="res://scripts/PlayerController.cs" id="14_o083g"]
@@ -41,7 +41,7 @@ size = Vector3(120, 1, 120)
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_vv1fk"]
 albedo_texture = ExtResource("2_permi")
-uv1_scale = Vector3(20, 20, 1)
+uv1_scale = Vector3(26, 26, 1)
 
 [sub_resource type="PlaneMesh" id="PlaneMesh_ar8l1"]
 size = Vector2(120, 120)

@@ -113,6 +113,15 @@ public partial class BuildSummer : SceneTree
         return m;
     }
 
+    /// <summary>
+    /// 生成された実写があればそれを、無ければプロシージャル版を使う。
+    /// 画像が届いていない環境でも壊れないようにするための切り替え。
+    /// </summary>
+    private static string BestTex(string generated, string fallback)
+    {
+        return ResourceLoader.Exists($"res://assets/textures/{generated}") ? generated : fallback;
+    }
+
     /// <summary>拡張子つきなら photo/ 等の相対名をそのまま、無印なら .png を補って読む。</summary>
     private static StandardMaterial3D TexMat(string tex, Vector2 uvScale, Color? tint = null, float roughness = 1f)
     {
@@ -202,8 +211,9 @@ public partial class BuildSummer : SceneTree
             Shape = new BoxShape3D { Size = new Vector3(120f, 1f, 120f) },
             Position = new Vector3(0f, -0.5f, 0f),
         });
+        // 芝は画面の大半を占めるので、実写が届いていればそれを使う
         ground.AddChild(MeshI(new PlaneMesh { Size = new Vector2(120f, 120f) }, Vector3.Zero,
-            TexMat("grass", new Vector2(20f, 20f))));
+            TexMat(BestTex("gen/TEX-grass_summer.jpg", "grass"), new Vector2(26f, 26f))));
         root.AddChild(ground);
 
         var roads = new Node3D { Name = "Roads" };
@@ -693,7 +703,8 @@ public partial class BuildSummer : SceneTree
         if (species == 1)
         {
             // メタセコイア（円錐の針葉樹）
-            var dark = TexMat("leaf", new Vector2(3f, 3f), new Color(0.55f, 0.75f, 0.55f));
+            var dark = TexMat(BestTex("gen/TEX-leaf_canopy.jpg", "leaf"),
+                              new Vector2(3f, 3f), new Color(0.55f, 0.75f, 0.55f));
             tree.AddChild(MeshI(new CylinderMesh { TopRadius = 0.12f, BottomRadius = 0.28f, Height = 4f },
                 new Vector3(0f, 2f, 0f), Trunk));
             tree.AddChild(MeshI(new CylinderMesh { TopRadius = 0.15f, BottomRadius = 1.5f, Height = 3f },
@@ -704,7 +715,7 @@ public partial class BuildSummer : SceneTree
         else
         {
             Color? tint = species == 2 ? new Color(1.15f, 1.2f, 0.6f) : null; // イチョウは黄緑
-            var leaf = TexMat("leaf", new Vector2(3f, 3f), tint);
+            var leaf = TexMat(BestTex("gen/TEX-leaf_canopy.jpg", "leaf"), new Vector2(3f, 3f), tint);
             tree.AddChild(MeshI(new CylinderMesh { TopRadius = 0.22f, BottomRadius = 0.38f, Height = 3f },
                 new Vector3(0f, 1.5f, 0f), Trunk));
             tree.AddChild(MeshI(new SphereMesh { Radius = 1.8f, Height = 3.2f }, new Vector3(0f, 3.9f, 0f), leaf));

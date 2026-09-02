@@ -561,9 +561,34 @@ public partial class BuildSummer : SceneTree
             street.AddChild(Collider(new Vector3(0.5f, 4.6f, 0.5f), new Vector3(10.7f, 2.3f, gz)));
         }
 
+        // アーケードの照明。夕方になると団地の窓は灯るのに、商店街は
+        // 陽が落ちるだけで真っ暗になり、シャッター街に見えていた。
+        // 屋根の下に蛍光灯を並べ、SummerMain が時刻で点ける
+        var lamps = new Node3D { Name = "StreetLights" };
+        for (int i = 0; i < 7; i++)
+        {
+            float lx = -16f + i * 5.2f;
+            // アーケードの屋根は影を落とさない設定なので、器具だけが影を落とすと
+            // 昼間の通路に四角い影が点々と浮く（撮って気づいた）。器具も影を切る
+            lamps.AddChild(MeshI(new BoxMesh { Size = new Vector3(1.5f, 0.1f, 0.26f) },
+                new Vector3(lx, 4.24f, 15.9f), Mat(new Color(0.85f, 0.86f, 0.84f)), noShadow: true));
+            lamps.AddChild(new OmniLight3D
+            {
+                Position = new Vector3(lx, 4.0f, 15.9f),
+                LightColor = new Color(1f, 0.95f, 0.85f),
+                LightEnergy = 0f,
+                OmniRange = 8.5f,
+                ShadowEnabled = false,
+            });
+        }
+        street.AddChild(lamps);
+
         var vending = new Node3D { Position = new Vector3(14.5f, 0f, 10.8f) };
         vending.AddChild(Box(new Vector3(0.95f, 1.8f, 0.8f), new Vector3(0f, 0.9f, 0f), new Color(0.8f, 0.15f, 0.15f)));
-        vending.AddChild(Box(new Vector3(0.8f, 0.9f, 0.05f), new Vector3(0f, 1.25f, -0.41f), new Color(0.9f, 0.9f, 0.92f)));
+        // 自販機の面。夜はここが光る（名前で拾って SummerMain が点ける）
+        var panel = Box(new Vector3(0.8f, 0.9f, 0.05f), new Vector3(0f, 1.25f, -0.41f), new Color(0.9f, 0.9f, 0.92f));
+        panel.Name = "VendingPanel";
+        vending.AddChild(panel);
         street.AddChild(vending);
         root.AddChild(street);
     }

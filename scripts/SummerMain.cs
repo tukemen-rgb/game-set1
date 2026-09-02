@@ -332,6 +332,8 @@ public partial class SummerMain : Node3D
     private Node3D _okuribi;          // 8/16 の夕方だけ焚く送り火
     private double _fireFlicker;
     private Node3D _radioBanners;     // ラジオ体操ののぼり（8/1〜8/7 だけ立てる）
+    private Node3D _streetLights;     // アーケードの蛍光灯（夕方から点ける）
+    private StandardMaterial3D _vendingPanel;
     private const int OkuribiDay = 16;
 
     private const int DailyAllowance = 100;
@@ -421,6 +423,27 @@ public partial class SummerMain : Node3D
         _festivalNode = GetNodeOrNull<Node3D>("Festival");
         _okuribi = GetNodeOrNull<Node3D>("Okuribi");
         _radioBanners = GetNodeOrNull<Node3D>("RadioTaiso/Banners");
+        _streetLights = GetNodeOrNull<Node3D>("Shotengai/StreetLights");
+        if (_streetLights != null)
+        {
+            foreach (Node c in _streetLights.GetChildren())
+            {
+                if (c is MeshInstance3D mi && mi.MaterialOverride is StandardMaterial3D lm)
+                {
+                    lm.EmissionEnabled = true;
+                    lm.Emission = new Color(1f, 0.97f, 0.88f);
+                    lm.EmissionEnergyMultiplier = 0f;
+                }
+            }
+        }
+        if (GetNodeOrNull("Shotengai/VendingPanel") is MeshInstance3D vp &&
+            vp.MaterialOverride is StandardMaterial3D vm)
+        {
+            vm.EmissionEnabled = true;
+            vm.Emission = new Color(1f, 0.92f, 0.7f);
+            vm.EmissionEnergyMultiplier = 0f;
+            _vendingPanel = vm;
+        }
         if (GetNodeOrNull("Backdrop/PanoramaNight") is MeshInstance3D np)
             _nightPano = np.MaterialOverride as StandardMaterial3D;
         if (GetNodeOrNull("Backdrop/Panorama") is MeshInstance3D dp)
@@ -1419,6 +1442,20 @@ public partial class SummerMain : Node3D
         }
         foreach (StandardMaterial3D band in _glassBands)
             band.EmissionEnergyMultiplier = night * 0.1f;
+
+        // 商店街の蛍光灯と自販機。団地の窓と同じ時刻で点ける
+        if (_streetLights != null)
+        {
+            foreach (Node c in _streetLights.GetChildren())
+            {
+                if (c is OmniLight3D lamp)
+                    lamp.LightEnergy = night * 1.5f;
+                else if (c is MeshInstance3D mi && mi.MaterialOverride is StandardMaterial3D lm)
+                    lm.EmissionEnergyMultiplier = night * 1.3f;
+            }
+        }
+        if (_vendingPanel != null)
+            _vendingPanel.EmissionEnergyMultiplier = night * 1.5f;
     }
 
     private void ApplyWeather()

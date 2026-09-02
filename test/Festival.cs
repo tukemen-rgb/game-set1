@@ -3,7 +3,7 @@ using Godot;
 /// <summary>
 /// 夏まつり（8月24日の夕方）の花火を検査する。
 ///   xvfb-run -a godot --path . --write-movie screenshots/festival/frame.png \
-///     --fixed-fps 30 --quit-after 400 --script res://test/Festival.cs
+///     --fixed-fps 30 --quit-after 700 --script res://test/Festival.cs
 /// 花火は17:30から上がるので、時間を早回しして夕方まで飛ばす。
 /// </summary>
 public partial class Festival : SceneTree
@@ -12,7 +12,7 @@ public partial class Festival : SceneTree
     {
         var packed = GD.Load<PackedScene>("res://scenes/summer_main.tscn");
         Node main = packed.Instantiate();
-        main.Set("SecondsPerHour", 0.8);   // 8:00 から 17:30 まで約8秒で飛ばす
+        main.Set("SecondsPerHour", 0.8 * Slow);   // 8:00 から 17:30 まで（歩き速度に合わせて引き伸ばし）
         main.Set("RngSeed", 2);
         main.Set("SkipIntro", true);
         main.Set("StartDay", 24);
@@ -21,6 +21,9 @@ public partial class Festival : SceneTree
 
     private double _t;
 
+    /// <summary>歩き速度にした分だけ動線の時間を伸ばす（Presentation.cs と同じ）。</summary>
+    private const double Slow = 1.731;
+
     /// <summary>
     /// 団地の棟間は建物で空がほとんど見えないので、花火を見るには
     /// 開けた場所へ出る必要がある。検査でも公園まで歩かせる。
@@ -28,7 +31,7 @@ public partial class Festival : SceneTree
     /// </summary>
     public override bool _Process(double delta)
     {
-        _t += delta;
+        _t += delta / Slow;
         if (_t < 6.0)
         {
             Input.ActionPress("ui_right");   // 棟間から東へ出る

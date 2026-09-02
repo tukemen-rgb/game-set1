@@ -6,7 +6,11 @@ using Godot;
 /// </summary>
 public partial class PlayerController : CharacterBody3D
 {
-    private const float Speed = 4.5f;
+    // 既定は歩き。Shift（run）で走る。
+    // 4.5 m/s は時速16km の全力疾走で、のんびり眺める遊びと合わない。
+    // 歩きを既定に落とし、急ぎたい時だけ走れるようにする。
+    private const float WalkSpeed = 2.6f;
+    private const float RunSpeed = 4.5f;
     private const float Gravity = 20.0f;
 
     /// <summary>日付切り替え演出中などに移動を止めるフラグ。</summary>
@@ -43,14 +47,17 @@ public partial class PlayerController : CharacterBody3D
     /// </summary>
     private void Animate(float speed, double delta)
     {
-        float amount = Mathf.Clamp(speed / Speed, 0f, 1f);
-        _walkPhase += (float)delta * (6.0f + 4.0f * amount) * amount;
-        float swing = Mathf.Sin(_walkPhase) * 34f * amount;
+        // moving は停止→歩きの立ち上がり、gait は歩き=1.0 / 走り≒1.7。
+        // 歩幅と歩調を gait で変えないと、歩きと走りが同じ絵になる。
+        float moving = Mathf.Clamp(speed / WalkSpeed, 0f, 1f);
+        float gait = speed / WalkSpeed;
+        _walkPhase += (float)delta * (5.2f + 2.4f * gait) * moving;
+        float swing = Mathf.Sin(_walkPhase) * (26f + 10f * Mathf.Min(gait, 1.8f)) * moving;
 
         // 足が地面に着くのは脚の振りが端に来た瞬間＝半周ごと。
         // 位相を半周単位で数えて、変わったときだけ鳴らす
         int stepIndex = Mathf.FloorToInt(_walkPhase / Mathf.Pi);
-        if (_step != null && amount > 0.15f && stepIndex != _lastStep)
+        if (_step != null && moving > 0.15f && stepIndex != _lastStep)
         {
             _lastStep = stepIndex;
             _step.PitchScale = 0.92f + GD.Randf() * 0.16f;   // 毎回わずかに変える
@@ -99,9 +106,10 @@ public partial class PlayerController : CharacterBody3D
         }
 
         Vector2 input = Input.GetVector("ui_left", "ui_right", "ui_up", "ui_down");
+        float speed = Input.IsActionPressed("run") ? RunSpeed : WalkSpeed;
         Vector3 v = Velocity;
-        v.X = input.X * Speed;
-        v.Z = input.Y * Speed;
+        v.X = input.X * speed;
+        v.Z = input.Y * speed;
         v.Y = IsOnFloor() ? 0f : v.Y - Gravity * (float)delta;
         Velocity = v;
         MoveAndSlide();

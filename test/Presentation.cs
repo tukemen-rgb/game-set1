@@ -3,13 +3,19 @@ using Godot;
 /// <summary>
 /// 検証・記録用のキャプチャスクリプト。実行方法（godot.md 参照）:
 ///   xvfb-run -a godot --path . --write-movie screenshots/run/frame.png \
-///     --fixed-fps 30 --quit-after 560 --script res://test/Presentation.cs
+///     --fixed-fps 30 --quit-after 1000 --script res://test/Presentation.cs
 /// 時間を加速した1日（朝→夕→日記）を、スクリプト入力で4つの固定カメラ
 /// ゾーンを巡りながら撮る。ライブ入力は使わない。
 /// </summary>
 public partial class Presentation : SceneTree
 {
     private double _t;
+
+    // 既定を歩き（2.6 m/s）に落としたので、走り（4.5 m/s）前提で組んだ
+    // 下の動線をそのまま使えるよう、時間の進みを 4.5/2.6 倍だけ遅くする。
+    // ゲーム内時計（SecondsPerHour）も同じ倍率で伸ばすので、
+    // 「何時にどこへ着くか」は以前とまったく同じになる。
+    private const double Slow = 1.731;
 
     // (開始秒, 終了秒, アクション) のタイムライン。
     // 団地の広場 → 大通りを渡って商店街 → 公園の木 (-4,-9) へ
@@ -32,7 +38,7 @@ public partial class Presentation : SceneTree
     {
         var packed = GD.Load<PackedScene>("res://scenes/summer_main.tscn");
         Node main = packed.Instantiate();
-        main.Set("SecondsPerHour", 1.7); // 1.7秒 = ゲーム内1時間 → 1日 ≒ 18.7秒
+        main.Set("SecondsPerHour", 1.7 * Slow); // 1日 ≒ 32秒（歩き速度に合わせて引き伸ばし）
         main.Set("RngSeed", 2);        // 動線上の木にセミが湧き捕獲成功する seed（test/SeedProbe.cs で探索）
         main.Set("SkipIntro", true);   // 検査では導入を飛ばす
         Root.AddChild(main);
@@ -40,7 +46,7 @@ public partial class Presentation : SceneTree
 
     public override bool _Process(double delta)
     {
-        _t += delta;
+        _t += delta / Slow;
         foreach (string action in Actions)
         {
             bool active = false;

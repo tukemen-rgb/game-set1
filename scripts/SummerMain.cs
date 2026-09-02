@@ -229,6 +229,10 @@ public partial class SummerMain : Node3D
     private bool _transitioning;
     private bool _vacationOver;
     private double _messageTimer;
+    private double _msgShownAt;   // いまの文を出した時刻（上書き検出用）
+    // 読む前に上書きされた文を捨てずに待たせる。深く積むと今さらな文が
+    // 出てくるので2つまで
+    private readonly Queue<(string Text, double Seconds)> _msgQueue = new();
 
     private PlayerController _player;
     private DirectionalLight3D _sun;
@@ -1250,8 +1254,29 @@ public partial class SummerMain : Node3D
 
     // --- メッセージ ---
 
-    private void ShowMessage(string text, double seconds = 2.5)
+    /// <summary>
+    /// 文を出す。<paramref name="immediate"/> は品書きのように
+    /// 「その場で書き換わってほしい」もの用。
+    /// それ以外は、前の文が 1.2 秒読まれるまで待たせる。
+    /// </summary>
+    private void ShowMessage(string text, double seconds = 2.5, bool immediate = false)
     {
+        if (!immediate && _messageTimer > 0.0 && _fishClock - _msgShownAt < 1.2
+            && _msgQueue.Count < 2)
+        {
+            _msgQueue.Enqueue((text, seconds));
+            return;
+        }
+        // 前の文がほとんど読まれないまま上書きされるのを見つける。
+        // 同じ形の不具合を3回踏んだ（発見の「その後」/ おばあさんの一言 /
+        // 時間帯の合図）ので、目で探すのをやめて検出させる
+        if (OS.GetEnvironment("DEBUG_MSG") == "1" && _messageTimer > 0.0
+            && _fishClock - _msgShownAt < 0.4)
+        {
+            GD.Print($"[msg!] 上書き（{_fishClock - _msgShownAt:F2}秒）: " +
+                     $"「{_messageLabel.Text.Replace("\n", " ")}」→「{text.Replace("\n", " ")}」");
+        }
+        _msgShownAt = _fishClock;
         _messageLabel.Text = text;
         _messageTimer = seconds;
         // 画面に出た文だけを追う手段が無く、毎回キャプチャを何十枚も見て
@@ -1265,6 +1290,17 @@ public partial class SummerMain : Node3D
         if (_messageTimer > 0.0)
         {
             _messageTimer -= delta;
+            return;
+        }
+        // 待たせていた文があれば、ここで出す
+        if (_msgQueue.Count > 0)
+        {
+            (string text, double seconds) = _msgQueue.Dequeue();
+            _msgShownAt = _fishClock;
+            _messageLabel.Text = text;
+            _messageTimer = seconds;
+            if (OS.GetEnvironment("DEBUG_MSG") == "1")
+                GD.Print($"[msg+] 8月{_day}日 {(int)_hour:D2}時 | {text.Replace("\n", " / ")}");
             return;
         }
         if (NearShop())
@@ -2347,7 +2383,7 @@ public partial class SummerMain : Node3D
               .Append(shelf[i].Name).Append('　').Append(shelf[i].Price).Append("円\n");
         }
         sb.Append("やじるしで えらぶ／スペースで かう／Ｚ で やめる");
-        ShowMessage(sb.ToString(), 60.0);
+        ShowMessage(sb.ToString(), 60.0, immediate: true);
     }
 
     private void UpdateShelfInput()

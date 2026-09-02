@@ -488,6 +488,44 @@ public partial class BuildSummer : SceneTree
             street.AddChild(BuildEndWall(ex, ez, edir));
         }
 
+        // 西の端。望遠カメラは西を向いているので、突き当りがそのまま
+        // 画面の消失点になる。何も置かないと「そこで町が終わっている」に見える。
+        // 東と対になる門柱を立て、その向こうに交差する道と家並みを置いて、
+        // 「町はまだ続いていて、ただ今日は行かないだけ」にする。
+        // 柱は通路の縁（z=14.0 / 17.8）に置く。z=13.3/18.5 だと店の列の裏に
+        // 入ってしまい、東からの望遠では一度も見えない
+        foreach (float gz in new[] { 14.0f, 17.8f })
+        {
+            street.AddChild(Box(new Vector3(0.42f, 4.2f, 0.42f), new Vector3(-19.4f, 2.1f, gz), ConcreteDark));
+            street.AddChild(Box(new Vector3(0.46f, 1.5f, 0.46f), new Vector3(-19.4f, 3.15f, gz),
+                new Color(0.3f, 0.5f, 0.62f)));
+            street.AddChild(Collider(new Vector3(0.5f, 4.2f, 0.5f), new Vector3(-19.4f, 2.1f, gz)));
+        }
+        // 交差する道（南北）と横断歩道
+        street.AddChild(TexBox(new Vector3(4.5f, 0.06f, 26f), new Vector3(-22.5f, 0.03f, 14f),
+            "photo/asphalt_02.jpg", new Vector2(1.2f, 9f)));
+        for (int i = 0; i < 4; i++)
+        {
+            street.AddChild(Box(new Vector3(0.45f, 0.021f, 1.6f),
+                new Vector3(-24.2f + i * 0.78f, 0.065f, 15.9f), new Color(0.88f, 0.88f, 0.86f)));
+        }
+        // 交差点の向こうの家並み（切妻屋根の低い家を3軒）。遠景に奥行きを作る
+        for (int i = 0; i < 3; i++)
+        {
+            float hz = 10.5f + i * 4.6f;
+            var house = new Node3D { Position = new Vector3(-26.5f, 0f, hz) };
+            house.AddChild(TexBox(new Vector3(3.6f, 2.5f, 3.4f), new Vector3(0f, 1.25f, 0f),
+                "plaster", new Vector2(2f, 1.4f)));
+            foreach (float side in new[] { -1f, 1f })
+            {
+                var slope = MeshI(new BoxMesh { Size = new Vector3(4.1f, 0.16f, 2.3f) },
+                    new Vector3(0f, 2.9f, 0.95f * side), TexMat("roof", new Vector2(3f, 1.6f)));
+                slope.RotationDegrees = new Vector3(28f * side, 0f, 0f);
+                house.AddChild(slope);
+            }
+            street.AddChild(house);
+        }
+
         // 入口の門柱。梁を渡すと画角の外（y=5 付近）に出てしまうので、
         // 柱と電飾看板だけを写る高さに置いて、望遠の絵に手前の枠を作る。
         foreach (float gz in new[] { 13.3f, 18.5f })
@@ -1079,7 +1117,9 @@ public partial class BuildSummer : SceneTree
             deco.AddChild(MakeTree(k * 3 + 1, new Vector3(-27f + k * 3.4f, 0f, -11.5f))); // 団地南の並木
         for (int k = 0; k < 4; k++)
             deco.AddChild(MakeTree(k * 3 + 1, new Vector3(-30f, 0f, 4f + k * 4f)));      // 西縁の並木
-        deco.AddChild(MakeTree(6, new Vector3(-24f, 0f, 16f)));
+        // 商店街の通路（z=14〜18）の真西に立っていて、望遠カメラの
+        // 突き当りをこの1本が塞いでいた。北へ寄せて視線を通す
+        deco.AddChild(MakeTree(6, new Vector3(-24f, 0f, 21.5f)));
         deco.AddChild(MakeTree(8, new Vector3(24f, 0f, 14f)));
         root.AddChild(deco);
 

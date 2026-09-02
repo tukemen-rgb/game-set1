@@ -514,6 +514,12 @@ public partial class SummerMain : Node3D
         if (_dexTitle == null || _dexList == null)
             return;
         _dexTitle.Text = $"ずかん　{_collected.Count} / {AllSpecies.Length}";
+        // 種類が増えるたびに一覧が枠からはみ出して footer と重なっていた
+        // （9種で一度、11種でまた）。数から文字の大きさを決めて、
+        // 何種になっても収まるようにする。行の高さは文字の約1.62倍
+        const float ListHeight = 440f;
+        int size = Mathf.Clamp(Mathf.FloorToInt(ListHeight / (AllSpecies.Length * 1.62f)), 15, 28);
+        _dexList.AddThemeFontSizeOverride("font_size", size);
         var sb = new System.Text.StringBuilder();
         for (int i = 0; i < AllSpecies.Length; i++)
         {

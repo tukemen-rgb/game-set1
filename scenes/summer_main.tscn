@@ -8832,8 +8832,16 @@ transform = Transform3D(-0.467888, -0.127307, 0.874571, 0, 0.989571, 0.144047, -
 fov = 55.0
 
 [node name="CamPlaza" type="Camera3D" parent="Cameras"]
-transform = Transform3D(0.529999, -0.455084, 0.715542, 0, 0.843801, 0.536656, -0.847998, -0.284427, 0.447214, 16, 12, 12)
-fov = 50.0
+transform = Transform3D(0.620703, -0.341285, 0.70587, 0, 0.900292, 0.435287, -0.784046, -0.270184, 0.558814, 12, 8, 10.5)
+fov = 44.0
+
+[node name="CamLot" type="Camera3D" parent="Cameras"]
+transform = Transform3D(0.980581, 0.0461064, -0.190619, 0, 0.971972, 0.235097, 0.196116, -0.230532, 0.953097, 20, 4.6, 15)
+fov = 40.0
+
+[node name="CamParkWest" type="Camera3D" parent="Cameras"]
+transform = Transform3D(-0.961524, 0.0761408, -0.263959, 0, 0.960825, 0.277157, 0.274721, 0.266493, -0.923856, -16, 5, -27)
+fov = 42.0
 
 [node name="UI" type="CanvasLayer" parent="."]
 

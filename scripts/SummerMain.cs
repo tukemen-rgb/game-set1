@@ -208,6 +208,9 @@ public partial class SummerMain : Node3D
         ["CamStreet"] = "street",
         ["CamPark"] = "park",
         ["CamPlaza"] = "plaza",
+        // 分割して増えた場面は、隣の場面と同じ遠景を使う（新しい写真は要らない）
+        ["CamParkWest"] = "park",
+        ["CamLot"] = "plaza",
     };
     // 木漏れ日。曇りと雨では薄れ、朝夕は寝るので、濃さを時刻と天気で動かす
     private readonly List<StandardMaterial3D> _komorebi = new();
@@ -475,10 +478,12 @@ public partial class SummerMain : Node3D
         if (p.Z > 11.5f)
             return "CamStreet"; // 商店街：通りの軸で望遠
         if (p.Z < -6f)
-            return "CamPark";   // 公園：池の対岸から広角
+            // 公園は東西で分ける。1台で 34m を見ると西端で主人公が 4% まで縮む
+            return p.X < -2f ? "CamParkWest" : "CamPark";
         if (p.X < -10f)
             return "CamDanchi"; // 団地の広場：斜め見下ろし
-        return "CamPlaza";      // 大通りと空き地：高め俯瞰
+        // 空き地はカメラの手前に来てしまうので、専用の画に切り替える
+        return p.X > 12f ? "CamLot" : "CamPlaza";
     }
 
     private void UpdateCamera(bool force = false)

@@ -1210,7 +1210,18 @@ public partial class BuildSummer : SceneTree
         cams.AddChild(Cam("CamDanchi", new Vector3(-1.5f, 7.5f, 0.9f), new Vector3(-24f, 1.6f, 0.1f), 40f, current: true));
         cams.AddChild(Cam("CamStreet", new Vector3(25f, 1.7f, 16.2f), new Vector3(-6f, 1.3f, 15.8f), 20f));
         cams.AddChild(Cam("CamPark", new Vector3(17f, 3.2f, -21f), new Vector3(0f, 0.4f, -12f), 55f));
-        cams.AddChild(Cam("CamPlaza", new Vector3(16f, 12f, 12f), new Vector3(0f, 0f, 2f), 50f));
+        // 空き地を CamLot に渡したぶん、大通りの画を寄せられる（実測 6.6% → ）
+        cams.AddChild(Cam("CamPlaza", new Vector3(12f, 8f, 10.5f), new Vector3(0f, 0.6f, 1f), 44f));
+        // 空き地（土管のある東端）。CamPlaza は東へ行くほどカメラに近づき、
+        // 実測で主人公が画面の142%（＝カメラを追い越す）になっていた。専用の画を置く。
+        // 北から土管の列に沿って見下ろす。西からだと (19,0,5) の木が
+        // ちょうど視線上に立って土管を隠してしまう
+        cams.AddChild(Cam("CamLot", new Vector3(20f, 4.6f, 15f), new Vector3(23f, 0.9f, 0f), 40f));
+        // 公園の西半分（すべり台・砂場）。CamPark は池の対岸からなので、
+        // 西の端では主人公が画面の4%まで縮んでいた。
+        // 公園の南（歩ける範囲の外）から北を見る。団地の棟が背景に入る。
+        // 北側に置くと団地の建物の内側にカメラが入ってしまう
+        cams.AddChild(Cam("CamParkWest", new Vector3(-16f, 5.0f, -27f), new Vector3(-12f, 0.8f, -13f), 42f));
         root.AddChild(cams);
     }
 

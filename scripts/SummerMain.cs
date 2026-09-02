@@ -41,7 +41,8 @@ public partial class SummerMain : Node3D
 
     /// <summary>セミの種類。出る時間帯が違うので「夕方にしか採れない」動機が生まれる。</summary>
     private readonly record struct Species(string Name, Color Color, int FromHour, int ToHour,
-                                          float CatchRate, bool RainOnly = false);
+                                          float CatchRate, bool RainOnly = false,
+                                          bool PondOnly = false);
 
     // 時間帯で顔ぶれが変わる。難しい種ほど捕獲率が低い
     private static readonly Species[] AllSpecies =
@@ -56,8 +57,27 @@ public partial class SummerMain : Node3D
         // 雨の日にしか会えないものを置いて、天気を引き算から足し算に変える
         new("カタツムリ", new Color(0.62f, 0.55f, 0.42f), 8, 19, 0.95f, RainOnly: true),
         new("アマガエル", new Color(0.42f, 0.68f, 0.35f), 8, 19, 0.55f, RainOnly: true),
+        // 木ではなく池で釣る。虫あみ（近づいて振る）とは手ざわりの違う遊びにする
+        new("ザリガニ", new Color(0.7f, 0.25f, 0.2f), 8, 19, 0.8f, PondOnly: true),
     };
     private const float CatchRange = 2.2f;
+
+    // --- ザリガニつり（公園の池） ---
+    // 池のふちに立って糸を垂らし、当たりが来た合図で引く。
+    // セミとりは「近づいて振る」だけなので、待ってから反射で応える遊びを
+    // 一つ足して、同じボタンでも手ざわりが変わるようにする。
+    private static readonly Vector2 PondCenter = new(6f, -15f);
+    private const float PondEdgeIn = 6.85f;    // これより内側には入れない（壁）
+    private const float PondEdgeOut = 8.8f;    // ふちに立っていると見なす外周
+    private const int CrayfishIndex = 8;
+    private const double BiteWindow = 1.1;     // 当たりに応えられる時間
+    // 時刻は Time.GetTicksMsec（実時間）ではなく delta の積算で持つ。
+    // 実時間で持つと、キャプチャ（--fixed-fps の早回し）で当たりが一瞬で来てしまい、
+    // 「待つ」という遊びそのものを検査できなくなる。
+    private double _fishClock;
+    private double _lineOutAt = -1.0;          // 糸を垂らした時刻（負なら垂らしていない）
+    private double _biteAt;                    // 当たりが来る時刻
+    private double _biteUntil;                 // 当たりの受付が切れる時刻
 
     /// <summary>
     /// その日の天気。31日が全部同じだと3日で飽きるので、日ごとに変える。
@@ -254,7 +274,9 @@ public partial class SummerMain : Node3D
             ShowMessage("セミの こえが かわった……", 2.5);
         }
         CheckShop();
-        CheckCatch();
+        _fishClock += delta;
+        if (!CheckFishing())
+            CheckCatch();
         CheckDiscovery();
         if (_hour >= DayEndHour)
             _ = EndDay();
@@ -735,6 +757,13 @@ public partial class SummerMain : Node3D
                 : "だがしや　スペースで はなす";
             return;
         }
+        if (AtPond())
+        {
+            _messageLabel.Text = _lineOutAt < 0.0
+                ? "いけ　スペースで いとを たらす"
+                : "…………";
+            return;
+        }
         int near = NearestCicada();
         if (near < 0)
         {
@@ -767,6 +796,8 @@ public partial class SummerMain : Node3D
         var pool = new List<int>();
         for (int i = 0; i < AllSpecies.Length; i++)
         {
+            if (AllSpecies[i].PondOnly)
+                continue;   // 池で釣るものは木に湧かせない
             if (AllSpecies[i].RainOnly != rainy)
                 continue;
             if (rainy || (_hour >= AllSpecies[i].FromHour && _hour < AllSpecies[i].ToHour))
@@ -962,6 +993,89 @@ public partial class SummerMain : Node3D
             }
         }
         return best;
+    }
+
+    /// <summary>池のふちに立っているか。ふちから離れると糸は自動で切れる。</summary>
+    private bool AtPond()
+    {
+        float d = new Vector2(_player.Position.X, _player.Position.Z).DistanceTo(PondCenter);
+        return d >= PondEdgeIn && d <= PondEdgeOut;
+    }
+
+    /// <summary>
+    /// ザリガニつり。戻り値 true のときは虫あみを振らせない（入力を食う）。
+    /// 待つ → 当たる → 引く の3拍。早く引くと逃げるので、待つことに意味が出る。
+    /// </summary>
+    private bool CheckFishing()
+    {
+        if (!AtPond())
+        {
+            _lineOutAt = -1.0;   // 池から離れたら糸は仕舞う
+            return false;
+        }
+
+        double now = _fishClock;
+
+        // 当たりの合図。合図から BiteWindow 秒だけ引ける
+        if (_lineOutAt >= 0.0 && _biteUntil <= 0.0 && now >= _biteAt)
+        {
+            _biteUntil = now + BiteWindow;
+            PlaySfx(_sfxSwing);
+            ShowMessage("ツン、と ひいた！　いま スペース！", BiteWindow);
+        }
+        // 合図を見逃した
+        if (_biteUntil > 0.0 && now > _biteUntil)
+        {
+            _lineOutAt = -1.0;
+            _biteUntil = 0.0;
+            PlaySfx(_sfxEscape);
+            ShowMessage("……いかれた。");
+            return true;
+        }
+
+        if (!Input.IsActionJustPressed("ui_accept"))
+            return true;
+
+        if (_lineOutAt < 0.0)
+        {
+            _lineOutAt = now;
+            _biteAt = now + _rng.RandfRange(1.8f, 4.6f);
+            _biteUntil = 0.0;
+            _player.SwingNet();
+            ShowMessage("いとを たらして まった。", 5.0);
+            return true;
+        }
+
+        if (_biteUntil <= 0.0)
+        {
+            // 当たる前に引いた
+            _lineOutAt = -1.0;
+            PlaySfx(_sfxEscape);
+            ShowMessage("まだ はやい。にげられた。");
+            return true;
+        }
+
+        // 当たりに応えた
+        _lineOutAt = -1.0;
+        _biteUntil = 0.0;
+        _player.SwingNet();
+        Species cray = AllSpecies[CrayfishIndex];
+        if (_rng.Randf() < cray.CatchRate)
+        {
+            _totalCaught++;
+            _todayCaught++;
+            PlaySfx(_sfxCatch);
+            if (_collected.Add(CrayfishIndex))
+                ShowMessage($"{cray.Name}を つりあげた！\nずかんに はじめて のった！", 3.5);
+            else
+                ShowMessage($"{cray.Name}を つりあげた！");
+        }
+        else
+        {
+            PlaySfx(_sfxEscape);
+            ShowMessage("あっ、はさみを はなされた……");
+        }
+        return true;
     }
 
     private void CheckCatch()

@@ -47,6 +47,7 @@ public partial class BuildSummer : SceneTree
         BuildSapMark(root);
         BuildFestival(root);
         BuildNoticeBoard(root);
+        BuildOkuribi(root);
         BuildPark(root);
         BuildVacantLot(root);
         BuildTrees(root);
@@ -774,6 +775,54 @@ public partial class BuildSummer : SceneTree
         t.AddChild(Box(new Vector3(0.3f, 0.1f, 0.22f), new Vector3(0.35f, 0.8f, 0f), new Color(0.9f, 0.88f, 0.8f)));
         t.AddChild(Box(new Vector3(0.09f, 0.05f, 0.09f), new Vector3(0.62f, 0.77f, 0.05f), new Color(0.7f, 0.15f, 0.15f)));
         root.AddChild(t);
+    }
+
+    /// <summary>
+    /// 送り火。8/16 の夕方だけ、団地の各棟の入口に小さな火を焚く。
+    /// 「8/16 送り火」は朝の台詞にあるのに、その日 町を歩いても
+    /// 火が一つも無かった（言って見せない、がまた残っていた）。
+    /// </summary>
+    private static void BuildOkuribi(Node3D root)
+    {
+        var group = new Node3D { Name = "Okuribi", Visible = false };
+        Vector3[] spots =
+        {
+            new(-22f, 0f, -2.6f), new(-17f, 0f, -2.6f),
+            new(-19f, 0f, 2.6f), new(-13f, 0f, 2.6f),
+        };
+        for (int i = 0; i < spots.Length; i++)
+        {
+            var fire = new Node3D { Name = $"Fire{i}", Position = spots[i] };
+            // 素焼きの皿と、井桁に組んだおがら
+            fire.AddChild(MeshI(new CylinderMesh { TopRadius = 0.26f, BottomRadius = 0.22f, Height = 0.06f },
+                new Vector3(0f, 0.03f, 0f), new Color(0.62f, 0.45f, 0.36f)));
+            for (int k = 0; k < 4; k++)
+            {
+                var stick = MeshI(new CylinderMesh { TopRadius = 0.014f, BottomRadius = 0.014f, Height = 0.34f },
+                    new Vector3(0f, 0.09f + (k / 2) * 0.045f, 0f), new Color(0.55f, 0.46f, 0.33f));
+                stick.RotationDegrees = new Vector3(90f, k % 2 == 0 ? 0f : 90f, 0f);
+                stick.Position += new Vector3(0f, 0f, k % 2 == 0 ? 0.05f : 0f);
+                fire.AddChild(stick);
+            }
+            // 炎。外炎と内炎の2枚。SummerMain が毎フレーム大きさを揺らす
+            var flame = new Node3D { Name = "Flame", Position = new Vector3(0f, 0.16f, 0f) };
+            flame.AddChild(MeshI(new CylinderMesh { TopRadius = 0f, BottomRadius = 0.13f, Height = 0.42f },
+                new Vector3(0f, 0.21f, 0f), new Color(0.98f, 0.55f, 0.15f), unshaded: true));
+            flame.AddChild(MeshI(new CylinderMesh { TopRadius = 0f, BottomRadius = 0.07f, Height = 0.26f },
+                new Vector3(0f, 0.13f, 0f), new Color(1f, 0.92f, 0.6f), unshaded: true));
+            fire.AddChild(flame);
+            fire.AddChild(new OmniLight3D
+            {
+                Name = "Light",
+                Position = new Vector3(0f, 0.4f, 0f),
+                LightColor = new Color(1f, 0.68f, 0.34f),
+                LightEnergy = 2.2f,
+                OmniRange = 5.5f,
+                ShadowEnabled = false,
+            });
+            group.AddChild(fire);
+        }
+        root.AddChild(group);
     }
 
     /// <summary>

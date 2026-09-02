@@ -321,6 +321,9 @@ public partial class SummerMain : Node3D
     };
     private int _goldfish;               // すくった金魚。夏のあいだ残る
     private Node3D _festivalNode;
+    private Node3D _okuribi;          // 8/16 の夕方だけ焚く送り火
+    private double _fireFlicker;
+    private const int OkuribiDay = 16;
 
     private const int DailyAllowance = 100;
     private int _money = DailyAllowance;
@@ -406,6 +409,7 @@ public partial class SummerMain : Node3D
         _asagaoPoles = GetNodeOrNull<Node3D>("Asagao/Poles");
         _asagaoFutaba = GetNodeOrNull<Node3D>("Asagao/Futaba");
         _festivalNode = GetNodeOrNull<Node3D>("Festival");
+        _okuribi = GetNodeOrNull<Node3D>("Okuribi");
         if (GetNodeOrNull("Backdrop/PanoramaNight") is MeshInstance3D np)
             _nightPano = np.MaterialOverride as StandardMaterial3D;
         if (GetNodeOrNull("Backdrop/Panorama") is MeshInstance3D dp)
@@ -456,6 +460,7 @@ public partial class SummerMain : Node3D
         _hour += delta / SecondsPerHour;
         UpdateSky();
         UpdateKomorebi();
+        UpdateOkuribi(delta);
         UpdateAudio(delta);
         UpdateLabels();
         UpdateCamera();
@@ -508,6 +513,34 @@ public partial class SummerMain : Node3D
             m.AlbedoColor = new Color(1f, 1f, 1f, a);
             // 完全に透明な板を描き続けても意味が無い
             m.NoDepthTest = false;
+        }
+    }
+
+    /// <summary>
+    /// 送り火。8/16 の 17時から日暮れまで焚く。炎は同じ形のまま置くと
+    /// 「オレンジの三角」に見えるので、大きさと灯りを不規則に揺らす。
+    /// </summary>
+    private void UpdateOkuribi(double delta)
+    {
+        if (_okuribi == null)
+            return;
+        bool on = _day == OkuribiDay && _hour >= 17.0;
+        if (_okuribi.Visible != on)
+            _okuribi.Visible = on;
+        if (!on)
+            return;
+
+        _fireFlicker += delta;
+        for (int i = 0; i < _okuribi.GetChildCount(); i++)
+        {
+            var fire = (Node3D)_okuribi.GetChild(i);
+            // 炎ごとに位相をずらす。そろって揺れると機械に見える
+            float w = Mathf.Sin((float)_fireFlicker * (5.3f + i * 1.7f)) * 0.5f
+                    + Mathf.Sin((float)_fireFlicker * (11.1f + i * 2.3f)) * 0.25f;
+            if (fire.GetNodeOrNull<Node3D>("Flame") is Node3D flame)
+                flame.Scale = new Vector3(1f + w * 0.14f, 1f + w * 0.26f, 1f + w * 0.14f);
+            if (fire.GetNodeOrNull<OmniLight3D>("Light") is OmniLight3D lamp)
+                lamp.LightEnergy = 2.2f + w * 0.7f;
         }
     }
 

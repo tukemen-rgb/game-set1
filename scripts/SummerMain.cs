@@ -70,8 +70,7 @@ public partial class SummerMain : Node3D
         new("クワガタ", new Color(0.13f, 0.11f, 0.1f), 8, 19, 0.45f, SapOnly: true),
     };
     private const float CatchRange = 2.2f;
-    private string _phaseSpecies = "セミ";   // いまの時間帯を代表する種
-    private readonly HashSet<int> _prevPool = new();   // 前の時間帯に出ていた種
+    private readonly HashSet<int> _prevPool = new();   // 前回 顔ぶれを見直したときに居てよかった種
     // 走って近づくと虫は逃げる。歩きを既定にした（イテレーション24）意味を
     // 遊びの側にも通す。走るのが速いだけなら、歩く理由が絵にしか無い
     private const float StartleRange = 4.0f;
@@ -234,7 +233,9 @@ public partial class SummerMain : Node3D
     private double _hudTimer;
     // 読む前に上書きされた文を捨てずに待たせる。深く積むと今さらな文が
     // 出てくるので2つまで
-    private readonly Queue<(string Text, double Seconds)> _msgQueue = new();
+    private readonly Queue<(string Text, double Seconds, double At)> _msgQueue = new();
+    private bool _pressUsed;   // このフレームの決定キーを、もう誰かが使ったか
+    private const double QueueLife = 6.0;   // 待ち行列に居られる秒数。過ぎたら捨てる
 
     private PlayerController _player;
     private DirectionalLight3D _sun;
@@ -252,6 +253,9 @@ public partial class SummerMain : Node3D
     private readonly HashSet<int> _found = new();        // 発見（日をまたいで残る）
     private string _todayFound = "";                     // その日 最初に見つけたもの
     private int _spawnedPhase = -1;                      // 何時台の顔ぶれで湧かせたか
+    private int _spawnedSlot = -1;                       // 直近に顔ぶれを見直した区切り
+    private readonly List<int> _cicadaSpot = new();      // _cicadas と同じ並び。木の番号（甲虫は -1）
+    private string _changeLine;                          // 顔ぶれが変わったときに出す文
     private Weather _weather = Weather.Sunny;
     private AudioStreamPlayer _rainVoice;
     private CpuParticles3D _rainFx;
@@ -544,18 +548,31 @@ public partial class SummerMain : Node3D
         UpdateFireworks(delta);
         if (PhaseOfHour() != _spawnedPhase)
         {
-            RespawnCicadas();
+            // 声の時間帯（8/11/16時）が変わったら顔ぶれを総入れ替え。
             // 「こえが かわった」だけでは、何が変わったのか分からない。
-            // その時間帯の主を名指しすると、時刻と種類のつながりが伝わる
+            // 来た種・去った種を名指しすると、時刻と種類のつながりが伝わる
+            RespawnCicadas();
             ShowMessage(_weather == Weather.Rainy
                 ? "雨の おとが かわった……"
-                : $"{_phaseSpecies}が 鳴きはじめた。", 3.0);
+                : _changeLine ?? "セミの こえが かわった。", 3.0, optional: true);
         }
-        CheckRadio();
-        CheckCoin();
+        else if (SpawnSlot() != _spawnedSlot)
+        {
+            // 種ごとの出入りの時刻（9:30 / 10 / 13 / 15 / 17時）は声の時間帯と
+            // 合わない。ここを見ていなかったので、17時からのヒグラシと夕方の
+            // 甲虫は一度も湧かず、図鑑は永遠に埋まらなかった（監査で判明）
+            string line = RefreshCicadas();
+            if (line != null)
+                ShowMessage(line, 3.0, optional: true);
+        }
+        // 決定キーは1押しで1つだけに効かせる（範囲が重なる台とあさがお等で、
+        // 1押しで両方成立していた）。順番は画面の案内（UpdateMessages）と同じ
+        _pressUsed = false;
+        CheckShop();
         CheckFolk();
         CheckAsagao();
-        CheckShop();
+        CheckCoin();
+        CheckRadio();
         CheckStartle();
         _fishClock += delta;
         if (_fishingPutAwayAt > 0.0 && _fishClock >= _fishingPutAwayAt)
@@ -655,7 +672,8 @@ public partial class SummerMain : Node3D
     /// <summary>開いている間は true。時間も操作も止める。</summary>
     private bool CheckDex()
     {
-        if (Input.IsActionJustPressed("dex"))
+        // 品書きの Z は「やめる」。ずかんまで開くと品書きの上に重なる
+        if (!_shopOpen && Input.IsActionJustPressed("dex"))
         {
             _dexOpen = !_dexOpen;
             if (_dex != null)
@@ -789,6 +807,7 @@ public partial class SummerMain : Node3D
         _dateLabel.Visible = true;
         _bugLabel.Visible = true;
         _messageLabel.Visible = true;
+        SyncScene();   // 空と窓を 8 時の姿にしてから明るくする
         Tween fadeIn = CreateTween();
         fadeIn.TweenProperty(_fade, "color:a", 0.0f, 2.4);
         await ToSignal(fadeIn, Tween.SignalName.Finished);
@@ -1309,21 +1328,30 @@ public partial class SummerMain : Node3D
     /// 「その場で書き換わってほしい」もの用。
     /// それ以外は、前の文が 1.2 秒読まれるまで待たせる。
     /// </summary>
-    private void ShowMessage(string text, double seconds = 2.5, bool immediate = false)
+    private void ShowMessage(string text, double seconds = 2.5, bool immediate = false,
+                             bool optional = false)
     {
-        if (!immediate && _messageTimer > 0.0 && _fishClock - _msgShownAt < 1.2
-            && _msgQueue.Count < 2)
+        // 待たせすぎた文は先に捨てる。捨てないと古い文2つで行列が埋まったままになり、
+        // 以後の文が全部その場で上書きになる（31日走破の記録で判明）
+        while (_msgQueue.Count > 0 && _fishClock - _msgQueue.Peek().At > QueueLife)
+            _msgQueue.Dequeue();
+        bool busy = !immediate && _messageTimer > 0.0 && _fishClock - _msgShownAt < 1.2;
+        if (busy && optional && _msgQueue.Count >= 2)
+            return;   // 空気の文（こえが かわった 等）は、混んでいるなら言わない
+        if (busy && _msgQueue.Count < 2)
         {
-            _msgQueue.Enqueue((text, seconds));
+            _msgQueue.Enqueue((text, seconds, _fishClock));
+            if (OS.GetEnvironment("DEBUG_MSG") == "1")
+                GD.Print($"[msg~] 待ち{_msgQueue.Count}: {text.Replace("\n", " / ")}");
             return;
         }
         // 前の文がほとんど読まれないまま上書きされるのを見つける。
         // 同じ形の不具合を3回踏んだ（発見の「その後」/ おばあさんの一言 /
         // 時間帯の合図）ので、目で探すのをやめて検出させる
         if (OS.GetEnvironment("DEBUG_MSG") == "1" && _messageTimer > 0.0
-            && _fishClock - _msgShownAt < 0.4)
+            && _fishClock - _msgShownAt < 1.2 && !immediate)
         {
-            GD.Print($"[msg!] 上書き（{_fishClock - _msgShownAt:F2}秒）: " +
+            GD.Print($"[msg!] 上書き（{_fishClock - _msgShownAt:F2}秒・待ち{_msgQueue.Count}）: " +
                      $"「{_messageLabel.Text.Replace("\n", " ")}」→「{text.Replace("\n", " ")}」");
         }
         _msgShownAt = _fishClock;
@@ -1342,15 +1370,25 @@ public partial class SummerMain : Node3D
             _messageTimer -= delta;
             return;
         }
-        // 待たせていた文があれば、ここで出す
-        if (_msgQueue.Count > 0)
+        // 待たせていた文があれば、ここで出す。ただし待たせすぎた文は捨てる
+        // （品書きの60秒の後ろで 13時の「こえが やんだ」が 18時に出ていた）
+        while (_msgQueue.Count > 0)
         {
-            (string text, double seconds) = _msgQueue.Dequeue();
+            (string text, double seconds, double at) = _msgQueue.Dequeue();
+            if (_fishClock - at > QueueLife)
+                continue;
             _msgShownAt = _fishClock;
             _messageLabel.Text = text;
             _messageTimer = seconds;
             if (OS.GetEnvironment("DEBUG_MSG") == "1")
                 GD.Print($"[msg+] 8月{_day}日 {(int)_hour:D2}時 | {text.Replace("\n", " / ")}");
+            return;
+        }
+        if (_shopOpen)
+        {
+            // 品書きは開いている限り出し続ける。合図やチャイムに上書きされた
+            // まま「はなす・かう」の案内に戻ると、そこで押した決定で買ってしまう
+            ShowShelf();
             return;
         }
         if (NearShop())
@@ -1373,8 +1411,7 @@ public partial class SummerMain : Node3D
                 : "あさがお　スペースで みる";
             return;
         }
-        if (_coin != null && _coin.Visible &&
-            new Vector2(_player.Position.X, _player.Position.Z).DistanceTo(CoinPos) < 1.9f)
+        if (_coin != null && _coin.Visible && Near(CoinPos, CoinRange))
         {
             _messageLabel.Text = "なにか おちて いる　スペースで ひろう";
             return;
@@ -1386,7 +1423,7 @@ public partial class SummerMain : Node3D
                 : "ラジオたいそう　スペースで はんこ";
             return;
         }
-        if (AtPond())
+        if (AtPond() && (_lineOutAt >= 0.0 || NearestCicada() < 0))
         {
             _messageLabel.Text = _lineOutAt < 0.0
                 ? "いけ　スペースで いとを たらす"
@@ -1412,15 +1449,91 @@ public partial class SummerMain : Node3D
             c.QueueFree();
         _cicadas.Clear();
         _cicadaSpecies.Clear();
+        _cicadaSpot.Clear();
         var indices = new List<int>();
         for (int i = 0; i < _treeSpots.Count; i++)
             indices.Add(i);
-        for (int i = indices.Count - 1; i > 0; i--)
+        Shuffle(indices);
+        List<int> pool = CurrentPool();
+        _changeLine = ChangeLine(pool);
+
+        int count = Mathf.Min(CicadasPerDay, indices.Count);
+        for (int k = 0; k < count; k++)
+            AddCicada(pool[(int)(_rng.Randi() % (uint)pool.Count)], indices[k], k);
+        SpawnSapBeetles();
+        PrintSpawns();
+        _spawnedPhase = PhaseOfHour();
+        _spawnedSlot = SpawnSlot();
+    }
+
+    /// <summary>
+    /// 声の時間帯は変わらないが、種の出入りの時刻をまたいだ。居るセミは
+    /// 動かさず、時間の過ぎた種だけ飛び去らせ、来たばかりの種を空いた木に足す。
+    /// 総入れ替えにしないのは、狙っていたセミが理由もなく消えないため。
+    /// 返り値は出す文（変化が無ければ null）。
+    /// </summary>
+    private string RefreshCicadas()
+    {
+        _spawnedSlot = SpawnSlot();
+        if (_weather == Weather.Rainy)
+            return null;   // 雨の生き物は一日中いる。甲虫も来ない
+        for (int i = _cicadas.Count - 1; i >= 0; i--)
         {
-            int j = (int)(_rng.Randi() % (uint)(i + 1));
-            (indices[i], indices[j]) = (indices[j], indices[i]);
+            if (!StaysNow(AllSpecies[_cicadaSpecies[i]]))
+                RemoveCicada(i);
         }
-        // 晴れ・くもりは時刻に合うセミ、雨の日は雨の生き物だけを候補にする
+        List<int> pool = CurrentPool();
+        var fresh = new List<int>();
+        foreach (int i in pool)
+        {
+            if (!_prevPool.Contains(i))
+                fresh.Add(i);
+        }
+        if (fresh.Count > 0)
+        {
+            var free = new List<int>();
+            for (int i = 0; i < _treeSpots.Count; i++)
+            {
+                if (!_cicadaSpot.Contains(i))
+                    free.Add(i);
+            }
+            Shuffle(free);
+            int onTrees = 0;
+            foreach (int sp in _cicadaSpecies)
+            {
+                if (!AllSpecies[sp].SapOnly)
+                    onTrees++;
+            }
+            // 「鳴きはじめた」と言って一匹も居ないのは嘘になる。最低1匹は足す
+            int add = Mathf.Clamp(CicadasPerDay - onTrees, 1, free.Count);
+            for (int k = 0; k < add; k++)
+                AddCicada(fresh[(int)(_rng.Randi() % (uint)fresh.Count)], free[k], k);
+        }
+        bool beetles = false;
+        foreach (int sp in _cicadaSpecies)
+            beetles |= AllSpecies[sp].SapOnly;
+        if (!beetles)
+            SpawnSapBeetles();   // 中で時刻を見る（朝と夕方だけ）
+        PrintSpawns();
+        return ChangeLine(pool);
+    }
+
+    /// <summary>種の出入りがある時刻の区切り。声の時間帯（8/11/16）より細かい。</summary>
+    private int SpawnSlot()
+    {
+        int slot = 0;
+        foreach (double edge in SlotEdges)
+        {
+            if (_hour >= edge)
+                slot++;
+        }
+        return slot;
+    }
+    private static readonly double[] SlotEdges = { 9.5, 10.0, 11.0, 13.0, 15.0, 16.0, 17.0 };
+
+    /// <summary>いま木に居てよい種（晴れ・くもりは時刻で、雨は雨の生き物だけ）。</summary>
+    private List<int> CurrentPool()
+    {
         bool rainy = _weather == Weather.Rainy;
         var pool = new List<int>();
         for (int i = 0; i < AllSpecies.Length; i++)
@@ -1429,52 +1542,86 @@ public partial class SummerMain : Node3D
                 continue;   // 池で釣るもの・樹液に来るものは別枠で湧かせる
             if (AllSpecies[i].RainOnly != rainy)
                 continue;
-            if (rainy || (_hour >= AllSpecies[i].FromHour && _hour < AllSpecies[i].ToHour))
+            if (rainy || InHour(AllSpecies[i]))
                 pool.Add(i);
         }
         if (pool.Count == 0)
             pool.Add(2); // 保険（アブラゼミ）
+        return pool;
+    }
 
-        // その時間帯を一番よく表す種を選ぶ。**前の時間帯には居なかった種**を
-        // 優先する（11時に「クマゼミが 鳴きはじめた」と言われても、
-        // クマゼミは朝から鳴いていたので嘘になる）。同点なら出ている時間が
-        // 短いほう＝その時間にしか会えないほうを採る
-        int signature = -1;
+    private bool InHour(Species sp) => _hour >= sp.FromHour && _hour < sp.ToHour;
+    private bool BeetleHour() => (_hour >= DayStartHour && _hour < 9.5) || _hour >= 17.0;
+    private bool StaysNow(Species sp) => sp.SapOnly ? BeetleHour() : sp.RainOnly || InHour(sp);
+
+    /// <summary>
+    /// 顔ぶれの変化を一文にする。来た種を優先し（「ヒグラシが 鳴きはじめた」）、
+    /// 去っただけなら「クマゼミの こえが やんだ」。**前の顔ぶれに居た種は
+    /// 名指ししない**（11時に「クマゼミが 鳴きはじめた」と言われても、
+    /// クマゼミは朝から鳴いていたので嘘になる）。同点なら出ている時間が
+    /// 短いほう＝その時間にしか会えないほうを採る。変化が無ければ null。
+    /// </summary>
+    private string ChangeLine(List<int> pool)
+    {
+        int came = -1, left = -1;
         foreach (int i in pool)
         {
-            bool isNew = !_prevPool.Contains(i);
-            bool bestIsNew = signature >= 0 && !_prevPool.Contains(signature);
-            if (signature < 0
-                || (isNew && !bestIsNew)
-                || (isNew == bestIsNew &&
-                    AllSpecies[i].ToHour - AllSpecies[i].FromHour <
-                    AllSpecies[signature].ToHour - AllSpecies[signature].FromHour))
-                signature = i;
+            if (!_prevPool.Contains(i) && (came < 0 || Span(i) < Span(came)))
+                came = i;
         }
-        _phaseSpecies = AllSpecies[signature].Name;
+        foreach (int i in _prevPool)
+        {
+            if (!pool.Contains(i) && (left < 0 || Span(i) < Span(left)))
+                left = i;
+        }
         _prevPool.Clear();
         foreach (int i in pool)
             _prevPool.Add(i);
+        if (came >= 0)
+            return $"{AllSpecies[came].Name}が 鳴きはじめた。";
+        if (left >= 0)
+            return $"{AllSpecies[left].Name}の こえが やんだ。";
+        return null;
+    }
+    private static int Span(int i) => AllSpecies[i].ToHour - AllSpecies[i].FromHour;
 
-        int count = Mathf.Min(CicadasPerDay, indices.Count);
-        for (int k = 0; k < count; k++)
+    private void AddCicada(int sp, int spotIndex, int seed)
+    {
+        var spot = new Node3D { Position = _treeSpots[spotIndex] };
+        spot.AddChild(MakeCicadaBody(AllSpecies[sp], spotIndex + seed));
+        AddChild(spot);
+        _cicadas.Add(spot);
+        _cicadaSpecies.Add(sp);
+        _cicadaSpot.Add(spotIndex);
+    }
+
+    private void RemoveCicada(int i)
+    {
+        _cicadas[i].QueueFree();
+        _cicadas.RemoveAt(i);
+        _cicadaSpecies.RemoveAt(i);
+        _cicadaSpot.RemoveAt(i);
+    }
+
+    private void Shuffle(List<int> list)
+    {
+        for (int i = list.Count - 1; i > 0; i--)
         {
-            int sp = pool[(int)(_rng.Randi() % (uint)pool.Count)];
-            var spot = new Node3D { Position = _treeSpots[indices[k]] };
-            spot.AddChild(MakeCicadaBody(AllSpecies[sp], indices[k] + k));
-            AddChild(spot);
-            _cicadas.Add(spot);
-            _cicadaSpecies.Add(sp);
+            int j = (int)(_rng.Randi() % (uint)(i + 1));
+            (list[i], list[j]) = (list[j], list[i]);
         }
-        SpawnSapBeetles();
-        // どこに何が湧いたかは画面から探すしかなく、雨の生き物のように
-        // 小さくて低い位置に出るものは見落とす。検査用に位置を出せるようにする
-        if (OS.GetEnvironment("DEBUG_SPAWN") == "1")
-        {
-            for (int i = 0; i < _cicadas.Count; i++)
-                GD.Print($"[spawn] {AllSpecies[_cicadaSpecies[i]].Name} @ {_cicadas[i].Position}");
-        }
-        _spawnedPhase = PhaseOfHour();
+    }
+
+    /// <summary>
+    /// どこに何が湧いたかは画面から探すしかなく、雨の生き物のように
+    /// 小さくて低い位置に出るものは見落とす。検査用に位置を出せるようにする。
+    /// </summary>
+    private void PrintSpawns()
+    {
+        if (OS.GetEnvironment("DEBUG_SPAWN") != "1")
+            return;
+        for (int i = 0; i < _cicadas.Count; i++)
+            GD.Print($"[spawn] 8月{_day}日 {_hour:F2}時 {AllSpecies[_cicadaSpecies[i]].Name} @ {_cicadas[i].Position}");
     }
 
     /// <summary>
@@ -1648,7 +1795,6 @@ public partial class SummerMain : Node3D
     /// <summary>朝=0 / 昼=1 / 夕=2。変わったら顔ぶれを入れ替える。</summary>
     private int PhaseOfHour() => _hour < 11.0 ? 0 : _hour < 16.0 ? 1 : 2;
 
-    /// <summary>木にとまったセミ1匹。頭を上にして幹に貼りつく本物の姿勢で作る。</summary>
     /// <summary>
     /// 樹液の木のカブトムシ・クワガタ。朝（8〜9時半）と夕方（17時以降）だけ来る。
     /// 昼に来ないのは本当のことで、遊びとしても「行く時間を選ぶ」理由になる。
@@ -1656,11 +1802,7 @@ public partial class SummerMain : Node3D
     /// </summary>
     private void SpawnSapBeetles()
     {
-        if (_weather == Weather.Rainy)
-            return;
-        bool morning = _hour >= DayStartHour && _hour < 9.5;
-        bool evening = _hour >= 17.0;
-        if (!morning && !evening)
+        if (_weather == Weather.Rainy || !BeetleHour())
             return;
 
         // 幹の同じ高さに2匹まで。カブトのほうが出やすい
@@ -1668,16 +1810,14 @@ public partial class SummerMain : Node3D
         for (int k = 0; k < count; k++)
         {
             int sp = _rng.Randf() < 0.62f ? SapKabuto : SapKuwagata;
-            var spot = new Node3D
-            {
-                Position = SapTree + new Vector3(0f, 0f, 0f),
-            };
+            var spot = new Node3D { Position = SapTree };
             Node3D body = MakeBeetle(AllSpecies[sp], k);
             body.Position = new Vector3(0.3f - k * 0.62f, 0.95f + k * 0.22f, k == 0 ? 0.08f : -0.1f);
             spot.AddChild(body);
             AddChild(spot);
             _cicadas.Add(spot);
             _cicadaSpecies.Add(sp);
+            _cicadaSpot.Add(-1);
         }
     }
 
@@ -1910,9 +2050,14 @@ public partial class SummerMain : Node3D
         if (!AtPond())
         {
             _lineOutAt = -1.0;   // 池から離れたら糸は仕舞う
+            _biteUntil = 0.0;    // 当たりの最中に離れても、次に来たとき「いかれた」にしない
             _player.SetFishing(false);
             return false;
         }
+        // B9: 池のふちの輪の中にも木がある（(0,-20) は中心から 7.8m）。
+        // 糸が出ていないときに目の前にセミが居れば、網が先
+        if (_lineOutAt < 0.0 && NearestCicada() >= 0)
+            return false;
 
         double now = _fishClock;
 
@@ -1921,7 +2066,8 @@ public partial class SummerMain : Node3D
         {
             _biteUntil = now + BiteWindow;
             PlaySfx(_sfxSwing);
-            ShowMessage("ツン、と ひいた！　いま スペース！", BiteWindow);
+            // 引ける窓は 1.1 秒。待ち行列に回ると窓を見ずに逃がされる
+            ShowMessage("ツン、と ひいた！　いま スペース！", BiteWindow, immediate: true);
         }
         // 合図を見逃した
         if (_biteUntil > 0.0 && now > _biteUntil)
@@ -1930,15 +2076,16 @@ public partial class SummerMain : Node3D
             _biteUntil = 0.0;
             _player.SetFishing(false);
             PlaySfx(_sfxEscape);
-            ShowMessage("……いかれた。");
+            ShowMessage("……いかれた。", immediate: true);
             return true;
         }
 
-        if (!Input.IsActionJustPressed("ui_accept"))
+        if (!TakePress())
             return true;
 
         if (_lineOutAt < 0.0)
         {
+            _fishingPutAwayAt = -1.0;   // 直前の釣り上げが予約した「竿を仕舞う」を消す
             _lineOutAt = now;
             _biteAt = now + _rng.RandfRange(1.8f, 4.6f);
             _biteUntil = 0.0;
@@ -1948,7 +2095,7 @@ public partial class SummerMain : Node3D
             Vector2 bob = PondCenter - toCenter * 5.5f;
             _player.SetFishing(true, new Vector3(bob.X, 0.05f, bob.Y));   // 虫あみ → 竿
             _player.SwingNet();
-            ShowMessage("いとを たらして まった。", 5.0);
+            ShowMessage("いとを たらして まった。", 5.0, immediate: true);
             return true;
         }
 
@@ -1959,7 +2106,7 @@ public partial class SummerMain : Node3D
             _player.SwingNet();
             _player.SetFishing(false);
             PlaySfx(_sfxEscape);
-            ShowMessage("まだ はやい。にげられた。");
+            ShowMessage("まだ はやい。にげられた。", immediate: true);
             return true;
         }
 
@@ -1975,14 +2122,14 @@ public partial class SummerMain : Node3D
             _todayCaught++;
             PlaySfx(_sfxCatch);
             if (_collected.Add(CrayfishIndex))
-                ShowMessage($"{cray.Name}を つりあげた！\nずかんに はじめて のった！", 3.5);
+                ShowMessage($"{cray.Name}を つりあげた！\nずかんに はじめて のった！", 3.5, immediate: true);
             else
-                ShowMessage($"{cray.Name}を つりあげた！");
+                ShowMessage($"{cray.Name}を つりあげた！", immediate: true);
         }
         else
         {
             PlaySfx(_sfxEscape);
-            ShowMessage("あっ、はさみを はなされた……");
+            ShowMessage("あっ、はさみを はなされた……", immediate: true);
         }
         return true;
     }
@@ -2001,9 +2148,7 @@ public partial class SummerMain : Node3D
             if (_player.Position.DistanceTo(_cicadas[i].Position) >= StartleRange)
                 continue;
             string name = AllSpecies[_cicadaSpecies[i]].Name;
-            _cicadas[i].QueueFree();
-            _cicadas.RemoveAt(i);
-            _cicadaSpecies.RemoveAt(i);
+            RemoveCicada(i);
             PlaySfx(_sfxEscape);
             ShowMessage(_toldStartle
                 ? $"{name}に にげられた。"
@@ -2015,7 +2160,7 @@ public partial class SummerMain : Node3D
 
     private void CheckCatch()
     {
-        if (!Input.IsActionJustPressed("ui_accept"))
+        if (!TakePress())
             return;
         // セミが居なくても振る。音だけでなく見た目でも操作に答える
         _player.SwingNet();
@@ -2025,9 +2170,7 @@ public partial class SummerMain : Node3D
             return;
         int sp = _cicadaSpecies[idx];
         Species species = AllSpecies[sp];
-        _cicadas[idx].QueueFree();
-        _cicadas.RemoveAt(idx);
-        _cicadaSpecies.RemoveAt(idx);
+        RemoveCicada(idx);
 
         if (_rng.Randf() < species.CatchRate)
         {
@@ -2193,7 +2336,7 @@ public partial class SummerMain : Node3D
 
         int blooms = BloomCount(_day);
         // つぼみは花になる前の数日だけ。咲いた花のぶんは引く
-        int buds = _day >= 13 ? Mathf.Clamp((_day - 12) / 3, 0, 5) : 0;
+        int buds = _day >= 13 ? Mathf.Clamp((_day - 10) / 3, 1, 5) : 0;   // 13日に1つ、16日に2つ
         for (int i = 0; i < _asagaoBuds.GetChildCount(); i++)
             ((Node3D)_asagaoBuds.GetChild(i)).Visible = i < buds && i >= blooms;
         for (int i = 0; i < _asagaoFlowers.GetChildCount(); i++)
@@ -2225,7 +2368,7 @@ public partial class SummerMain : Node3D
     private void CheckFolk()
     {
         int idx = NearestFolk();
-        if (idx < 0 || !Input.IsActionJustPressed("ui_accept"))
+        if (idx < 0 || !TakePress())
             return;
         if (_folkTalkedDay == _day && _folkTalkedIndex == idx)
         {
@@ -2261,6 +2404,14 @@ public partial class SummerMain : Node3D
              + (CoinToday(_day) ? "……きょうは、あった。" : "きょうは なかった。");
     }
 
+    /// <summary>「その後」の独白。自販機は、落ちている日に「なかった」と言わない。</summary>
+    private string SpotLater(int i)
+    {
+        if (i != VendingSpot || !CoinToday(_day))
+            return Spots[i].Later;
+        return "きょうは、あった。\nあると 思って のぞくのが、たぶん たのしい。";
+    }
+
     /// <summary>自販機の下をのぞく。落ちている日は拾える。</summary>
     private void CheckCoin()
     {
@@ -2269,9 +2420,7 @@ public partial class SummerMain : Node3D
         bool there = CoinToday(_day) && _coinTakenDay != _day;
         if (_coin.Visible != there)
             _coin.Visible = there;
-        if (!there || !Input.IsActionJustPressed("ui_accept"))
-            return;
-        if (new Vector2(_player.Position.X, _player.Position.Z).DistanceTo(CoinPos) > 1.9f)
+        if (!there || !Near(CoinPos, CoinRange) || !TakePress())
             return;
         _coinTakenDay = _day;
         _coin.Visible = false;
@@ -2289,7 +2438,7 @@ public partial class SummerMain : Node3D
     /// <summary>あさがおを見る。日に一度だけ、その日の姿を言葉にする。</summary>
     private void CheckAsagao()
     {
-        if (!AtAsagao() || !Input.IsActionJustPressed("ui_accept"))
+        if (!AtAsagao() || !TakePress())
             return;
         if (_watchedDay == _day)
         {
@@ -2351,7 +2500,7 @@ public partial class SummerMain : Node3D
 
     private void CheckRadio()
     {
-        if (!AtRadio() || _stampedDay == _day || !Input.IsActionJustPressed("ui_accept"))
+        if (!AtRadio() || _stampedDay == _day || !TakePress())
             return;
         _stampedDay = _day;
         _stamps++;
@@ -2359,9 +2508,23 @@ public partial class SummerMain : Node3D
         ShowMessage($"ラジオたいそう。\nカードに はんこを おしてもらった。（{_stamps}/{RadioLastDay}）", 3.5);
     }
 
-    private bool NearShop()
+    private bool NearShop() => Near(ShopPos, TalkRange);
+
+    private Vector2 PlayerXZ() => new(_player.Position.X, _player.Position.Z);
+    private bool Near(Vector2 at, float range) => PlayerXZ().DistanceTo(at) < range;
+    private const float CoinRange = 1.9f;
+
+    /// <summary>
+    /// このフレームの決定キーを取る。取れるのは1フレームに1回だけ。
+    /// 範囲が重なる場所（ラジオ体操の台とあさがお、台とおばさん）で
+    /// 1押しで両方が成立し、毎回 虫あみまで振っていたのをやめる。
+    /// </summary>
+    private bool TakePress()
     {
-        return new Vector2(_player.Position.X, _player.Position.Z).DistanceTo(ShopPos) < TalkRange;
+        if (_pressUsed || !Input.IsActionJustPressed("ui_accept"))
+            return false;
+        _pressUsed = true;
+        return true;
     }
 
     private void CheckShop()
@@ -2369,8 +2532,7 @@ public partial class SummerMain : Node3D
         if (!NearShop())
         {
             if (_shopOpen)
-                _player.Frozen = false;
-            _shopOpen = false;   // 店先を離れたら品書きは閉じる
+                CloseShelf();   // 店先を離れたら品書きは閉じる
             return;
         }
 
@@ -2379,7 +2541,7 @@ public partial class SummerMain : Node3D
             UpdateShelfInput();
             return;
         }
-        if (!Input.IsActionJustPressed("ui_accept"))
+        if (!TakePress())
             return;
 
         if (_talkedDay != _day)
@@ -2397,6 +2559,13 @@ public partial class SummerMain : Node3D
         // 品書きは矢印で選ぶので、開いている間は歩かせない
         _player.Frozen = true;
         ShowShelf();
+    }
+
+    /// <summary>品書きを閉じる。閉じた直後の文は待たせず出す（品書きは60秒の文なので）。</summary>
+    private void CloseShelf()
+    {
+        _shopOpen = false;
+        _player.Frozen = false;
     }
 
     /// <summary>その日の品書き。夏まつりの日は屋台の品に入れ替わる。</summary>
@@ -2440,9 +2609,8 @@ public partial class SummerMain : Node3D
     {
         if (Input.IsActionJustPressed("dex"))
         {
-            _shopOpen = false;
-            _player.Frozen = false;
-            ShowMessage("「また おいで」", 2.0);
+            CloseShelf();
+            ShowMessage("「また おいで」", 2.0, immediate: true);
             return;
         }
         if (Input.IsActionJustPressed("ui_right") || Input.IsActionJustPressed("ui_down"))
@@ -2457,27 +2625,25 @@ public partial class SummerMain : Node3D
             ShowShelf();
             return;
         }
-        if (!Input.IsActionJustPressed("ui_accept"))
+        if (!TakePress())
             return;
 
         Goods g = TodayShelf()[_shopPick];
         if (_money < g.Price)
         {
-            ShowMessage("「おかねが たりないねえ。\nあしたに しようか」", 3.0);
-            _shopOpen = false;
-            _player.Frozen = false;
+            CloseShelf();
+            ShowMessage("「おかねが たりないねえ。\nあしたに しようか」", 3.0, immediate: true);
             return;
         }
         _money -= g.Price;
         PlaySfx(_sfxCatch);
-        _shopOpen = false;
-        _player.Frozen = false;
+        CloseShelf();
         _todayBought = g.Name;
 
         if (g.Name == "ラムネ")
         {
             _marbles++;
-            ShowMessage($"{g.Bought}\nビー玉が {_marbles}こに なった。", 4.5);
+            ShowMessage($"{g.Bought}\nビー玉が {_marbles}こに なった。", 4.5, immediate: true);
         }
         else if (g.Name == "金魚すくい")
         {
@@ -2486,7 +2652,7 @@ public partial class SummerMain : Node3D
             _goldfish += got;
             ShowMessage(got == 0
                 ? "いっぱつで やぶれた。\nおじさんが 一ぴき くれた。"
-                : $"{got}ひき すくえた。\nふくろの 水が ゆれて いる。", 4.0);
+                : $"{got}ひき すくえた。\nふくろの 水が ゆれて いる。", 4.0, immediate: true);
             if (got == 0)
                 _goldfish++;
         }
@@ -2496,17 +2662,17 @@ public partial class SummerMain : Node3D
             bool win = _rng.Randf() < 0.25f;
             if (win)
             {
-                _money += g.Price * 2;
-                ShowMessage("「あたりだ！」\nおばあさんが 40円 くれた。", 4.0);
+                _money = Mathf.Min(_money + g.Price * 2, 900);   // おこづかいの上限は当たりでも守る
+                ShowMessage("「あたりだ！」\nおばあさんが 40円 くれた。", 4.0, immediate: true);
             }
             else
             {
-                ShowMessage("「はずれ。まあ そんなもんさ」\nかみきれを ポケットに いれた。", 4.0);
+                ShowMessage("「はずれ。まあ そんなもんさ」\nかみきれを ポケットに いれた。", 4.0, immediate: true);
             }
         }
         else
         {
-            ShowMessage(g.Bought, 4.5);
+            ShowMessage(g.Bought, 4.5, immediate: true);
         }
     }
 
@@ -2535,9 +2701,10 @@ public partial class SummerMain : Node3D
             if (_day >= LaterDay && !_foundLater.Contains(i) && !_foundToday.Contains(i))
             {
                 _foundLater.Add(i);
+                string later = SpotLater(i);
                 if (_todayFound == "")
-                    _todayFound = Spots[i].Later.Replace("\n", "");
-                ShowMessage(Spots[i].Later, 5.0);
+                    _todayFound = later.Replace("\n", "");
+                ShowMessage(later, 5.0);
                 return;
             }
         }
@@ -2600,7 +2767,7 @@ public partial class SummerMain : Node3D
     /// </summary>
     private async Task GrabDiaryShot()
     {
-        if (_diaryShot == null)
+        if (_diaryShot == null || DisplayServer.GetName() == "headless")
             return;
         // 日付や匹数のラベルごと焼き付いてしまうので、先に隠して1フレーム待つ。
         // GetImage は「最後に描かれた絵」を返すので、隠した直後では間に合わない。
@@ -2612,6 +2779,15 @@ public partial class SummerMain : Node3D
         Image img = GetViewport().GetTexture().GetImage();
         if (img != null)
             _diaryShot.Texture = ImageTexture.CreateFromImage(img);
+    }
+
+    /// <summary>時刻と天気に従う見た目を、いまの _hour に合わせる（フェード前用）。</summary>
+    private void SyncScene()
+    {
+        UpdateCamera(force: true);
+        UpdateSky();
+        UpdateKomorebi();
+        UpdateWindows();
     }
 
     private async Task EndDay()
@@ -2656,6 +2832,11 @@ public partial class SummerMain : Node3D
         _player.Position = new Vector3(-14f, 0.1f, 0f); // 団地の広場から一日開始
         RespawnCicadas();
         _messageLabel.Text = "";
+        _messageTimer = 0.0;
+        _msgQueue.Clear();   // 前日の文の残りを翌朝に出さない
+        // フェードイン中は _Process が止まっている。ここで朝の絵に合わせておかないと、
+        // 前日夕方のカメラ・空・点いた窓のまま明るくなって 1 秒後に切り替わる
+        SyncScene();
         Tween fadeIn = CreateTween();
         fadeIn.TweenProperty(_fade, "color:a", 0.0f, 1.0);
         await ToSignal(fadeIn, Tween.SignalName.Finished);

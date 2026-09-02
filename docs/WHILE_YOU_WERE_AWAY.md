@@ -3,8 +3,12 @@
 判断ログ（`docs/AUTOPILOT.md`）は 60 件を超えました。全部読む必要はありません。
 **この1枚と、20秒の動画**で足ります。
 
-**まず見るもの**: [`docs/video/summer_day.mp4`](video/summer_day.mp4)
-（20秒・音つき。8月1日の団地 → 大通り → 商店街 → 公園）
+**まず見るもの**（どちらも音つき）:
+
+- [`docs/video/summer_day.mp4`](video/summer_day.mp4)
+  20秒。8月1日の団地 → 大通り → 商店街 → 公園
+- [`docs/video/summer_festival.mp4`](video/summer_festival.mp4)
+  13秒。**8月24日 夏まつりの夕方**。夕陽・灯った窓・花火
 
 ## 1. 画像の件（社長にお願いしていた分）
 

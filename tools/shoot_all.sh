@@ -18,6 +18,10 @@ cd "$(dirname "$0")/.."
 
 export DOTNET_ROOT="${DOTNET_ROOT:-/opt/dotnet}"
 GODOT="${GODOT:-godot}"
+# 夕方の灯り（窓・アーケード・送り火）が入ってから、1フレームの描画が
+# 25% 重くなった（実測: 240フレームで 正午111秒 / 夕方139秒）。
+# 長い撮影は fps を落として同じ長さを少ないフレームで撮る
+SHOOT_FPS="${SHOOT_FPS:-30}"
 
 shoot() {                      # shoot 名前 フレーム数 スクリプト [KEY=VAL ...]
   local name=$1 frames=$2 script=$3; shift 3
@@ -25,7 +29,7 @@ shoot() {                      # shoot 名前 フレーム数 スクリプト [K
   echo "--- $name ($frames フレーム)"
   env "$@" xvfb-run -a "$GODOT" --path . \
     --write-movie "screenshots/$name/frame.png" \
-    --fixed-fps 30 --quit-after "$frames" --script "$script" \
+    --fixed-fps "$SHOOT_FPS" --quit-after "$frames" --script "$script" \
     >"/tmp/shoot_$name.log" 2>&1
   local n; n=$(ls "screenshots/$name" 2>/dev/null | wc -l)
   echo "    $n 枚"
@@ -42,10 +46,10 @@ has() {                        # 引数が無ければ全部、あれば指定�
 has cams    && shoot cams    20   res://test/CamShots.cs   SHOT_HOUR=12.5
 has cams_pm && shoot cams_pm 20   res://test/CamShots.cs   SHOT_HOUR=17.2
 has rain    && shoot rain    20   res://test/CamShots.cs   SHOT_DAY=8 SHOT_HOUR=11.0
-has run     && shoot run     1050 res://test/Presentation.cs
+has run     && SHOOT_FPS=20 shoot run 700 res://test/Presentation.cs   # 20fps で1日ぶん（35秒）
 has intro   && shoot intro   320  res://test/Intro.cs      INTRO_FRESH=1
 has ending  && shoot ending  260  res://test/Ending.cs
-has shop    && shoot shop    820  res://test/Shop.cs
+has shop    && SHOOT_FPS=20 shoot shop 550 res://test/Shop.cs
 has fishing && shoot fishing 420  res://test/Fishing.cs    FISH_CLOSEUP=1
 has dex     && shoot dex     430  res://test/Dex.cs
 has radio   && shoot radio   200  res://test/Radio.cs

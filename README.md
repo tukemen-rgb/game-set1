@@ -208,8 +208,9 @@ bash tools/make_video.sh run docs/video/summer_day.mp4 4 20   # 連番PNG＋音 
 python3 tools/check_audio.py screenshots/run                  # 音量を1秒ごとに測る
 ```
 
-**動いている20秒**: [`docs/video/summer_day.mp4`](docs/video/summer_day.mp4)
-（8月1日の団地 → 大通り → 商店街 → 公園。音つき）
+**動いているところ**（音つき）:
+[`docs/video/summer_day.mp4`](docs/video/summer_day.mp4)（20秒・8月1日の一日）/
+[`docs/video/summer_festival.mp4`](docs/video/summer_festival.mp4)（13秒・8月24日の夏まつり）
 
 ### 検査用の環境変数
 

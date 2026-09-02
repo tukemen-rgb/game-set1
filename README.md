@@ -178,6 +178,11 @@ godot --path .                                                   # 実行
 | `Radio.cs` | ラジオ体操のはんこ（8時台に台の前へ） |
 | `Talk.cs` | 町の人との立ち話 |
 
+```bash
+bash tools/shoot_all.sh              # 全場面（30分ほど）
+bash tools/shoot_all.sh cams dex     # 触った所だけ
+```
+
 ### 検査用の環境変数
 
 「撮れないものは直せない」ので、見たい状態を作るスイッチはここに集める。

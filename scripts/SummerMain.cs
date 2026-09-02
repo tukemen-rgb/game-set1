@@ -117,7 +117,7 @@ public partial class SummerMain : Node3D
     {
         [7] = new("きょうで ラジオたいそうは おしまい。\nはんこが ぜんぶ そろった。",
                   "ラジオたいそうの さいごの日。はんこが そろった。"),
-        [13] = new("おぼんが はじまった。\nどこの まども、いつもより あかるい。",
+        [13] = new("おぼんが はじまった。\n夕方には、どこの まども いつもより あかるく なるらしい。",
                    "おぼん。だんちじゅうの まどが あかるかった。"),
         [16] = new("おくりびの ひ。\nかえって いく ひとたちが いるらしい。",
                    "おくりび。なつが すこし とおのいた 気がした。"),
@@ -149,10 +149,15 @@ public partial class SummerMain : Node3D
     // --- 町の人 ---
     // ベンチのおじいさんも立ち話の二人も、置いただけで一言も話さなかった。
     // 人が居るのに黙っているのは、居ないより不自然になる。
-    private readonly record struct Townsfolk(Vector2 Pos, string Label, string[] Lines);
+    /// <summary>台詞と、それを言ってよい日付の範囲。期間ものの話が期間外に出ないため。</summary>
+    private readonly record struct Line(string Text, int From = 1, int To = 31)
+    {
+        public static implicit operator Line(string text) => new(text);
+    }
+    private readonly record struct Townsfolk(Vector2 Pos, string Label, Line[] Lines);
     private static readonly Townsfolk[] Folks =
     {
-        new(new Vector2(-1.5f, 15.2f), "おじいさん", new[]
+        new(new Vector2(-1.5f, 15.2f), "おじいさん", new Line[]
         {
             "「この あつさは、むかしの 夏には なかったよ」",
             "「この先の 空き地は、ずっと 田んぼだったんだ」",
@@ -160,21 +165,27 @@ public partial class SummerMain : Node3D
             "「学校は どうだい。\n……ああ、なつやすみか」",
             "「あの 電柱、わしより 年下なんだ」",
         }),
-        new(new Vector2(-18.6f, -1.1f), "おばさん", new[]
+        new(new Vector2(-18.6f, -1.1f), "おばさん", new Line[]
         {
             "「たまごが 安いのよ、きょう。\nいそがないと なくなる」",
             "「おおきく なったわねえ。\nこの前まで だっこして たのに」",
             "「せんたくもの、はやく 入れなさいって\nおかあさんに 言っといて」",
             "「ぼうや、水分は とってる？」",
-            "「なつまつりの 提灯、もう ついてたわ」",
+            // 提灯が見えるのは祭りの当日だけ。8/3 から「もう ついてた」と言っていた
+            new("「もうすぐ なつまつりねえ。\n屋台、たのしみに してるんでしょ」", FestivalDay - 4, FestivalDay - 1),
+            new("「なつまつりの 提灯、もう ついてたわ」", FestivalDay, FestivalDay),
+            new("「まつり、たのしかったわねえ。\nうちの 子は 金魚を 三びき」", FestivalDay + 1),
         }),
-        new(new Vector2(-19.6f, -0.2f), "となりの おばさん", new[]
+        new(new Vector2(-19.6f, -0.2f), "となりの おばさん", new Line[]
         {
             "「うちの 子は もう おきないの。\nえらいわねえ、あなたは」",
             "「あそこの 木、また セミが すごいのよ」",
             "「夕立が くるかも しれないわ。\nかさ、もってる？」",
             "「そうそう、それでね——」",
-            "「ラジオたいそう、行った？\nはんこ もらえるうちに 行きなさい」",
+            // ラジオ体操は 8/7 まで。8/31 まで「行きなさい」と言っていた
+            new("「ラジオたいそう、行った？\nはんこ もらえるうちに 行きなさい」", 1, RadioLastDay),
+            new("「ラジオたいそう、おわっちゃったわね。\nあさが しずかに なった」", RadioLastDay + 1, RadioLastDay + 5),
+            new("「しゅくだい、すすんでる？\n……きかない ほうが よかった？」", 20),
         }),
     };
     private const float FolkRange = 2.4f;
@@ -540,7 +551,8 @@ public partial class SummerMain : Node3D
             return;
         if (CheckDex())
             return;   // ずかんを開いている間は時間も止める
-        _hour += delta / SecondsPerHour;
+        if (!_shopOpen)
+            _hour += delta / SecondsPerHour;   // 品書きを見ている間は時計を止める（ずかんと同じ）
         UpdateSky();
         UpdateKomorebi();
         UpdateOkuribi(delta);
@@ -559,9 +571,10 @@ public partial class SummerMain : Node3D
             // 「こえが かわった」だけでは、何が変わったのか分からない。
             // 来た種・去った種を名指しすると、時刻と種類のつながりが伝わる
             RespawnCicadas();
-            ShowMessage(_weather == Weather.Rainy
-                ? "雨の おとが かわった……"
-                : _changeLine ?? "セミの こえが かわった。", 3.0, optional: true);
+            // 雨の日はセミが鳴いていないので、変わったと言うものが無い。
+            // 顔ぶれに変化が無い境（15→16時）でも「かわった」と言っていた
+            if (_weather != Weather.Rainy && _changeLine != null)
+                ShowMessage(_changeLine, 3.0, optional: true);
         }
         else if (SpawnSlot() != _spawnedSlot)
         {
@@ -1388,8 +1401,15 @@ public partial class SummerMain : Node3D
         bool busy = !immediate && _messageTimer > 0.0 && _fishClock - _msgShownAt < 1.2;
         if (busy && optional && _msgQueue.Count >= 2)
             return;   // 空気の文（こえが かわった 等）は、混んでいるなら言わない
-        if (busy && _msgQueue.Count < 2)
+        if (busy)
         {
+            // 満杯なら一番古い待ちを捨てる。表示中の文は守る（読まれる前に消えるのが最悪）
+            if (_msgQueue.Count >= 2)
+            {
+                (string dropped, double _, double _) = _msgQueue.Dequeue();
+                if (OS.GetEnvironment("DEBUG_MSG") == "1")
+                    GD.Print($"[msg-] 捨てた: {dropped.Replace("\n", " / ")}");
+            }
             _msgQueue.Enqueue((text, seconds, _fishClock));
             if (OS.GetEnvironment("DEBUG_MSG") == "1")
                 GD.Print($"[msg~] 待ち{_msgQueue.Count}: {text.Replace("\n", " / ")}");
@@ -1854,7 +1874,7 @@ public partial class SummerMain : Node3D
     }
 
     /// <summary>朝=0 / 昼=1 / 夕=2。変わったら顔ぶれを入れ替える。</summary>
-    private int PhaseOfHour() => _hour < 11.0 ? 0 : _hour < 16.0 ? 1 : 2;
+    private int PhaseOfHour() => _hour < 11.0 ? 0 : _hour < 17.0 ? 1 : 2;   // 夕の声（ヒグラシ）は 17 時から
 
     /// <summary>
     /// 樹液の木のカブトムシ・クワガタ。朝（8〜9時半）と夕方（17時以降）だけ来る。
@@ -2439,8 +2459,15 @@ public partial class SummerMain : Node3D
         _folkTalkedDay = _day;
         _folkTalkedIndex = idx;
         _folkTalks++;
-        string[] lines = Folks[idx].Lines;
-        ShowMessage(lines[(_day - 1 + idx * 2) % lines.Length], 4.0);
+        // その日に言ってよい台詞だけから選ぶ。日付だけで回すと、期間ものの話が
+        // 期間外に出る（ラジオ体操が終わった後も「行きなさい」と言っていた）
+        var pool = new List<string>();
+        foreach (Line l in Folks[idx].Lines)
+        {
+            if (_day >= l.From && _day <= l.To)
+                pool.Add(l.Text);
+        }
+        ShowMessage(pool[(_day - 1 + idx * 2) % pool.Count], 4.0);
     }
 
     /// <summary>その日 十円が落ちているか。日付から決まるので、同じ日は必ず同じ。</summary>
@@ -2547,6 +2574,16 @@ public partial class SummerMain : Node3D
         if (_day <= RadioLastDay)
             return $"8月{_day}日の あさ。\nラジオたいそうへ いこう。";
 
+        // 朝の一言は天気を見る。雨の朝に「せんたくものが ほされて いる」、
+        // 晴れの朝に「そうでも ない かも」と言っていた
+        if (_weather == Weather.Rainy)
+        {
+            return $"8月{_day}日の あさ。\n" + (_day % 2 == 0
+                ? "あめ。まどが くもって いる。"
+                : "あめの おとで 目が さめた。");
+        }
+        if (_weather == Weather.Cloudy)
+            return $"8月{_day}日の あさ。\nきょうも 天気が いい……と 思ったが、そうでも ない かも。";
         string[] lines =
         {
             "あさの うちは、まだ すずしい。",
@@ -2554,7 +2591,6 @@ public partial class SummerMain : Node3D
             "せんたくものが、もう ほされて いる。",
             "とおくで 工事の 音が している。",
             "きのうの ことを、少し わすれて いる。",
-            "きょうも 天気が いい……と 思ったが、そうでも ない かも。",
         };
         return $"8月{_day}日の あさ。\n{lines[(_day - 1) % lines.Length]}";
     }
@@ -2644,9 +2680,15 @@ public partial class SummerMain : Node3D
     {
         if (_weather == Weather.Rainy)
             return "「よく 来たね。\nこんな日は、あめの 生きものが 出るよ」";
+        if (_day == FestivalDay)
+            return "「きょうは まつりだよ。\n屋台は 夕方から。おこづかい、もって おいで」";
         if (_day < LastDay && WeatherOfDay(_day + 1) == Weather.Rainy)
             return "「あしたは 雨が くるよ。\n足が いたむ日は だいたい あたる」";
-        return GrannyLines[(_day - 1) % GrannyLines.Length];
+        string line = GrannyLines[(_day - 1) % GrannyLines.Length];
+        // 祭りの話は前と後で変える。8/31 に「なつまつり、いくのかい」と言っていた
+        if (line == GrannyLines[6] && _day > FestivalDay)
+            line = "「まつりは どうだった。\nうちの 屋台、見て くれたかい」";
+        return line;
     }
 
     /// <summary>品書き。矢印で選び、スペースで買う。</summary>
@@ -2789,7 +2831,13 @@ public partial class SummerMain : Node3D
         else if (_weather == Weather.Rainy)
             line = $"あめの日にしか いない むしを {_todayCaught}ひき つかまえた。";
         if (Events.TryGetValue(_day, out Event todayEvent))
-            return $"【日記】8月{_day}日({Weekday()})\n{line}\n{todayEvent.Diary}\nあしたは なにを しようかな。";
+        {
+            string ev = todayEvent.Diary;
+            // 8/7 は押した数で言い分ける。押していなくても「そろった」と書いていた
+            if (_day == RadioLastDay && _stamps < RadioLastDay)
+                ev = $"ラジオたいそうの さいごの日。はんこは {_stamps}こ だった。";
+            return $"【日記】8月{_day}日({Weekday()})\n{line}\n{ev}\nあしたは なにを しようかな。";
+        }
 
         // 祭りが近づくと日記が数え始める。これが「待ち遠しさ」になる
         int toFestival = FestivalDay - _day;
@@ -2910,9 +2958,10 @@ public partial class SummerMain : Node3D
         // 実際に押した数で言い方を変える
         if (_day == RadioLastDay)
         {
+            // 皆勤でも朝は「6こ」と言われた（今日のぶんを含めない）。数を言わない
             morning = _stamps >= RadioLastDay - 1
-                ? $"きょうで ラジオたいそうは おしまい。\nはんこは {_stamps}こ たまった。"
-                : $"きょうで ラジオたいそうは おしまい。\nはんこは {_stamps}こ だけだった。";
+                ? "きょうで ラジオたいそうは おしまい。\nきょうの はんこで、カードが ぜんぶ うまる。"
+                : $"きょうで ラジオたいそうは おしまい。\nはんこは まだ {_stamps}こ。";
         }
         ShowMessage(morning, 4.0);
     }

@@ -211,6 +211,23 @@ public partial class SummerMain : Node3D
     };
     // 木漏れ日。曇りと雨では薄れ、朝夕は寝るので、濃さを時刻と天気で動かす
     private readonly List<StandardMaterial3D> _komorebi = new();
+    // --- 駄菓子屋の買い物 ---
+    // 「ラムネ、ひやして あるよ」と言われて何も買えないのは、
+    // 池と同じ「期待させて返さない」形。おこづかいは毎朝100円入る。
+    private readonly record struct Goods(string Name, int Price, string Bought);
+    private static readonly Goods[] Shelf =
+    {
+        new("ラムネ", 100, "せんが ぬけて、たまが おちた。\nつめたいのが のどを とおって いく。"),
+        new("あたりくじ", 20, ""),   // 当たり外れは引いてから決める
+        new("アイス", 50, "かじると まんなかに あずきが いた。\nあたりだ、と おもった。"),
+    };
+    private const int DailyAllowance = 100;
+    private int _money = DailyAllowance;
+    private int _marbles;            // ラムネのビー玉。夏のあいだ残る
+    private bool _shopOpen;          // 品書きを開いている
+    private int _shopPick;
+    private string _todayBought = "";
+
     private CanvasLayer _dex;
     private Label _dexTitle, _dexList;
     private bool _dexOpen;
@@ -895,7 +912,7 @@ public partial class SummerMain : Node3D
         };
         _dateLabel.Text = $"8月{_day}日({Weekday()})  {h:D2}:{m:D2}  {wx}";
         _bugLabel.Text = $"むし ×{_totalCaught}   ずかん {_collected.Count}/{AllSpecies.Length}   " +
-                         $"はっけん {_found.Count}/{Spots.Length}";
+                         $"はっけん {_found.Count}/{Spots.Length}   {_money}円";
     }
 
     // --- メッセージ ---
@@ -915,9 +932,7 @@ public partial class SummerMain : Node3D
         }
         if (NearShop())
         {
-            _messageLabel.Text = _talkedDay == _day
-                ? "だがしや"
-                : "だがしや　スペースで はなす";
+            _messageLabel.Text = "だがしや　スペースで はなす・かう";
             return;
         }
         if (AtPond())
@@ -1322,6 +1337,8 @@ public partial class SummerMain : Node3D
             ["day"] = _day,
             ["totalCaught"] = _totalCaught,
             ["talkCount"] = _talkCount,
+            ["money"] = _money,
+            ["marbles"] = _marbles,
             ["collected"] = collected,
             ["found"] = found,
         };
@@ -1350,6 +1367,9 @@ public partial class SummerMain : Node3D
         _day = Mathf.Clamp((int)data["day"], 1, LastDay);
         _totalCaught = (int)data["totalCaught"];
         _talkCount = (int)data["talkCount"];
+        // 古いセーブには入っていないので、無ければ既定に戻す
+        _money = data.ContainsKey("money") ? (int)data["money"] : DailyAllowance;
+        _marbles = data.ContainsKey("marbles") ? (int)data["marbles"] : 0;
         _collected.Clear();
         foreach (Variant v in data["collected"].AsGodotArray())
             _collected.Add((int)v);
@@ -1368,18 +1388,112 @@ public partial class SummerMain : Node3D
 
     private void CheckShop()
     {
-        if (!NearShop() || !Input.IsActionJustPressed("ui_accept"))
-            return;
-        if (_talkedDay == _day)
+        if (!NearShop())
         {
-            ShowMessage("「もう 話したろう。\nまた あした おいで」", 3.0);
+            if (_shopOpen)
+                _player.Frozen = false;
+            _shopOpen = false;   // 店先を離れたら品書きは閉じる
             return;
         }
-        _talkedDay = _day;
-        // 日替わりで話が変わる。8日周期なので31日で4周し、同じ話でも間が空く
-        string line = GrannyLines[(_day - 1) % GrannyLines.Length];
-        _talkCount++;
-        ShowMessage(line, 5.0);
+
+        if (_shopOpen)
+        {
+            UpdateShelfInput();
+            return;
+        }
+        if (!Input.IsActionJustPressed("ui_accept"))
+            return;
+
+        if (_talkedDay != _day)
+        {
+            // その日の一言を先に。買い物はそのあと開く
+            _talkedDay = _day;
+            string line = GrannyLines[(_day - 1) % GrannyLines.Length];
+            _talkCount++;
+            ShowMessage(line, 5.0);
+        }
+        _shopOpen = true;
+        _shopPick = 0;
+        // 品書きは矢印で選ぶので、開いている間は歩かせない
+        _player.Frozen = true;
+        ShowShelf();
+    }
+
+    /// <summary>品書き。矢印で選び、スペースで買う。</summary>
+    private void ShowShelf()
+    {
+        var sb = new System.Text.StringBuilder();
+        sb.Append($"おこづかい {_money}円\n");
+        for (int i = 0; i < Shelf.Length; i++)
+        {
+            sb.Append(i == _shopPick ? "▶ " : "　 ")
+              .Append(Shelf[i].Name).Append('　').Append(Shelf[i].Price).Append("円　");
+        }
+        sb.Append("\nやじるしで えらぶ／スペースで かう／Ｚ で やめる");
+        ShowMessage(sb.ToString(), 60.0);
+    }
+
+    private void UpdateShelfInput()
+    {
+        if (Input.IsActionJustPressed("dex"))
+        {
+            _shopOpen = false;
+            _player.Frozen = false;
+            ShowMessage("「また おいで」", 2.0);
+            return;
+        }
+        if (Input.IsActionJustPressed("ui_right") || Input.IsActionJustPressed("ui_down"))
+        {
+            _shopPick = (_shopPick + 1) % Shelf.Length;
+            ShowShelf();
+            return;
+        }
+        if (Input.IsActionJustPressed("ui_left") || Input.IsActionJustPressed("ui_up"))
+        {
+            _shopPick = (_shopPick + Shelf.Length - 1) % Shelf.Length;
+            ShowShelf();
+            return;
+        }
+        if (!Input.IsActionJustPressed("ui_accept"))
+            return;
+
+        Goods g = Shelf[_shopPick];
+        if (_money < g.Price)
+        {
+            ShowMessage("「おかねが たりないねえ。\nあしたに しようか」", 3.0);
+            _shopOpen = false;
+            _player.Frozen = false;
+            return;
+        }
+        _money -= g.Price;
+        PlaySfx(_sfxCatch);
+        _shopOpen = false;
+        _player.Frozen = false;
+        _todayBought = g.Name;
+
+        if (g.Name == "ラムネ")
+        {
+            _marbles++;
+            ShowMessage($"{g.Bought}\nビー玉が {_marbles}こに なった。", 4.5);
+        }
+        else if (g.Name == "あたりくじ")
+        {
+            // 4回に1回あたり。小さい賭けだが、当たると声が出る
+            bool win = _rng.Randf() < 0.25f;
+            if (win)
+            {
+                _money += g.Price * 2;
+                ShowMessage("「あたりだ！」\nおばあさんが 40円 くれた。", 4.0);
+            }
+            else
+            {
+                ShowMessage("「はずれ。まあ そんなもんさ」\nかみきれを ポケットに いれた。", 4.0);
+            }
+        }
+        else
+        {
+            ShowMessage(g.Bought, 4.5);
+        }
     }
 
     // --- 発見（締切も失敗も無い。歩けば増える） ---
@@ -1425,6 +1539,10 @@ public partial class SummerMain : Node3D
             return $"【日記】8月{_day}日({Weekday()})\n{line}\n" +
                    $"あと {toFestival}日で なつまつり。\nあしたは なにを しようかな。";
 
+        if (_todayBought != "")
+            return $"【日記】8月{_day}日({Weekday()})\n{line}\n" +
+                   $"だがしやで {_todayBought}を かった。\nあしたは なにを しようかな。";
+
         if (_talkedDay == _day)
             return $"【日記】8月{_day}日({Weekday()})\n{line}\n" +
                    $"だがしやの おばあさんと はなした。\nあしたは なにを しようかな。";
@@ -1457,6 +1575,9 @@ public partial class SummerMain : Node3D
         _hour = DayStartHour;
         _todayCaught = 0;
         _todayFound = "";
+        _todayBought = "";
+        // おこづかいは毎朝入る。ためこめるが、貯めることが目的にならない額にする
+        _money = Mathf.Min(_money + DailyAllowance, 900);
         ApplyWeather();
         SaveGame();   // 一日が変わるたびに保存。中断してもここから再開できる
         _player.Position = new Vector3(-14f, 0.1f, 0f); // 団地の広場から一日開始

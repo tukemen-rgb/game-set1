@@ -211,6 +211,9 @@ public partial class SummerMain : Node3D
     };
     // 木漏れ日。曇りと雨では薄れ、朝夕は寝るので、濃さを時刻と天気で動かす
     private readonly List<StandardMaterial3D> _komorebi = new();
+    private CanvasLayer _dex;
+    private Label _dexTitle, _dexList;
+    private bool _dexOpen;
     private CanvasLayer _title;
     private Label _titlePrompt;
     private bool _atTitle;          // タイトルで入力待ち
@@ -231,6 +234,9 @@ public partial class SummerMain : Node3D
         _fade = GetNode<ColorRect>("UI/Fade");
         _cameras = GetNode<Node3D>("Cameras");
         _title = GetNodeOrNull<CanvasLayer>("Title");
+        _dex = GetNodeOrNull<CanvasLayer>("Dex");
+        _dexTitle = GetNodeOrNull<Label>("Dex/Title");
+        _dexList = GetNodeOrNull<Label>("Dex/List");
         Node komorebi = GetNodeOrNull("Komorebi");
         if (komorebi != null)
         {
@@ -304,6 +310,8 @@ public partial class SummerMain : Node3D
         }
         if (_vacationOver || _transitioning)
             return;
+        if (CheckDex())
+            return;   // ずかんを開いている間は時間も止める
         _hour += delta / SecondsPerHour;
         UpdateSky();
         UpdateKomorebi();
@@ -356,6 +364,61 @@ public partial class SummerMain : Node3D
             // 完全に透明な板を描き続けても意味が無い
             m.NoDepthTest = false;
         }
+    }
+
+    // --- ずかん ---
+
+    /// <summary>その種をどこで見つけるかの手がかり。未捕獲でもここは見せる。</summary>
+    private static string SpeciesHint(Species sp)
+    {
+        if (sp.PondOnly)
+            return "こうえんの いけ";
+        if (sp.RainOnly)
+            return "あめの ひ";
+        string band = sp.FromHour < 10 ? "あさ" : sp.FromHour < 15 ? "ひる" : "ゆうがた";
+        return $"きの みき　{band}（{sp.FromHour}〜{sp.ToHour}じ）";
+    }
+
+    /// <summary>開いている間は true。時間も操作も止める。</summary>
+    private bool CheckDex()
+    {
+        if (Input.IsActionJustPressed("dex"))
+        {
+            _dexOpen = !_dexOpen;
+            if (_dex != null)
+                _dex.Visible = _dexOpen;
+            _player.Frozen = _dexOpen;
+            // 日付・匹数のラベルが透けて重なるので、開いている間は隠す
+            GetNode<CanvasLayer>("UI").Visible = !_dexOpen;
+            if (_dexOpen)
+                FillDex();
+        }
+        return _dexOpen;
+    }
+
+    /// <summary>
+    /// 捕った種は名前と手がかり、まだの種は「？？？」と手がかりだけ。
+    /// 名前を伏せても手がかりを見せるのは、次にどこへ行けばいいかを渡すため。
+    /// </summary>
+    private void FillDex()
+    {
+        if (_dexTitle == null || _dexList == null)
+            return;
+        _dexTitle.Text = $"ずかん　{_collected.Count} / {AllSpecies.Length}";
+        var sb = new System.Text.StringBuilder();
+        for (int i = 0; i < AllSpecies.Length; i++)
+        {
+            bool got = _collected.Contains(i);
+            string name = got ? AllSpecies[i].Name : "？？？";
+            // 1種1行。2行使うと9種が画面に入らない
+            sb.Append(got ? "●　" : "○　").Append(name.PadRight(8, '　'))
+              .Append('　').Append(SpeciesHint(AllSpecies[i])).Append('\n');
+        }
+        sb.Append('\n');
+        sb.Append(_collected.Count == AllSpecies.Length
+            ? "ぜんぶ そろった。"
+            : "まだ 会って いない ものが いる。");
+        _dexList.Text = sb.ToString();
     }
 
     // --- タイトル ---

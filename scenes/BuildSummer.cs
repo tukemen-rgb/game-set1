@@ -1339,6 +1339,49 @@ public partial class BuildSummer : SceneTree
         prompt.Text = "スペースで はじめる";
         title.AddChild(prompt);
 
+        // 操作はここで渡す。本編の途中で操作説明を出すと、雰囲気を壊す
+        Label keys = MakeLabel("Keys", 21);
+        keys.SetAnchorsPreset(Control.LayoutPreset.FullRect);
+        keys.OffsetTop = 592f;
+        keys.HorizontalAlignment = HorizontalAlignment.Center;
+        keys.VerticalAlignment = VerticalAlignment.Center;
+        keys.Modulate = new Color(1f, 1f, 1f, 0.78f);
+        keys.Text = "やじるし あるく　　Shift はしる　　スペース むしあみ・つり・はなす　　Ｚ ずかん";
+        title.AddChild(keys);
+
         root.AddChild(title);
+
+        // --- ずかん ---
+        // 31日かけて9種を集めるのに、数（3/9）しか見られず「何を捕ったか」を
+        // 一度も見返せなかった。集める遊びの答えを返す場所を作る。
+        var dex = new CanvasLayer { Name = "Dex", Layer = 3, Visible = false };
+        var dexBg = new ColorRect { Name = "Bg", Color = new Color(0.06f, 0.09f, 0.07f, 0.88f) };
+        dexBg.SetAnchorsPreset(Control.LayoutPreset.FullRect);
+        dex.AddChild(dexBg);
+
+        Label dexTitle = MakeLabel("Title", 40);
+        dexTitle.SetAnchorsPreset(Control.LayoutPreset.FullRect);
+        dexTitle.OffsetTop = 34f;
+        dexTitle.OffsetBottom = -560f;
+        dexTitle.HorizontalAlignment = HorizontalAlignment.Center;
+        dex.AddChild(dexTitle);
+
+        Label dexList = MakeLabel("List", 28);
+        dexList.SetAnchorsPreset(Control.LayoutPreset.FullRect);
+        dexList.OffsetLeft = 150f;
+        dexList.OffsetRight = -150f;
+        dexList.OffsetTop = 100f;
+        dexList.OffsetBottom = -70f;
+        dex.AddChild(dexList);
+
+        Label dexFoot = MakeLabel("Foot", 24);
+        dexFoot.SetAnchorsPreset(Control.LayoutPreset.FullRect);
+        dexFoot.OffsetTop = 580f;
+        dexFoot.HorizontalAlignment = HorizontalAlignment.Center;
+        dexFoot.VerticalAlignment = VerticalAlignment.Center;
+        dexFoot.Text = "Ｚ で とじる";
+        dex.AddChild(dexFoot);
+
+        root.AddChild(dex);
     }
 }

@@ -8941,3 +8941,65 @@ theme_override_constants/outline_size = 8
 text = "スペースで はじめる"
 horizontal_alignment = 1
 vertical_alignment = 1
+
+[node name="Keys" type="Label" parent="Title"]
+modulate = Color(1, 1, 1, 0.78)
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = 592.0
+theme_override_fonts/font = SubResource("SystemFont_6t880")
+theme_override_font_sizes/font_size = 21
+theme_override_colors/font_outline_color = Color(0.1, 0.1, 0.15, 1)
+theme_override_constants/outline_size = 8
+text = "やじるし あるく　　Shift はしる　　スペース むしあみ・つり・はなす　　Ｚ ずかん"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Dex" type="CanvasLayer" parent="."]
+layer = 3
+visible = false
+
+[node name="Bg" type="ColorRect" parent="Dex"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+color = Color(0.06, 0.09, 0.07, 0.88)
+
+[node name="Title" type="Label" parent="Dex"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = 34.0
+offset_bottom = -560.0
+theme_override_fonts/font = SubResource("SystemFont_6t880")
+theme_override_font_sizes/font_size = 40
+theme_override_colors/font_outline_color = Color(0.1, 0.1, 0.15, 1)
+theme_override_constants/outline_size = 8
+horizontal_alignment = 1
+
+[node name="List" type="Label" parent="Dex"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 150.0
+offset_top = 100.0
+offset_right = -150.0
+offset_bottom = -70.0
+theme_override_fonts/font = SubResource("SystemFont_6t880")
+theme_override_font_sizes/font_size = 28
+theme_override_colors/font_outline_color = Color(0.1, 0.1, 0.15, 1)
+theme_override_constants/outline_size = 8
+
+[node name="Foot" type="Label" parent="Dex"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = 580.0
+theme_override_fonts/font = SubResource("SystemFont_6t880")
+theme_override_font_sizes/font_size = 24
+theme_override_colors/font_outline_color = Color(0.1, 0.1, 0.15, 1)
+theme_override_constants/outline_size = 8
+text = "Ｚ で とじる"
+horizontal_alignment = 1
+vertical_alignment = 1

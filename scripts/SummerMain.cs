@@ -22,7 +22,11 @@ public partial class SummerMain : Node3D
     [Export]
     public bool Overcast { get; set; }
 
-    /// <summary>true なら導入を飛ばす（キャプチャ用。人が遊ぶときは常に false）。</summary>
+    /// <summary>
+    /// true なら導入を飛ばす。キャプチャ・検査の実行を意味するので、
+    /// セーブの読み書きも行わない（検査が人のセーブを壊さないため）。
+    /// 人が遊ぶときは常に false。
+    /// </summary>
     [Export]
     public bool SkipIntro { get; set; }
 
@@ -152,6 +156,10 @@ public partial class SummerMain : Node3D
     private double _nextFirework;
     private int _talkedDay = -1;      // 同じ日に何度も同じ話をしないため
     private int _talkCount;           // 通った回数
+
+    // 1日 3.7分 × 31日 ≒ 1時間53分。ぶっ通しでしか遊べないと
+    // 結末まで辿り着く人がほとんどいなくなるので、毎朝 自動で保存する。
+    private const string SavePath = "user://summer_save.json";
     private readonly List<Vector3> _treeSpots = new();
     private readonly AudioStreamPlayer[] _cicadaVoices = new AudioStreamPlayer[3];
     // 遠景（実写パノラマ・入道雲）は Unshaded なのでライトが当たらない。
@@ -190,6 +198,9 @@ public partial class SummerMain : Node3D
                 _treeSpots.Add(tree.Position);
         }
         _day = Mathf.Max(1, StartDay);
+        bool continued = LoadGame();
+        GD.Print($"[save] つづきから={continued} 日付=8月{_day}日 " +
+                 $"セミ={_totalCaught} ずかん={_collected.Count} はっけん={_found.Count}");
         _weather = WeatherOfDay(_day);
         Overcast = _weather != Weather.Sunny;
         if (RngSeed != 0)
@@ -210,6 +221,9 @@ public partial class SummerMain : Node3D
         UpdateCamera(force: true);
         if (SkipIntro)
             ShowMessage($"2000年8月{_day}日。ニュータウンの なつやすみ。", 4.0);
+        else if (continued)
+            // 続きから。導入はもう見ているので流さない
+            ShowMessage($"8月{_day}日。\nつづきから はじめる。", 4.0);
         else
             _ = PlayIntro();
     }
@@ -310,6 +324,10 @@ public partial class SummerMain : Node3D
     /// </summary>
     private async Task PlayEnding()
     {
+        // 夏が終わったら記録を消す。次に起動したら、また8月1日から
+        if (!SkipIntro && FileAccess.FileExists(SavePath))
+            DirAccess.RemoveAbsolute(ProjectSettings.GlobalizePath(SavePath));
+
         _messageLabel.Text =
             $"8月31日。なつやすみが おわった。\n" +
             $"つかまえたセミ、ぜんぶで {_totalCaught}ひき。\n" +
@@ -911,6 +929,60 @@ public partial class SummerMain : Node3D
         }
     }
 
+    // --- 中断と再開（毎朝 自動保存。メニューは持たない） ---
+
+    private void SaveGame()
+    {
+        if (SkipIntro)
+            return;   // 検査実行では書かない
+        var collected = new Godot.Collections.Array();
+        foreach (int i in _collected)
+            collected.Add(i);
+        var found = new Godot.Collections.Array();
+        foreach (int i in _found)
+            found.Add(i);
+        var data = new Godot.Collections.Dictionary
+        {
+            ["day"] = _day,
+            ["totalCaught"] = _totalCaught,
+            ["talkCount"] = _talkCount,
+            ["collected"] = collected,
+            ["found"] = found,
+        };
+        using FileAccess f = FileAccess.Open(SavePath, FileAccess.ModeFlags.Write);
+        if (f == null)
+        {
+            GD.PushWarning($"セーブできない: {FileAccess.GetOpenError()}");
+            return;
+        }
+        f.StoreString(Json.Stringify(data));
+    }
+
+    /// <summary>保存があれば読み込む。読めれば true（導入を飛ばして続きから）。</summary>
+    private bool LoadGame()
+    {
+        if (SkipIntro || !FileAccess.FileExists(SavePath))
+            return false;
+        using FileAccess f = FileAccess.Open(SavePath, FileAccess.ModeFlags.Read);
+        if (f == null)
+            return false;
+        Variant parsed = Json.ParseString(f.GetAsText());
+        if (parsed.VariantType != Variant.Type.Dictionary)
+            return false;
+        var data = parsed.AsGodotDictionary();
+
+        _day = Mathf.Clamp((int)data["day"], 1, LastDay);
+        _totalCaught = (int)data["totalCaught"];
+        _talkCount = (int)data["talkCount"];
+        _collected.Clear();
+        foreach (Variant v in data["collected"].AsGodotArray())
+            _collected.Add((int)v);
+        _found.Clear();
+        foreach (Variant v in data["found"].AsGodotArray())
+            _found.Add((int)v);
+        return true;
+    }
+
     // --- 駄菓子屋（町にいる ただ一人の相手） ---
 
     private bool NearShop()
@@ -1008,6 +1080,7 @@ public partial class SummerMain : Node3D
         _todayCaught = 0;
         _todayFound = "";
         ApplyWeather();
+        SaveGame();   // 一日が変わるたびに保存。中断してもここから再開できる
         _player.Position = new Vector3(-14f, 0.1f, 0f); // 団地の広場から一日開始
         RespawnCicadas();
         _messageLabel.Text = "";

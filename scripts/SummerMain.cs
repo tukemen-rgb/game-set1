@@ -671,6 +671,10 @@ public partial class SummerMain : Node3D
         if (_chime == null || _chimedDay == _day || _hour < ChimeHour)
             return;
         _chimedDay = _day;
+        // 17 時をまたいだ瞬間だけ鳴る。夕方から始める検査（StartHour 18.4）で
+        // 開始直後に「五時の チャイム」が鳴っていた
+        if (_hour > ChimeHour + 0.2)
+            return;
         _chime.Play();
         ShowMessage("五時の チャイムが 鳴った。", 3.0);
     }
@@ -1094,8 +1098,8 @@ public partial class SummerMain : Node3D
             InitialVelocityMin = 9f,
             InitialVelocityMax = 16f,
             Gravity = new Vector3(0f, -4.5f, 0f),
-            ScaleAmountMin = 0.9f,
-            ScaleAmountMax = 1.8f,
+            ScaleAmountMin = 1.0f,
+            ScaleAmountMax = 2.2f,
             ColorRamp = fade,
             Mesh = new SphereMesh { Radius = 0.36f, Height = 0.72f, RadialSegments = 5, Rings = 3 },
         };
@@ -1510,8 +1514,8 @@ public partial class SummerMain : Node3D
             return;
         }
         Species sp = AllSpecies[_cicadaSpecies[near]];
-        string mark = _collected.Contains(_cicadaSpecies[near]) ? "" : "  ★みつけていない！";
-        _messageLabel.Text = $"{sp.Name}だ！ スペースで 虫あみを ふる{mark}";
+        string mark = _collected.Contains(_cicadaSpecies[near]) ? "" : "　★はじめて";   // 長いと1語だけ2行目に落ちる
+        _messageLabel.Text = $"{sp.Name}だ！ スペースで ふる{mark}";
     }
 
     // --- セミとり ---

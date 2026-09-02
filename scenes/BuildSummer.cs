@@ -589,6 +589,25 @@ public partial class BuildSummer : SceneTree
         var panel = Box(new Vector3(0.8f, 0.9f, 0.05f), new Vector3(0f, 1.25f, -0.41f), new Color(0.9f, 0.9f, 0.92f));
         panel.Name = "VendingPanel";
         vending.AddChild(panel);
+        // 自販機の下の十円玉。発見の独白が「ときどき 十円が おちて いる」と
+        // 言うのに、拾えた ためしが無かった。日によって本当に落ちている
+        var coin = new Node3D { Name = "Coin", Position = new Vector3(14.5f, 0f, 10.28f), Visible = false };
+        // 実物大（直径2.3cm）だと歩いている高さからは見えない。
+        // 拾えるものだと気づける大きさ・明るさにする
+        var coinMat = new StandardMaterial3D
+        {
+            AlbedoColor = new Color(0.85f, 0.66f, 0.34f),
+            Metallic = 0.7f,
+            Roughness = 0.25f,
+        };
+        var coinMesh = MeshI(new CylinderMesh { TopRadius = 0.085f, BottomRadius = 0.085f, Height = 0.012f },
+            // 歩道は厚さ0.08の板なので、y=0.02 だと**舗装の中に埋まる**
+            // （撮っても何も写らず、そこで初めて気づいた）
+            new Vector3(0f, 0.095f, 0f), coinMat);
+        coinMesh.RotationDegrees = new Vector3(4f, 0f, 7f);   // 少し傾いて落ちている
+        coin.AddChild(coinMesh);
+        street.AddChild(coin);
+
         street.AddChild(vending);
         root.AddChild(street);
     }

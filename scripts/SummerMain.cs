@@ -337,6 +337,12 @@ public partial class SummerMain : Node3D
     // 池の水。金属寄りの材質なので、放っておくと夕方でも真昼の青のまま残る
     // 夏まつりの提灯と裸電球。昼は紙のまま、夕方から灯る
     private readonly List<(StandardMaterial3D Mat, Color Lit)> _festivalLights = new();
+    // 自販機の下の十円玉。5日に1度くらい落ちている（日付から決まる）
+    private static readonly Vector2 CoinPos = new(14.5f, 10.28f);
+    private const int VendingSpot = 3;   // Spots のうち自販機の場所
+    private Node3D _coin;
+    private int _coinTakenDay = -1;
+    private int _coinsFound;
     private StandardMaterial3D _pondWater;
     private Color _pondWaterBase;
     private const int OkuribiDay = 16;
@@ -438,6 +444,7 @@ public partial class SummerMain : Node3D
                     _festivalLights.Add((fm, fm.AlbedoColor));
             }
         }
+        _coin = GetNodeOrNull<Node3D>("Shotengai/Coin");
         _streetLights = GetNodeOrNull<Node3D>("Shotengai/StreetLights");
         if (_streetLights != null)
         {
@@ -533,6 +540,7 @@ public partial class SummerMain : Node3D
                 : $"{_phaseSpecies}が 鳴きはじめた。", 3.0);
         }
         CheckRadio();
+        CheckCoin();
         CheckFolk();
         CheckAsagao();
         CheckShop();
@@ -797,6 +805,8 @@ public partial class SummerMain : Node3D
             extra += $"\n町の人と {_folkTalks}回 立ち話を した。";
         if (_goldfish > 0)
             extra += $"\n金魚は {_goldfish}ひき つれて かえった。";
+        if (_coinsFound > 0)
+            extra += $"\nじはんきの したで 十円を {_coinsFound}回 ひろった。";
         if (_foundLater.Count > 0)
             extra += $"\nおなじ ばしょへ {_foundLater.Count}回 もどって みた。";
         _messageLabel.Text =
@@ -1275,6 +1285,12 @@ public partial class SummerMain : Node3D
             _messageLabel.Text = _watchedDay == _day
                 ? "あさがお"
                 : "あさがお　スペースで みる";
+            return;
+        }
+        if (_coin != null && _coin.Visible &&
+            new Vector2(_player.Position.X, _player.Position.Z).DistanceTo(CoinPos) < 1.9f)
+        {
+            _messageLabel.Text = "なにか おちて いる　スペースで ひろう";
             return;
         }
         if (AtRadio())
@@ -1996,6 +2012,7 @@ public partial class SummerMain : Node3D
             ["bloomSeen"] = _bloomSeen,
             ["folkTalks"] = _folkTalks,
             ["goldfish"] = _goldfish,
+            ["coins"] = _coinsFound,
             ["foundLater"] = FromSet(_foundLater),
             ["collected"] = collected,
             ["found"] = found,
@@ -2032,6 +2049,7 @@ public partial class SummerMain : Node3D
         _bloomSeen = data.ContainsKey("bloomSeen") ? (int)data["bloomSeen"] : 0;
         _folkTalks = data.ContainsKey("folkTalks") ? (int)data["folkTalks"] : 0;
         _goldfish = data.ContainsKey("goldfish") ? (int)data["goldfish"] : 0;
+        _coinsFound = data.ContainsKey("coins") ? (int)data["coins"] : 0;
         _foundLater.Clear();
         if (data.ContainsKey("foundLater"))
         {
@@ -2133,6 +2151,48 @@ public partial class SummerMain : Node3D
         _folkTalks++;
         string[] lines = Folks[idx].Lines;
         ShowMessage(lines[(_day - 1 + idx * 2) % lines.Length], 4.0);
+    }
+
+    /// <summary>その日 十円が落ちているか。日付から決まるので、同じ日は必ず同じ。</summary>
+    /// <summary>
+    /// その日 十円が落ちているか。日付から決まるので、同じ日は必ず同じ。
+    /// 5日おきのような規則的な式だと、2周目で並びを覚えられて
+    /// 「のぞく楽しみ」が計算になる。散らばる式を選んだ
+    /// （8/6, 9, 13, 16, 23, 30 の6日）。
+    /// </summary>
+    private bool CoinToday(int day) => (day * 29 + 41) % 100 < 20;
+
+    /// <summary>
+    /// 発見の独白。自販機のところだけは、その日の十円の有無で結びが変わる。
+    /// 落ちている日に「きょうは なかった」と言ってしまうと、
+    /// 足元に十円が転がっているのに嘘をつくことになる（実際そうなっていた）。
+    /// </summary>
+    private string SpotText(int i)
+    {
+        if (i != VendingSpot)
+            return Spots[i].Text;
+        return "じはんきの したを のぞくと、ときどき 十円が おちて いる。\n"
+             + (CoinToday(_day) ? "……きょうは、あった。" : "きょうは なかった。");
+    }
+
+    /// <summary>自販機の下をのぞく。落ちている日は拾える。</summary>
+    private void CheckCoin()
+    {
+        if (_coin == null)
+            return;
+        bool there = CoinToday(_day) && _coinTakenDay != _day;
+        if (_coin.Visible != there)
+            _coin.Visible = there;
+        if (!there || !Input.IsActionJustPressed("ui_accept"))
+            return;
+        if (new Vector2(_player.Position.X, _player.Position.Z).DistanceTo(CoinPos) > 1.9f)
+            return;
+        _coinTakenDay = _day;
+        _coin.Visible = false;
+        _coinsFound++;
+        _money = Mathf.Min(_money + 10, 900);
+        PlaySfx(_sfxCatch);
+        ShowMessage("じはんきの したに 十円。\nもらって おこう。", 3.0);
     }
 
     private bool AtAsagao()
@@ -2359,9 +2419,10 @@ public partial class SummerMain : Node3D
             {
                 _found.Add(i);
                 _foundToday.Add(i);
+                string text = SpotText(i);
                 if (_todayFound == "")
-                    _todayFound = Spots[i].Text.Replace("\n", "");
-                ShowMessage(Spots[i].Text, 5.0);
+                    _todayFound = text.Replace("\n", "");
+                ShowMessage(text, 5.0);
                 return;
             }
             // 夏の後半、同じ場所へもう一度来ると、ひと月ぶんの時間が乗った

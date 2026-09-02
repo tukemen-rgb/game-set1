@@ -70,6 +70,10 @@ public partial class SummerMain : Node3D
         new("クワガタ", new Color(0.13f, 0.11f, 0.1f), 8, 19, 0.45f, SapOnly: true),
     };
     private const float CatchRange = 2.2f;
+    // 走って近づくと虫は逃げる。歩きを既定にした（イテレーション24）意味を
+    // 遊びの側にも通す。走るのが速いだけなら、歩く理由が絵にしか無い
+    private const float StartleRange = 4.0f;
+    private bool _toldStartle;      // 「そっと ちかづく」は一度だけ教える
 
     // 樹液の出るくぬぎ（空き地のそば）。ここだけ甲虫が来る
     private static readonly Vector3 SapTree = new(19f, 0f, 5f);
@@ -451,6 +455,7 @@ public partial class SummerMain : Node3D
         CheckFolk();
         CheckAsagao();
         CheckShop();
+        CheckStartle();
         _fishClock += delta;
         if (_fishingPutAwayAt > 0.0 && _fishClock >= _fishingPutAwayAt)
         {
@@ -1633,6 +1638,32 @@ public partial class SummerMain : Node3D
             ShowMessage("あっ、はさみを はなされた……");
         }
         return true;
+    }
+
+    /// <summary>
+    /// 走っている間、近くの虫は逃げる。止まれば逃げないので、
+    /// 「見つけたら歩きに切り替える」が正しい遊び方になる。
+    /// 池のザリガニは水の中なので関係ない（対象から外れている）。
+    /// </summary>
+    private void CheckStartle()
+    {
+        if (_player == null || !_player.Running)
+            return;
+        for (int i = _cicadas.Count - 1; i >= 0; i--)
+        {
+            if (_player.Position.DistanceTo(_cicadas[i].Position) >= StartleRange)
+                continue;
+            string name = AllSpecies[_cicadaSpecies[i]].Name;
+            _cicadas[i].QueueFree();
+            _cicadas.RemoveAt(i);
+            _cicadaSpecies.RemoveAt(i);
+            PlaySfx(_sfxEscape);
+            ShowMessage(_toldStartle
+                ? $"{name}に にげられた。"
+                : $"{name}に にげられた……。\nそっと ちかづかないと だめだ。", 3.0);
+            _toldStartle = true;
+            return;   // 1フレームに1匹まで。まとめて消えると理由が伝わらない
+        }
     }
 
     private void CheckCatch()

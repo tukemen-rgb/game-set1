@@ -16,6 +16,9 @@ public partial class PlayerController : CharacterBody3D
     /// <summary>日付切り替え演出中などに移動を止めるフラグ。</summary>
     public bool Frozen { get; set; }
 
+    /// <summary>いま走っているか。虫が逃げるかどうかの判定に使う。</summary>
+    public bool Running { get; private set; }
+
     // 歩行アニメ用。腕と脚を肩／腰から振る
     private Node3D _armL, _armR, _legL, _legR;
     private Node3D _net, _rod, _rodTip;
@@ -199,7 +202,8 @@ public partial class PlayerController : CharacterBody3D
         }
 
         Vector2 input = Input.GetVector("ui_left", "ui_right", "ui_up", "ui_down");
-        float speed = Input.IsActionPressed("run") ? RunSpeed : WalkSpeed;
+        Running = Input.IsActionPressed("run") && input.LengthSquared() > 0.01f;
+        float speed = Running ? RunSpeed : WalkSpeed;
         Vector3 v = Velocity;
         v.X = input.X * speed;
         v.Z = input.Y * speed;

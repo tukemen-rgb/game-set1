@@ -1065,8 +1065,11 @@ public partial class SummerMain : Node3D
         // gl_compatibility では環境光が絵の大半を作る。太陽の色だけ金にしても
         // 芝が真昼のまま緑に光っていた（撮って確かめた）。環境光も一緒に
         // 暖色へ寄せて落とさないと、夕方は夕方に見えない
-        _env.AmbientLightColor = ambient.Lerp(new Color(0.5f, 0.34f, 0.27f), warm * 0.8f)
-                                 * (1f - 0.28f * warm);
+        // 17時だけ見て決めたら、18時過ぎが**セピア写真**のように茶色く潰れた。
+        // 寄せ先を明るくし、寄せ具合に上限（0.7）を、暗くする量にも上限を置く。
+        // 「夕方らしさ」は色の傾きで作るもので、暗くして作るものではない
+        _env.AmbientLightColor = ambient.Lerp(new Color(0.62f, 0.5f, 0.44f), Mathf.Min(warm, 0.7f) * 0.75f)
+                                 * (1f - 0.16f * warm);
 
         // 遠景も同じ光の下に置く。真昼は素の色、朝夕は太陽の色に寄せて暗くする
         Color sunTint = sunColor;

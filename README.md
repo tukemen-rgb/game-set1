@@ -5,6 +5,8 @@
 [Godogen](https://github.com/htdt/godogen) の Godot/Claude パイプライン
 （`CLAUDE.md` / `godot.md`）で開発している。
 
+**社長へ**: 留守のあいだの要約は [`docs/WHILE_YOU_WERE_AWAY.md`](docs/WHILE_YOU_WERE_AWAY.md) に1枚でまとめてある。
+
 「夏休みもの」の文法（有限の31日・固定カメラ・小さな遊び・日記）は使うが、
 舞台・年代・意匠はオリジナル。経緯は `docs/RESEARCH.md`、
 自走開発の判断ログは `docs/AUTOPILOT.md`。

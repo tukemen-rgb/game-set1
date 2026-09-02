@@ -1039,14 +1039,32 @@ public partial class SummerMain : Node3D
         _sky.SkyHorizonColor = hor;
         _sky.GroundHorizonColor = hor;
         _env.FogLightColor = hor;
-        _env.AmbientLightColor = hor.Lerp(Colors.White, 0.45f) * 0.8f;
+        Color ambient = hor.Lerp(Colors.White, 0.45f) * 0.8f;
         float arc = Mathf.Sin(t * Mathf.Pi);
         _sun.RotationDegrees = new Vector3(-10f - 60f * arc, -150f + 120f * t, 0f);
-        _sun.LightEnergy = 0.55f + 0.65f * arc;
-        _sun.LightColor = new Color(1f, 0.72f + 0.26f * arc, 0.55f + 0.4f * arc);
+
+        // 光の色は「太陽の高さ」ではなく「時刻」で決める。
+        // 高さ（arc）に比例させていたときは、17時でもまだ (1, 0.83, 0.72) の
+        // ほぼ白い光で、空だけ夕焼けなのに地面は真昼のままだった。
+        // 夕方は 14時から効き始めて 19時で最も濃い金色になる。
+        float evening = Mathf.Pow(Mathf.Clamp((float)((_hour - 14.0) / 5.0), 0f, 1f), 1.3f);
+        float morning = Mathf.Clamp((float)((9.5 - _hour) / 3.5), 0f, 1f) * 0.55f;
+        float warm = Mathf.Max(evening, morning);
+        var noonLight = new Color(1f, 0.98f, 0.94f);
+        var goldLight = new Color(1f, 0.6f, 0.3f);
+        Color sunColor = noonLight.Lerp(goldLight, warm);
+        _sun.LightColor = sunColor;
+        // 金色になるほど弱くする。明るいまま色だけ変えると絵の具に見える
+        _sun.LightEnergy = (0.55f + 0.65f * arc) * (1f - 0.38f * warm);
+
+        // gl_compatibility では環境光が絵の大半を作る。太陽の色だけ金にしても
+        // 芝が真昼のまま緑に光っていた（撮って確かめた）。環境光も一緒に
+        // 暖色へ寄せて落とさないと、夕方は夕方に見えない
+        _env.AmbientLightColor = ambient.Lerp(new Color(0.5f, 0.34f, 0.27f), warm * 0.8f)
+                                 * (1f - 0.28f * warm);
 
         // 遠景も同じ光の下に置く。真昼は素の色、朝夕は太陽の色に寄せて暗くする
-        var sunTint = new Color(1f, 0.72f + 0.26f * arc, 0.55f + 0.4f * arc);
+        Color sunTint = sunColor;
         float bright = 0.45f + 0.55f * arc;
         ApplySkyTint(Colors.White.Lerp(sunTint, 0.65f) * bright);
 

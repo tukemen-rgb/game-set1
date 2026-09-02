@@ -215,12 +215,15 @@ public partial class BuildSummer : SceneTree
         var ground = new StaticBody3D { Name = "Ground" };
         ground.AddChild(new CollisionShape3D
         {
-            Shape = new BoxShape3D { Size = new Vector3(120f, 1f, 120f) },
+            Shape = new BoxShape3D { Size = new Vector3(200f, 1f, 200f) },
             Position = new Vector3(0f, -0.5f, 0f),
         });
         // 芝は画面の大半を占めるので、実写が届いていればそれを使う
-        ground.AddChild(MeshI(new PlaneMesh { Size = new Vector2(120f, 120f) }, Vector3.Zero,
-            TexMat(BestTex("gen/TEX-grass_summer.jpg", "grass"), new Vector2(26f, 26f))));
+        // 120m 角だと、遠景の円筒（半径62m）の内側で地面が終わり、
+        // 高いカメラからは芝の縁が「世界の端」として弧に見えていた。
+        // 円筒の外まで伸ばせば、縁は円筒の壁に隠れる
+        ground.AddChild(MeshI(new PlaneMesh { Size = new Vector2(200f, 200f) }, Vector3.Zero,
+            TexMat(BestTex("gen/TEX-grass_summer.jpg", "grass"), new Vector2(43f, 43f))));
         root.AddChild(ground);
 
         var roads = new Node3D { Name = "Roads" };

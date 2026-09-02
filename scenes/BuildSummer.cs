@@ -862,6 +862,37 @@ public partial class BuildSummer : SceneTree
                 };
                 backdrop.AddChild(night);
             }
+
+            // 夕焼け空。町のパノラマ（y=-3..43）の上半分だけを覆う位置に置く。
+            // 町並みの帯とは高さで住み分けるので、遠景と喧嘩しない。
+            // 一番内側の半径にして、夕方だけ前面に出す。
+            const string SunsetPath = "res://assets/sky/SKY-sunset.jpg";
+            if (ResourceLoader.Exists(SunsetPath))
+            {
+                var duskMat = new StandardMaterial3D
+                {
+                    AlbedoTexture = GD.Load<Texture2D>(SunsetPath),
+                    ShadingMode = BaseMaterial3D.ShadingModeEnum.Unshaded,
+                    CullMode = BaseMaterial3D.CullModeEnum.Disabled,
+                    Transparency = BaseMaterial3D.TransparencyEnum.Alpha,
+                    AlbedoColor = new Color(1f, 1f, 1f, 0f),   // 昼は完全に透明
+                    // 写真の下端は暗い陸地なので、上 82% だけを使う
+                    Uv1Scale = new Vector3(3f, 0.82f, 1f),
+                };
+                var dusk = new MeshInstance3D
+                {
+                    Name = "PanoramaDusk",
+                    Mesh = new CylinderMesh
+                    {
+                        TopRadius = 61f, BottomRadius = 61f, Height = 42f,
+                        RadialSegments = 48, CapTop = false, CapBottom = false,
+                    },
+                    MaterialOverride = duskMat,
+                    CastShadow = GeometryInstance3D.ShadowCastingSetting.Off,
+                    Position = new Vector3(0f, 39f, 0f),   // y=18..60。町の帯より上
+                };
+                backdrop.AddChild(dusk);
+            }
         }
 
         // 西〜北西の遠景団地群（簡易版住棟）。マット絵がある側は間引く

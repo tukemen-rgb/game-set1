@@ -167,6 +167,7 @@ public partial class SummerMain : Node3D
     private readonly List<(StandardMaterial3D Mat, Color Base)> _skyTinted = new();
     private StandardMaterial3D _nightPano;   // 夕方から重なってくる夜の遠景
     private StandardMaterial3D _dayPano;     // 昼の遠景
+    private StandardMaterial3D _duskSky;     // 夕方だけ上空に重なる夕焼け
     private string _panoZone = "";           // いま貼っている場所
 
     // 場面ごとに実写が1枚ずつある。遠景もその場所のものに差し替える。
@@ -217,6 +218,8 @@ public partial class SummerMain : Node3D
             _nightPano = np.MaterialOverride as StandardMaterial3D;
         if (GetNodeOrNull("Backdrop/Panorama") is MeshInstance3D dp)
             _dayPano = dp.MaterialOverride as StandardMaterial3D;
+        if (GetNodeOrNull("Backdrop/PanoramaDusk") is MeshInstance3D sk)
+            _duskSky = sk.MaterialOverride as StandardMaterial3D;
         RespawnCicadas();
         UpdateCamera(force: true);
         if (SkipIntro)
@@ -374,7 +377,7 @@ public partial class SummerMain : Node3D
     {
         if (node == null)
             return;
-        if (node.Name != "PanoramaNight"
+        if (node.Name != "PanoramaNight" && node.Name != "PanoramaDusk"
             && node is MeshInstance3D mi && mi.MaterialOverride is StandardMaterial3D m
             && m.ShadingMode == BaseMaterial3D.ShadingModeEnum.Unshaded
             && !_skyTinted.Exists(e => e.Mat == m))
@@ -670,6 +673,16 @@ public partial class SummerMain : Node3D
         {
             float nightAlpha = Mathf.Clamp((float)((_hour - 17.0) / 2.0), 0f, 1f);
             _nightPano.AlbedoColor = new Color(1f, 1f, 1f, nightAlpha);
+        }
+
+        // 夕焼け空は 16時から立ち上がり 17:40 で最大、そこから夜に譲って引く。
+        // 山形にすることで「夕焼けの時間」がはっきり存在するようになる
+        if (_duskSky != null)
+        {
+            float up = Mathf.Clamp((float)((_hour - 16.0) / 1.7), 0f, 1f);
+            float down = 1f - Mathf.Clamp((float)((_hour - 17.7) / 1.3), 0f, 1f);
+            float a = Mathf.Min(up, down) * (_weather == Weather.Rainy ? 0.25f : 1f);
+            _duskSky.AlbedoColor = new Color(1f, 1f, 1f, a);
         }
     }
 

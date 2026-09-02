@@ -41,6 +41,7 @@ public partial class BuildSummer : SceneTree
         BuildDanchi(root);
         BuildShotengai(root);
         BuildRadioTaiso(root);
+        BuildPuddles(root);
         BuildPark(root);
         BuildVacantLot(root);
         BuildTrees(root);
@@ -706,6 +707,50 @@ public partial class BuildSummer : SceneTree
         t.AddChild(Box(new Vector3(0.3f, 0.1f, 0.22f), new Vector3(0.35f, 0.8f, 0f), new Color(0.9f, 0.88f, 0.8f)));
         t.AddChild(Box(new Vector3(0.09f, 0.05f, 0.09f), new Vector3(0.62f, 0.77f, 0.05f), new Color(0.7f, 0.15f, 0.15f)));
         root.AddChild(t);
+    }
+
+    /// <summary>
+    /// 水たまり。雨の日だけ出す（SummerMain が Visible を切り替える）。
+    /// 雨粒の線だけでは「雨の日」に見えず、地面に水が残って初めて伝わる。
+    /// 舗装のくぼみに溜まるものなので、道と広場の上にだけ置く。
+    /// </summary>
+    private static void BuildPuddles(Node3D root)
+    {
+        var group = new Node3D { Name = "Puddles", Visible = false };
+        var mat = new StandardMaterial3D
+        {
+            AlbedoColor = new Color(0.36f, 0.40f, 0.45f, 0.85f),
+            Transparency = BaseMaterial3D.TransparencyEnum.Alpha,
+            Roughness = 0.05f,
+            Metallic = 0.7f,
+            NormalEnabled = true,
+            NormalTexture = GD.Load<Texture2D>("res://assets/textures/water_normal.png"),
+            NormalScale = 0.35f,
+            Uv1Scale = new Vector3(2f, 2f, 1f),
+        };
+        // (x, z, 長径, 短径)。大通り・歩道・団地の広場・商店街の通路
+        (float X, float Z, float W, float H)[] spots =
+        {
+            (-3f, 8.4f, 3.2f, 1.5f), (9f, 7.6f, 2.4f, 1.1f), (-17f, 8.2f, 2.8f, 1.3f),
+            (-12f, 2.5f, 1.8f, 1.0f), (-16f, -1.5f, 2.2f, 1.2f),
+            (2f, -3.5f, 1.6f, 1.4f), (-4f, 13.6f, 2.0f, 1.1f), (6f, 15.9f, 2.6f, 1.2f),
+            (20f, 8.6f, 2.2f, 1.2f),
+        };
+        foreach ((float x, float z, float w, float h) in spots)
+        {
+            group.AddChild(new MeshInstance3D
+            {
+                Mesh = new CylinderMesh
+                {
+                    TopRadius = 0.5f, BottomRadius = 0.5f, Height = 0.01f, RadialSegments = 20,
+                },
+                MaterialOverride = mat,
+                Position = new Vector3(x, 0.075f, z),
+                Scale = new Vector3(w, 1f, h),
+                CastShadow = GeometryInstance3D.ShadowCastingSetting.Off,
+            });
+        }
+        root.AddChild(group);
     }
 
     // --- 公園（池・すべり台・ブランコ・砂場・ベンチ） ---

@@ -199,6 +199,9 @@ public partial class SummerMain : Node3D
     private StandardMaterial3D _dayPano;     // 昼の遠景
     private StandardMaterial3D _duskSky;     // 夕方だけ上空に重なる夕焼け
     private StandardMaterial3D _rainSky;     // 雨・くもりの日に上空を覆う灰色
+    // 雨の日に濡らす地面の材質（元の色と粗さを覚えておいて戻す）
+    private readonly List<(StandardMaterial3D Mat, Color Albedo, float Rough, float Metal)> _groundMats = new();
+    private Node3D _puddles;
     private string _panoZone = "";           // いま貼っている場所
 
     // 場面ごとに実写が1枚ずつある。遠景もその場所のものに差し替える。
@@ -305,6 +308,8 @@ public partial class SummerMain : Node3D
         SetupRainFx();
         SetupFireworkFx();
         CollectSkyTinted(GetNodeOrNull("Backdrop"));
+        CollectGround(this);
+        _puddles = GetNodeOrNull<Node3D>("Puddles");
         if (GetNodeOrNull("Backdrop/PanoramaNight") is MeshInstance3D np)
             _nightPano = np.MaterialOverride as StandardMaterial3D;
         if (GetNodeOrNull("Backdrop/Panorama") is MeshInstance3D dp)
@@ -1054,6 +1059,40 @@ public partial class SummerMain : Node3D
         return Weather.Sunny;
     }
 
+    /// <summary>
+    /// 地面に使っている材質を集める。雨の日に濡らすため。
+    /// 壁まで濡らすと team が意図していない見た目になるので、
+    /// 地面に使っているテクスチャ名だけを拾う。
+    /// </summary>
+    private void CollectGround(Node node)
+    {
+        if (node is MeshInstance3D mi && mi.MaterialOverride is StandardMaterial3D m &&
+            m.AlbedoTexture != null)
+        {
+            string path = m.AlbedoTexture.ResourcePath;
+            if (path.Contains("asphalt") || path.Contains("concrete_floor") ||
+                path.Contains("dirt") || path.Contains("grass"))
+            {
+                _groundMats.Add((m, m.AlbedoColor, m.Roughness, m.Metallic));
+            }
+        }
+        foreach (Node child in node.GetChildren())
+            CollectGround(child);
+    }
+
+    /// <summary>雨の日は地面を暗く・つるりとさせる。乾いたままだと嘘になる。</summary>
+    private void ApplyWetGround(bool wet)
+    {
+        foreach ((StandardMaterial3D m, Color albedo, float rough, float metal) in _groundMats)
+        {
+            m.AlbedoColor = wet ? albedo * new Color(0.72f, 0.75f, 0.8f, 1f) : albedo;
+            m.Roughness = wet ? 0.3f : rough;
+            m.Metallic = wet ? 0.25f : metal;
+        }
+        if (_puddles != null)
+            _puddles.Visible = wet;
+    }
+
     private void ApplyWeather()
     {
         _weather = WeatherOfDay(_day);
@@ -1071,6 +1110,7 @@ public partial class SummerMain : Node3D
             };
             _rainSky.AlbedoColor = new Color(1f, 1f, 1f, a);
         }
+        ApplyWetGround(_weather == Weather.Rainy);
     }
 
     /// <summary>朝=0 / 昼=1 / 夕=2。変わったら顔ぶれを入れ替える。</summary>

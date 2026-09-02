@@ -20,6 +20,9 @@ public partial class CamShots : SceneTree
         _main.Set("SecondsPerHour", 100000.0); // 時刻を止める
         _main.Set("RngSeed", 2);
         _main.Set("SkipIntro", true);   // 検査では導入を飛ばす
+        string day = OS.GetEnvironment("SHOT_DAY");
+        if (day != "")
+            _main.Set("StartDay", day.ToInt());        // 雨の日などを指定して撮る
         string hour = OS.GetEnvironment("SHOT_HOUR");
         if (hour != "")
             _main.Set("StartHour", hour.ToFloat());   // 昼の光で撮りたいとき

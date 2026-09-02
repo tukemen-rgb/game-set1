@@ -78,6 +78,7 @@ public partial class SummerMain : Node3D
     private double _lineOutAt = -1.0;          // 糸を垂らした時刻（負なら垂らしていない）
     private double _biteAt;                    // 当たりが来る時刻
     private double _biteUntil;                 // 当たりの受付が切れる時刻
+    private double _fishingPutAwayAt = -1.0;   // 竿を仕舞う時刻（あおりを見せ切ってから）
 
     /// <summary>
     /// その日の天気。31日が全部同じだと3日で飽きるので、日ごとに変える。
@@ -275,6 +276,11 @@ public partial class SummerMain : Node3D
         }
         CheckShop();
         _fishClock += delta;
+        if (_fishingPutAwayAt > 0.0 && _fishClock >= _fishingPutAwayAt)
+        {
+            _fishingPutAwayAt = -1.0;
+            _player.SetFishing(false);
+        }
         if (!CheckFishing())
             CheckCatch();
         CheckDiscovery();
@@ -1011,6 +1017,7 @@ public partial class SummerMain : Node3D
         if (!AtPond())
         {
             _lineOutAt = -1.0;   // 池から離れたら糸は仕舞う
+            _player.SetFishing(false);
             return false;
         }
 
@@ -1028,6 +1035,7 @@ public partial class SummerMain : Node3D
         {
             _lineOutAt = -1.0;
             _biteUntil = 0.0;
+            _player.SetFishing(false);
             PlaySfx(_sfxEscape);
             ShowMessage("……いかれた。");
             return true;
@@ -1041,6 +1049,11 @@ public partial class SummerMain : Node3D
             _lineOutAt = now;
             _biteAt = now + _rng.RandfRange(1.8f, 4.6f);
             _biteUntil = 0.0;
+            // ウキは水面（半径6.4・y=0.03）の内側に落とす。
+            // プレイヤーから池の中心へ向かって取ると、どこに立っても水の上になる
+            var toCenter = (PondCenter - new Vector2(_player.Position.X, _player.Position.Z)).Normalized();
+            Vector2 bob = PondCenter - toCenter * 5.5f;
+            _player.SetFishing(true, new Vector3(bob.X, 0.05f, bob.Y));   // 虫あみ → 竿
             _player.SwingNet();
             ShowMessage("いとを たらして まった。", 5.0);
             return true;
@@ -1050,15 +1063,18 @@ public partial class SummerMain : Node3D
         {
             // 当たる前に引いた
             _lineOutAt = -1.0;
+            _player.SwingNet();
+            _player.SetFishing(false);
             PlaySfx(_sfxEscape);
             ShowMessage("まだ はやい。にげられた。");
             return true;
         }
 
-        // 当たりに応えた
+        // 当たりに応えた。あおりの絵を見せてから竿を仕舞う
         _lineOutAt = -1.0;
         _biteUntil = 0.0;
         _player.SwingNet();
+        _fishingPutAwayAt = _fishClock + 0.6;
         Species cray = AllSpecies[CrayfishIndex];
         if (_rng.Randf() < cray.CatchRate)
         {

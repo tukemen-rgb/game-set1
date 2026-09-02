@@ -1084,7 +1084,10 @@ public partial class BuildSummer : SceneTree
             // 右手に虫あみ。腕の子にしてあるので、歩けば一緒に揺れ、
             // 振れば一緒に振れる。持っていないのに音だけ鳴るのは嘘になる
             if (name == "ArmR")
+            {
                 pivot.AddChild(BuildNet());
+                pivot.AddChild(BuildRod());   // 釣りのときだけ出す（既定は非表示）
+            }
             player.AddChild(pivot);
         }
 
@@ -1124,6 +1127,25 @@ public partial class BuildSummer : SceneTree
         net.AddChild(MeshI(new CylinderMesh { TopRadius = 0.185f, BottomRadius = 0.03f, Height = 0.3f },
             new Vector3(0f, 1.12f, 0f), bagMat, noShadow: true));
         return net;
+    }
+
+    /// <summary>
+    /// ザリガニつりの竿。柄・糸・ウキ。既定は非表示で、糸を垂らす間だけ出す。
+    /// 池のふちで虫あみを振っていると、操作と絵が食い違って嘘になる。
+    /// </summary>
+    private static Node3D BuildRod()
+    {
+        // 虫あみと同じ支点・同じ向きの取り方。前方（-Z）へ、やや水平に構える
+        var rod = new Node3D { Name = "Rod", Position = new Vector3(0f, -0.42f, 0f), Visible = false };
+        rod.RotationDegrees = new Vector3(-64f, 0f, 0f);
+
+        rod.AddChild(MeshI(new CylinderMesh { TopRadius = 0.008f, BottomRadius = 0.016f, Height = 1.15f },
+            new Vector3(0f, 0.57f, 0f), new Color(0.5f, 0.38f, 0.22f)));
+
+        // 糸とウキは水面の一点に置く（PlayerController が毎フレーム張り直す）。
+        // 竿の子にぶら下げると、立つ位置によって宙に浮いたり水に届かなかったりする。
+        rod.AddChild(new Node3D { Name = "Tip", Position = new Vector3(0f, 1.15f, 0f) });
+        return rod;
     }
 
     private static Camera3D Cam(string name, Vector3 pos, Vector3 target, float fov, bool current = false)

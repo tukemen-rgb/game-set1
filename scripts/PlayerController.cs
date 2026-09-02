@@ -18,12 +18,18 @@ public partial class PlayerController : CharacterBody3D
 
     // 歩行アニメ用。腕と脚を肩／腰から振る
     private Node3D _armL, _armR, _legL, _legR;
+    private Node3D _net, _rod, _rodTip;
+    private MeshInstance3D _line, _bob;   // 糸とウキ（ワールド座標に置く）
+    private bool _fishing;
+    private Vector3 _bobAt;               // ウキを落とす水面の一点
+    private float _bobPhase;
     private float _walkPhase;
     private float _swingLeft;      // 虫あみを振っている残り時間
     private AudioStreamPlayer _step;
     private int _lastStep = -1;    // 直近で鳴らした歩数（同じ歩で二重に鳴らさない）
     private int _stepCount;
     private const float SwingTime = 0.42f;
+    private const float FishHold = -8f;   // 糸を垂らしている間の右腕の角度
 
     public override void _Ready()
     {
@@ -31,6 +37,10 @@ public partial class PlayerController : CharacterBody3D
         _armR = GetNodeOrNull<Node3D>("ArmR");
         _legL = GetNodeOrNull<Node3D>("LegL");
         _legR = GetNodeOrNull<Node3D>("LegR");
+        _net = GetNodeOrNull<Node3D>("ArmR/Net");
+        _rod = GetNodeOrNull<Node3D>("ArmR/Rod");
+        _rodTip = GetNodeOrNull<Node3D>("ArmR/Rod/Tip");
+        BuildLineAndBob();
 
         var stream = GD.Load<AudioStreamWav>("res://assets/audio/sfx_step.wav");
         if (stream != null)
@@ -81,11 +91,18 @@ public partial class PlayerController : CharacterBody3D
         {
             _swingLeft = Mathf.Max(0f, _swingLeft - (float)delta);
             float t = 1f - _swingLeft / SwingTime;          // 0→1
-            // 後ろへ振りかぶってから一気に前へ抜く
-            float arc = t < 0.3f
-                ? Mathf.Lerp(0f, 55f, t / 0.3f)
-                : Mathf.Lerp(55f, -125f, (t - 0.3f) / 0.7f);
+            // 虫あみは振りかぶって前へ抜く。竿は手首だけの短いあおりにする
+            float arc = _fishing
+                ? (t < 0.35f ? Mathf.Lerp(FishHold, FishHold - 34f, t / 0.35f)
+                             : Mathf.Lerp(FishHold - 34f, FishHold, (t - 0.35f) / 0.65f))
+                : (t < 0.3f ? Mathf.Lerp(0f, 55f, t / 0.3f)
+                            : Mathf.Lerp(55f, -125f, (t - 0.3f) / 0.7f));
             _armR.RotationDegrees = new Vector3(arc, 0f, 0f);
+        }
+        else if (_fishing)
+        {
+            // 糸を垂らしている間は腕を水面へ向けたまま止める
+            _armR.RotationDegrees = new Vector3(FishHold, 0f, 0f);
         }
         else
         {
@@ -95,6 +112,82 @@ public partial class PlayerController : CharacterBody3D
 
     /// <summary>虫あみを振る。捕獲の操作に見た目の答えを返すため。</summary>
     public void SwingNet() => _swingLeft = SwingTime;
+
+    /// <summary>
+    /// 糸とウキ。竿の先と水面の一点を結ぶので、プレイヤーの姿勢に関係なく
+    /// 「水に浮いている」ように見える。TopLevel にしてワールド座標で扱う。
+    /// </summary>
+    private void BuildLineAndBob()
+    {
+        _line = new MeshInstance3D
+        {
+            Name = "FishLine",
+            TopLevel = true,
+            Visible = false,
+            CastShadow = GeometryInstance3D.ShadowCastingSetting.Off,
+            Mesh = new CylinderMesh { TopRadius = 0.005f, BottomRadius = 0.005f, Height = 1f },
+            MaterialOverride = new StandardMaterial3D
+            {
+                AlbedoColor = new Color(0.95f, 0.95f, 0.92f),
+                ShadingMode = BaseMaterial3D.ShadingModeEnum.Unshaded,
+            },
+        };
+        AddChild(_line);
+
+        _bob = new MeshInstance3D
+        {
+            Name = "FishBob",
+            TopLevel = true,
+            Visible = false,
+            Mesh = new SphereMesh { Radius = 0.07f, Height = 0.16f },
+            MaterialOverride = new StandardMaterial3D { AlbedoColor = new Color(0.9f, 0.25f, 0.2f), Roughness = 1f },
+        };
+        AddChild(_bob);
+    }
+
+    /// <summary>
+    /// 池のふちで糸を垂らしている間は、虫あみを竿に持ち替える。
+    /// target は水面のウキを落とす一点（ワールド座標）。
+    /// </summary>
+    public void SetFishing(bool on, Vector3 target = default)
+    {
+        if (on)
+            _bobAt = target;
+        if (_fishing == on)
+            return;
+        _fishing = on;
+        if (_net != null)
+            _net.Visible = !on;
+        if (_rod != null)
+            _rod.Visible = on;
+        if (_line != null)
+            _line.Visible = on;
+        if (_bob != null)
+            _bob.Visible = on;
+    }
+
+    /// <summary>竿の先とウキを毎フレーム結び直す。</summary>
+    private void UpdateLine(double delta)
+    {
+        if (!_fishing || _line == null || _bob == null || _rodTip == null)
+            return;
+        _bobPhase += (float)delta * 1.6f;
+        Vector3 b = _bobAt + new Vector3(0f, Mathf.Sin(_bobPhase) * 0.015f, 0f);
+        _bob.GlobalPosition = b;
+
+        Vector3 a = _rodTip.GlobalPosition;
+        Vector3 d = b - a;
+        float len = d.Length();
+        if (len < 0.02f)
+            return;
+        // CylinderMesh は +Y 軸。基底の Y 列を長さぶん伸ばして、a→b を1本で張る
+        Vector3 y = d / len;
+        Vector3 x = y.Cross(Vector3.Forward);
+        if (x.LengthSquared() < 1e-4f)
+            x = y.Cross(Vector3.Right);
+        x = x.Normalized();
+        _line.GlobalTransform = new Transform3D(new Basis(x, y * len, x.Cross(y)), a + d * 0.5f);
+    }
 
     public override void _PhysicsProcess(double delta)
     {
@@ -131,5 +224,6 @@ public partial class PlayerController : CharacterBody3D
         if (dir.LengthSquared() > 0.01f)
             LookAt(GlobalPosition + dir, Vector3.Up);
         Animate(new Vector2(v.X, v.Z).Length(), delta);
+        UpdateLine(delta);
     }
 }

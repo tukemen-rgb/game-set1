@@ -1,4 +1,4 @@
-[gd_scene load_steps=1449 format=3]
+[gd_scene load_steps=1451 format=3]
 
 [ext_resource type="Script" path="res://scripts/SummerMain.cs" id="1_permi"]
 [ext_resource type="Texture2D" path="res://assets/textures/gen/TEX-grass_summer.jpg" id="2_8laxt"]
@@ -4664,32 +4664,40 @@ bottom_radius = 0.03
 height = 0.3
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_q3uv3"]
-albedo_color = Color(0.98, 0.85, 0.72, 1)
+albedo_color = Color(0.5, 0.38, 0.22, 1)
 
-[sub_resource type="CapsuleMesh" id="CapsuleMesh_cqcp2"]
-radius = 0.075
-height = 0.36
+[sub_resource type="CylinderMesh" id="CylinderMesh_cqcp2"]
+top_radius = 0.008
+bottom_radius = 0.016
+height = 1.15
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_q20b2"]
-albedo_color = Color(0.92, 0.92, 0.93, 1)
-
-[sub_resource type="BoxMesh" id="BoxMesh_t387s"]
-size = Vector3(0.16, 0.08, 0.24)
-
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_byh7f"]
 albedo_color = Color(0.98, 0.85, 0.72, 1)
 
-[sub_resource type="CapsuleMesh" id="CapsuleMesh_yrr37"]
+[sub_resource type="CapsuleMesh" id="CapsuleMesh_t387s"]
 radius = 0.075
 height = 0.36
 
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_r3qad"]
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_byh7f"]
 albedo_color = Color(0.92, 0.92, 0.93, 1)
 
-[sub_resource type="BoxMesh" id="BoxMesh_5awae"]
+[sub_resource type="BoxMesh" id="BoxMesh_yrr37"]
 size = Vector3(0.16, 0.08, 0.24)
 
-[sub_resource type="SystemFont" id="SystemFont_mkj1f"]
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_r3qad"]
+albedo_color = Color(0.98, 0.85, 0.72, 1)
+
+[sub_resource type="CapsuleMesh" id="CapsuleMesh_5awae"]
+radius = 0.075
+height = 0.36
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_mkj1f"]
+albedo_color = Color(0.92, 0.92, 0.93, 1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_x24gi"]
+size = Vector3(0.16, 0.08, 0.24)
+
+[sub_resource type="SystemFont" id="SystemFont_x5wn8"]
 font_names = PackedStringArray("Noto Sans CJK JP", "Noto Sans JP", "Hiragino Sans", "Yu Gothic", "Meiryo", "sans-serif")
 
 [node name="SummerMain" type="Node3D"]
@@ -8617,31 +8625,43 @@ material_override = SubResource("StandardMaterial3D_6sqvw")
 cast_shadow = 0
 mesh = SubResource("CylinderMesh_jf71u")
 
+[node name="Rod" type="Node3D" parent="Player/ArmR"]
+transform = Transform3D(1, 0, 0, 0, 0.438371, 0.898794, 0, -0.898794, 0.438371, 0, -0.42, 0)
+visible = false
+
+[node name="@MeshInstance3D@796" type="MeshInstance3D" parent="Player/ArmR/Rod"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.57, 0)
+material_override = SubResource("StandardMaterial3D_q3uv3")
+mesh = SubResource("CylinderMesh_cqcp2")
+
+[node name="Tip" type="Node3D" parent="Player/ArmR/Rod"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.15, 0)
+
 [node name="LegL" type="Node3D" parent="Player"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.13, 0.4, 0)
 
-[node name="@MeshInstance3D@796" type="MeshInstance3D" parent="Player/LegL"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.18, 0)
-material_override = SubResource("StandardMaterial3D_q3uv3")
-mesh = SubResource("CapsuleMesh_cqcp2")
-
 [node name="@MeshInstance3D@797" type="MeshInstance3D" parent="Player/LegL"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.36, -0.03)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.18, 0)
 material_override = SubResource("StandardMaterial3D_q20b2")
-mesh = SubResource("BoxMesh_t387s")
+mesh = SubResource("CapsuleMesh_t387s")
+
+[node name="@MeshInstance3D@798" type="MeshInstance3D" parent="Player/LegL"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.36, -0.03)
+material_override = SubResource("StandardMaterial3D_byh7f")
+mesh = SubResource("BoxMesh_yrr37")
 
 [node name="LegR" type="Node3D" parent="Player"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.13, 0.4, 0)
 
-[node name="@MeshInstance3D@798" type="MeshInstance3D" parent="Player/LegR"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.18, 0)
-material_override = SubResource("StandardMaterial3D_byh7f")
-mesh = SubResource("CapsuleMesh_yrr37")
-
 [node name="@MeshInstance3D@799" type="MeshInstance3D" parent="Player/LegR"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.36, -0.03)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.18, 0)
 material_override = SubResource("StandardMaterial3D_r3qad")
-mesh = SubResource("BoxMesh_5awae")
+mesh = SubResource("CapsuleMesh_5awae")
+
+[node name="@MeshInstance3D@800" type="MeshInstance3D" parent="Player/LegR"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.36, -0.03)
+material_override = SubResource("StandardMaterial3D_mkj1f")
+mesh = SubResource("BoxMesh_x24gi")
 
 [node name="Cameras" type="Node3D" parent="."]
 
@@ -8669,7 +8689,7 @@ offset_left = 24.0
 offset_top = 16.0
 offset_right = 24.0
 offset_bottom = 16.0
-theme_override_fonts/font = SubResource("SystemFont_mkj1f")
+theme_override_fonts/font = SubResource("SystemFont_x5wn8")
 theme_override_font_sizes/font_size = 30
 theme_override_colors/font_outline_color = Color(0.1, 0.1, 0.15, 1)
 theme_override_constants/outline_size = 8
@@ -8682,7 +8702,7 @@ offset_left = -660.0
 offset_top = 16.0
 offset_right = -24.0
 offset_bottom = 60.0
-theme_override_fonts/font = SubResource("SystemFont_mkj1f")
+theme_override_fonts/font = SubResource("SystemFont_x5wn8")
 theme_override_font_sizes/font_size = 30
 theme_override_colors/font_outline_color = Color(0.1, 0.1, 0.15, 1)
 theme_override_constants/outline_size = 8
@@ -8702,7 +8722,7 @@ anchor_bottom = 1.0
 offset_left = 80.0
 offset_right = -80.0
 offset_bottom = -36.0
-theme_override_fonts/font = SubResource("SystemFont_mkj1f")
+theme_override_fonts/font = SubResource("SystemFont_x5wn8")
 theme_override_font_sizes/font_size = 34
 theme_override_colors/font_outline_color = Color(0.1, 0.1, 0.15, 1)
 theme_override_constants/outline_size = 8

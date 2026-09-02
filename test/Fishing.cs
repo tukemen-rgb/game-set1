@@ -15,6 +15,7 @@ public partial class Fishing : SceneTree
     private bool _dropped;
     private double _hold = -1.0;   // ボタンを離すまでの残り
     private string _last = "";
+    private Camera3D _cam;
 
     public override void _Initialize()
     {
@@ -26,11 +27,25 @@ public partial class Fishing : SceneTree
         Root.AddChild(main);
         _msg = main.GetNode<Label>("UI/MessageLabel");
         _player = main.GetNode<Node3D>("Player");
+
+        // FISH_CLOSEUP=1 で寄りのカメラ。固定カメラだと主人公が点にしか映らず、
+        // 竿と糸とウキが出ているかを目視できない
+        if (OS.GetEnvironment("FISH_CLOSEUP") == "1")
+        {
+            _cam = new Camera3D { Fov = 34f };
+            Root.AddChild(_cam);
+        }
     }
 
     public override bool _Process(double delta)
     {
         _t += delta;
+        if (_cam != null)
+        {
+            _cam.MakeCurrent();
+            Vector3 at = _player.GlobalPosition + new Vector3(0f, 0.8f, -0.5f);
+            _cam.LookAtFromPosition(at + new Vector3(2.1f, 0.5f, 1.6f), at, Vector3.Up);
+        }
         // 出発 (-14,0) から池のふち (6,-7.6) へ歩く
         Vector3 p = _player.GlobalPosition;
         bool arrived = p.X > 5.6f && p.Z < -7.2f;

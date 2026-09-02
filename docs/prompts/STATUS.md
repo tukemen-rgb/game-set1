@@ -1,16 +1,13 @@
 # 画像の入荷状況
 
-## ★ フェーズ1（まずこれだけ）: **12 / 15**
+## ★ フェーズ1（まずこれだけ）: **15 / 15**
 
-残り:
-- `DET-rain_streak` — ディテール・汚し / 雨だれ
-- `DET-shadow_leaves` — ディテール・汚し / 木漏れ日
-- `UI-title_key` — UI・キーアート / タイトル用キーアート
+フェーズ1は完了。
 
 ## 全体
 
-- 揃った: **12 / 113**
-- 未着: 101
+- 揃った: **15 / 113**
+- 未着: 98
 - `incoming/` に未処理: 0
 
 `tools/ingest_images.sh` が自動更新する。手で編集しない。
@@ -29,6 +26,9 @@
 - `SKY-sunset` — 空・遠景 / 夕焼け → `assets/sky/SKY-sunset.jpg`
 - `TEX-grass_summer` — テクスチャ / 夏の芝生 → `assets/textures/gen/TEX-grass_summer.jpg`
 - `TEX-leaf_canopy` — テクスチャ / 木の葉 → `assets/textures/gen/TEX-leaf_canopy.jpg`
+- `DET-rain_streak` — ディテール・汚し / 雨だれ → `assets/textures/decals/DET-rain_streak.webp`
+- `DET-shadow_leaves` — ディテール・汚し / 木漏れ日 → `assets/textures/decals/DET-shadow_leaves.webp`
+- `UI-title_key` — UI・キーアート / タイトル用キーアート → `assets/ui/UI-title_key.jpg`
 
 ## 未着（この ID の画像がまだ無い）
 
@@ -117,7 +117,6 @@
 - `PROP-bike_rack` — 小物 / 自転車置き場
 - `PROP-water_faucet` — 小物 / 公園の水飲み場
 - `PROP-bench_engawa` — 小物 / 縁台
-- `DET-rain_streak` — ディテール・汚し / 雨だれ
 - `DET-crack_wall` — ディテール・汚し / 壁のひび
 - `DET-patch_repair` — ディテール・汚し / 補修跡
 - `DET-moss_corner` — ディテール・汚し / 苔
@@ -126,8 +125,6 @@
 - `DET-puddle` — ディテール・汚し / 水たまり
 - `DET-chalk_drawing` — ディテール・汚し / ろう石の落書き
 - `DET-tire_mark` — ディテール・汚し / タイヤ痕
-- `DET-shadow_leaves` — ディテール・汚し / 木漏れ日
-- `UI-title_key` — UI・キーアート / タイトル用キーアート
 - `UI-diary_paper` — UI・キーアート / 日記の紙
 - `UI-bug_book` — UI・キーアート / セミ図鑑のページ
 - `UI-calendar` — UI・キーアート / 8月のカレンダー

@@ -1,4 +1,0 @@
-# アップロードしたファイル名 = プロンプトID
-DET-rain_streak.webp = DET-rain_streak
-DET-shadow_leaves.webp = DET-shadow_leaves
-UI-title_key.jpg = UI-title_key

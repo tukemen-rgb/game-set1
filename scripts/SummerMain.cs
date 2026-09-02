@@ -574,15 +574,28 @@ public partial class SummerMain : Node3D
     /// </summary>
     private async Task PlayEnding()
     {
+        // EndDay が絵日記のために隠したラベルを戻す。ここを忘れると
+        // 結末の文章が一行も出ないまま黒画面のまま終わる（実際に一度そうなった）
+        _messageLabel.Visible = true;
+        _dateLabel.Visible = true;
+        _bugLabel.Visible = true;
+
         // 夏が終わったら記録を消す。次に起動したら、また8月1日から
         if (!SkipIntro && FileAccess.FileExists(SavePath))
             DirAccess.RemoveAbsolute(ProjectSettings.GlobalizePath(SavePath));
 
+        // この夏に増えたものを全部ここで返す。数えたものが最後に出てこないと、
+        // 集めた意味がプレイヤーに戻らない
+        string extra = "";
+        if (_stamps > 0)
+            extra += $"\nラジオたいそうの はんこは {_stamps}こ。";
+        if (_marbles > 0)
+            extra += $"\nビー玉は {_marbles}こ たまった。";
         _messageLabel.Text =
             $"8月31日。なつやすみが おわった。\n" +
-            $"つかまえたセミ、ぜんぶで {_totalCaught}ひき。\n" +
+            $"つかまえた むし、ぜんぶで {_totalCaught}ひき。\n" +
             $"ずかんは {_collected.Count}/{AllSpecies.Length}しゅるい。\n" +
-            $"おぼえて いる ばしょは {_found.Count}こ。";
+            $"おぼえて いる ばしょは {_found.Count}こ。{extra}";
         await ToSignal(GetTree().CreateTimer(5.0), SceneTreeTimer.SignalName.Timeout);
 
         _messageLabel.Text = "";
@@ -1040,6 +1053,13 @@ public partial class SummerMain : Node3D
             AddChild(spot);
             _cicadas.Add(spot);
             _cicadaSpecies.Add(sp);
+        }
+        // どこに何が湧いたかは画面から探すしかなく、雨の生き物のように
+        // 小さくて低い位置に出るものは見落とす。検査用に位置を出せるようにする
+        if (OS.GetEnvironment("DEBUG_SPAWN") == "1")
+        {
+            for (int i = 0; i < _cicadas.Count; i++)
+                GD.Print($"[spawn] {AllSpecies[_cicadaSpecies[i]].Name} @ {_cicadas[i].Position}");
         }
         _spawnedPhase = PhaseOfHour();
     }

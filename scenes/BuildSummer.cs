@@ -1383,5 +1383,70 @@ public partial class BuildSummer : SceneTree
         dex.AddChild(dexFoot);
 
         root.AddChild(dex);
+
+        // --- 絵日記 ---
+        // 一日の締めが真っ黒な画面に白文字だけで、31日ぶん毎晩それを見る。
+        // 「日記」と名乗っていながら絵が一枚も無かった。
+        // その日の最後の画面をそのまま貼るので、絵は毎日ちがう。
+        var diary = new CanvasLayer { Name = "Diary", Layer = 4, Visible = false };
+        // 紙の後ろは暗い机。世界が透けると「ページを見ている」感じにならない
+        var desk = new ColorRect { Name = "Desk", Color = new Color(0.05f, 0.05f, 0.07f) };
+        desk.SetAnchorsPreset(Control.LayoutPreset.FullRect);
+        diary.AddChild(desk);
+
+        var paper = new ColorRect { Name = "Paper", Color = new Color(0.93f, 0.9f, 0.82f) };
+        paper.SetAnchorsPreset(Control.LayoutPreset.FullRect);
+        paper.OffsetLeft = 96f;
+        paper.OffsetRight = -96f;
+        paper.OffsetTop = 22f;
+        paper.OffsetBottom = -22f;
+        diary.AddChild(paper);
+
+        // 綴じ側の赤い罫と、紙の左端の穴。ノートに見せるための最小限
+        var margin = new ColorRect { Name = "Margin", Color = new Color(0.78f, 0.45f, 0.42f, 0.55f) };
+        margin.SetAnchorsPreset(Control.LayoutPreset.LeftWide);
+        margin.OffsetLeft = 54f;
+        margin.OffsetRight = 56f;
+        margin.OffsetTop = 12f;
+        margin.OffsetBottom = -12f;
+        paper.AddChild(margin);
+
+        // その日の絵（最後の画面を貼る）。枠を付けて写真らしく見せる
+        // TextureRect は既定でははみ出すので、枠側で切る
+        var frame = new ColorRect { Name = "Frame", Color = new Color(0.99f, 0.98f, 0.95f), ClipContents = true };
+        frame.SetAnchorsPreset(Control.LayoutPreset.FullRect);
+        frame.OffsetLeft = 84f;
+        frame.OffsetRight = -40f;
+        frame.OffsetTop = 26f;
+        frame.OffsetBottom = -266f;
+        paper.AddChild(frame);
+
+        var shot = new TextureRect
+        {
+            Name = "Shot",
+            StretchMode = TextureRect.StretchModeEnum.KeepAspectCovered,
+            Modulate = new Color(0.97f, 0.94f, 0.86f),   // 紙に焼いた色味に寄せる
+        };
+        shot.SetAnchorsPreset(Control.LayoutPreset.FullRect);
+        shot.OffsetLeft = 9f;
+        shot.OffsetRight = -9f;
+        shot.OffsetTop = 9f;
+        shot.OffsetBottom = -9f;
+        frame.AddChild(shot);
+
+        Label diaryText = MakeLabel("Text", 28);
+        diaryText.AddThemeColorOverride("font_color", new Color(0.16f, 0.15f, 0.2f));
+        diaryText.AddThemeConstantOverride("outline_size", 0);
+        diaryText.SetAnchorsPreset(Control.LayoutPreset.FullRect);
+        diaryText.OffsetLeft = 84f;
+        diaryText.OffsetRight = -40f;
+        diaryText.OffsetTop = 352f;
+        diaryText.OffsetBottom = -18f;
+        diaryText.AutowrapMode = TextServer.AutowrapMode.WordSmart;
+        diaryText.HorizontalAlignment = HorizontalAlignment.Left;
+        diaryText.VerticalAlignment = VerticalAlignment.Top;
+        paper.AddChild(diaryText);
+
+        root.AddChild(diary);
     }
 }

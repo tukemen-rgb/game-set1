@@ -228,6 +228,9 @@ public partial class SummerMain : Node3D
     private int _shopPick;
     private string _todayBought = "";
 
+    private CanvasLayer _diary;
+    private TextureRect _diaryShot;
+    private Label _diaryText;
     private CanvasLayer _dex;
     private Label _dexTitle, _dexList;
     private bool _dexOpen;
@@ -252,6 +255,9 @@ public partial class SummerMain : Node3D
         _cameras = GetNode<Node3D>("Cameras");
         _title = GetNodeOrNull<CanvasLayer>("Title");
         _dex = GetNodeOrNull<CanvasLayer>("Dex");
+        _diary = GetNodeOrNull<CanvasLayer>("Diary");
+        _diaryShot = GetNodeOrNull<TextureRect>("Diary/Paper/Frame/Shot");
+        _diaryText = GetNodeOrNull<Label>("Diary/Paper/Text");
         _dexTitle = GetNodeOrNull<Label>("Dex/Title");
         _dexList = GetNodeOrNull<Label>("Dex/List");
         Node komorebi = GetNodeOrNull("Komorebi");
@@ -516,6 +522,9 @@ public partial class SummerMain : Node3D
         }
 
         _messageLabel.Text = "";
+        _dateLabel.Visible = true;
+        _bugLabel.Visible = true;
+        _messageLabel.Visible = true;
         Tween fadeIn = CreateTween();
         fadeIn.TweenProperty(_fade, "color:a", 0.0f, 2.4);
         await ToSignal(fadeIn, Tween.SignalName.Finished);
@@ -1553,10 +1562,32 @@ public partial class SummerMain : Node3D
         return $"【日記】8月{_day}日({Weekday()})\n{line}\n{extra}\nあしたは なにを しようかな。";
     }
 
+    /// <summary>
+    /// その日の最後の画面を1枚だけ焼き取って、絵日記の「絵」にする。
+    /// 絵を毎日別に描く手段が無いので、実際に見ていた景色をそのまま貼る。
+    /// 暗転する前に撮らないと、真っ黒な絵になる。
+    /// </summary>
+    private async Task GrabDiaryShot()
+    {
+        if (_diaryShot == null)
+            return;
+        // 日付や匹数のラベルごと焼き付いてしまうので、先に隠して1フレーム待つ。
+        // GetImage は「最後に描かれた絵」を返すので、隠した直後では間に合わない。
+        _dateLabel.Visible = false;
+        _bugLabel.Visible = false;
+        _messageLabel.Visible = false;
+        await ToSignal(GetTree(), SceneTree.SignalName.ProcessFrame);
+        await ToSignal(GetTree(), SceneTree.SignalName.ProcessFrame);
+        Image img = GetViewport().GetTexture().GetImage();
+        if (img != null)
+            _diaryShot.Texture = ImageTexture.CreateFromImage(img);
+    }
+
     private async Task EndDay()
     {
         _transitioning = true;
         _player.Frozen = true;
+        await GrabDiaryShot();   // 暗転の前に、ラベルを外して撮る
         Tween fadeOut = CreateTween();
         fadeOut.TweenProperty(_fade, "color:a", 1.0f, 1.0);
         await ToSignal(fadeOut, Tween.SignalName.Finished);
@@ -1568,8 +1599,18 @@ public partial class SummerMain : Node3D
             return;
         }
 
-        _messageLabel.Text = DiaryText();
-        await ToSignal(GetTree().CreateTimer(3.0), SceneTreeTimer.SignalName.Timeout);
+        if (_diary != null && _diaryText != null)
+        {
+            _diaryText.Text = DiaryText();
+            _diary.Visible = true;
+            await ToSignal(GetTree().CreateTimer(5.0), SceneTreeTimer.SignalName.Timeout);
+            _diary.Visible = false;
+        }
+        else
+        {
+            _messageLabel.Text = DiaryText();
+            await ToSignal(GetTree().CreateTimer(3.0), SceneTreeTimer.SignalName.Timeout);
+        }
 
         _day++;
         _hour = DayStartHour;

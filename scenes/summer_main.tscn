@@ -9003,3 +9003,69 @@ theme_override_constants/outline_size = 8
 text = "Ｚ で とじる"
 horizontal_alignment = 1
 vertical_alignment = 1
+
+[node name="Diary" type="CanvasLayer" parent="."]
+layer = 4
+visible = false
+
+[node name="Desk" type="ColorRect" parent="Diary"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+color = Color(0.05, 0.05, 0.07, 1)
+
+[node name="Paper" type="ColorRect" parent="Diary"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 96.0
+offset_top = 22.0
+offset_right = -96.0
+offset_bottom = -22.0
+color = Color(0.93, 0.9, 0.82, 1)
+
+[node name="Margin" type="ColorRect" parent="Diary/Paper"]
+layout_mode = 0
+anchor_bottom = 1.0
+offset_left = 54.0
+offset_top = 12.0
+offset_right = 56.0
+offset_bottom = -12.0
+color = Color(0.78, 0.45, 0.42, 0.55)
+
+[node name="Frame" type="ColorRect" parent="Diary/Paper"]
+clip_contents = true
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 84.0
+offset_top = 26.0
+offset_right = -40.0
+offset_bottom = -266.0
+color = Color(0.99, 0.98, 0.95, 1)
+
+[node name="Shot" type="TextureRect" parent="Diary/Paper/Frame"]
+modulate = Color(0.97, 0.94, 0.86, 1)
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 9.0
+offset_top = 9.0
+offset_right = -9.0
+offset_bottom = -9.0
+stretch_mode = 6
+
+[node name="Text" type="Label" parent="Diary/Paper"]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 84.0
+offset_top = 352.0
+offset_right = -40.0
+offset_bottom = -18.0
+theme_override_fonts/font = SubResource("SystemFont_6t880")
+theme_override_font_sizes/font_size = 28
+theme_override_colors/font_color = Color(0.16, 0.15, 0.2, 1)
+theme_override_colors/font_outline_color = Color(0.1, 0.1, 0.15, 1)
+theme_override_constants/outline_size = 0
+autowrap_mode = 3

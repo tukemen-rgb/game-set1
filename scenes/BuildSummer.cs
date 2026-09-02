@@ -46,6 +46,7 @@ public partial class BuildSummer : SceneTree
         BuildResidents(root);
         BuildSapMark(root);
         BuildFestival(root);
+        BuildNoticeBoard(root);
         BuildPark(root);
         BuildVacantLot(root);
         BuildTrees(root);
@@ -770,6 +771,54 @@ public partial class BuildSummer : SceneTree
         t.AddChild(Box(new Vector3(0.3f, 0.1f, 0.22f), new Vector3(0.35f, 0.8f, 0f), new Color(0.9f, 0.88f, 0.8f)));
         t.AddChild(Box(new Vector3(0.09f, 0.05f, 0.09f), new Vector3(0.62f, 0.77f, 0.05f), new Color(0.7f, 0.15f, 0.15f)));
         root.AddChild(t);
+    }
+
+    /// <summary>
+    /// 町内会の掲示板と、立てかけた自転車。
+    /// 塞いでいた木をどけたら、大通りの画の右半分が芝だけの空白になった。
+    /// 中景に人の暮らしの物が要る。ラジオ体操の予定表や回覧板が貼ってある板。
+    /// </summary>
+    private static void BuildNoticeBoard(Node3D root)
+    {
+        var n = new Node3D { Name = "NoticeBoard", Position = new Vector3(5.2f, 0f, 3.4f) };
+        n.RotationDegrees = new Vector3(0f, -28f, 0f);
+
+        foreach (float px in new[] { -0.85f, 0.85f })
+            n.AddChild(Box(new Vector3(0.1f, 1.9f, 0.1f), new Vector3(px, 0.95f, 0f), DarkWood));
+        n.AddChild(Box(new Vector3(1.95f, 1.05f, 0.07f), new Vector3(0f, 1.35f, 0f), new Color(0.75f, 0.72f, 0.66f)));
+        // 小さな屋根（雨よけ）
+        var cap = MeshI(new BoxMesh { Size = new Vector3(2.15f, 0.06f, 0.42f) },
+            new Vector3(0f, 1.95f, -0.1f), TexMat("roof", new Vector2(2f, 1f)));
+        cap.RotationDegrees = new Vector3(-16f, 0f, 0f);
+        n.AddChild(cap);
+        // 貼り紙。大きさと色を散らす
+        Color[] paper = { new(0.96f, 0.95f, 0.92f), new(0.95f, 0.88f, 0.5f), new(0.9f, 0.93f, 0.96f) };
+        for (int i = 0; i < 4; i++)
+        {
+            var note = Box(new Vector3(0.36f + (i % 2) * 0.1f, 0.44f, 0.02f),
+                new Vector3(-0.62f + i * 0.42f, 1.3f + (i % 2) * 0.1f, 0.05f), paper[i % 3]);
+            note.RotationDegrees = new Vector3(0f, 0f, i % 2 == 0 ? 2.5f : -2f);
+            n.AddChild(note);
+        }
+
+        // 立てかけた自転車（駐輪場のものと同じ作り）
+        var bike = new Node3D { Position = new Vector3(1.5f, 0f, 0.5f), RotationDegrees = new Vector3(0f, 74f, 8f) };
+        var body = new Color(0.28f, 0.34f, 0.46f);
+        bike.AddChild(Box(new Vector3(0.08f, 0.55f, 1.3f), new Vector3(0f, 0.5f, 0f), body));
+        bike.AddChild(Box(new Vector3(0.5f, 0.06f, 0.06f), new Vector3(0f, 0.95f, -0.5f), body));
+        bike.AddChild(Box(new Vector3(0.28f, 0.05f, 0.2f), new Vector3(0f, 0.82f, 0.35f), DarkWood));  // 荷台
+        foreach (float wz in new[] { -0.55f, 0.55f })
+        {
+            var wheel = MeshI(new TorusMesh { InnerRadius = 0.24f, OuterRadius = 0.3f },
+                new Vector3(0f, 0.3f, wz), new Color(0.14f, 0.14f, 0.15f));
+            wheel.RotationDegrees = new Vector3(90f, 0f, 0f);
+            bike.AddChild(wheel);
+        }
+        n.AddChild(bike);
+        // 掲示板は開けた芝の上なので、当たり判定を付けても挟まれる心配がない
+        // （人に付けなかったのは狭い通路で動けなくなるため。事情が違う）
+        n.AddChild(Collider(new Vector3(2.1f, 1.9f, 0.35f), new Vector3(0f, 0.95f, 0f)));
+        root.AddChild(n);
     }
 
     /// <summary>

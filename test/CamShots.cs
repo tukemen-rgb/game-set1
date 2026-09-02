@@ -3,13 +3,18 @@ using Godot;
 /// <summary>
 /// 4つの固定カメラの構図を1枚ずつ撮る。画像生成AIへ渡す img2img 参照用。
 ///   xvfb-run -a godot --path . --write-movie screenshots/camshots/frame.png \
-///     --fixed-fps 30 --quit-after 12 --script res://test/CamShots.cs
+///     --fixed-fps 30 --quit-after 20 --script res://test/CamShots.cs
 /// UI と主人公を消し、時刻を固定して「背景プレートの下絵」として撮る。
-/// カメラは3フレームずつ切り替わるので frame 2/5/8/11 を採用する。
+/// カメラは3フレームずつ切り替わるので frame 2/5/8/11/14/17 を採用する。
 /// </summary>
 public partial class CamShots : SceneTree
 {
-    private static readonly string[] Cams = { "CamDanchi", "CamStreet", "CamPark", "CamPlaza" };
+    // ゾーンを6つに割った（イテレーション33）のに、この検査は4つしか
+    // 撮っていなかった。新しい2場面が一度も検査に載らない状態だった
+    private static readonly string[] Cams =
+    {
+        "CamDanchi", "CamStreet", "CamPark", "CamParkWest", "CamPlaza", "CamLot",
+    };
     private Node _main;
     private int _frame;
 

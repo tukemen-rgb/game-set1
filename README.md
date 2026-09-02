@@ -166,7 +166,7 @@ godot --path .                                                   # 実行
 | `Presentation.cs` | 通しプレイ（決まった動線・乱数固定） |
 | `Intro.cs` / `Ending.cs` | 導入 / 結末（導入は `INTRO_FRESH=1` でセーブを消して流す） |
 | `CloseUp.cs` | 寄り。`CLOSEUP_WALK=1` 歩行 / `CLOSEUP_SWING=1` 虫あみ |
-| `CamShots.cs` | 固定カメラ（`SHOT_HOUR=12.5` で時刻指定）/ `KeyArt.cs` 俯瞰 |
+| `CamShots.cs` | 固定カメラ6場面すべて（`SHOT_DAY` / `SHOT_HOUR`）/ `KeyArt.cs` 俯瞰 |
 | `CamMetric.cs` | 各ゾーンで主人公が画面の何px・何％になるかの実測 |
 
 `CamShots.cs` は `SHOT_DAY=8`（雨の日）と `SHOT_HOUR=12.5`（時刻）を指定できる。

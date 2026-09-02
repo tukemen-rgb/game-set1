@@ -1432,17 +1432,31 @@ public partial class BuildSummer : SceneTree
         }
         backdrop.AddChild(golf);
 
-        // 南の丘（千里丘陵ふう、霞んだ緑）
-        (Vector3 pos, float r, float h, Color c)[] hills =
+        // 南の丘（千里丘陵ふう、霞んだ緑）。
+        // 円錐1つだと「水色の三角の切り紙」にしか見えなかった（実際そう写った）。
+        // 丸みのある塊を3つ重ねて稜線を崩し、Unshaded にして
+        // 陽が当たって白飛びしないようにする（遠景は光より霞で決まる）。
+        (Vector3 Pos, float R, float H, Color C)[] hills =
         {
-            (new Vector3(-18f, 0f, -50f), 22f, 12f, new Color(0.42f, 0.55f, 0.5f)),
-            (new Vector3(14f, 0f, -52f), 26f, 15f, new Color(0.5f, 0.62f, 0.62f)),
-            (new Vector3(44f, 0f, -44f), 16f, 9f, new Color(0.44f, 0.57f, 0.5f)),
+            (new Vector3(-20f, 0f, -58f), 24f, 11f, new Color(0.36f, 0.46f, 0.42f)),
+            (new Vector3(16f, 0f, -62f), 28f, 14f, new Color(0.41f, 0.51f, 0.5f)),
+            (new Vector3(48f, 0f, -50f), 18f, 8f, new Color(0.38f, 0.48f, 0.44f)),
         };
-        foreach (var (pos, r, h, c) in hills)
+        foreach ((Vector3 pos, float r, float h, Color c) in hills)
         {
-            backdrop.AddChild(MeshI(new CylinderMesh { TopRadius = 0f, BottomRadius = r, Height = h },
-                pos + new Vector3(0f, h / 2f, 0f), c));
+            // (横のずれ, 大きさ, 高さの比)。少しずつずらして稜線を2〜3山にする
+            (float Dx, float S, float Hy)[] lumps =
+            {
+                (0f, 1f, 1f), (-r * 0.62f, 0.72f, 0.78f), (r * 0.68f, 0.6f, 0.66f),
+            };
+            foreach ((float dx, float sc, float hy) in lumps)
+            {
+                var lump = MeshI(new SphereMesh { Radius = r * sc, Height = r * sc * 2f },
+                    pos + new Vector3(dx, 0f, (dx == 0f ? 0f : 6f)), c, unshaded: true);
+                // つぶして丘の丸みにする。球のままだと山が団子になる
+                lump.Scale = new Vector3(1f, h * hy / (r * sc), 0.85f);
+                backdrop.AddChild(lump);
+            }
         }
         // 入道雲
         Vector3[] clouds = { new(-24f, 22f, -36f), new(8f, 25f, -40f), new(34f, 21f, -30f), new(-8f, 26f, 36f) };

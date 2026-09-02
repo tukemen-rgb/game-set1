@@ -184,7 +184,11 @@ godot --path .                                                   # 実行
 ```bash
 bash tools/shoot_all.sh              # 全場面（30分ほど）
 bash tools/shoot_all.sh cams dex     # 触った所だけ
+bash tools/make_video.sh run docs/video/summer_day.mp4 4 20   # 連番PNG＋音 → 動画
 ```
+
+**動いている20秒**: [`docs/video/summer_day.mp4`](docs/video/summer_day.mp4)
+（8月1日の団地 → 大通り → 商店街 → 公園。音つき）
 
 ### 検査用の環境変数
 

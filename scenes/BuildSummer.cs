@@ -43,6 +43,7 @@ public partial class BuildSummer : SceneTree
         BuildRadioTaiso(root);
         BuildPuddles(root);
         BuildAsagao(root);
+        BuildResidents(root);
         BuildPark(root);
         BuildVacantLot(root);
         BuildTrees(root);
@@ -729,6 +730,73 @@ public partial class BuildSummer : SceneTree
         t.AddChild(Box(new Vector3(0.3f, 0.1f, 0.22f), new Vector3(0.35f, 0.8f, 0f), new Color(0.9f, 0.88f, 0.8f)));
         t.AddChild(Box(new Vector3(0.09f, 0.05f, 0.09f), new Vector3(0.62f, 0.77f, 0.05f), new Color(0.7f, 0.15f, 0.15f)));
         root.AddChild(t);
+    }
+
+    /// <summary>
+    /// 座っている人・立ち話をしている人。動かないが、居るだけで町が変わる。
+    /// 商店街も棟間も無人で、平日の昼間なのにゴーストタウンに見えていた。
+    /// 主人公と同じ組み立て（胴・頭・腕）で、服の色と姿勢だけ変える。
+    /// </summary>
+    private static Node3D Resident(string name, Vector3 pos, float rotY, Color wear, bool seated)
+    {
+        var r = new Node3D { Name = name, Position = pos, RotationDegrees = new Vector3(0f, rotY, 0f) };
+        float hip = seated ? 0.42f : 0.4f;
+        float chest = seated ? 0.78f : 0.9f;
+
+        r.AddChild(MeshI(new CapsuleMesh { Radius = 0.23f, Height = 0.66f },
+            new Vector3(0f, chest, 0f), wear));
+        r.AddChild(MeshI(new SphereMesh { Radius = 0.2f, Height = 0.4f },
+            new Vector3(0f, chest + 0.42f, 0f), Skin));
+        // 髪（後頭部だけ）。真横や後ろから見たときに頭が球のままにならないように
+        r.AddChild(MeshI(new SphereMesh { Radius = 0.205f, Height = 0.3f },
+            new Vector3(0f, chest + 0.5f, 0.02f), new Color(0.22f, 0.2f, 0.2f)));
+
+        foreach (float ax in new[] { -0.26f, 0.26f })
+        {
+            var arm = MeshI(new CapsuleMesh { Radius = 0.06f, Height = 0.36f },
+                new Vector3(ax, chest - 0.06f, seated ? -0.1f : 0f), Skin);
+            arm.RotationDegrees = new Vector3(seated ? -35f : 6f, 0f, 0f);
+            r.AddChild(arm);
+        }
+        foreach (float lx in new[] { -0.12f, 0.12f })
+        {
+            var leg = MeshI(new CapsuleMesh { Radius = 0.075f, Height = 0.38f },
+                seated ? new Vector3(lx, hip - 0.02f, -0.24f) : new Vector3(lx, hip - 0.2f, 0f),
+                seated ? new Color(0.32f, 0.34f, 0.4f) : new Color(0.28f, 0.3f, 0.36f));
+            leg.RotationDegrees = new Vector3(seated ? -78f : 0f, 0f, 0f);
+            r.AddChild(leg);
+        }
+        return r;
+    }
+
+    private static void BuildResidents(Node3D root)
+    {
+        var people = new Node3D { Name = "Residents" };
+
+        // 商店街のベンチに座って新聞を読んでいるおじいさん
+        // 望遠カメラ（x=25）から 34m 先だと点になる。26m ほどの位置に置く
+        var bench = new Node3D { Position = new Vector3(-1.2f, 0f, 15.3f) };
+        bench.AddChild(Box(new Vector3(1.6f, 0.08f, 0.42f), new Vector3(0f, 0.42f, 0f), DarkWood));
+        bench.AddChild(Box(new Vector3(1.6f, 0.4f, 0.07f), new Vector3(0f, 0.62f, 0.2f), DarkWood));
+        foreach (float bx in new[] { -0.65f, 0.65f })
+            bench.AddChild(Box(new Vector3(0.08f, 0.42f, 0.36f), new Vector3(bx, 0.21f, 0f), ConcreteDark));
+        people.AddChild(bench);
+        var grandpa = Resident("Grandpa", new Vector3(-1.5f, 0f, 15.2f), 172f,
+                               new Color(0.78f, 0.78f, 0.74f), seated: true);
+        grandpa.AddChild(Box(new Vector3(0.34f, 0.02f, 0.26f), new Vector3(0f, 0.86f, -0.28f),
+                             new Color(0.9f, 0.89f, 0.84f)));   // 新聞
+        people.AddChild(grandpa);
+
+        // 団地の広場で立ち話をしている二人（買い物かごを提げている）
+        var talkA = Resident("Neighbor1", new Vector3(-18.6f, 0f, -1.1f), 118f,
+                             new Color(0.7f, 0.5f, 0.55f), seated: false);
+        talkA.AddChild(Box(new Vector3(0.26f, 0.22f, 0.16f), new Vector3(0.3f, 0.55f, 0.06f),
+                           new Color(0.85f, 0.82f, 0.7f)));      // 買い物かご
+        people.AddChild(talkA);
+        people.AddChild(Resident("Neighbor2", new Vector3(-19.6f, 0f, -0.2f), -62f,
+                                 new Color(0.5f, 0.58f, 0.66f), seated: false));
+
+        root.AddChild(people);
     }
 
     /// <summary>

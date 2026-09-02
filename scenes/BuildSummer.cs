@@ -284,7 +284,23 @@ public partial class BuildSummer : SceneTree
             float y = f * FloorH;
             b.AddChild(Box(new Vector3(length + 0.2f, 0.16f, 0.85f), new Vector3(0f, y + 0.08f, 2.85f), Concrete));
             b.AddChild(Box(new Vector3(length + 0.1f, 1.02f, 0.07f), new Vector3(0f, y + 0.67f, 3.24f), RailPanel));
-            b.AddChild(Box(new Vector3(length, FloorH - 1.25f, 0.12f), new Vector3(0f, y + 1.88f, 2.56f), ShadowGlass));
+            // 一枚の帯で通していたが、それだと夕方に灯りを点けたとき
+            // 建物が「一本の光る棒」になった。住戸ごとに2枚の窓に割る。
+            // 割ったことで、点く部屋と点かない部屋ができる
+            float unitW = length / 4f;
+            for (int u = 0; u < 4; u++)
+            {
+                float ux = -length / 2f + unitW * (u + 0.5f);
+                float paneW = Mathf.Min(2.1f, unitW * 0.4f);
+                foreach (float side in new[] { -1f, 1f })
+                {
+                    b.AddChild(Box(new Vector3(paneW, FloorH - 1.25f, 0.12f),
+                        new Vector3(ux + side * paneW * 0.56f, y + 1.88f, 2.56f), ShadowGlass));
+                }
+                // 窓と窓のあいだの壁（帯を割ったので、間が抜けないように）
+                b.AddChild(Box(new Vector3(unitW - paneW * 2.12f + 0.05f, FloorH - 1.25f, 0.1f),
+                    new Vector3(ux, y + 1.88f, 2.55f), Concrete));
+            }
             for (int d = 0; d <= 4; d++)
             {
                 b.AddChild(Box(new Vector3(0.08f, 2.3f, 0.8f),

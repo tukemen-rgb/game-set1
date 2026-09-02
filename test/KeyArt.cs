@@ -18,6 +18,16 @@ public partial class KeyArt : SceneTree
         main.Set("Overcast", true);
         main.Set("RngSeed", 2);
         main.Set("SkipIntro", true);   // 検査では導入を飛ばす
+        // 夕方の灯りなど「時刻で変わるもの」を俯瞰で見たいことがある
+        string day = OS.GetEnvironment("SHOT_DAY");
+        if (day != "")
+            main.Set("StartDay", day.ToInt());
+        string hour = OS.GetEnvironment("SHOT_HOUR");
+        if (hour != "")
+        {
+            main.Set("StartHour", hour.ToFloat());
+            main.Set("Overcast", false);   // 時刻指定のときは曇天を強制しない
+        }
         Root.AddChild(main);
         ((CanvasLayer)main.GetNode("UI")).Visible = false;
 

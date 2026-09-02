@@ -321,6 +321,12 @@ public partial class SummerMain : Node3D
     };
     private int _goldfish;               // すくった金魚。夏のあいだ残る
     private Node3D _festivalNode;
+    // 団地と商店街の窓。夕方になると一部に灯りが点く。
+    // 「おぼんは どこの まども いつもより あかるい」と言っておきながら、
+    // 3Dの窓は一年中まっくらだった
+    private readonly List<StandardMaterial3D> _windows = new();     // 部屋の窓（点いたり点かなかったり）
+    private readonly List<StandardMaterial3D> _glassBands = new();  // 各階を通す帯（うっすらだけ光らせる）
+    private const int ObonDay = 13;
     private Node3D _okuribi;          // 8/16 の夕方だけ焚く送り火
     private double _fireFlicker;
     private const int OkuribiDay = 16;
@@ -402,6 +408,7 @@ public partial class SummerMain : Node3D
         SetupFireworkFx();
         CollectSkyTinted(GetNodeOrNull("Backdrop"));
         CollectGround(this);
+        CollectWindows(this);
         _puddles = GetNodeOrNull<Node3D>("Puddles");
         _asagaoVine = GetNodeOrNull<Node3D>("Asagao/Vine");
         _asagaoBuds = GetNodeOrNull<Node3D>("Asagao/Buds");
@@ -461,6 +468,7 @@ public partial class SummerMain : Node3D
         UpdateSky();
         UpdateKomorebi();
         UpdateOkuribi(delta);
+        UpdateWindows();
         UpdateAudio(delta);
         UpdateLabels();
         UpdateCamera();
@@ -1327,6 +1335,57 @@ public partial class SummerMain : Node3D
         }
         if (_puddles != null)
             _puddles.Visible = wet;
+    }
+
+    /// <summary>
+    /// 窓を集める。窓は「テクスチャ無し・ShadowGlass 色」の面なので、
+    /// 名前ではなく材質で拾う（シーンビルダー側を作り替えずに済む）。
+    /// </summary>
+    private void CollectWindows(Node node)
+    {
+        if (node is MeshInstance3D mi && mi.MaterialOverride is StandardMaterial3D m &&
+            m.AlbedoTexture == null &&
+            Mathf.Abs(m.AlbedoColor.R - 0.3f) < 0.02f &&
+            Mathf.Abs(m.AlbedoColor.G - 0.31f) < 0.02f &&
+            Mathf.Abs(m.AlbedoColor.B - 0.33f) < 0.02f)
+        {
+            m.EmissionEnabled = true;
+            m.Emission = new Color(1f, 0.86f, 0.6f);
+            m.EmissionEnergyMultiplier = 0f;
+            // 同じ色は「部屋の窓」と「各階を通すガラス帯」の両方に使われている。
+            // 帯まで部屋として点けると、建物が一本の光る棒になった（撮って確認）。
+            // 大きさで分け、帯はうっすらとだけ光らせる
+            var box = mi.Mesh as BoxMesh;
+            bool roomSized = box != null && box.Size.X <= 2.4f && box.Size.Y <= 2.6f;
+            if (roomSized)
+                _windows.Add(m);
+            else
+                _glassBands.Add(m);
+        }
+        foreach (Node child in node.GetChildren())
+            CollectWindows(child);
+    }
+
+    /// <summary>
+    /// 夕方から窓に灯りが点く。全部点けると寮に見えるので、
+    /// 部屋ごとに点く／点かないを決める。お盆は点く数を増やす。
+    /// </summary>
+    private void UpdateWindows()
+    {
+        if (_windows.Count == 0 && _glassBands.Count == 0)
+            return;
+        float night = Mathf.Clamp((float)((_hour - 17.2) / 1.6), 0f, 1f);
+        int threshold = _day == ObonDay ? 7 : 4;   // 10 部屋のうち何室が点くか
+        for (int i = 0; i < _windows.Count; i++)
+        {
+            bool lit = (i * 7 + 3) % 10 < threshold;
+            // 1.7 では白く飛んで「照明パネル」に見えた。0.42 で窓の明るさ
+            // 1.7 は白飛び、0.42 は夕方の明るさに負けて見えなかった。
+            // 小さい窓に分けたうえで 1.05 が、灯りとして読める強さ
+            _windows[i].EmissionEnergyMultiplier = lit ? night * 1.05f : 0f;
+        }
+        foreach (StandardMaterial3D band in _glassBands)
+            band.EmissionEnergyMultiplier = night * 0.1f;
     }
 
     private void ApplyWeather()

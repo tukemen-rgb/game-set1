@@ -335,6 +335,8 @@ public partial class SummerMain : Node3D
     private Node3D _streetLights;     // アーケードの蛍光灯（夕方から点ける）
     private StandardMaterial3D _vendingPanel;
     // 池の水。金属寄りの材質なので、放っておくと夕方でも真昼の青のまま残る
+    // 夏まつりの提灯と裸電球。昼は紙のまま、夕方から灯る
+    private readonly List<(StandardMaterial3D Mat, Color Lit)> _festivalLights = new();
     private StandardMaterial3D _pondWater;
     private Color _pondWaterBase;
     private const int OkuribiDay = 16;
@@ -417,6 +419,8 @@ public partial class SummerMain : Node3D
         CollectSkyTinted(GetNodeOrNull("Backdrop"));
         CollectGround(this);
         CollectWindows(this);
+        if (OS.GetEnvironment("DEBUG_UNLIT") == "1")
+            ReportUnlit(this);
         _puddles = GetNodeOrNull<Node3D>("Puddles");
         _asagaoVine = GetNodeOrNull<Node3D>("Asagao/Vine");
         _asagaoBuds = GetNodeOrNull<Node3D>("Asagao/Buds");
@@ -426,6 +430,14 @@ public partial class SummerMain : Node3D
         _festivalNode = GetNodeOrNull<Node3D>("Festival");
         _okuribi = GetNodeOrNull<Node3D>("Okuribi");
         _radioBanners = GetNodeOrNull<Node3D>("RadioTaiso/Banners");
+        if (GetNodeOrNull("Festival/Lights") is Node3D fl)
+        {
+            foreach (Node c in fl.GetChildren())
+            {
+                if (c is MeshInstance3D mi && mi.MaterialOverride is StandardMaterial3D fm)
+                    _festivalLights.Add((fm, fm.AlbedoColor));
+            }
+        }
         _streetLights = GetNodeOrNull<Node3D>("Shotengai/StreetLights");
         if (_streetLights != null)
         {
@@ -1475,6 +1487,35 @@ public partial class SummerMain : Node3D
         }
         if (_vendingPanel != null)
             _vendingPanel.EmissionEnergyMultiplier = night * 1.5f;
+
+        // 提灯は昼のあいだ「灯った色」で光りっぱなしだった（8/24 の 11:30 を
+        // 撮って気づいた）。昼は色あせた紙、夕方から灯った色へ寄せる
+        var paperByDay = new Color(0.9f, 0.86f, 0.79f);
+        foreach ((StandardMaterial3D m, Color lit) in _festivalLights)
+            m.AlbedoColor = paperByDay.Lerp(lit, night);
+    }
+
+    /// <summary>
+    /// 「時刻の仕組みが触っていない物」を洗い出す（DEBUG_UNLIT=1）。
+    /// 夕方になっても真昼のまま残る物を、1回ずつ撮って見つけていたが、
+    /// それでは取りこぼす。Unshaded（光が当たらない）なのに
+    /// 時刻の色掛けの対象になっていない物を、まとめて名指しする。
+    /// </summary>
+    private void ReportUnlit(Node node, string path = "")
+    {
+        if (node is MeshInstance3D mi && mi.MaterialOverride is StandardMaterial3D m)
+        {
+            bool unshaded = m.ShadingMode == BaseMaterial3D.ShadingModeEnum.Unshaded;
+            bool tracked = false;
+            foreach ((StandardMaterial3D t, Color _) in _skyTinted)
+            {
+                if (t == m) { tracked = true; break; }
+            }
+            if (unshaded && !tracked)
+                GD.Print($"[unlit] {path}/{node.Name}");
+        }
+        foreach (Node child in node.GetChildren())
+            ReportUnlit(child, $"{path}/{node.Name}");
     }
 
     private void ApplyWeather()

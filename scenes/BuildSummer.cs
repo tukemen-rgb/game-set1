@@ -961,13 +961,17 @@ public partial class BuildSummer : SceneTree
         };
         // 東端まで吊ると、望遠カメラ（x=25）の 10m 手前に来た1個が
         // 画面上部を横切る太い棒になる。x=8 までにする
+        // 提灯と裸電球は「灯り」なので、昼は紙のまま・夜に灯る。
+        // Lights の下にまとめて、SummerMain が時刻で色を動かす
+        var fesLights = new Node3D { Name = "Lights" };
         for (int i = 0; i < 13; i++)
         {
             float lx = -17f + i * 2.1f;
-            f.AddChild(MeshI(new CylinderMesh { TopRadius = 0.09f, BottomRadius = 0.09f, Height = 0.22f },
-                new Vector3(lx, 3.5f, 15.9f), lampMat, noShadow: true));
+            fesLights.AddChild(MeshI(new CylinderMesh { TopRadius = 0.09f, BottomRadius = 0.09f, Height = 0.22f },
+                new Vector3(lx, 3.5f, 15.9f), lampMat.Duplicate() as StandardMaterial3D, noShadow: true));
             f.AddChild(Box(new Vector3(0.02f, 0.35f, 0.02f), new Vector3(lx, 3.78f, 15.9f), ConcreteDark));
         }
+        f.AddChild(fesLights);
 
         // 屋台3軒。天幕・台・のれん・裸電球
         (float X, Color Cloth, Color Goods)[] stalls =
@@ -1002,9 +1006,9 @@ public partial class BuildSummer : SceneTree
                 st.AddChild(MeshI(new SphereMesh { Radius = 0.09f, Height = 0.18f },
                     new Vector3(-0.8f + k * 0.4f, 1.0f, 0.05f), goods));
             }
-            // 裸電球
-            st.AddChild(MeshI(new SphereMesh { Radius = 0.07f, Height = 0.14f },
-                new Vector3(0f, 1.95f, 0.2f), new Color(1f, 0.95f, 0.75f), unshaded: true));
+            // 裸電球（これも Lights の下に置く。位置は屋台の中なので絶対座標で）
+            fesLights.AddChild(MeshI(new SphereMesh { Radius = 0.07f, Height = 0.14f },
+                new Vector3(sx, 1.95f, 16.8f), new Color(1f, 0.95f, 0.75f), unshaded: true));
             f.AddChild(st);
         }
         root.AddChild(f);

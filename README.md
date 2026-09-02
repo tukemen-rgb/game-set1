@@ -227,6 +227,7 @@ python3 tools/check_audio.py screenshots/run                  # 音量を1秒ご
 | `DEBUG_FIREWORK=1` | 花火の打ち上げ位置を出す |
 | `DEBUG_STEPS=1` | 足音が鳴った回数を出す |
 | `DEBUG_MSG=1` | 画面に出た文を出た順に流す |
+| `DEBUG_UNLIT=1` | 光が当たらない材質のうち、時刻の色掛けの対象外のものを列挙 |
 | `END_DAY` | `Ending.cs` の開始日（`END_DAY=30` で最終日の朝を見る） |
 | `SpeedProbe.cs` | 歩き／走りの移動距離の実測（ヘッドレス） |
 

@@ -230,6 +230,8 @@ public partial class SummerMain : Node3D
     private bool _vacationOver;
     private double _messageTimer;
     private double _msgShownAt;   // いまの文を出した時刻（上書き検出用）
+    private string _lastCounts = "";   // 右上の数字。変わったときだけ見せる
+    private double _hudTimer;
     // 読む前に上書きされた文を捨てずに待たせる。深く積むと今さらな文が
     // 出てくるので2つまで
     private readonly Queue<(string Text, double Seconds)> _msgQueue = new();
@@ -532,6 +534,7 @@ public partial class SummerMain : Node3D
         UpdateLabels();
         UpdateCamera();
         UpdateMessages(delta);
+        UpdateHud(delta);
         AnimateCicadas();
         UpdateFireworks(delta);
         if (PhaseOfHour() != _spawnedPhase)
@@ -1248,8 +1251,30 @@ public partial class SummerMain : Node3D
             _ => "はれ",
         };
         _dateLabel.Text = $"8月{_day}日({Weekday()})  {h:D2}:{m:D2}  {wx}";
-        _bugLabel.Text = $"むし ×{_totalCaught}   ずかん {_collected.Count}/{AllSpecies.Length}   " +
-                         $"はっけん {_found.Count}/{Spots.Length}   {_money}円";
+        string counts = $"むし ×{_totalCaught}   ずかん {_collected.Count}/{AllSpecies.Length}   " +
+                        $"はっけん {_found.Count}/{Spots.Length}   {_money}円";
+        _bugLabel.Text = counts;
+
+        // 数を出しっぱなしにしない。
+        // 「残数を突きつけると焦りになる」と決めておきながら、画面の右上に
+        // 4つの数字を31日ぶん出し続けていた。**変わったときだけ**見せる。
+        // ふだんの数はＺのずかんで見られるので、失われる情報は無い
+        if (counts != _lastCounts)
+        {
+            _lastCounts = counts;
+            _hudTimer = 4.0;
+        }
+    }
+
+    /// <summary>右上の数字を、変わってから数秒だけ見せる。</summary>
+    private void UpdateHud(double delta)
+    {
+        if (_hudTimer > 0.0)
+            _hudTimer -= delta;
+        float target = _hudTimer > 0.0 ? 1f : 0f;
+        Color c = _bugLabel.Modulate;
+        c.A = Mathf.MoveToward(c.A, target, (float)delta * 1.6f);
+        _bugLabel.Modulate = c;
     }
 
     // --- メッセージ ---

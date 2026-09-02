@@ -450,11 +450,85 @@ public partial class BuildSummer : SceneTree
             street.AddChild(Box(new Vector3(0.15f, 4.4f, 0.15f), new Vector3(x, 2.2f, 18.3f), ConcreteDark));
         }
 
+        // 望遠カメラ（東から西を覗く）は画角が狭く、写る高さは y=0〜3.5 ほど。
+        // そこに一番大きく入るのが「列の端の店の横っ腹」で、無地のままだと
+        // 画面の左右 1/3 がのっぺりした灰色の板になる。端の壁だけ作り込む。
+        foreach ((float ex, float ez, int edir) in new[]
+                 {
+                     (9.95f, 12.7f, 1), (9.95f, 19.1f, 1),      // 東の入口側（望遠カメラの手前）
+                     (-17.95f, 12.7f, -1), (-17.95f, 19.1f, -1), // 西の端
+                     (-6.05f, 12.7f, 1), (-1.95f, 12.7f, -1),   // 南列のギャップ（入口）の両脇
+                 })
+        {
+            street.AddChild(BuildEndWall(ex, ez, edir));
+        }
+
+        // 入口の門柱。梁を渡すと画角の外（y=5 付近）に出てしまうので、
+        // 柱と電飾看板だけを写る高さに置いて、望遠の絵に手前の枠を作る。
+        foreach (float gz in new[] { 13.3f, 18.5f })
+        {
+            street.AddChild(Box(new Vector3(0.45f, 4.6f, 0.45f), new Vector3(10.7f, 2.3f, gz), ConcreteDark));
+            street.AddChild(Box(new Vector3(0.5f, 1.9f, 0.5f), new Vector3(10.7f, 3.4f, gz),
+                new Color(0.86f, 0.32f, 0.26f)));
+            street.AddChild(Box(new Vector3(0.56f, 0.16f, 0.56f), new Vector3(10.7f, 2.42f, gz),
+                new Color(0.93f, 0.9f, 0.82f)));
+            street.AddChild(Collider(new Vector3(0.5f, 4.6f, 0.5f), new Vector3(10.7f, 2.3f, gz)));
+        }
+
         var vending = new Node3D { Position = new Vector3(14.5f, 0f, 10.8f) };
         vending.AddChild(Box(new Vector3(0.95f, 1.8f, 0.8f), new Vector3(0f, 0.9f, 0f), new Color(0.8f, 0.15f, 0.15f)));
         vending.AddChild(Box(new Vector3(0.8f, 0.9f, 0.05f), new Vector3(0f, 1.25f, -0.41f), new Color(0.9f, 0.9f, 0.92f)));
         street.AddChild(vending);
         root.AddChild(street);
+    }
+
+    /// <summary>
+    /// 列の端で露出している店の側面を作り込む。dir は露出している面の向き（+1 = +X）。
+    /// 腰壁・袖看板・室外機・雨どい・貼り紙・ビールケースで、無地の面を割る。
+    /// </summary>
+    private static Node3D BuildEndWall(float x, float z, int dir)
+    {
+        var w = new Node3D { Name = $"EndWall{(int)(x * 10)}_{(int)(z * 10)}" };
+        float d = dir;
+
+        // 腰壁（下半分のタイル帯）。無地の面はまず横に割ると嘘くささが減る
+        w.AddChild(TexBox(new Vector3(0.07f, 0.85f, 2.96f), new Vector3(x + 0.05f * d, 0.43f, z),
+            "photo/concrete_floor_01.jpg", new Vector2(3f, 1.2f)));
+        w.AddChild(Box(new Vector3(0.1f, 0.07f, 2.98f), new Vector3(x + 0.06f * d, 0.86f, z), ConcreteDark));
+
+        // 袖看板（壁から直角に張り出す縦看板）。商店街の横顔はほぼこれで決まる
+        w.AddChild(Box(new Vector3(0.9f, 1.7f, 0.08f), new Vector3(x + 0.5f * d, 2.05f, z - 0.85f),
+            new Color(0.93f, 0.91f, 0.85f)));
+        w.AddChild(Box(new Vector3(0.94f, 0.26f, 0.1f), new Vector3(x + 0.5f * d, 2.78f, z - 0.85f),
+            new Color(0.2f, 0.35f, 0.6f)));
+        w.AddChild(Box(new Vector3(0.12f, 0.1f, 0.1f), new Vector3(x + 0.08f * d, 2.7f, z - 0.85f), ConcreteDark));
+
+        // 室外機と架台
+        w.AddChild(Box(new Vector3(0.5f, 0.58f, 0.78f), new Vector3(x + 0.3f * d, 1.28f, z + 0.8f), RailPanel));
+        w.AddChild(Box(new Vector3(0.44f, 0.06f, 0.72f), new Vector3(x + 0.3f * d, 0.97f, z + 0.8f), ConcreteDark));
+        w.AddChild(Box(new Vector3(0.06f, 0.34f, 0.06f), new Vector3(x + 0.5f * d, 0.8f, z + 1.1f), ConcreteDark));
+
+        // 雨どい（縦に一本通すと壁の高さが読めるようになる）
+        w.AddChild(Box(new Vector3(0.13f, 3.1f, 0.13f), new Vector3(x + 0.08f * d, 1.55f, z + 1.34f), ConcreteDark));
+
+        // 貼り紙。少し傾け、色を散らす
+        Color[] paper = { new(0.95f, 0.94f, 0.9f), new(0.95f, 0.85f, 0.4f), new(0.9f, 0.92f, 0.95f) };
+        for (int i = 0; i < 3; i++)
+        {
+            var note = Box(new Vector3(0.04f, 0.4f, 0.28f),
+                new Vector3(x + 0.045f * d, 1.45f + i * 0.42f, z - 0.15f + (i % 2) * 0.5f), paper[i]);
+            note.RotationDegrees = new Vector3(0f, 0f, i == 1 ? 3.5f : -2.5f);
+            w.AddChild(note);
+        }
+
+        // ビールケースの積み上げ（足元に物があると「使われている店」に見える）
+        Color[] crate = { new(0.75f, 0.25f, 0.2f), new(0.2f, 0.35f, 0.55f), new(0.75f, 0.25f, 0.2f) };
+        for (int i = 0; i < 3; i++)
+        {
+            w.AddChild(Box(new Vector3(0.42f, 0.28f, 0.42f),
+                new Vector3(x + 0.32f * d, 0.14f + i * 0.28f, z - 1.15f + (i == 2 ? 0.06f : 0f)), crate[i]));
+        }
+        return w;
     }
 
     private static Node3D BuildShop(Vector3 pos, int facing, Color awning, bool glassFront, int idx)

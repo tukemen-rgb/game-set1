@@ -932,7 +932,7 @@ public partial class SummerMain : Node3D
             // 4秒の素材を途切れず回す。インポート設定に頼らずコード側で閉じる
             stream.LoopMode = AudioStreamWav.LoopModeEnum.Forward;
             stream.LoopBegin = 0;
-            stream.LoopEnd = stream.Data.Length / 2; // 16bit モノラル
+            stream.LoopEnd = LoopFrames(stream);
             var player = new AudioStreamPlayer
             {
                 Name = $"Cicada{i}",
@@ -963,7 +963,7 @@ public partial class SummerMain : Node3D
         {
             rainStream.LoopMode = AudioStreamWav.LoopModeEnum.Forward;
             rainStream.LoopBegin = 0;
-            rainStream.LoopEnd = rainStream.Data.Length / 2;
+            rainStream.LoopEnd = LoopFrames(rainStream);
             // 雨の日に始めるときは最初から鳴らす（セミと同じ扱い）。
             // 音量はセミの床（-8dB）とそろえる。雨の日だけ 8dB 静かだと、
             // 「雨で世界が静まる」ではなく「音が抜けている」に聞こえる
@@ -978,9 +978,11 @@ public partial class SummerMain : Node3D
         }
 
         _sfxFirework = MakeSfx("sfx_firework", -4f);
-        _sfxSwing = MakeSfx("sfx_swing", -10f);
+        // 音量はミックス内で実測して決めた（docs/audit/audio.md）。
+        // 振る音はセミの床から +4dB しか出ておらず、聞こえない手応えだった
+        _sfxSwing = MakeSfx("sfx_swing", -5f);
         _sfxCatch = MakeSfx("sfx_catch", -6f);
-        _sfxEscape = MakeSfx("sfx_escape", -8f);
+        _sfxEscape = MakeSfx("sfx_escape", -5f);
     }
 
     private static void PlaySfx(AudioStreamPlayer p)
@@ -1097,6 +1099,15 @@ public partial class SummerMain : Node3D
         _fireworkFx.Restart();
         PlaySfx(_sfxFirework);
     }
+
+    /// <summary>
+    /// ループの終端（フレーム数）。`Data.Length / 2` は 16bit PCM の前提で、
+    /// インポートが QOA 圧縮（Godot 4.4 の既定）だと圧縮後のバイト数になり、
+    /// 4 秒の素材が先頭 0.81 秒しか回っていなかった（録音の自己相関で確認）。
+    /// 長さ×レートで数えれば形式に依らない。
+    /// </summary>
+    private static int LoopFrames(AudioStreamWav stream)
+        => Mathf.RoundToInt((float)(stream.GetLength() * stream.MixRate));
 
     private AudioStreamPlayer MakeSfx(string file, float db)
     {

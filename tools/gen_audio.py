@@ -43,6 +43,13 @@ def add_tone(buf, freq, start, dur, amp, mod_hz=0.0, mod_depth=0.0, decay=0.0, s
     n = int(dur * RATE)
     detune = 1.0 + rng.uniform(-0.02, 0.02)
     phase = rng.uniform(0, math.tau)
+    # ループ全長の音は、周波数を 1/DUR Hz の倍数に丸めて終端で位相が閉じるように
+    # する。端の 10ms フェードも掛けない（掛けると継ぎ目に 8〜10dB の谷ができ、
+    # 4 秒ごとに「息継ぎ」が聞こえた。docs/audit/audio.md）
+    whole = dur >= DUR
+    if whole:
+        freq = round(freq * detune * DUR) / DUR
+        detune = 1.0
     for k in range(n):
         i = (i0 + k) % N                      # はみ出した分は先頭へ回してループを閉じる
         t = k / RATE
@@ -50,8 +57,9 @@ def add_tone(buf, freq, start, dur, amp, mod_hz=0.0, mod_depth=0.0, decay=0.0, s
         if decay > 0.0:
             env *= math.exp(-t * decay)
         # 立ち上がり・終わりを滑らかにしてプツッという音を防ぐ
-        edge = min(1.0, t / 0.01, (dur - t) / 0.01)
-        env *= max(0.0, edge)
+        if not whole:
+            edge = min(1.0, t / 0.01, (dur - t) / 0.01)
+            env *= max(0.0, edge)
         m = 1.0
         if mod_hz > 0.0:
             m = 1.0 - mod_depth + mod_depth * (0.5 + 0.5 * math.sin(math.tau * mod_hz * t))
@@ -277,7 +285,7 @@ if __name__ == "__main__":
     save("cicada_evening", evening)
     save("rain", rain)
     save_oneshot("chime_five", chime_five, 4.2)
-    save_oneshot("sfx_firework", sfx_firework, 1.6)
+    save_oneshot("sfx_firework", sfx_firework, 0.95)   # 1.6 だと後ろ 44% が無音だった
     save_oneshot("sfx_step", sfx_step, 0.14)
     save_oneshot("sfx_swing", sfx_swing, 0.30)
     save_oneshot("sfx_catch", sfx_catch, 0.55)

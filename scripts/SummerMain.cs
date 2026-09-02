@@ -46,7 +46,8 @@ public partial class SummerMain : Node3D
     /// <summary>セミの種類。出る時間帯が違うので「夕方にしか採れない」動機が生まれる。</summary>
     private readonly record struct Species(string Name, Color Color, int FromHour, int ToHour,
                                           float CatchRate, bool RainOnly = false,
-                                          bool PondOnly = false);
+                                          bool PondOnly = false,
+                                          bool SapOnly = false);
 
     // 時間帯で顔ぶれが変わる。難しい種ほど捕獲率が低い
     private static readonly Species[] AllSpecies =
@@ -63,8 +64,17 @@ public partial class SummerMain : Node3D
         new("アマガエル", new Color(0.42f, 0.68f, 0.35f), 8, 19, 0.55f, RainOnly: true),
         // 木ではなく池で釣る。虫あみ（近づいて振る）とは手ざわりの違う遊びにする
         new("ザリガニ", new Color(0.7f, 0.25f, 0.2f), 8, 19, 0.8f, PondOnly: true),
+        // 樹液の出るくぬぎに、朝と夕方だけ来る。昼間は来ないので
+        // 「いつでも行けば居る」にはならない
+        new("カブトムシ", new Color(0.24f, 0.16f, 0.11f), 8, 19, 0.6f, SapOnly: true),
+        new("クワガタ", new Color(0.13f, 0.11f, 0.1f), 8, 19, 0.45f, SapOnly: true),
     };
     private const float CatchRange = 2.2f;
+
+    // 樹液の出るくぬぎ（空き地のそば）。ここだけ甲虫が来る
+    private static readonly Vector3 SapTree = new(19f, 0f, 5f);
+    private const int SapKabuto = 9;
+    private const int SapKuwagata = 10;
 
     // --- ザリガニつり（公園の池） ---
     // 池のふちに立って糸を垂らし、当たりが来た合図で引く。
@@ -470,6 +480,8 @@ public partial class SummerMain : Node3D
     {
         if (sp.PondOnly)
             return "こうえんの いけ";
+        if (sp.SapOnly)
+            return "じゅえきの くぬぎ　あさと ゆうがた";
         if (sp.RainOnly)
             return "あめの ひ";
         string band = sp.FromHour < 10 ? "あさ" : sp.FromHour < 15 ? "ひる" : "ゆうがた";
@@ -1119,8 +1131,8 @@ public partial class SummerMain : Node3D
         var pool = new List<int>();
         for (int i = 0; i < AllSpecies.Length; i++)
         {
-            if (AllSpecies[i].PondOnly)
-                continue;   // 池で釣るものは木に湧かせない
+            if (AllSpecies[i].PondOnly || AllSpecies[i].SapOnly)
+                continue;   // 池で釣るもの・樹液に来るものは別枠で湧かせる
             if (AllSpecies[i].RainOnly != rainy)
                 continue;
             if (rainy || (_hour >= AllSpecies[i].FromHour && _hour < AllSpecies[i].ToHour))
@@ -1139,6 +1151,7 @@ public partial class SummerMain : Node3D
             _cicadas.Add(spot);
             _cicadaSpecies.Add(sp);
         }
+        SpawnSapBeetles();
         // どこに何が湧いたかは画面から探すしかなく、雨の生き物のように
         // 小さくて低い位置に出るものは見落とす。検査用に位置を出せるようにする
         if (OS.GetEnvironment("DEBUG_SPAWN") == "1")
@@ -1223,6 +1236,102 @@ public partial class SummerMain : Node3D
     private int PhaseOfHour() => _hour < 11.0 ? 0 : _hour < 16.0 ? 1 : 2;
 
     /// <summary>木にとまったセミ1匹。頭を上にして幹に貼りつく本物の姿勢で作る。</summary>
+    /// <summary>
+    /// 樹液の木のカブトムシ・クワガタ。朝（8〜9時半）と夕方（17時以降）だけ来る。
+    /// 昼に来ないのは本当のことで、遊びとしても「行く時間を選ぶ」理由になる。
+    /// 雨の日は来ない（雨の日は雨の生き物の日にする）。
+    /// </summary>
+    private void SpawnSapBeetles()
+    {
+        if (_weather == Weather.Rainy)
+            return;
+        bool morning = _hour >= DayStartHour && _hour < 9.5;
+        bool evening = _hour >= 17.0;
+        if (!morning && !evening)
+            return;
+
+        // 幹の同じ高さに2匹まで。カブトのほうが出やすい
+        int count = 1 + (int)(_rng.Randi() % 2);
+        for (int k = 0; k < count; k++)
+        {
+            int sp = _rng.Randf() < 0.62f ? SapKabuto : SapKuwagata;
+            var spot = new Node3D
+            {
+                Position = SapTree + new Vector3(0f, 0f, 0f),
+            };
+            Node3D body = MakeBeetle(AllSpecies[sp], k);
+            body.Position = new Vector3(0.3f - k * 0.62f, 0.95f + k * 0.22f, k == 0 ? 0.08f : -0.1f);
+            spot.AddChild(body);
+            AddChild(spot);
+            _cicadas.Add(spot);
+            _cicadaSpecies.Add(sp);
+        }
+    }
+
+    /// <summary>甲虫。丸い背・角（カブト）またはあご（クワガタ）・6本の脚。</summary>
+    private static Node3D MakeBeetle(Species sp, int variant)
+    {
+        var root = new Node3D { RotationDegrees = new Vector3(-8f, 90f + variant * 40f, 0f) };
+        var shell = new StandardMaterial3D { AlbedoColor = sp.Color, Roughness = 0.35f };
+        var dark = new StandardMaterial3D { AlbedoColor = sp.Color * 0.6f, Roughness = 0.4f };
+
+        var body = new MeshInstance3D
+        {
+            Mesh = new SphereMesh { Radius = 0.07f, Height = 0.12f },
+            MaterialOverride = shell,
+            Scale = new Vector3(1f, 1f, 1.55f),
+        };
+        root.AddChild(body);
+        root.AddChild(new MeshInstance3D
+        {
+            Mesh = new SphereMesh { Radius = 0.045f, Height = 0.07f },
+            MaterialOverride = dark,
+            Position = new Vector3(0f, 0.01f, -0.1f),
+        });
+
+        if (sp.Name == "カブトムシ")
+        {
+            // 角。前へ突き出して先で上を向く
+            var horn = new MeshInstance3D
+            {
+                Mesh = new CylinderMesh { TopRadius = 0.008f, BottomRadius = 0.016f, Height = 0.14f },
+                MaterialOverride = dark,
+                Position = new Vector3(0f, 0.05f, -0.16f),
+                RotationDegrees = new Vector3(-62f, 0f, 0f),
+            };
+            root.AddChild(horn);
+        }
+        else
+        {
+            // あご。左右に開いた2本
+            foreach (float mx in new[] { -0.03f, 0.03f })
+            {
+                root.AddChild(new MeshInstance3D
+                {
+                    Mesh = new CylinderMesh { TopRadius = 0.006f, BottomRadius = 0.011f, Height = 0.11f },
+                    MaterialOverride = dark,
+                    Position = new Vector3(mx, 0.015f, -0.17f),
+                    RotationDegrees = new Vector3(-74f, 0f, mx > 0f ? -16f : 16f),
+                });
+            }
+        }
+
+        for (int i = 0; i < 3; i++)
+        {
+            foreach (float lx in new[] { -0.06f, 0.06f })
+            {
+                root.AddChild(new MeshInstance3D
+                {
+                    Mesh = new CapsuleMesh { Radius = 0.008f, Height = 0.07f },
+                    MaterialOverride = dark,
+                    Position = new Vector3(lx, -0.03f, -0.06f + i * 0.07f),
+                    RotationDegrees = new Vector3(0f, 0f, lx > 0f ? -58f : 58f),
+                });
+            }
+        }
+        return root;
+    }
+
     private static Node3D MakeCicadaBody(Species sp, int variant)
     {
         if (sp.RainOnly)

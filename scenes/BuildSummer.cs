@@ -44,6 +44,7 @@ public partial class BuildSummer : SceneTree
         BuildPuddles(root);
         BuildAsagao(root);
         BuildResidents(root);
+        BuildSapMark(root);
         BuildPark(root);
         BuildVacantLot(root);
         BuildTrees(root);
@@ -768,6 +769,44 @@ public partial class BuildSummer : SceneTree
         t.AddChild(Box(new Vector3(0.3f, 0.1f, 0.22f), new Vector3(0.35f, 0.8f, 0f), new Color(0.9f, 0.88f, 0.8f)));
         t.AddChild(Box(new Vector3(0.09f, 0.05f, 0.09f), new Vector3(0.62f, 0.77f, 0.05f), new Color(0.7f, 0.15f, 0.15f)));
         root.AddChild(t);
+    }
+
+    /// <summary>
+    /// 樹液の跡。空き地そばの木 (19,0,5) の幹に、黒く濡れた染みと
+    /// 集まる小虫を付ける。ここに甲虫が来るという手がかりが要る。
+    /// </summary>
+    private static void BuildSapMark(Node3D root)
+    {
+        var m = new Node3D { Name = "SapTree", Position = new Vector3(19f, 0f, 5f) };
+        var wet = new StandardMaterial3D
+        {
+            AlbedoColor = new Color(0.12f, 0.08f, 0.05f),
+            Roughness = 0.15f,
+            Metallic = 0.35f,
+        };
+        // 幹（半径 0.2 前後）に沿わせた縦長の染み
+        // 円筒で巻くと「幹に黒い輪をはめた」絵になった（実際そう見えた）。
+        // 幹の一面に貼る板にして、樹液が流れた跡として縦に垂らす
+        (float Ang, float Y, float H, float W)[] runs =
+        {
+            (0.0f, 1.02f, 0.62f, 0.2f), (0.55f, 0.86f, 0.4f, 0.13f), (-0.7f, 0.72f, 0.3f, 0.1f),
+        };
+        foreach ((float ang, float y, float h, float w) in runs)
+        {
+            var slab = MeshI(new BoxMesh { Size = new Vector3(w, h, 0.03f) },
+                new Vector3(Mathf.Sin(ang) * 0.24f, y, Mathf.Cos(ang) * 0.24f), wet);
+            slab.RotationDegrees = new Vector3(0f, ang * 57.3f, 0f);
+            m.AddChild(slab);
+        }
+        // 集まっている小虫。近づくと分かる程度の点
+        for (int i = 0; i < 6; i++)
+        {
+            float th = i * 1.05f;
+            m.AddChild(MeshI(new SphereMesh { Radius = 0.014f, Height = 0.022f },
+                new Vector3(Mathf.Cos(th) * 0.26f, 0.8f + (i % 3) * 0.2f, Mathf.Sin(th) * 0.26f),
+                new Color(0.2f, 0.18f, 0.14f)));
+        }
+        root.AddChild(m);
     }
 
     /// <summary>

@@ -790,6 +790,36 @@ public partial class BuildSummer : SceneTree
         // 出席カードの箱と朱肉
         t.AddChild(Box(new Vector3(0.3f, 0.1f, 0.22f), new Vector3(0.35f, 0.8f, 0f), new Color(0.9f, 0.88f, 0.8f)));
         t.AddChild(Box(new Vector3(0.09f, 0.05f, 0.09f), new Vector3(0.62f, 0.77f, 0.05f), new Color(0.7f, 0.15f, 0.15f)));
+
+        // のぼり旗。台の前に立って何をやっているか、**近づく前に**分かるようにする。
+        // 初日の朝、目の前にあるのに「近づかないと分からない」のでは、
+        // 最初の一歩の手がかりにならない。8/1〜8/7 のあいだだけ立てる
+        var banners = new Node3D { Name = "Banners" };
+        foreach ((float bx, Color cloth) in new[]
+                 {
+                     (-1.15f, new Color(0.88f, 0.25f, 0.22f)),
+                     (1.15f, new Color(0.95f, 0.95f, 0.93f)),
+                 })
+        {
+            // 14m 先の棟間カメラから読める大きさが要る。2.5m/幅0.4 では
+            // 点にしか見えなかったので、3.4m/幅0.62 に上げた
+            banners.AddChild(MeshI(new CylinderMesh { TopRadius = 0.03f, BottomRadius = 0.035f, Height = 3.4f },
+                new Vector3(bx, 1.7f, 0f), new Color(0.72f, 0.7f, 0.66f)));
+            banners.AddChild(Box(new Vector3(0.04f, 0.035f, 0.66f), new Vector3(bx, 3.34f, 0.31f), new Color(0.72f, 0.7f, 0.66f)));
+            // 布。竿の片側に垂らす
+            banners.AddChild(Box(new Vector3(0.02f, 2.2f, 0.62f), new Vector3(bx + 0.03f, 2.22f, 0.31f), cloth));
+            // 帯（遠目に「文字が入っている」と読めるだけの横線）
+            for (int k = 0; k < 3; k++)
+            {
+                banners.AddChild(Box(new Vector3(0.03f, 0.2f, 0.44f),
+                    new Vector3(bx + 0.04f, 2.95f - k * 0.62f, 0.31f),
+                    cloth.Lerp(new Color(0.15f, 0.15f, 0.18f), 0.75f)));
+            }
+            // 土台の重し
+            banners.AddChild(MeshI(new CylinderMesh { TopRadius = 0.16f, BottomRadius = 0.2f, Height = 0.14f },
+                new Vector3(bx, 0.07f, 0f), ConcreteDark));
+        }
+        t.AddChild(banners);
         root.AddChild(t);
     }
 

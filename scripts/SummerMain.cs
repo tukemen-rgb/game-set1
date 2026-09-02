@@ -331,6 +331,7 @@ public partial class SummerMain : Node3D
     private const int ObonDay = 13;
     private Node3D _okuribi;          // 8/16 の夕方だけ焚く送り火
     private double _fireFlicker;
+    private Node3D _radioBanners;     // ラジオ体操ののぼり（8/1〜8/7 だけ立てる）
     private const int OkuribiDay = 16;
 
     private const int DailyAllowance = 100;
@@ -419,6 +420,7 @@ public partial class SummerMain : Node3D
         _asagaoFutaba = GetNodeOrNull<Node3D>("Asagao/Futaba");
         _festivalNode = GetNodeOrNull<Node3D>("Festival");
         _okuribi = GetNodeOrNull<Node3D>("Okuribi");
+        _radioBanners = GetNodeOrNull<Node3D>("RadioTaiso/Banners");
         if (GetNodeOrNull("Backdrop/PanoramaNight") is MeshInstance3D np)
             _nightPano = np.MaterialOverride as StandardMaterial3D;
         if (GetNodeOrNull("Backdrop/Panorama") is MeshInstance3D dp)
@@ -1436,6 +1438,8 @@ public partial class SummerMain : Node3D
         UpdateAsagao();
         if (_festivalNode != null)
             _festivalNode.Visible = _day == FestivalDay;   // 屋台と提灯は当日だけ
+        if (_radioBanners != null)
+            _radioBanners.Visible = _day <= RadioLastDay;  // のぼりは期間中ずっと
     }
 
     /// <summary>朝=0 / 昼=1 / 夕=2。変わったら顔ぶれを入れ替える。</summary>

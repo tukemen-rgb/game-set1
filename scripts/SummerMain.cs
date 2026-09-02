@@ -131,6 +131,42 @@ public partial class SummerMain : Node3D
         "「おや、また 来たね。\nおぼえて いてくれるのは うれしいもんだ」",
     };
 
+    // --- 町の人 ---
+    // ベンチのおじいさんも立ち話の二人も、置いただけで一言も話さなかった。
+    // 人が居るのに黙っているのは、居ないより不自然になる。
+    private readonly record struct Townsfolk(Vector2 Pos, string Label, string[] Lines);
+    private static readonly Townsfolk[] Folks =
+    {
+        new(new Vector2(-1.5f, 15.2f), "おじいさん", new[]
+        {
+            "「この あつさは、むかしの 夏には なかったよ」",
+            "「この先の 空き地は、ずっと 田んぼだったんだ」",
+            "「新聞は 朝に よむと きまってる。\nここが いちばん すずしい」",
+            "「学校は どうだい。\n……ああ、なつやすみか」",
+            "「あの 電柱、わしより 年下なんだ」",
+        }),
+        new(new Vector2(-18.6f, -1.1f), "おばさん", new[]
+        {
+            "「たまごが 安いのよ、きょう。\nいそがないと なくなる」",
+            "「おおきく なったわねえ。\nこの前まで だっこして たのに」",
+            "「せんたくもの、はやく 入れなさいって\nおかあさんに 言っといて」",
+            "「ぼうや、水分は とってる？」",
+            "「なつまつりの 提灯、もう ついてたわ」",
+        }),
+        new(new Vector2(-19.6f, -0.2f), "となりの おばさん", new[]
+        {
+            "「うちの 子は もう おきないの。\nえらいわねえ、あなたは」",
+            "「あそこの 木、また セミが すごいのよ」",
+            "「夕立が くるかも しれないわ。\nかさ、もってる？」",
+            "「そうそう、それでね——」",
+            "「ラジオたいそう、行った？\nはんこ もらえるうちに 行きなさい」",
+        }),
+    };
+    private const float FolkRange = 2.4f;
+    private int _folkTalkedDay = -1;
+    private int _folkTalkedIndex = -1;
+    private int _folkTalks;              // 夏のあいだに交わした立ち話の数
+
     private const int FestivalDay = 24;
     private const double FireworkFromHour = 17.5;
     private const float DiscoverRange = 3.2f;
@@ -385,6 +421,7 @@ public partial class SummerMain : Node3D
             ShowMessage("セミの こえが かわった……", 2.5);
         }
         CheckRadio();
+        CheckFolk();
         CheckAsagao();
         CheckShop();
         _fishClock += delta;
@@ -607,6 +644,8 @@ public partial class SummerMain : Node3D
             extra += $"\nビー玉は {_marbles}こ たまった。";
         if (_bloomSeen > 0)
             extra += $"\nあさがおが 咲いた朝を {_bloomSeen}回 見た。";
+        if (_folkTalks > 0)
+            extra += $"\n町の人と {_folkTalks}回 立ち話を した。";
         _messageLabel.Text =
             $"8月31日。なつやすみが おわった。\n" +
             $"つかまえた むし、ぜんぶで {_totalCaught}ひき。\n" +
@@ -1017,6 +1056,14 @@ public partial class SummerMain : Node3D
         if (NearShop())
         {
             _messageLabel.Text = "だがしや　スペースで はなす・かう";
+            return;
+        }
+        int folk = NearestFolk();
+        if (folk >= 0)
+        {
+            _messageLabel.Text = _folkTalkedDay == _day && _folkTalkedIndex == folk
+                ? Folks[folk].Label
+                : $"{Folks[folk].Label}　スペースで はなす";
             return;
         }
         if (AtAsagao())
@@ -1493,6 +1540,7 @@ public partial class SummerMain : Node3D
             ["marbles"] = _marbles,
             ["stamps"] = _stamps,
             ["bloomSeen"] = _bloomSeen,
+            ["folkTalks"] = _folkTalks,
             ["collected"] = collected,
             ["found"] = found,
         };
@@ -1526,6 +1574,7 @@ public partial class SummerMain : Node3D
         _marbles = data.ContainsKey("marbles") ? (int)data["marbles"] : 0;
         _stamps = data.ContainsKey("stamps") ? (int)data["stamps"] : 0;
         _bloomSeen = data.ContainsKey("bloomSeen") ? (int)data["bloomSeen"] : 0;
+        _folkTalks = data.ContainsKey("folkTalks") ? (int)data["folkTalks"] : 0;
         _collected.Clear();
         foreach (Variant v in data["collected"].AsGodotArray())
             _collected.Add((int)v);
@@ -1582,6 +1631,45 @@ public partial class SummerMain : Node3D
             ((Node3D)_asagaoBuds.GetChild(i)).Visible = i < buds && i >= blooms;
         for (int i = 0; i < _asagaoFlowers.GetChildCount(); i++)
             ((Node3D)_asagaoFlowers.GetChild(i)).Visible = i < blooms;
+    }
+
+    /// <summary>いちばん近い町の人。範囲外なら -1。</summary>
+    private int NearestFolk()
+    {
+        var p = new Vector2(_player.Position.X, _player.Position.Z);
+        int best = -1;
+        float bestDist = FolkRange;
+        for (int i = 0; i < Folks.Length; i++)
+        {
+            float d = p.DistanceTo(Folks[i].Pos);
+            if (d < bestDist)
+            {
+                bestDist = d;
+                best = i;
+            }
+        }
+        return best;
+    }
+
+    /// <summary>
+    /// 町の人と立ち話。人ごと・日ごとに台詞が変わる。
+    /// 同じ日に同じ人へ何度も話しかけても、話は増やさない。
+    /// </summary>
+    private void CheckFolk()
+    {
+        int idx = NearestFolk();
+        if (idx < 0 || !Input.IsActionJustPressed("ui_accept"))
+            return;
+        if (_folkTalkedDay == _day && _folkTalkedIndex == idx)
+        {
+            ShowMessage("「……」", 1.6);
+            return;
+        }
+        _folkTalkedDay = _day;
+        _folkTalkedIndex = idx;
+        _folkTalks++;
+        string[] lines = Folks[idx].Lines;
+        ShowMessage(lines[(_day - 1 + idx * 2) % lines.Length], 4.0);
     }
 
     private bool AtAsagao()

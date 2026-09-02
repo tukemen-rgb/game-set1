@@ -182,6 +182,11 @@ public partial class SummerMain : Node3D
     private int _folkTalks;              // 夏のあいだに交わした立ち話の数
 
     private const int FestivalDay = 24;
+    private const int LaterDay = 16;      // これ以降、発見した場所に「その後」が出る
+    private readonly HashSet<int> _foundLater = new();
+    // その日に初めて見つけた場所。同じ日に「その後」まで出ると、
+    // 最初の独白を読む前に上書きされる（検査で実際にそうなった）
+    private readonly HashSet<int> _foundToday = new();
     private const double FireworkFromHour = 17.5;
     private const float DiscoverRange = 3.2f;
 
@@ -190,18 +195,29 @@ public partial class SummerMain : Node3D
     /// このゲームは「30代が2000年の子供に戻る」話なので、
     /// 子供の目線に、かすかな既視感（大人の記憶）を一枚重ねる。
     /// </summary>
-    private readonly record struct Spot(Vector2 Pos, string Text);
+    // Later は夏の後半（8/16 以降）にもう一度そこへ来たときの独白。
+    // 発見が「一度きりの読み物」で終わっていたので、同じ場所に
+    // 戻る理由を作る。同じ景色に、ひと月ぶんの時間が乗る
+    private readonly record struct Spot(Vector2 Pos, string Text, string Later);
 
     private static readonly Spot[] Spots =
     {
-        new(new Vector2(-26f, 14f), "きゅうすいとうは いつも おなじ かたち。\nどうして だろう、と 思った ことも なかった。"),
-        new(new Vector2(22f, 0f), "どかんの なかは ひんやり している。\nここに かくれると、だれも 見つけられない。"),
-        new(new Vector2(6f, -8f), "いけの みずは にごって いて そこが 見えない。\nなにか いる きが する。ずっと そう 思って いた。"),
-        new(new Vector2(14f, 10.5f), "じはんきの したを のぞくと、ときどき 十円が おちて いる。\nきょうは なかった。"),
-        new(new Vector2(2f, 8f), "しんごうが ないから、みぎ ひだり みぎ。\nおかあさんに 百回 いわれた。"),
-        new(new Vector2(-6f, -11f), "すべりだいは まなつに さわると あつい。\nしっている のに まいかい さわって しまう。"),
-        new(new Vector2(-2f, -17f), "ブランコを こぎながら 空を 見ると、\nくもが すごい はやさで うごいて 見える。"),
-        new(new Vector2(-4f, 13f), "しょうてんがいの したは いつも すずしい。\nそとの あつさが、きゅうに とおくなる。"),
+        new(new Vector2(-26f, 14f), "きゅうすいとうは いつも おなじ かたち。\nどうして だろう、と 思った ことも なかった。",
+            "きゅうすいとうは きょうも おなじ かたち。\nかわらない ものが ある、と いうことに 気づいた。"),
+        new(new Vector2(22f, 0f), "どかんの なかは ひんやり している。\nここに かくれると、だれも 見つけられない。",
+            "どかんの なかで、雨やどりを した 日を 思い出す。\nまだ 夏なのに、思い出に なって いる。"),
+        new(new Vector2(6f, -8f), "いけの みずは にごって いて そこが 見えない。\nなにか いる きが する。ずっと そう 思って いた。",
+            "そこは やっぱり 見えない。\nでも 何が いるかは、もう 知って いる。"),
+        new(new Vector2(14f, 10.5f), "じはんきの したを のぞくと、ときどき 十円が おちて いる。\nきょうは なかった。",
+            "きょうも なかった。\nあると 思って のぞくのが、たぶん たのしい。"),
+        new(new Vector2(2f, 8f), "しんごうが ないから、みぎ ひだり みぎ。\nおかあさんに 百回 いわれた。",
+            "みぎ ひだり みぎ。\nもう 言われなくても やって いる。"),
+        new(new Vector2(-6f, -11f), "すべりだいは まなつに さわると あつい。\nしっている のに まいかい さわって しまう。",
+            "きょうは そんなに あつくない。\nすべりだいの ほうが さきに 秋に なる。"),
+        new(new Vector2(-2f, -17f), "ブランコを こぎながら 空を 見ると、\nくもが すごい はやさで うごいて 見える。",
+            "くもの かたちが かわった。\n入道雲じゃ ない くもが、たかい ところに ある。"),
+        new(new Vector2(-4f, 13f), "しょうてんがいの したは いつも すずしい。\nそとの あつさが、きゅうに とおくなる。",
+            "アーケードの 音が、来た ころより すこし ちいさい。\nみんな 夏に なれたのかも しれない。"),
     };
 
     private int _day = 1;
@@ -688,6 +704,8 @@ public partial class SummerMain : Node3D
             extra += $"\n町の人と {_folkTalks}回 立ち話を した。";
         if (_goldfish > 0)
             extra += $"\n金魚は {_goldfish}ひき つれて かえった。";
+        if (_foundLater.Count > 0)
+            extra += $"\nおなじ ばしょへ {_foundLater.Count}回 もどって みた。";
         _messageLabel.Text =
             $"8月31日。なつやすみが おわった。\n" +
             $"つかまえた むし、ぜんぶで {_totalCaught}ひき。\n" +
@@ -1725,6 +1743,14 @@ public partial class SummerMain : Node3D
 
     // --- 中断と再開（毎朝 自動保存。メニューは持たない） ---
 
+    private static Godot.Collections.Array FromSet(HashSet<int> set)
+    {
+        var a = new Godot.Collections.Array();
+        foreach (int i in set)
+            a.Add(i);
+        return a;
+    }
+
     private void SaveGame()
     {
         if (SkipIntro)
@@ -1746,6 +1772,7 @@ public partial class SummerMain : Node3D
             ["bloomSeen"] = _bloomSeen,
             ["folkTalks"] = _folkTalks,
             ["goldfish"] = _goldfish,
+            ["foundLater"] = FromSet(_foundLater),
             ["collected"] = collected,
             ["found"] = found,
         };
@@ -1781,6 +1808,12 @@ public partial class SummerMain : Node3D
         _bloomSeen = data.ContainsKey("bloomSeen") ? (int)data["bloomSeen"] : 0;
         _folkTalks = data.ContainsKey("folkTalks") ? (int)data["folkTalks"] : 0;
         _goldfish = data.ContainsKey("goldfish") ? (int)data["goldfish"] : 0;
+        _foundLater.Clear();
+        if (data.ContainsKey("foundLater"))
+        {
+            foreach (Variant v in data["foundLater"].AsGodotArray())
+                _foundLater.Add((int)v);
+        }
         _collected.Clear();
         foreach (Variant v in data["collected"].AsGodotArray())
             _collected.Add((int)v);
@@ -2066,13 +2099,28 @@ public partial class SummerMain : Node3D
         var here = new Vector2(_player.Position.X, _player.Position.Z);
         for (int i = 0; i < Spots.Length; i++)
         {
-            if (_found.Contains(i) || here.DistanceTo(Spots[i].Pos) > DiscoverRange)
+            if (here.DistanceTo(Spots[i].Pos) > DiscoverRange)
                 continue;
-            _found.Add(i);
-            if (_todayFound == "")
-                _todayFound = Spots[i].Text.Replace("\n", "");
-            ShowMessage(Spots[i].Text, 5.0);
-            return;
+
+            if (!_found.Contains(i))
+            {
+                _found.Add(i);
+                _foundToday.Add(i);
+                if (_todayFound == "")
+                    _todayFound = Spots[i].Text.Replace("\n", "");
+                ShowMessage(Spots[i].Text, 5.0);
+                return;
+            }
+            // 夏の後半、同じ場所へもう一度来ると、ひと月ぶんの時間が乗った
+            // 独白が出る。1か所につき1回だけ
+            if (_day >= LaterDay && !_foundLater.Contains(i) && !_foundToday.Contains(i))
+            {
+                _foundLater.Add(i);
+                if (_todayFound == "")
+                    _todayFound = Spots[i].Later.Replace("\n", "");
+                ShowMessage(Spots[i].Later, 5.0);
+                return;
+            }
         }
     }
 
@@ -2181,6 +2229,7 @@ public partial class SummerMain : Node3D
         _todayCaught = 0;
         _todayFound = "";
         _todayBought = "";
+        _foundToday.Clear();
         // おこづかいは毎朝入る。ためこめるが、貯めることが目的にならない額にする
         _money = Mathf.Min(_money + DailyAllowance, 900);
         ApplyWeather();

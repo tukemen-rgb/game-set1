@@ -320,6 +320,10 @@ public partial class SummerMain : Node3D
     private bool _atTitle;          // タイトルで入力待ち
     private bool _titleContinued;   // セーブがあるか（プロンプトの文言を変える）
     private double _titleBlink;
+    // セミの声の混ぜ具合（0〜1）。dB ではなくここを動かして等パワーで混ぜる
+    private readonly float[] _voiceMix = new float[3];
+    private const float CicadaDb = -8f;
+    private static readonly float CicadaAmp = (float)Mathf.DbToLinear(CicadaDb);
     private AudioStreamPlayer _sfxSwing, _sfxCatch, _sfxEscape;
     private readonly RandomNumberGenerator _rng = new();
 
@@ -765,11 +769,12 @@ public partial class SummerMain : Node3D
                 Autoplay = false,
                 // 開始時点の時間帯だけ最初から鳴らす。全部を無音から上げると
                 // ゲーム開始の数秒が無音になってしまう
-                VolumeDb = i == PhaseOfHour() ? -8f : -60f,
+                VolumeDb = i == PhaseOfHour() ? CicadaDb : -60f,
             };
             AddChild(player);
             player.Play();
             _cicadaVoices[i] = player;
+            _voiceMix[i] = i == PhaseOfHour() ? 1f : 0f;
         }
 
         // 効果音。虫あみを振った瞬間・捕れた瞬間・逃げられた瞬間に手応えを返す
@@ -925,9 +930,14 @@ public partial class SummerMain : Node3D
             if (v == null)
                 continue;
             // 雨の日はセミが鳴かない。ここを変えるだけで一日の印象が別物になる
-            float target = (i == phase && _weather != Weather.Rainy) ? -8f : -60f;
-            // 秒あたり約12dB で寄せる。時間帯の変わり目がゆっくり入れ替わる
-            v.VolumeDb = Mathf.MoveToward(v.VolumeDb, target, (float)delta * 12f);
+            float target = (i == phase && _weather != Weather.Rainy) ? 1f : 0f;
+            // 混ぜ具合を 0〜1 で動かす（約2.3秒で入れ替わる）。
+            // dB を直線で動かすと、入れ替わりの真ん中で両方 -34dB まで下がり、
+            // 合計で 8〜10dB の穴が開く（実測で確認）。
+            // 振幅を sqrt(混ぜ具合) にすると出力の power が足して1に保たれる
+            _voiceMix[i] = Mathf.MoveToward(_voiceMix[i], target, (float)delta * 0.44f);
+            float amp = Mathf.Sqrt(_voiceMix[i]) * CicadaAmp;
+            v.VolumeDb = amp > 0.001f ? Mathf.LinearToDb(amp) : -60f;
         }
         if (_rainVoice != null)
         {

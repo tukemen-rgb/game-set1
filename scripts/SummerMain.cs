@@ -139,7 +139,7 @@ public partial class SummerMain : Node3D
     {
         "「あついねえ。\nラムネ、ひやして あるよ」",
         "「その あみ、じょうずに つかえるかい。\nむかしの 子は みんな もってた」",
-        "「きょうは 雨が くるよ。\n足が いたむ日は だいたい あたる」",
+        "「かき氷、うちのは あずきが 多いよ。\nおおくして あるんだ、わざと」",
         "「だんちの 子だろう。\nおかあさんに よろしくね」",
         "「そこの 木は、まいとし よく 鳴くんだよ。\n毎年、おなじ 木でね」",
         "「ゆっくり おいき。\n夏は、いそぐと おわるのが 早い」",
@@ -2298,11 +2298,13 @@ public partial class SummerMain : Node3D
 
         if (_talkedDay != _day)
         {
-            // その日の一言を先に。買い物はそのあと開く
+            // その日の一言。ここで品書きまで開くと、**同じフレームで上書きされて
+            // 一言が一度も読めない**（イテレーション47で品書きを足して以来
+            // そうなっていた）。品書きは次の一押しで開く
             _talkedDay = _day;
-            string line = GrannyLines[(_day - 1) % GrannyLines.Length];
             _talkCount++;
-            ShowMessage(line, 5.0);
+            ShowMessage(GrannyLine(), 5.0);
+            return;
         }
         _shopOpen = true;
         _shopPick = 0;
@@ -2313,6 +2315,23 @@ public partial class SummerMain : Node3D
 
     /// <summary>その日の品書き。夏まつりの日は屋台の品に入れ替わる。</summary>
     private Goods[] TodayShelf() => _day == FestivalDay ? FestivalShelf : Shelf;
+
+    /// <summary>
+    /// おばあさんの一言。天気に関わる日は天気の話をする。
+    /// 元は「きょうは 雨が くるよ。足が いたむ日は だいたい あたる」を
+    /// 8日周期で回していたが、**その日が雨とは限らなかった**（8/3 と 8/11 は
+    /// くもり）。当たらない予報を「だいたい あたる」と言わせていた。
+    /// 明日が雨の日にだけ言わせれば、**本当に当たる**うえ、
+    /// プレイヤーは翌日に雨の生きものが出ると分かって備えられる。
+    /// </summary>
+    private string GrannyLine()
+    {
+        if (_weather == Weather.Rainy)
+            return "「よく 来たね。\nこんな日は、あめの 生きものが 出るよ」";
+        if (_day < LastDay && WeatherOfDay(_day + 1) == Weather.Rainy)
+            return "「あしたは 雨が くるよ。\n足が いたむ日は だいたい あたる」";
+        return GrannyLines[(_day - 1) % GrannyLines.Length];
+    }
 
     /// <summary>品書き。矢印で選び、スペースで買う。</summary>
     private void ShowShelf()

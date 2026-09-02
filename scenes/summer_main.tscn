@@ -10162,7 +10162,7 @@ material_override = SubResource("StandardMaterial3D_rbam2")
 mesh = SubResource("SphereMesh_uybpj")
 
 [node name="@Node3D@818" type="Node3D" parent="Trees"]
-transform = Transform3D(-0.963661, 0, 0.780357, 0, 1.24, 0, -0.780357, 0, -0.963661, 8, 0, 4.2)
+transform = Transform3D(-0.963661, 0, 0.780357, 0, 1.24, 0, -0.780357, 0, -0.963661, -6, 0, 4.6)
 
 [node name="@MeshInstance3D@814" type="MeshInstance3D" parent="Trees/@Node3D@818"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, 0)
@@ -10543,7 +10543,7 @@ cast_shadow = 0
 mesh = SubResource("PlaneMesh_hisrf")
 
 [node name="Komorebi3" type="MeshInstance3D" parent="Komorebi"]
-transform = Transform3D(-0.777146, 0, 0.629321, 0, 1, 0, -0.629321, 0, -0.777146, 8.9, 0.03, 4.9)
+transform = Transform3D(-0.777146, 0, 0.629321, 0, 1, 0, -0.629321, 0, -0.777146, -5.1, 0.03, 5.3)
 material_override = SubResource("StandardMaterial3D_dddpy")
 cast_shadow = 0
 mesh = SubResource("PlaneMesh_8wi54")

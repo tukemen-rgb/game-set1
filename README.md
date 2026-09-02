@@ -92,6 +92,17 @@
 
 必要なもの: **Godot 4.4 (.NET 版)** と **.NET SDK 8**。
 
+コンテナを作り直すと Godot は消えるので入れ直す（`.NET SDK` は `/opt/dotnet`）。
+**`DOTNET_ROOT` を渡さないと `Failed to load hostfxr` で落ちる**（無言ではないが
+原因が分かりにくい）。
+
+```bash
+curl -sSL -o /tmp/godot.zip https://github.com/godotengine/godot/releases/download/4.4-stable/Godot_v4.4-stable_mono_linux_x86_64.zip
+unzip -q /tmp/godot.zip -d /opt/godot
+ln -sf /opt/godot/Godot_v4.4-stable_mono_linux_x86_64/Godot_v4.4-stable_mono_linux.x86_64 /usr/local/bin/godot
+export DOTNET_ROOT=/opt/dotnet PATH="$PATH:/opt/dotnet"
+```
+
 ```bash
 dotnet build                                                     # C# コンパイル
 godot --headless --path . --script res://scenes/BuildTextures.cs # テクスチャ生成

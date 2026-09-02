@@ -14,7 +14,9 @@ public partial class Ending : SceneTree
         main.Set("SecondsPerHour", 0.35);   // 1日を数秒で終わらせて日没まで飛ばす
         main.Set("RngSeed", 2);
         main.Set("SkipIntro", true);
-        main.Set("StartDay", 31);           // 最終日から始める
+        // END_DAY=30 なら 8/30 から始めて、日をまたぐ朝の一言まで見られる
+        string d = OS.GetEnvironment("END_DAY");
+        main.Set("StartDay", d != "" ? d.ToInt() : 31);   // 既定は最終日から
         Root.AddChild(main);
     }
 }

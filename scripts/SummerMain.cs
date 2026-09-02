@@ -1190,6 +1190,10 @@ public partial class SummerMain : Node3D
     {
         _messageLabel.Text = text;
         _messageTimer = seconds;
+        // 画面に出た文だけを追う手段が無く、毎回キャプチャを何十枚も見て
+        // 探していた。DEBUG_MSG=1 で出た順に流す
+        if (OS.GetEnvironment("DEBUG_MSG") == "1")
+            GD.Print($"[msg] 8月{_day}日 {(int)_hour:D2}時 | {text.Replace("\n", " / ")}");
     }
 
     private void UpdateMessages(double delta)
@@ -2073,6 +2077,35 @@ public partial class SummerMain : Node3D
         ShowMessage(line, 3.5);
     }
 
+    /// <summary>
+    /// 朝のひとこと。ずっと「ラジオたいそう おわり！」と出していたので、
+    /// **ラジオ体操が終わった 8/8 以降も毎朝そう言って**いた（31日ぶん）。
+    /// 期間・終盤・ふだんで言い分ける。終盤だけ日を数えるのは、
+    /// 夏休みものの山場がそこだから。途中では数えない（焦らせない）。
+    /// </summary>
+    private string MorningLine()
+    {
+        if (_day == LastDay)
+            return "8月31日。\nなつやすみ、さいごの 日。";
+        if (_day == LastDay - 1)
+            return $"8月{_day}日の あさ。\nあと ふつか。";
+        if (_day == LastDay - 2)
+            return $"8月{_day}日の あさ。\nしゅくだいの ことは、まだ 考えない。";
+        if (_day <= RadioLastDay)
+            return $"8月{_day}日の あさ。\nラジオたいそうへ いこう。";
+
+        string[] lines =
+        {
+            "あさの うちは、まだ すずしい。",
+            "きょうは どこへ いこう。",
+            "せんたくものが、もう ほされて いる。",
+            "とおくで 工事の 音が している。",
+            "きのうの ことを、少し わすれて いる。",
+            "きょうも 天気が いい……と 思ったが、そうでも ない かも。",
+        };
+        return $"8月{_day}日の あさ。\n{lines[(_day - 1) % lines.Length]}";
+    }
+
     private void CheckRadio()
     {
         if (!AtRadio() || _stampedDay == _day || !Input.IsActionJustPressed("ui_accept"))
@@ -2367,7 +2400,7 @@ public partial class SummerMain : Node3D
         _transitioning = false;
         string morning = Events.TryGetValue(_day, out Event ev)
             ? ev.Morning
-            : $"8月{_day}日の あさ。ラジオたいそう おわり！";
+            : MorningLine();
         // 8/7 は「はんこが そろった」と決め打ちしていたが、押していない朝もある。
         // 実際に押した数で言い方を変える
         if (_day == RadioLastDay)

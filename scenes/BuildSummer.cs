@@ -824,6 +824,49 @@ public partial class BuildSummer : SceneTree
         deco.AddChild(MakeTree(6, new Vector3(-24f, 0f, 16f)));
         deco.AddChild(MakeTree(8, new Vector3(24f, 0f, 14f)));
         root.AddChild(deco);
+
+        BuildKomorebi(root, spots);
+    }
+
+    /// <summary>
+    /// 木漏れ日。木の下の地面に葉の影を落とす。
+    /// いまは木の足元が均一な芝で、木が「地面に置いた置物」に見えている。
+    /// 影が落ちて初めて、木と地面が同じ光の下にあるように見える。
+    /// 濃さはアルファで持つので、SummerMain が天気と時刻で動かせる。
+    /// </summary>
+    private static void BuildKomorebi(Node3D root, Vector3[] spots)
+    {
+        if (!ResourceLoader.Exists("res://assets/textures/gen/komorebi.png"))
+            return;   // 焼き直し（tools/gen_decals.py）がまだなら何も出さない
+
+        var group = new Node3D { Name = "Komorebi" };
+        var tex = GD.Load<Texture2D>("res://assets/textures/gen/komorebi.png");
+        for (int i = 0; i < spots.Length; i++)
+        {
+            // 影は木ごとに別の材質にする。1枚を共有すると、
+            // 回転や濃さを個別に動かせなくなる
+            var mat = new StandardMaterial3D
+            {
+                AlbedoTexture = tex,
+                Transparency = BaseMaterial3D.TransparencyEnum.Alpha,
+                ShadingMode = BaseMaterial3D.ShadingModeEnum.Unshaded,
+                CullMode = BaseMaterial3D.CullModeEnum.Back,
+                Roughness = 1f,
+            };
+            // 太陽は南西寄り（Sun の Y 回転 -60°）なので、影は北東へ少しずれる
+            float size = 5.6f + (i % 3) * 0.9f;
+            var patch = new MeshInstance3D
+            {
+                Name = $"Komorebi{i}",
+                Mesh = new PlaneMesh { Size = new Vector2(size, size) },
+                MaterialOverride = mat,
+                Position = new Vector3(spots[i].X + 0.9f, 0.03f, spots[i].Z + 0.7f),
+                RotationDegrees = new Vector3(0f, i * 47f, 0f),   // 同じ模様の繰り返しに見せない
+                CastShadow = GeometryInstance3D.ShadowCastingSetting.Off,
+            };
+            group.AddChild(patch);
+        }
+        root.AddChild(group);
     }
 
     // --- 電柱と電線（大通り沿い） ---

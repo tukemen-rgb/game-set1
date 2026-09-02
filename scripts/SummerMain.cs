@@ -34,6 +34,10 @@ public partial class SummerMain : Node3D
     [Export]
     public int StartDay { get; set; } = 1;
 
+    /// <summary>検査で「昼の絵」を撮るための開始時刻。0 なら既定（8時）。</summary>
+    [Export]
+    public double StartHour { get; set; }
+
     private const double DayStartHour = 8.0;
     private const double DayEndHour = 19.0;
     private const int LastDay = 31;
@@ -205,6 +209,8 @@ public partial class SummerMain : Node3D
         ["CamPark"] = "park",
         ["CamPlaza"] = "plaza",
     };
+    // 木漏れ日。曇りと雨では薄れ、朝夕は寝るので、濃さを時刻と天気で動かす
+    private readonly List<StandardMaterial3D> _komorebi = new();
     private CanvasLayer _title;
     private Label _titlePrompt;
     private bool _atTitle;          // タイトルで入力待ち
@@ -225,6 +231,15 @@ public partial class SummerMain : Node3D
         _fade = GetNode<ColorRect>("UI/Fade");
         _cameras = GetNode<Node3D>("Cameras");
         _title = GetNodeOrNull<CanvasLayer>("Title");
+        Node komorebi = GetNodeOrNull("Komorebi");
+        if (komorebi != null)
+        {
+            foreach (Node child in komorebi.GetChildren())
+            {
+                if (child is MeshInstance3D mi && mi.MaterialOverride is StandardMaterial3D km)
+                    _komorebi.Add(km);
+            }
+        }
         _titlePrompt = GetNodeOrNull<Label>("Title/Prompt");
         foreach (Node child in GetNode("Trees").GetChildren())
         {
@@ -232,6 +247,8 @@ public partial class SummerMain : Node3D
                 _treeSpots.Add(tree.Position);
         }
         _day = Mathf.Max(1, StartDay);
+        if (StartHour > 0.0)
+            _hour = StartHour;
         bool continued = LoadGame();
         GD.Print($"[save] つづきから={continued} 日付=8月{_day}日 " +
                  $"セミ={_totalCaught} ずかん={_collected.Count} はっけん={_found.Count}");
@@ -289,6 +306,7 @@ public partial class SummerMain : Node3D
             return;
         _hour += delta / SecondsPerHour;
         UpdateSky();
+        UpdateKomorebi();
         UpdateAudio(delta);
         UpdateLabels();
         UpdateCamera();
@@ -312,6 +330,32 @@ public partial class SummerMain : Node3D
         CheckDiscovery();
         if (_hour >= DayEndHour)
             _ = EndDay();
+    }
+
+    /// <summary>
+    /// 木漏れ日の濃さ。晴れの正午が一番濃く、朝夕は寝て消える。
+    /// 曇りは薄く、雨は出さない。影が天気と無関係に出ていると嘘になる。
+    /// </summary>
+    private void UpdateKomorebi()
+    {
+        if (_komorebi.Count == 0)
+            return;
+        float peak = _weather switch
+        {
+            Weather.Rainy => 0f,
+            Weather.Cloudy => 0.3f,
+            _ => 1f,
+        };
+        // 8:30〜17:30 の外は0。正午へ向かって上がる山にする
+        float t = Mathf.Clamp((float)((_hour - 8.5) / 3.5), 0f, 1f)
+                * Mathf.Clamp((float)((17.5 - _hour) / 3.5), 0f, 1f);
+        float a = peak * t;
+        foreach (StandardMaterial3D m in _komorebi)
+        {
+            m.AlbedoColor = new Color(1f, 1f, 1f, a);
+            // 完全に透明な板を描き続けても意味が無い
+            m.NoDepthTest = false;
+        }
     }
 
     // --- タイトル ---

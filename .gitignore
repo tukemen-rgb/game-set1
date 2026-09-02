@@ -6,7 +6,10 @@ bin/
 obj/
 
 # キャプチャ出力（godot.md の検証フロー用）
-screenshots/
+screenshots/*
+# Godot にこのフォルダを走査させない印。撮ったPNGを全部インポートしようとして
+# .godot/imported が 7.4GB / 29700ファイルまで膨らんでいた
+!screenshots/.gdignore
 
 # エクスポート成果物
 export/

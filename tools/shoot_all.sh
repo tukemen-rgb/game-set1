@@ -23,6 +23,10 @@ GODOT="${GODOT:-godot}"
 # 長い撮影は fps を落として同じ長さを少ないフレームで撮る
 SHOOT_FPS="${SHOOT_FPS:-30}"
 
+# Godot が screenshots/ 以下の PNG を全部インポートしようとするので、
+# 走査を止める印を必ず置く（消えていると --import が終わらなくなる）
+mkdir -p screenshots && touch screenshots/.gdignore
+
 shoot() {                      # shoot 名前 フレーム数 スクリプト [KEY=VAL ...]
   local name=$1 frames=$2 script=$3; shift 3
   rm -rf "screenshots/$name"; mkdir -p "screenshots/$name"

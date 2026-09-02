@@ -377,6 +377,10 @@ public partial class SummerMain : Node3D
     private const float RainDb = -7f;
     private static readonly float CicadaAmp = (float)Mathf.DbToLinear(CicadaDb);
     private AudioStreamPlayer _sfxSwing, _sfxCatch, _sfxEscape;
+    // 五時のチャイム。2000年の団地の夕方は、これが「帰る合図」だった
+    private AudioStreamPlayer _chime;
+    private int _chimedDay = -1;
+    private const double ChimeHour = 17.0;
     private readonly RandomNumberGenerator _rng = new();
 
     public override void _Ready()
@@ -529,6 +533,7 @@ public partial class SummerMain : Node3D
         UpdateSky();
         UpdateKomorebi();
         UpdateOkuribi(delta);
+        CheckChime();
         UpdateWindows();
         UpdateAudio(delta);
         UpdateLabels();
@@ -617,6 +622,19 @@ public partial class SummerMain : Node3D
             if (fire.GetNodeOrNull<OmniLight3D>("Light") is OmniLight3D lamp)
                 lamp.LightEnergy = 2.2f + w * 0.7f;
         }
+    }
+
+    /// <summary>
+    /// 17時に一度だけ鳴らす。夕方の始まりは
+    /// 「ヒグラシとカブトムシが出る時間」でもあるので、合図として働く。
+    /// </summary>
+    private void CheckChime()
+    {
+        if (_chime == null || _chimedDay == _day || _hour < ChimeHour)
+            return;
+        _chimedDay = _day;
+        _chime.Play();
+        ShowMessage("五時の チャイムが 鳴った。", 3.0);
     }
 
     // --- ずかん ---
@@ -911,6 +929,13 @@ public partial class SummerMain : Node3D
             player.Play();
             _cicadaVoices[i] = player;
             _voiceMix[i] = i == PhaseOfHour() && _weather != Weather.Rainy ? 1f : 0f;
+        }
+
+        var chimeStream = GD.Load<AudioStreamWav>("res://assets/audio/chime_five.wav");
+        if (chimeStream != null)
+        {
+            _chime = new AudioStreamPlayer { Name = "Chime", Stream = chimeStream, VolumeDb = -5f };
+            AddChild(_chime);
         }
 
         // 効果音。虫あみを振った瞬間・捕れた瞬間・逃げられた瞬間に手応えを返す

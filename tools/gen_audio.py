@@ -119,6 +119,42 @@ def save_oneshot(name, fill, dur):
     print(f"audio: {path.name}  {n} samples  ({dur:.2f}s)")
 
 
+def chime_five(buf, n):
+    """五時のチャイム。町のスピーカーから遠く聞こえる鐘の4音。
+
+    2000年の団地の夕方は、これが鳴ると帰る合図だった。
+    本物の旋律は使わず、下降する4音を鐘の倍音で鳴らす。
+    遠くから聞こえるように、立ち上がりを鈍らせて残響を長く引く。
+    """
+    # ソ→ミ→レ→ソ（1オクターブ下）。鐘なので基音＋非整数倍音を重ねる
+    notes = [(783.99, 0.00), (659.25, 0.85), (587.33, 1.70), (392.00, 2.55)]
+    partials = [(1.0, 1.00), (2.76, 0.34), (5.40, 0.16), (8.93, 0.07)]
+    for freq, start in notes:
+        s0 = int(start * RATE)
+        for p_mul, p_amp in partials:
+            f = freq * p_mul
+            for i in range(s0, n):
+                t = (i - s0) / RATE
+                # 立ち上がり 25ms、そこから長い減衰（遠さは減衰の長さで出す）
+                attack = min(1.0, t / 0.025)
+                # 減衰が速すぎると、山（ピーク）だけ大きくて実際には
+                # 聞こえない音になる（測ってセミの声に埋もれていた）。
+                # 長く伸ばして、平均の音量を上げる
+                env = attack * math.exp(-t * (0.85 + p_mul * 0.3))
+                # 立ち上がり中は env が 0 から始まるので、ここで打ち切ると
+                # **1サンプル目で break して無音のファイルになる**（実際なった）。
+                # 減衰の打ち切りは立ち上がりが終わってから見る
+                if t > 0.05 and env < 0.0008:
+                    break
+                buf[i] += math.sin(2.0 * math.pi * f * t) * p_amp * env * 0.22
+
+    # 遠さ: 低域だけ通して角を落とす
+    prev = 0.0
+    for i in range(n):
+        prev += (buf[i] - prev) * 0.35
+        buf[i] = prev
+
+
 def sfx_swing(buf, n):
     """虫あみを振る音。空気を切る『ヒュッ』。"""
     rng = random.Random(11)
@@ -240,6 +276,7 @@ if __name__ == "__main__":
     save("cicada_day", day)
     save("cicada_evening", evening)
     save("rain", rain)
+    save_oneshot("chime_five", chime_five, 4.2)
     save_oneshot("sfx_firework", sfx_firework, 1.6)
     save_oneshot("sfx_step", sfx_step, 0.14)
     save_oneshot("sfx_swing", sfx_swing, 0.30)

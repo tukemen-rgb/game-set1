@@ -185,6 +185,7 @@ godot --path .                                                   # 実行
 bash tools/shoot_all.sh              # 全場面（30分ほど）
 bash tools/shoot_all.sh cams dex     # 触った所だけ
 bash tools/make_video.sh run docs/video/summer_day.mp4 4 20   # 連番PNG＋音 → 動画
+python3 tools/check_audio.py screenshots/run                  # 音量を1秒ごとに測る
 ```
 
 **動いている20秒**: [`docs/video/summer_day.mp4`](docs/video/summer_day.mp4)

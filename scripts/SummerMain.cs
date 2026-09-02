@@ -323,6 +323,7 @@ public partial class SummerMain : Node3D
     // セミの声の混ぜ具合（0〜1）。dB ではなくここを動かして等パワーで混ぜる
     private readonly float[] _voiceMix = new float[3];
     private const float CicadaDb = -8f;
+    private const float RainDb = -7f;
     private static readonly float CicadaAmp = (float)Mathf.DbToLinear(CicadaDb);
     private AudioStreamPlayer _sfxSwing, _sfxCatch, _sfxEscape;
     private readonly RandomNumberGenerator _rng = new();
@@ -769,12 +770,14 @@ public partial class SummerMain : Node3D
                 Autoplay = false,
                 // 開始時点の時間帯だけ最初から鳴らす。全部を無音から上げると
                 // ゲーム開始の数秒が無音になってしまう
-                VolumeDb = i == PhaseOfHour() ? CicadaDb : -60f,
+                // 雨の日はセミが鳴かない。ここで満音から始めると、
+                // 開始直後にセミ→雨の入れ替わりが起きて音に穴が開く（実測 -42.7dB）
+                VolumeDb = i == PhaseOfHour() && _weather != Weather.Rainy ? CicadaDb : -60f,
             };
             AddChild(player);
             player.Play();
             _cicadaVoices[i] = player;
-            _voiceMix[i] = i == PhaseOfHour() ? 1f : 0f;
+            _voiceMix[i] = i == PhaseOfHour() && _weather != Weather.Rainy ? 1f : 0f;
         }
 
         // 効果音。虫あみを振った瞬間・捕れた瞬間・逃げられた瞬間に手応えを返す
@@ -784,7 +787,15 @@ public partial class SummerMain : Node3D
             rainStream.LoopMode = AudioStreamWav.LoopModeEnum.Forward;
             rainStream.LoopBegin = 0;
             rainStream.LoopEnd = rainStream.Data.Length / 2;
-            _rainVoice = new AudioStreamPlayer { Name = "Rain", Stream = rainStream, VolumeDb = -60f };
+            // 雨の日に始めるときは最初から鳴らす（セミと同じ扱い）。
+            // 音量はセミの床（-8dB）とそろえる。雨の日だけ 8dB 静かだと、
+            // 「雨で世界が静まる」ではなく「音が抜けている」に聞こえる
+            _rainVoice = new AudioStreamPlayer
+            {
+                Name = "Rain",
+                Stream = rainStream,
+                VolumeDb = _weather == Weather.Rainy ? RainDb : -60f,
+            };
             AddChild(_rainVoice);
             _rainVoice.Play();
         }
@@ -941,7 +952,7 @@ public partial class SummerMain : Node3D
         }
         if (_rainVoice != null)
         {
-            float rainTarget = _weather == Weather.Rainy ? -12f : -60f;
+            float rainTarget = _weather == Weather.Rainy ? RainDb : -60f;
             _rainVoice.VolumeDb = Mathf.MoveToward(_rainVoice.VolumeDb, rainTarget, (float)delta * 12f);
         }
     }

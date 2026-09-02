@@ -21,6 +21,9 @@ public partial class CloseUp : SceneTree
         main.Set("SecondsPerHour", 100000.0);  // 時刻を止める
         main.Set("RngSeed", 2);
         main.Set("SkipIntro", true);   // 検査では導入を飛ばす
+        string day = OS.GetEnvironment("CLOSEUP_DAY");
+        if (day != "")
+            main.Set("StartDay", day.ToInt());   // 雨の日などを指定して寄りで見る
         Root.AddChild(main);
         ((CanvasLayer)main.GetNode("UI")).Visible = false;
 

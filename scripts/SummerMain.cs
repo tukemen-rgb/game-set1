@@ -40,7 +40,8 @@ public partial class SummerMain : Node3D
     private const int CicadasPerDay = 4;
 
     /// <summary>セミの種類。出る時間帯が違うので「夕方にしか採れない」動機が生まれる。</summary>
-    private readonly record struct Species(string Name, Color Color, int FromHour, int ToHour, float CatchRate);
+    private readonly record struct Species(string Name, Color Color, int FromHour, int ToHour,
+                                          float CatchRate, bool RainOnly = false);
 
     // 時間帯で顔ぶれが変わる。難しい種ほど捕獲率が低い
     private static readonly Species[] AllSpecies =
@@ -51,6 +52,10 @@ public partial class SummerMain : Node3D
         new("ミンミンゼミ", new Color(0.2f, 0.42f, 0.3f), 10, 17, 0.6f),
         new("ツクツクボウシ", new Color(0.28f, 0.3f, 0.22f), 15, 19, 0.55f),
         new("ヒグラシ", new Color(0.45f, 0.28f, 0.22f), 17, 19, 0.4f),
+        // 雨の日だけ出る。雨を「できない日」で終わらせず、
+        // 雨の日にしか会えないものを置いて、天気を引き算から足し算に変える
+        new("カタツムリ", new Color(0.62f, 0.55f, 0.42f), 8, 19, 0.95f, RainOnly: true),
+        new("アマガエル", new Color(0.42f, 0.68f, 0.35f), 8, 19, 0.55f, RainOnly: true),
     };
     private const float CatchRange = 2.2f;
 
@@ -704,7 +709,7 @@ public partial class SummerMain : Node3D
             _ => "はれ",
         };
         _dateLabel.Text = $"8月{_day}日({Weekday()})  {h:D2}:{m:D2}  {wx}";
-        _bugLabel.Text = $"セミ ×{_totalCaught}   ずかん {_collected.Count}/{AllSpecies.Length}   " +
+        _bugLabel.Text = $"むし ×{_totalCaught}   ずかん {_collected.Count}/{AllSpecies.Length}   " +
                          $"はっけん {_found.Count}/{Spots.Length}";
     }
 
@@ -757,19 +762,20 @@ public partial class SummerMain : Node3D
             int j = (int)(_rng.Randi() % (uint)(i + 1));
             (indices[i], indices[j]) = (indices[j], indices[i]);
         }
-        // いまの時刻に出ている種類だけを候補にする
+        // 晴れ・くもりは時刻に合うセミ、雨の日は雨の生き物だけを候補にする
+        bool rainy = _weather == Weather.Rainy;
         var pool = new List<int>();
         for (int i = 0; i < AllSpecies.Length; i++)
         {
-            if (_hour >= AllSpecies[i].FromHour && _hour < AllSpecies[i].ToHour)
+            if (AllSpecies[i].RainOnly != rainy)
+                continue;
+            if (rainy || (_hour >= AllSpecies[i].FromHour && _hour < AllSpecies[i].ToHour))
                 pool.Add(i);
         }
         if (pool.Count == 0)
             pool.Add(2); // 保険（アブラゼミ）
 
-        // 雨の日はセミが鳴かない＝とれない。「今日は無理だ」も一日の表情
-        int count = _weather == Weather.Rainy ? 0 : Mathf.Min(CicadasPerDay, indices.Count);
-        count = Mathf.Min(count, indices.Count);
+        int count = Mathf.Min(CicadasPerDay, indices.Count);
         for (int k = 0; k < count; k++)
         {
             int sp = pool[(int)(_rng.Randi() % (uint)pool.Count)];
@@ -811,6 +817,9 @@ public partial class SummerMain : Node3D
     /// <summary>木にとまったセミ1匹。頭を上にして幹に貼りつく本物の姿勢で作る。</summary>
     private static Node3D MakeCicadaBody(Species sp, int variant)
     {
+        if (sp.RainOnly)
+            return MakeRainCreature(sp, variant);
+
         var root = new Node3D
         {
             // 高さ 1.25m。広葉樹の樹冠は 2.1m から、メタセコイアの円錐は
@@ -868,6 +877,73 @@ public partial class SummerMain : Node3D
             });
         }
         root.AddChild(wings);
+        return root;
+    }
+
+    /// <summary>雨の日の生き物。木の根元近くに居るので、セミより低い位置に置く。</summary>
+    private static Node3D MakeRainCreature(Species sp, int variant)
+    {
+        var root = new Node3D
+        {
+            Position = new Vector3(0.34f, 0.22f, 0.16f),
+            RotationDegrees = new Vector3(0f, (variant * 61) % 360, 0f),
+        };
+        var body = new StandardMaterial3D { AlbedoColor = sp.Color, Roughness = 0.5f };
+
+        if (sp.Name == "カタツムリ")
+        {
+            // 殻（渦は作れないので円環で代用）と、伸びた体と触角
+            root.AddChild(new MeshInstance3D
+            {
+                Mesh = new TorusMesh { InnerRadius = 0.03f, OuterRadius = 0.11f },
+                MaterialOverride = body,
+                Position = new Vector3(0f, 0.11f, -0.02f),
+                RotationDegrees = new Vector3(90f, 0f, 0f),
+            });
+            var soft = new StandardMaterial3D { AlbedoColor = new Color(0.78f, 0.72f, 0.62f), Roughness = 0.4f };
+            root.AddChild(new MeshInstance3D
+            {
+                Mesh = new CapsuleMesh { Radius = 0.035f, Height = 0.2f },
+                MaterialOverride = soft,
+                Position = new Vector3(0f, 0.035f, 0.06f),
+                RotationDegrees = new Vector3(90f, 0f, 0f),
+            });
+            foreach (float ex in new[] { -0.022f, 0.022f })
+            {
+                root.AddChild(new MeshInstance3D
+                {
+                    Mesh = new CapsuleMesh { Radius = 0.006f, Height = 0.07f },
+                    MaterialOverride = soft,
+                    Position = new Vector3(ex, 0.075f, 0.14f),
+                    RotationDegrees = new Vector3(24f, 0f, 0f),
+                });
+            }
+            return root;
+        }
+
+        // アマガエル
+        root.AddChild(new MeshInstance3D
+        {
+            Mesh = new SphereMesh { Radius = 0.075f, Height = 0.12f },
+            MaterialOverride = body,
+            Position = new Vector3(0f, 0.07f, 0f),
+        });
+        foreach (float ex in new[] { -0.035f, 0.035f })
+        {
+            root.AddChild(new MeshInstance3D
+            {
+                Mesh = new SphereMesh { Radius = 0.024f, Height = 0.042f },
+                MaterialOverride = body,
+                Position = new Vector3(ex, 0.115f, 0.02f),
+            });
+            root.AddChild(new MeshInstance3D    // 後ろ足
+            {
+                Mesh = new CapsuleMesh { Radius = 0.016f, Height = 0.09f },
+                MaterialOverride = body,
+                Position = new Vector3(ex * 1.9f, 0.03f, -0.03f),
+                RotationDegrees = new Vector3(72f, 0f, 0f),
+            });
+        }
         return root;
     }
 
@@ -1049,8 +1125,10 @@ public partial class SummerMain : Node3D
         // 「あと◯しゅるい」のような残数は書かない。
         // 締切に見えると、この手のゲームでは焦りになって台無しになる。
         // 日記は達成表ではなく、その日の思い出として書く。
-        if (_weather == Weather.Rainy)
+        if (_weather == Weather.Rainy && _todayCaught == 0)
             line = "あめ。セミは 一ぴきも 鳴かなかった。";
+        else if (_weather == Weather.Rainy)
+            line = $"あめの日にしか いない むしを {_todayCaught}ひき つかまえた。";
         if (Events.TryGetValue(_day, out Event todayEvent))
             return $"【日記】8月{_day}日({Weekday()})\n{line}\n{todayEvent.Diary}\nあしたは なにを しようかな。";
 

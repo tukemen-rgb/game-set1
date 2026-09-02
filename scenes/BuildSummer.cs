@@ -1037,6 +1037,44 @@ public partial class BuildSummer : SceneTree
                 };
                 backdrop.AddChild(dusk);
             }
+
+            // 雨雲。遠景の実写は晴れの日に撮った1枚しか無いので、
+            // 雨の日でも空が青いままだった（暗くしても青は青のまま）。
+            // 写真を足す代わりに、上空を覆う灰色の帯を重ねて空だけ差し替える。
+            // 地平線側は透けさせる。全面を塗ると遠景の町まで消えてしまうので、
+            // 上は雲で覆い、下は霞ませて町を残す
+            var cloud = new Gradient();
+            cloud.SetColor(0, new Color(0.72f, 0.74f, 0.76f, 0f));   // 地平側（透明）
+            cloud.SetColor(1, new Color(0.34f, 0.37f, 0.42f, 1f));   // 天頂側
+            cloud.AddPoint(0.42f, new Color(0.58f, 0.61f, 0.64f, 0.92f));
+            var rainMat = new StandardMaterial3D
+            {
+                AlbedoTexture = new GradientTexture2D
+                {
+                    Gradient = cloud,
+                    Width = 8,
+                    Height = 256,
+                    Fill = GradientTexture2D.FillEnum.Linear,
+                    FillFrom = new Vector2(0f, 1f),   // 下が明るい（地平線側）
+                    FillTo = new Vector2(0f, 0f),
+                },
+                ShadingMode = BaseMaterial3D.ShadingModeEnum.Unshaded,
+                CullMode = BaseMaterial3D.CullModeEnum.Disabled,
+                Transparency = BaseMaterial3D.TransparencyEnum.Alpha,
+                AlbedoColor = new Color(1f, 1f, 1f, 0f),   // 晴れは完全に透明
+            };
+            backdrop.AddChild(new MeshInstance3D
+            {
+                Name = "PanoramaRain",
+                Mesh = new CylinderMesh
+                {
+                    TopRadius = 60.5f, BottomRadius = 60.5f, Height = 56f,
+                    RadialSegments = 48, CapTop = false, CapBottom = false,
+                },
+                MaterialOverride = rainMat,
+                CastShadow = GeometryInstance3D.ShadowCastingSetting.Off,
+                Position = new Vector3(0f, 30f, 0f),   // y=2..58。水平の視線も覆う高さまで下げる
+            });
         }
 
         // 西〜北西の遠景団地群（簡易版住棟）。マット絵がある側は間引く

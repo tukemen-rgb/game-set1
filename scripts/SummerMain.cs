@@ -198,6 +198,7 @@ public partial class SummerMain : Node3D
     private StandardMaterial3D _nightPano;   // 夕方から重なってくる夜の遠景
     private StandardMaterial3D _dayPano;     // 昼の遠景
     private StandardMaterial3D _duskSky;     // 夕方だけ上空に重なる夕焼け
+    private StandardMaterial3D _rainSky;     // 雨・くもりの日に上空を覆う灰色
     private string _panoZone = "";           // いま貼っている場所
 
     // 場面ごとに実写が1枚ずつある。遠景もその場所のものに差し替える。
@@ -303,8 +304,6 @@ public partial class SummerMain : Node3D
         SetupAudio();
         SetupRainFx();
         SetupFireworkFx();
-        if (_rainFx != null)
-            _rainFx.Emitting = _weather == Weather.Rainy;
         CollectSkyTinted(GetNodeOrNull("Backdrop"));
         if (GetNodeOrNull("Backdrop/PanoramaNight") is MeshInstance3D np)
             _nightPano = np.MaterialOverride as StandardMaterial3D;
@@ -312,6 +311,11 @@ public partial class SummerMain : Node3D
             _dayPano = dp.MaterialOverride as StandardMaterial3D;
         if (GetNodeOrNull("Backdrop/PanoramaDusk") is MeshInstance3D sk)
             _duskSky = sk.MaterialOverride as StandardMaterial3D;
+        if (GetNodeOrNull("Backdrop/PanoramaRain") is MeshInstance3D rk)
+            _rainSky = rk.MaterialOverride as StandardMaterial3D;
+        // 初日ぶんの天気も反映する（ApplyWeather は日付が変わるときにしか呼ばれない）。
+        // 遠景の材質を掴んだあとでないと、雨雲の帯に色が入らない
+        ApplyWeather();
         RespawnCicadas();
         UpdateCamera(force: true);
         // 検査（SkipIntro）ではタイトルを出さない。人のセーブも導入も触らない
@@ -615,7 +619,7 @@ public partial class SummerMain : Node3D
     {
         if (node == null)
             return;
-        if (node.Name != "PanoramaNight" && node.Name != "PanoramaDusk"
+        if (node.Name != "PanoramaNight" && node.Name != "PanoramaDusk" && node.Name != "PanoramaRain"
             && node is MeshInstance3D mi && mi.MaterialOverride is StandardMaterial3D m
             && m.ShadingMode == BaseMaterial3D.ShadingModeEnum.Unshaded
             && !_skyTinted.Exists(e => e.Mat == m))
@@ -1056,6 +1060,17 @@ public partial class SummerMain : Node3D
         Overcast = _weather != Weather.Sunny;
         if (_rainFx != null)
             _rainFx.Emitting = _weather == Weather.Rainy;
+        // 遠景の実写は晴れの1枚だけなので、空は灰色の帯で覆って差し替える
+        if (_rainSky != null)
+        {
+            float a = _weather switch
+            {
+                Weather.Rainy => 0.97f,
+                Weather.Cloudy => 0.72f,
+                _ => 0f,
+            };
+            _rainSky.AlbedoColor = new Color(1f, 1f, 1f, a);
+        }
     }
 
     /// <summary>朝=0 / 昼=1 / 夕=2。変わったら顔ぶれを入れ替える。</summary>

@@ -343,13 +343,34 @@ public partial class BuildSummer : SceneTree
             }
         }
 
-        // 通路の両脇の植え込み（低く刈り込んだ生垣）
-        var hedge = new Color(0.24f, 0.4f, 0.22f);
+        // 通路の両脇の植え込み（低く刈り込んだ生垣）。
+        // ここは起動して最初に映る画（CamDanchi）の手前を占めるのに、
+        // 無地の緑の箱だった。葉のテクスチャを貼り、刈り込みの凹凸を足す。
         for (int i = 0; i < 6; i++)
         {
             float hx = -9f + i * 3.6f;
-            danchi.AddChild(Box(new Vector3(3f, 0.6f, 0.55f), new Vector3(hx, 0.3f, -1.95f), hedge));
-            danchi.AddChild(Box(new Vector3(3f, 0.6f, 0.55f), new Vector3(hx, 0.3f, 1.95f), hedge * 1.1f));
+            foreach (float hz in new[] { -1.95f, 1.95f })
+            {
+                float tone = hz < 0f ? 0.92f : 1.0f;   // 南北で明るさを変える
+                danchi.AddChild(MeshI(new BoxMesh { Size = new Vector3(3f, 0.6f, 0.55f) },
+                    new Vector3(hx, 0.3f, hz),
+                    TexMat(BestTex("gen/TEX-leaf_canopy.jpg", "leaf"), new Vector2(2.4f, 0.7f),
+                           new Color(0.62f * tone, 0.78f * tone, 0.55f * tone))));
+                // 刈り込みの天面は真っ平らにならない。小さな塊を3つ載せて縁を崩す
+                for (int k = 0; k < 3; k++)
+                {
+                    float bx = hx - 0.95f + k * 0.95f;
+                    // 隙間を空けると「並んだ箱」に見えるので、幅を重ねて連続させる
+                    danchi.AddChild(MeshI(
+                        new BoxMesh { Size = new Vector3(1.15f, 0.14f + (k % 2) * 0.06f, 0.56f) },
+                        new Vector3(bx, 0.585f + (k % 2) * 0.02f, hz + ((k + i) % 2 == 0 ? 0.02f : -0.02f)),
+                        TexMat(BestTex("gen/TEX-leaf_canopy.jpg", "leaf"), new Vector2(0.8f, 0.6f),
+                               new Color(0.66f * tone, 0.82f * tone, 0.58f * tone))));
+                }
+                // 根元の土。緑の箱が地面から生えているように見えないのを直す
+                danchi.AddChild(TexBox(new Vector3(3.1f, 0.06f, 0.72f), new Vector3(hx, 0.03f, hz),
+                    "dirt", new Vector2(2f, 0.6f)));
+            }
         }
 
         // 駐輪場（波板の屋根とラック、自転車を数台）

@@ -14,7 +14,7 @@ public partial class Festival : SceneTree
         Node main = packed.Instantiate();
         // 8時から早回しすると、花火の時間帯（17:30〜19:00）が2秒しか無く
         // 数発しか撮れなかった。StartHour で夕方から始めて、時計はゆっくり進める
-        main.Set("StartHour", 17.4);
+        main.Set("StartHour", 18.4);
         main.Set("SecondsPerHour", 40.0);
         main.Set("RngSeed", 2);
         main.Set("SkipIntro", true);

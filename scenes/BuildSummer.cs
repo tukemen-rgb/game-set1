@@ -140,6 +140,10 @@ public partial class BuildSummer : SceneTree
             AlbedoColor = tint ?? Colors.White,
             Roughness = roughness,
             Uv1Scale = new Vector3(uvScale.X, uvScale.Y, 1f),
+            // 芝は 43×43 で敷くので縮小率が大きい。mipmap 無しだと遠くの芝が
+            // 画素単位の砂嵐になる（視覚監査 #1）。.import 側で mipmap を作り、
+            // 寝た面には異方性で読む
+            TextureFilter = BaseMaterial3D.TextureFilterEnum.LinearWithMipmapsAnisotropic,
         };
     }
 
@@ -195,7 +199,7 @@ public partial class BuildSummer : SceneTree
             AmbientLightColor = new Color(0.6f, 0.65f, 0.7f),
             FogEnabled = true,
             FogLightColor = new Color(0.75f, 0.85f, 0.95f),
-            FogDensity = 0.006f,
+            FogDensity = 0.003f,   // 0.006 は真昼でも 30m 先が白く沈んだ（監査 #8）
         };
         root.AddChild(new WorldEnvironment { Name = "Env", Environment = env });
 
@@ -482,9 +486,11 @@ public partial class BuildSummer : SceneTree
         street.AddChild(Collider(new Vector3(28f, 3f, 3f), new Vector3(-4f, 1.5f, 19.1f)));
         street.AddChild(TexBox(new Vector3(2.6f, 0.05f, 3.6f), new Vector3(-4f, 0.045f, 12.6f), "photo/concrete_floor_01.jpg", new Vector2(1.8f, 2.4f)));
 
+        // 0.45 では屋根が透けて蛍光灯が空に浮いて見えた（監査 #9）。
+        // 波板らしく少し透かしつつ、梁を渡して屋根として読めるようにする
         var roofMat = new StandardMaterial3D
         {
-            AlbedoColor = new Color(0.95f, 0.9f, 0.8f, 0.45f),
+            AlbedoColor = new Color(0.95f, 0.9f, 0.8f, 0.72f),
             Transparency = BaseMaterial3D.TransparencyEnum.Alpha,
             Roughness = 0.4f,
         };
@@ -492,6 +498,10 @@ public partial class BuildSummer : SceneTree
             new Vector3(-2f, 4.4f, 15.9f), roofMat);
         roof.CastShadow = GeometryInstance3D.ShadowCastingSetting.Off;
         street.AddChild(roof);
+        for (float bx = -17f; bx <= 15f; bx += 4f)
+            street.AddChild(Box(new Vector3(0.14f, 0.2f, 5.2f), new Vector3(bx, 4.28f, 15.9f), ConcreteDark));
+        street.AddChild(Box(new Vector3(34f, 0.2f, 0.14f), new Vector3(-2f, 4.28f, 13.35f), ConcreteDark));
+        street.AddChild(Box(new Vector3(34f, 0.2f, 0.14f), new Vector3(-2f, 4.28f, 18.45f), ConcreteDark));
         foreach (float x in new[] { -17f, -9f, -1f, 7f, 14f })
         {
             street.AddChild(Box(new Vector3(0.15f, 4.4f, 0.15f), new Vector3(x, 2.2f, 13.5f), ConcreteDark));
@@ -1244,10 +1254,11 @@ public partial class BuildSummer : SceneTree
         var group = new Node3D { Name = "Puddles", Visible = false };
         var mat = new StandardMaterial3D
         {
-            AlbedoColor = new Color(0.36f, 0.40f, 0.45f, 0.85f),
+            // 0.85 では舗装が隠れて「置いた金属板」に見えた（監査 #11）。透かす
+            AlbedoColor = new Color(0.36f, 0.40f, 0.45f, 0.55f),
             Transparency = BaseMaterial3D.TransparencyEnum.Alpha,
             Roughness = 0.05f,
-            Metallic = 0.7f,
+            Metallic = 0.5f,
             NormalEnabled = true,
             NormalTexture = GD.Load<Texture2D>("res://assets/textures/water_normal.png"),
             NormalScale = 0.35f,
@@ -1305,10 +1316,26 @@ public partial class BuildSummer : SceneTree
         slide.AddChild(Box(new Vector3(1f, 0.25f, 0.8f), new Vector3(0f, 0.55f, 0.9f), Stone));
         slide.AddChild(Box(new Vector3(1f, 0.25f, 0.8f), new Vector3(0f, 1.05f, 0.3f), Stone));
         slide.AddChild(Box(new Vector3(1f, 0.25f, 0.9f), new Vector3(0f, 1.55f, -0.35f), new Color(0.85f, 0.45f, 0.3f)));
+        // 階段と滑走面が離れて見えた（監査 #10）。支柱と手すりで一つの遊具にする
+        var slideSteel = new Color(0.55f, 0.6f, 0.65f);
+        foreach (float sx in new[] { -0.45f, 0.45f })
+        {
+            slide.AddChild(Box(new Vector3(0.08f, 1.55f, 0.08f), new Vector3(sx, 0.78f, -0.35f), slideSteel));
+            slide.AddChild(Box(new Vector3(0.08f, 1.0f, 0.08f), new Vector3(sx, 0.5f, 0.9f), slideSteel));
+            slide.AddChild(Box(new Vector3(0.05f, 0.7f, 0.05f), new Vector3(sx, 2.05f, -0.35f), slideSteel));
+            slide.AddChild(Box(new Vector3(0.05f, 0.05f, 1.3f), new Vector3(sx, 2.4f, 0.3f), slideSteel));
+        }
         var chute = MeshI(new BoxMesh { Size = new Vector3(0.9f, 0.1f, 3.4f) },
             new Vector3(0f, 0.95f, -1.9f), Mat(new Color(0.75f, 0.78f, 0.8f)));
         chute.RotationDegrees = new Vector3(-24f, 0f, 0f);
         slide.AddChild(chute);
+        foreach (float sx in new[] { -0.47f, 0.47f })
+        {
+            var rail = MeshI(new BoxMesh { Size = new Vector3(0.05f, 0.14f, 3.4f) },
+                new Vector3(sx, 1.02f, -1.9f), Mat(slideSteel));
+            rail.RotationDegrees = new Vector3(-24f, 0f, 0f);
+            slide.AddChild(rail);
+        }
         park.AddChild(slide);
 
         var swing = new Node3D { Position = new Vector3(-2f, 0f, -17f) };
@@ -1620,9 +1647,12 @@ public partial class BuildSummer : SceneTree
             // 地平線側は透けさせる。全面を塗ると遠景の町まで消えてしまうので、
             // 上は雲で覆い、下は霞ませて町を残す
             var cloud = new Gradient();
-            cloud.SetColor(0, new Color(0.72f, 0.74f, 0.76f, 0f));   // 地平側（透明）
+            // 下端を透かしすぎると、目線の低いカメラ（CamLot 4.6m）の地平線に
+            // 晴れの日の入道雲がそのまま見えた（監査 #6）。透ける帯を短くする
+            cloud.SetColor(0, new Color(0.72f, 0.74f, 0.76f, 0.55f));   // 地平側（霞）
             cloud.SetColor(1, new Color(0.34f, 0.37f, 0.42f, 1f));   // 天頂側
-            cloud.AddPoint(0.42f, new Color(0.58f, 0.61f, 0.64f, 0.92f));
+            cloud.AddPoint(0.12f, new Color(0.66f, 0.68f, 0.71f, 0.9f));
+            cloud.AddPoint(0.42f, new Color(0.58f, 0.61f, 0.64f, 0.95f));
             var rainMat = new StandardMaterial3D
             {
                 AlbedoTexture = new GradientTexture2D

@@ -188,7 +188,7 @@ public partial class SummerMain : Node3D
     // その日に初めて見つけた場所。同じ日に「その後」まで出ると、
     // 最初の独白を読む前に上書きされる（検査で実際にそうなった）
     private readonly HashSet<int> _foundToday = new();
-    private const double FireworkFromHour = 17.5;
+    private const double FireworkFromHour = 18.5;   // 17.5 は夕焼けの明るい空に白が飽和して塊になった（監査 #7）
     private const float DiscoverRange = 3.2f;
 
     /// <summary>
@@ -258,7 +258,7 @@ public partial class SummerMain : Node3D
     private string _changeLine;                          // 顔ぶれが変わったときに出す文
     private Weather _weather = Weather.Sunny;
     private AudioStreamPlayer _rainVoice;
-    private CpuParticles3D _rainFx;
+    private readonly List<CpuParticles3D> _rainFx = new();   // 商店街の屋根を避けて数個に分ける
     private CpuParticles3D _fireworkFx;
     private AudioStreamPlayer _sfxFirework;
     private double _nextFirework;
@@ -455,7 +455,14 @@ public partial class SummerMain : Node3D
             foreach (Node c in fl.GetChildren())
             {
                 if (c is MeshInstance3D mi && mi.MaterialOverride is StandardMaterial3D fm)
+                {
+                    // 色を変えるだけでは 18 時の空の明るさに負けて灯って見えない（監査 #14）。
+                    // 窓と同じく発光させる
+                    fm.EmissionEnabled = true;
+                    fm.Emission = fm.AlbedoColor;
+                    fm.EmissionEnergyMultiplier = 0f;
                     _festivalLights.Add((fm, fm.AlbedoColor));
+                }
             }
         }
         _coin = GetNodeOrNull<Node3D>("Shotengai/Coin");
@@ -999,31 +1006,54 @@ public partial class SummerMain : Node3D
     /// </summary>
     private void SetupRainFx()
     {
-        _rainFx = new CpuParticles3D
-        {
-            Name = "RainFx",
-            Amount = 900,
-            Lifetime = 1.4f,
-            Emitting = false,
-            Position = new Vector3(0f, 14f, 0f),
-            EmissionShape = CpuParticles3D.EmissionShapeEnum.Box,
-            EmissionBoxExtents = new Vector3(34f, 1f, 34f),
-            Direction = Vector3.Down,
-            Spread = 2f,
-            InitialVelocityMin = 16f,
-            InitialVelocityMax = 20f,
-            ScaleAmountMin = 1f,
-            ScaleAmountMax = 1f,
-            Mesh = new BoxMesh { Size = new Vector3(0.035f, 0.9f, 0.035f) },
-            Gravity = new Vector3(0f, -3f, 0f),
-        };
-        _rainFx.MaterialOverride = new StandardMaterial3D
+        // 一枚の箱で降らせると商店街の屋根（x -19〜15, z 13.3〜18.5, y 4.4）の下にも
+        // 降った（監査 #5）。屋根の足跡を避けた4つの箱に分け、量は面積で配る
+        var rainMat = new StandardMaterial3D
         {
             AlbedoColor = new Color(0.82f, 0.88f, 0.95f, 0.75f),
             Transparency = BaseMaterial3D.TransparencyEnum.Alpha,
             ShadingMode = BaseMaterial3D.ShadingModeEnum.Unshaded,
+            // 縦長の箱は見下ろしのカメラで点になって消えた（監査 #12）。
+            // カメラに正対する帯にする
+            BillboardMode = BaseMaterial3D.BillboardModeEnum.Enabled,
+            CullMode = BaseMaterial3D.CullModeEnum.Disabled,
         };
-        AddChild(_rainFx);
+        (Vector3 Center, Vector3 Extents)[] boxes =
+        {
+            (new Vector3(0f, 14f, -10.35f), new Vector3(34f, 1f, 23.65f)),   // 屋根の南側（団地・公園）
+            (new Vector3(0f, 14f, 26.25f), new Vector3(34f, 1f, 7.75f)),     // 屋根の北側
+            (new Vector3(-26.5f, 14f, 15.9f), new Vector3(7.5f, 1f, 2.6f)),  // 屋根の西
+            (new Vector3(24.5f, 14f, 15.9f), new Vector3(9.5f, 1f, 2.6f)),   // 屋根の東
+        };
+        const float total = 1100f;
+        float area = 0f;
+        foreach ((Vector3 _, Vector3 e) in boxes)
+            area += e.X * e.Z;
+        int k = 0;
+        foreach ((Vector3 center, Vector3 extents) in boxes)
+        {
+            var fx = new CpuParticles3D
+            {
+                Name = $"RainFx{k++}",
+                Amount = Mathf.Max(8, Mathf.RoundToInt(total * extents.X * extents.Z / area)),
+                Lifetime = 1.4f,
+                Emitting = false,
+                Position = center,
+                EmissionShape = CpuParticles3D.EmissionShapeEnum.Box,
+                EmissionBoxExtents = extents,
+                Direction = Vector3.Down,
+                Spread = 2f,
+                InitialVelocityMin = 16f,
+                InitialVelocityMax = 20f,
+                ScaleAmountMin = 1f,
+                ScaleAmountMax = 1f,
+                Mesh = new QuadMesh { Size = new Vector2(0.045f, 0.9f) },
+                Gravity = new Vector3(0f, -3f, 0f),
+                MaterialOverride = rainMat,
+            };
+            AddChild(fx);
+            _rainFx.Add(fx);
+        }
     }
 
     /// <summary>花火。空の高いところで一発ずつ開かせる。</summary>
@@ -1032,9 +1062,9 @@ public partial class SummerMain : Node3D
         // 花火は 70〜95m 先の空に上がる。玉が小さいと点にしか映らないので、
         // 距離に合わせて玉も広がりも大きく取る（半径0.16では点だった）
         var fade = new Gradient();
-        fade.SetColor(0, new Color(1f, 1f, 1f, 1f));      // 開いた瞬間は白く光る
+        fade.SetColor(0, new Color(1f, 1f, 1f, 0.8f));    // 開いた瞬間
         fade.SetColor(1, new Color(1f, 1f, 1f, 0f));      // 尾を引いて消える
-        fade.AddPoint(0.25f, new Color(1f, 1f, 1f, 0.95f));
+        fade.AddPoint(0.25f, new Color(1f, 1f, 1f, 0.7f));
         _fireworkFx = new CpuParticles3D
         {
             Name = "FireworkFx",
@@ -1048,10 +1078,10 @@ public partial class SummerMain : Node3D
             InitialVelocityMin = 9f,
             InitialVelocityMax = 16f,
             Gravity = new Vector3(0f, -4.5f, 0f),
-            ScaleAmountMin = 1.1f,
-            ScaleAmountMax = 2.4f,
+            ScaleAmountMin = 0.9f,
+            ScaleAmountMax = 1.8f,
             ColorRamp = fade,
-            Mesh = new SphereMesh { Radius = 0.5f, Height = 1f, RadialSegments = 5, Rings = 3 },
+            Mesh = new SphereMesh { Radius = 0.36f, Height = 0.72f, RadialSegments = 5, Rings = 3 },
         };
         _fireworkFx.MaterialOverride = new StandardMaterial3D
         {
@@ -1088,10 +1118,11 @@ public partial class SummerMain : Node3D
         float rise = dist * _rng.RandfRange(0.21f, 0.34f);
         var local = new Vector3(_rng.RandfRange(-22f, 22f), rise, -dist);
         _fireworkFx.Position = cam.GlobalTransform * local;
+        // 淡い色だと加算で白に飽和して「白い塊」になった（監査 #7）。色は濃く
         Color[] hues =
         {
-            new(1f, 0.85f, 0.5f), new(1f, 0.5f, 0.55f), new(0.6f, 0.85f, 1f),
-            new(0.7f, 1f, 0.7f), new(1f, 0.7f, 0.95f),
+            new(1f, 0.62f, 0.15f), new(1f, 0.25f, 0.3f), new(0.25f, 0.6f, 1f),
+            new(0.3f, 1f, 0.4f), new(1f, 0.4f, 0.9f),
         };
         _fireworkFx.Color = hues[(int)(_rng.Randi() % (uint)hues.Length)];
         if (OS.GetEnvironment("DEBUG_FIREWORK") == "1")
@@ -1169,32 +1200,41 @@ public partial class SummerMain : Node3D
     private void UpdateSky()
     {
         float t = Mathf.Clamp((float)((_hour - 6.0) / 13.0), 0f, 1f);
+        float nightAlpha = Mathf.Clamp((float)((_hour - 17.0) / 2.0), 0f, 1f);
         if (Overcast)
         {
             bool rainy = _weather == Weather.Rainy;
-            var overTop = rainy ? new Color(0.34f, 0.37f, 0.41f) : new Color(0.6f, 0.66f, 0.71f);
-            var overHor = rainy ? new Color(0.55f, 0.58f, 0.61f) : new Color(0.85f, 0.87f, 0.89f);
+            // 雨・くもりの日は時刻で一切変わらず、18:30 でも真昼の灰色だった（監査 #2）。
+            // 夕方は暗く、少し暖色に寄せる。夜の遠景も晴れと同じ時刻で重ねる
+            float dayArc = Mathf.Sin(t * Mathf.Pi);
+            float dim = 0.42f + 0.58f * dayArc;
+            float dusk = Mathf.Clamp((float)((_hour - 16.5) / 2.5), 0f, 1f);
+            var duskTint = new Color(0.72f, 0.6f, 0.55f);
+            var overTop = (rainy ? new Color(0.34f, 0.37f, 0.41f) : new Color(0.6f, 0.66f, 0.71f)) * dim;
+            var overHor = (rainy ? new Color(0.55f, 0.58f, 0.61f) : new Color(0.85f, 0.87f, 0.89f))
+                          .Lerp(duskTint, dusk * 0.45f) * dim;
             _sky.SkyTopColor = overTop;
             _sky.SkyHorizonColor = overHor;
             _sky.GroundHorizonColor = overHor;
             _env.FogLightColor = overHor;
             _env.FogDensity = 0.0035f;
-            _env.AmbientLightColor = rainy
+            _env.AmbientLightColor = (rainy
                 ? new Color(0.46f, 0.49f, 0.53f)
-                : new Color(0.74f, 0.76f, 0.78f);
+                : new Color(0.74f, 0.76f, 0.78f)).Lerp(duskTint, dusk * 0.35f) * dim;
             _sun.ShadowEnabled = false;
-            _sun.LightEnergy = rainy ? 0.3f : 0.55f;
-            _sun.LightColor = new Color(0.95f, 0.96f, 0.98f);
+            _sun.LightEnergy = (rainy ? 0.3f : 0.55f) * dim;
+            _sun.LightColor = new Color(0.95f, 0.96f, 0.98f).Lerp(duskTint, dusk * 0.5f);
             _sun.RotationDegrees = new Vector3(-60f, -40f, 0f);
             // 遠景は晴れの日に撮った実写なので、曇り・雨の日は強めに沈めないと
             // 「空だけ晴れている」ちぐはぐな絵になる
-            ApplySkyTint(_weather == Weather.Rainy
+            ApplySkyTint((_weather == Weather.Rainy
                 ? new Color(0.42f, 0.46f, 0.52f)
-                : new Color(0.68f, 0.71f, 0.75f));
+                : new Color(0.68f, 0.71f, 0.75f)) * dim);
+            if (_nightPano != null)
+                _nightPano.AlbedoColor = new Color(1f, 1f, 1f, nightAlpha);
             return;
         }
         _sun.ShadowEnabled = true;
-        _env.FogDensity = 0.006f;
         // 天頂と地平線の2色をそれぞれ時刻で補間してグラデーション空を作る
         var topMorning = new Color(0.4f, 0.55f, 0.85f);
         var topNoon = new Color(0.2f, 0.45f, 0.85f);
@@ -1244,6 +1284,8 @@ public partial class SummerMain : Node3D
         _sun.LightColor = sunColor;
         // 金色になるほど弱くする。明るいまま色だけ変えると絵の具に見える
         _sun.LightEnergy = (0.55f + 0.65f * arc) * (1f - 0.38f * warm);
+        // 霞は夕方に濃く、真昼は薄く。0.006 固定では真昼でも 30m 先が白く沈んだ（監査 #8）
+        _env.FogDensity = 0.0025f + 0.0035f * warm;
 
         // gl_compatibility では環境光が絵の大半を作る。太陽の色だけ金にしても
         // 芝が真昼のまま緑に光っていた（撮って確かめた）。環境光も一緒に
@@ -1272,10 +1314,7 @@ public partial class SummerMain : Node3D
         // 夜の遠景（窓に灯りが点いた同じ町）を17時から重ねていく。
         // 昼版を暗くするだけでは窓の灯りは作れないので、別撮りを混ぜる
         if (_nightPano != null)
-        {
-            float nightAlpha = Mathf.Clamp((float)((_hour - 17.0) / 2.0), 0f, 1f);
             _nightPano.AlbedoColor = new Color(1f, 1f, 1f, nightAlpha);
-        }
 
         // 夕焼け空は 16時から立ち上がり 17:40 で最大、そこから夜に譲って引く。
         // 山形にすることで「夕焼けの時間」がはっきり存在するようになる
@@ -1642,6 +1681,12 @@ public partial class SummerMain : Node3D
     /// </summary>
     private static Weather WeatherOfDay(int day)
     {
+        // 式のままだと送り火の日（8/16）が雨で、土砂降りの中で火を焚いていた
+        // （監査 #3）。雨の日の数は変えず、16日と17日の天気を入れ替える
+        if (day == OkuribiDay)
+            day = OkuribiDay + 1;
+        else if (day == OkuribiDay + 1)
+            day = OkuribiDay;
         int h = (day * 37 + 11) % 100;
         if (h < 18)
             return Weather.Rainy;
@@ -1657,8 +1702,10 @@ public partial class SummerMain : Node3D
     /// </summary>
     private void CollectGround(Node node)
     {
+        // 濡らすのは上向きの平面だけ。池のふちのトーラスまで濡らすと、
+        // 丸い断面の反射が帯になって磨いた金属の輪に見えた（監査 #4）
         if (node is MeshInstance3D mi && mi.MaterialOverride is StandardMaterial3D m &&
-            m.AlbedoTexture != null)
+            m.AlbedoTexture != null && (mi.Mesh is BoxMesh || mi.Mesh is PlaneMesh))
         {
             string path = m.AlbedoTexture.ResourcePath;
             if (path.Contains("asphalt") || path.Contains("concrete_floor") ||
@@ -1752,7 +1799,10 @@ public partial class SummerMain : Node3D
         // 撮って気づいた）。昼は色あせた紙、夕方から灯った色へ寄せる
         var paperByDay = new Color(0.9f, 0.86f, 0.79f);
         foreach ((StandardMaterial3D m, Color lit) in _festivalLights)
+        {
             m.AlbedoColor = paperByDay.Lerp(lit, night);
+            m.EmissionEnergyMultiplier = night * 0.9f;
+        }
     }
 
     /// <summary>
@@ -1782,8 +1832,8 @@ public partial class SummerMain : Node3D
     {
         _weather = WeatherOfDay(_day);
         Overcast = _weather != Weather.Sunny;
-        if (_rainFx != null)
-            _rainFx.Emitting = _weather == Weather.Rainy;
+        foreach (CpuParticles3D fx in _rainFx)
+            fx.Emitting = _weather == Weather.Rainy;
         // 遠景の実写は晴れの1枚だけなので、空は灰色の帯で覆って差し替える
         if (_rainSky != null)
         {

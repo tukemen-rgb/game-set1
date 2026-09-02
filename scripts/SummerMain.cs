@@ -214,6 +214,15 @@ public partial class SummerMain : Node3D
     };
     // 木漏れ日。曇りと雨では薄れ、朝夕は寝るので、濃さを時刻と天気で動かす
     private readonly List<StandardMaterial3D> _komorebi = new();
+    // --- ラジオ体操 ---
+    // 8/7 の朝に「はんこが ぜんぶ そろった」と言っておきながら、
+    // 押す場所がどこにも無かった。game が自分で吐いた嘘を本当にする。
+    private static readonly Vector2 RadioPos = new(-16f, 1.5f);
+    private const int RadioLastDay = 7;      // 8/1〜8/7 の朝だけ
+    private const double RadioFromHour = 8.0, RadioToHour = 9.0;
+    private int _stamps;                     // 押したはんこの数（夏のあいだ残る）
+    private int _stampedDay = -1;
+
     // --- 駄菓子屋の買い物 ---
     // 「ラムネ、ひやして あるよ」と言われて何も買えないのは、
     // 池と同じ「期待させて返さない」形。おこづかいは毎朝100円入る。
@@ -235,7 +244,7 @@ public partial class SummerMain : Node3D
     private TextureRect _diaryShot;
     private Label _diaryText;
     private CanvasLayer _dex;
-    private Label _dexTitle, _dexList;
+    private Label _dexTitle, _dexList, _dexFoot;
     private bool _dexOpen;
     private CanvasLayer _title;
     private Label _titlePrompt;
@@ -263,6 +272,7 @@ public partial class SummerMain : Node3D
         _diaryText = GetNodeOrNull<Label>("Diary/Paper/Text");
         _dexTitle = GetNodeOrNull<Label>("Dex/Title");
         _dexList = GetNodeOrNull<Label>("Dex/List");
+        _dexFoot = GetNodeOrNull<Label>("Dex/Foot");
         Node komorebi = GetNodeOrNull("Komorebi");
         if (komorebi != null)
         {
@@ -352,6 +362,7 @@ public partial class SummerMain : Node3D
             RespawnCicadas();
             ShowMessage("セミの こえが かわった……", 2.5);
         }
+        CheckRadio();
         CheckShop();
         _fishClock += delta;
         if (_fishingPutAwayAt > 0.0 && _fishClock >= _fishingPutAwayAt)
@@ -440,11 +451,17 @@ public partial class SummerMain : Node3D
             sb.Append(got ? "●　" : "○　").Append(name.PadRight(8, '　'))
               .Append('　').Append(SpeciesHint(AllSpecies[i])).Append('\n');
         }
-        sb.Append('\n');
-        sb.Append(_collected.Count == AllSpecies.Length
-            ? "ぜんぶ そろった。"
-            : "まだ 会って いない ものが いる。");
+
         _dexList.Text = sb.ToString();
+        // 一覧の下に足すと 9種で埋まった枠からはみ出すので、footer に持たせる
+        if (_dexFoot != null)
+        {
+            string card = $"ラジオたいそうの カード　{_stamps} / {RadioLastDay}";
+            if (_marbles > 0)
+                card += $"　　　ビー玉　{_marbles}こ";
+            string tail = _collected.Count == AllSpecies.Length ? "ぜんぶ そろった。" : "";
+            _dexFoot.Text = $"{card}\n{tail}Ｚ で とじる";
+        }
     }
 
     // --- タイトル ---
@@ -949,6 +966,13 @@ public partial class SummerMain : Node3D
             _messageLabel.Text = "だがしや　スペースで はなす・かう";
             return;
         }
+        if (AtRadio())
+        {
+            _messageLabel.Text = _stampedDay == _day
+                ? "ラジオたいそう　きょうの はんこは おした"
+                : "ラジオたいそう　スペースで はんこ";
+            return;
+        }
         if (AtPond())
         {
             _messageLabel.Text = _lineOutAt < 0.0
@@ -1353,6 +1377,7 @@ public partial class SummerMain : Node3D
             ["talkCount"] = _talkCount,
             ["money"] = _money,
             ["marbles"] = _marbles,
+            ["stamps"] = _stamps,
             ["collected"] = collected,
             ["found"] = found,
         };
@@ -1384,6 +1409,7 @@ public partial class SummerMain : Node3D
         // 古いセーブには入っていないので、無ければ既定に戻す
         _money = data.ContainsKey("money") ? (int)data["money"] : DailyAllowance;
         _marbles = data.ContainsKey("marbles") ? (int)data["marbles"] : 0;
+        _stamps = data.ContainsKey("stamps") ? (int)data["stamps"] : 0;
         _collected.Clear();
         foreach (Variant v in data["collected"].AsGodotArray())
             _collected.Add((int)v);
@@ -1394,6 +1420,24 @@ public partial class SummerMain : Node3D
     }
 
     // --- 駄菓子屋（町にいる ただ一人の相手） ---
+
+    /// <summary>ラジオ体操の台の前に立っていて、まだ押せる朝か。</summary>
+    private bool AtRadio()
+    {
+        if (_day > RadioLastDay || _hour < RadioFromHour || _hour >= RadioToHour)
+            return false;
+        return new Vector2(_player.Position.X, _player.Position.Z).DistanceTo(RadioPos) < 2.6f;
+    }
+
+    private void CheckRadio()
+    {
+        if (!AtRadio() || _stampedDay == _day || !Input.IsActionJustPressed("ui_accept"))
+            return;
+        _stampedDay = _day;
+        _stamps++;
+        PlaySfx(_sfxCatch);
+        ShowMessage($"ラジオたいそう。\nカードに はんこを おしてもらった。（{_stamps}/{RadioLastDay}）", 3.5);
+    }
 
     private bool NearShop()
     {
@@ -1553,6 +1597,11 @@ public partial class SummerMain : Node3D
             return $"【日記】8月{_day}日({Weekday()})\n{line}\n" +
                    $"あと {toFestival}日で なつまつり。\nあしたは なにを しようかな。";
 
+        if (_stampedDay == _day && _day < RadioLastDay)
+            return $"【日記】8月{_day}日({Weekday()})\n{line}\n" +
+                   $"あさ、はんこを おしてもらった。（{_stamps}/{RadioLastDay}）\n" +
+                   "あしたは なにを しようかな。";
+
         if (_todayBought != "")
             return $"【日記】8月{_day}日({Weekday()})\n{line}\n" +
                    $"だがしやで {_todayBought}を かった。\nあしたは なにを しようかな。";
@@ -1634,8 +1683,17 @@ public partial class SummerMain : Node3D
         await ToSignal(fadeIn, Tween.SignalName.Finished);
         _player.Frozen = false;
         _transitioning = false;
-        ShowMessage(Events.TryGetValue(_day, out Event ev)
+        string morning = Events.TryGetValue(_day, out Event ev)
             ? ev.Morning
-            : $"8月{_day}日の あさ。ラジオたいそう おわり！", ev.Morning != null ? 4.5 : 3.0);
+            : $"8月{_day}日の あさ。ラジオたいそう おわり！";
+        // 8/7 は「はんこが そろった」と決め打ちしていたが、押していない朝もある。
+        // 実際に押した数で言い方を変える
+        if (_day == RadioLastDay)
+        {
+            morning = _stamps >= RadioLastDay - 1
+                ? $"きょうで ラジオたいそうは おしまい。\nはんこは {_stamps}こ たまった。"
+                : $"きょうで ラジオたいそうは おしまい。\nはんこは {_stamps}こ だけだった。";
+        }
+        ShowMessage(morning, 4.0);
     }
 }

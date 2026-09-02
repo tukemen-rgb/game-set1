@@ -40,6 +40,7 @@ public partial class BuildSummer : SceneTree
         BuildGroundAndRoads(root);
         BuildDanchi(root);
         BuildShotengai(root);
+        BuildRadioTaiso(root);
         BuildPark(root);
         BuildVacantLot(root);
         BuildTrees(root);
@@ -679,6 +680,32 @@ public partial class BuildSummer : SceneTree
 
         shop.AddChild(Collider(new Vector3(3.9f, 3f, 3f), new Vector3(0f, 1.5f, 0f)));
         return shop;
+    }
+
+    /// <summary>
+    /// ラジオ体操の台（折りたたみ机・ラジカセ・出席カードの箱）。
+    /// 「8/7で ラジオたいそうは おしまい。はんこが そろった」と game が
+    /// 言っておきながら、押す場所がどこにも無かった。
+    /// </summary>
+    private static void BuildRadioTaiso(Node3D root)
+    {
+        var t = new Node3D { Name = "RadioTaiso", Position = new Vector3(-16f, 0f, 1.5f) };
+        // 折りたたみ机
+        t.AddChild(Box(new Vector3(1.5f, 0.06f, 0.65f), new Vector3(0f, 0.72f, 0f), new Color(0.82f, 0.78f, 0.7f)));
+        foreach (float lx in new[] { -0.65f, 0.65f })
+        {
+            t.AddChild(Box(new Vector3(0.05f, 0.7f, 0.05f), new Vector3(lx, 0.36f, -0.25f), ConcreteDark));
+            t.AddChild(Box(new Vector3(0.05f, 0.7f, 0.05f), new Vector3(lx, 0.36f, 0.25f), ConcreteDark));
+        }
+        // ラジカセ
+        t.AddChild(Box(new Vector3(0.46f, 0.24f, 0.18f), new Vector3(-0.4f, 0.87f, 0f), new Color(0.2f, 0.2f, 0.22f)));
+        t.AddChild(MeshI(new CylinderMesh { TopRadius = 0.075f, BottomRadius = 0.075f, Height = 0.03f },
+            new Vector3(-0.52f, 0.87f, -0.1f), new Color(0.45f, 0.45f, 0.48f)));
+        t.AddChild(Box(new Vector3(0.02f, 0.3f, 0.02f), new Vector3(-0.2f, 1.12f, 0f), Stone));   // アンテナ
+        // 出席カードの箱と朱肉
+        t.AddChild(Box(new Vector3(0.3f, 0.1f, 0.22f), new Vector3(0.35f, 0.8f, 0f), new Color(0.9f, 0.88f, 0.8f)));
+        t.AddChild(Box(new Vector3(0.09f, 0.05f, 0.09f), new Vector3(0.62f, 0.77f, 0.05f), new Color(0.7f, 0.15f, 0.15f)));
+        root.AddChild(t);
     }
 
     // --- 公園（池・すべり台・ブランコ・砂場・ベンチ） ---
@@ -1387,7 +1414,7 @@ public partial class BuildSummer : SceneTree
 
         Label dexFoot = MakeLabel("Foot", 24);
         dexFoot.SetAnchorsPreset(Control.LayoutPreset.FullRect);
-        dexFoot.OffsetTop = 580f;
+        dexFoot.OffsetTop = 556f;
         dexFoot.HorizontalAlignment = HorizontalAlignment.Center;
         dexFoot.VerticalAlignment = VerticalAlignment.Center;
         dexFoot.Text = "Ｚ で とじる";

@@ -1,5 +1,0 @@
-# アップロードしたファイル名 = プロンプトID
-SKY-clear_cumulonimbus.jpg = SKY-clear_cumulonimbus
-SKY-sunset.jpg = SKY-sunset
-TEX-grass_summer.jpg = TEX-grass_summer
-TEX-leaf_canopy.jpg = TEX-leaf_canopy

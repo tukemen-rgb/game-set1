@@ -1,20 +1,16 @@
 # 画像の入荷状況
 
-## ★ フェーズ1（まずこれだけ）: **8 / 15**
+## ★ フェーズ1（まずこれだけ）: **12 / 15**
 
 残り:
-- `SKY-clear_cumulonimbus` — 空・遠景 / 快晴・入道雲
-- `SKY-sunset` — 空・遠景 / 夕焼け
-- `TEX-grass_summer` — テクスチャ / 夏の芝生
-- `TEX-leaf_canopy` — テクスチャ / 木の葉
 - `DET-rain_streak` — ディテール・汚し / 雨だれ
 - `DET-shadow_leaves` — ディテール・汚し / 木漏れ日
 - `UI-title_key` — UI・キーアート / タイトル用キーアート
 
 ## 全体
 
-- 揃った: **8 / 113**
-- 未着: 105
+- 揃った: **12 / 113**
+- 未着: 101
 - `incoming/` に未処理: 0
 
 `tools/ingest_images.sh` が自動更新する。手で編集しない。
@@ -29,6 +25,10 @@
 - `BG-park-night` — 背景プレート / 公園と池 / 夜 → `assets/plates/BG-park-night.jpg`
 - `BG-plaza-noon` — 背景プレート / 大通りと空き地 / 真夏の正午 → `assets/plates/BG-plaza-noon.jpg`
 - `BG-plaza-night` — 背景プレート / 大通りと空き地 / 夜 → `assets/plates/BG-plaza-night.jpg`
+- `SKY-clear_cumulonimbus` — 空・遠景 / 快晴・入道雲 → `assets/sky/SKY-clear_cumulonimbus.jpg`
+- `SKY-sunset` — 空・遠景 / 夕焼け → `assets/sky/SKY-sunset.jpg`
+- `TEX-grass_summer` — テクスチャ / 夏の芝生 → `assets/textures/gen/TEX-grass_summer.jpg`
+- `TEX-leaf_canopy` — テクスチャ / 木の葉 → `assets/textures/gen/TEX-leaf_canopy.jpg`
 
 ## 未着（この ID の画像がまだ無い）
 
@@ -48,8 +48,6 @@
 - `BG-plaza-evening` — 背景プレート / 大通りと空き地 / 夕方 18時 ※下絵の添付が必要
 - `BG-plaza-overcast` — 背景プレート / 大通りと空き地 / 曇天 ※下絵の添付が必要
 - `BG-plaza-rain` — 背景プレート / 大通りと空き地 / 雨上がり ※下絵の添付が必要
-- `SKY-clear_cumulonimbus` — 空・遠景 / 快晴・入道雲
-- `SKY-sunset` — 空・遠景 / 夕焼け
 - `SKY-overcast` — 空・遠景 / 曇天
 - `SKY-morning_haze` — 空・遠景 / 朝もや
 - `SKY-after_rain` — 空・遠景 / 雨上がり
@@ -61,11 +59,9 @@
 - `TEX-asphalt` — テクスチャ / アスファルト
 - `TEX-paving_tile` — テクスチャ / 歩道の平板
 - `TEX-paving_block` — テクスチャ / インターロッキング
-- `TEX-grass_summer` — テクスチャ / 夏の芝生
 - `TEX-dirt_ground` — テクスチャ / 土のグラウンド
 - `TEX-sand_box` — テクスチャ / 砂場の砂
 - `TEX-water_pond` — テクスチャ / 池の水面
-- `TEX-leaf_canopy` — テクスチャ / 木の葉
 - `TEX-metasequoia` — テクスチャ / メタセコイアの葉
 - `TEX-bark` — テクスチャ / 木の幹
 - `TEX-roof_tile` — テクスチャ / 瓦屋根

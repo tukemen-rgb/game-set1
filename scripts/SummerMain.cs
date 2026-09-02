@@ -291,6 +291,17 @@ public partial class SummerMain : Node3D
         new("あたりくじ", 20, ""),   // 当たり外れは引いてから決める
         new("アイス", 50, "かじると まんなかに あずきが いた。\nあたりだ、と おもった。"),
     };
+    // 夏まつりの日だけ品書きが変わる。おこづかいの行き先が3品しか無く、
+    // 上限900円まで貯まったあと使い道が消えていた
+    private static readonly Goods[] FestivalShelf =
+    {
+        new("かき氷", 100, "けずった 氷に いちごの シロップ。\nこめかみが きゅっと なった。"),
+        new("りんご飴", 150, "外は かたくて、中は すっぱい。\n手が べたべたに なった。"),
+        new("金魚すくい", 200, ""),   // すくえた数は やってから決める
+    };
+    private int _goldfish;               // すくった金魚。夏のあいだ残る
+    private Node3D _festivalNode;
+
     private const int DailyAllowance = 100;
     private int _money = DailyAllowance;
     private int _marbles;            // ラムネのビー玉。夏のあいだ残る
@@ -369,6 +380,7 @@ public partial class SummerMain : Node3D
         _asagaoFlowers = GetNodeOrNull<Node3D>("Asagao/Flowers");
         _asagaoPoles = GetNodeOrNull<Node3D>("Asagao/Poles");
         _asagaoFutaba = GetNodeOrNull<Node3D>("Asagao/Futaba");
+        _festivalNode = GetNodeOrNull<Node3D>("Festival");
         if (GetNodeOrNull("Backdrop/PanoramaNight") is MeshInstance3D np)
             _nightPano = np.MaterialOverride as StandardMaterial3D;
         if (GetNodeOrNull("Backdrop/Panorama") is MeshInstance3D dp)
@@ -664,6 +676,8 @@ public partial class SummerMain : Node3D
             extra += $"\nあさがおが 咲いた朝を {_bloomSeen}回 見た。";
         if (_folkTalks > 0)
             extra += $"\n町の人と {_folkTalks}回 立ち話を した。";
+        if (_goldfish > 0)
+            extra += $"\n金魚は {_goldfish}ひき つれて かえった。";
         _messageLabel.Text =
             $"8月31日。なつやすみが おわった。\n" +
             $"つかまえた むし、ぜんぶで {_totalCaught}ひき。\n" +
@@ -1236,6 +1250,8 @@ public partial class SummerMain : Node3D
         }
         ApplyWetGround(_weather == Weather.Rainy);
         UpdateAsagao();
+        if (_festivalNode != null)
+            _festivalNode.Visible = _day == FestivalDay;   // 屋台と提灯は当日だけ
     }
 
     /// <summary>朝=0 / 昼=1 / 夕=2。変わったら顔ぶれを入れ替える。</summary>
@@ -1656,6 +1672,7 @@ public partial class SummerMain : Node3D
             ["stamps"] = _stamps,
             ["bloomSeen"] = _bloomSeen,
             ["folkTalks"] = _folkTalks,
+            ["goldfish"] = _goldfish,
             ["collected"] = collected,
             ["found"] = found,
         };
@@ -1690,6 +1707,7 @@ public partial class SummerMain : Node3D
         _stamps = data.ContainsKey("stamps") ? (int)data["stamps"] : 0;
         _bloomSeen = data.ContainsKey("bloomSeen") ? (int)data["bloomSeen"] : 0;
         _folkTalks = data.ContainsKey("folkTalks") ? (int)data["folkTalks"] : 0;
+        _goldfish = data.ContainsKey("goldfish") ? (int)data["goldfish"] : 0;
         _collected.Clear();
         foreach (Variant v in data["collected"].AsGodotArray())
             _collected.Add((int)v);
@@ -1874,17 +1892,23 @@ public partial class SummerMain : Node3D
         ShowShelf();
     }
 
+    /// <summary>その日の品書き。夏まつりの日は屋台の品に入れ替わる。</summary>
+    private Goods[] TodayShelf() => _day == FestivalDay ? FestivalShelf : Shelf;
+
     /// <summary>品書き。矢印で選び、スペースで買う。</summary>
     private void ShowShelf()
     {
+        Goods[] shelf = TodayShelf();
         var sb = new System.Text.StringBuilder();
-        sb.Append($"おこづかい {_money}円\n");
-        for (int i = 0; i < Shelf.Length; i++)
+        sb.Append(_day == FestivalDay ? $"なつまつり　おこづかい {_money}円\n" : $"おこづかい {_money}円\n");
+        // 横に並べると、品名が長い日（金魚すくい 200円）に行が折り返して
+        // 「200」と「円」が分かれた。1品1行なら品が増えても崩れない
+        for (int i = 0; i < shelf.Length; i++)
         {
             sb.Append(i == _shopPick ? "▶ " : "　 ")
-              .Append(Shelf[i].Name).Append('　').Append(Shelf[i].Price).Append("円　");
+              .Append(shelf[i].Name).Append('　').Append(shelf[i].Price).Append("円\n");
         }
-        sb.Append("\nやじるしで えらぶ／スペースで かう／Ｚ で やめる");
+        sb.Append("やじるしで えらぶ／スペースで かう／Ｚ で やめる");
         ShowMessage(sb.ToString(), 60.0);
     }
 
@@ -1899,20 +1923,20 @@ public partial class SummerMain : Node3D
         }
         if (Input.IsActionJustPressed("ui_right") || Input.IsActionJustPressed("ui_down"))
         {
-            _shopPick = (_shopPick + 1) % Shelf.Length;
+            _shopPick = (_shopPick + 1) % TodayShelf().Length;
             ShowShelf();
             return;
         }
         if (Input.IsActionJustPressed("ui_left") || Input.IsActionJustPressed("ui_up"))
         {
-            _shopPick = (_shopPick + Shelf.Length - 1) % Shelf.Length;
+            _shopPick = (_shopPick + TodayShelf().Length - 1) % TodayShelf().Length;
             ShowShelf();
             return;
         }
         if (!Input.IsActionJustPressed("ui_accept"))
             return;
 
-        Goods g = Shelf[_shopPick];
+        Goods g = TodayShelf()[_shopPick];
         if (_money < g.Price)
         {
             ShowMessage("「おかねが たりないねえ。\nあしたに しようか」", 3.0);
@@ -1930,6 +1954,17 @@ public partial class SummerMain : Node3D
         {
             _marbles++;
             ShowMessage($"{g.Bought}\nビー玉が {_marbles}こに なった。", 4.5);
+        }
+        else if (g.Name == "金魚すくい")
+        {
+            // 破れるまでに何匹すくえるか。0匹の年もある
+            int got = (int)(_rng.Randi() % 4u);
+            _goldfish += got;
+            ShowMessage(got == 0
+                ? "いっぱつで やぶれた。\nおじさんが 一ぴき くれた。"
+                : $"{got}ひき すくえた。\nふくろの 水が ゆれて いる。", 4.0);
+            if (got == 0)
+                _goldfish++;
         }
         else if (g.Name == "あたりくじ")
         {

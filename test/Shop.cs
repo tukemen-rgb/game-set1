@@ -20,6 +20,9 @@ public partial class Shop : SceneTree
         main.Set("SecondsPerHour", 40.0 * Slow);
         main.Set("RngSeed", 2);
         main.Set("SkipIntro", true);
+        string day = OS.GetEnvironment("SHOP_DAY");
+        if (day != "")
+            main.Set("StartDay", day.ToInt());   // 8/24 は屋台の品書きになる
         Root.AddChild(main);
     }
 

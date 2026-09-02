@@ -45,6 +45,7 @@ public partial class BuildSummer : SceneTree
         BuildAsagao(root);
         BuildResidents(root);
         BuildSapMark(root);
+        BuildFestival(root);
         BuildPark(root);
         BuildVacantLot(root);
         BuildTrees(root);
@@ -769,6 +770,72 @@ public partial class BuildSummer : SceneTree
         t.AddChild(Box(new Vector3(0.3f, 0.1f, 0.22f), new Vector3(0.35f, 0.8f, 0f), new Color(0.9f, 0.88f, 0.8f)));
         t.AddChild(Box(new Vector3(0.09f, 0.05f, 0.09f), new Vector3(0.62f, 0.77f, 0.05f), new Color(0.7f, 0.15f, 0.15f)));
         root.AddChild(t);
+    }
+
+    /// <summary>
+    /// 夏まつりの屋台と提灯。8/24 だけ出す（SummerMain が Visible を切り替える）。
+    /// 駄菓子屋のおばあさんが「うちも 屋台を 出すよ」と言うのに、
+    /// 当日ずっと何も出ていなかった。
+    /// </summary>
+    private static void BuildFestival(Node3D root)
+    {
+        var f = new Node3D { Name = "Festival", Visible = false };
+
+        // 提灯。商店街の通路に沿って吊るす
+        var lampMat = new StandardMaterial3D
+        {
+            AlbedoColor = new Color(1f, 0.72f, 0.42f),
+            ShadingMode = BaseMaterial3D.ShadingModeEnum.Unshaded,
+        };
+        // 東端まで吊ると、望遠カメラ（x=25）の 10m 手前に来た1個が
+        // 画面上部を横切る太い棒になる。x=8 までにする
+        for (int i = 0; i < 13; i++)
+        {
+            float lx = -17f + i * 2.1f;
+            f.AddChild(MeshI(new CylinderMesh { TopRadius = 0.09f, BottomRadius = 0.09f, Height = 0.22f },
+                new Vector3(lx, 3.5f, 15.9f), lampMat, noShadow: true));
+            f.AddChild(Box(new Vector3(0.02f, 0.35f, 0.02f), new Vector3(lx, 3.78f, 15.9f), ConcreteDark));
+        }
+
+        // 屋台3軒。天幕・台・のれん・裸電球
+        (float X, Color Cloth, Color Goods)[] stalls =
+        {
+            (-7.5f, new Color(0.85f, 0.3f, 0.28f), new Color(0.9f, 0.25f, 0.3f)),   // りんご飴
+            (0.5f, new Color(0.35f, 0.55f, 0.8f), new Color(0.75f, 0.9f, 0.95f)),   // かき氷
+            (7.5f, new Color(0.9f, 0.85f, 0.4f), new Color(0.95f, 0.55f, 0.25f)),   // 金魚すくい
+        };
+        foreach ((float sx, Color cloth, Color goods) in stalls)
+        {
+            var st = new Node3D { Position = new Vector3(sx, 0f, 16.6f) };
+            st.AddChild(Box(new Vector3(2.4f, 0.1f, 0.9f), new Vector3(0f, 0.86f, 0f), DarkWood));
+            st.AddChild(Box(new Vector3(2.4f, 0.8f, 0.08f), new Vector3(0f, 0.44f, -0.4f), DarkWood));
+            foreach (float px in new[] { -1.1f, 1.1f })
+            {
+                st.AddChild(Box(new Vector3(0.07f, 2.1f, 0.07f), new Vector3(px, 1.05f, -0.4f), ConcreteDark));
+                st.AddChild(Box(new Vector3(0.07f, 2.1f, 0.07f), new Vector3(px, 1.05f, 0.4f), ConcreteDark));
+            }
+            var roof = MeshI(new BoxMesh { Size = new Vector3(2.8f, 0.08f, 1.4f) },
+                new Vector3(0f, 2.15f, 0f), Mat(cloth));
+            st.AddChild(roof);
+            // 紅白の垂れ幕
+            for (int k = 0; k < 4; k++)
+            {
+                st.AddChild(Box(new Vector3(0.62f, 0.4f, 0.03f),
+                    new Vector3(-0.93f + k * 0.62f, 1.9f, 0.68f),
+                    k % 2 == 0 ? cloth : new Color(0.96f, 0.95f, 0.92f)));
+            }
+            // 台の上の品
+            for (int k = 0; k < 5; k++)
+            {
+                st.AddChild(MeshI(new SphereMesh { Radius = 0.09f, Height = 0.18f },
+                    new Vector3(-0.8f + k * 0.4f, 1.0f, 0.05f), goods));
+            }
+            // 裸電球
+            st.AddChild(MeshI(new SphereMesh { Radius = 0.07f, Height = 0.14f },
+                new Vector3(0f, 1.95f, 0.2f), new Color(1f, 0.95f, 0.75f), unshaded: true));
+            f.AddChild(st);
+        }
+        root.AddChild(f);
     }
 
     /// <summary>

@@ -233,7 +233,7 @@ public partial class BuildSummer : SceneTree
         // 参考画（docs/reference/park_pond_gpt.png）の芝は暗いオリーブ (98,119,28)。
         // 素のテクスチャはライム (184,232,134) で明度が 1.8 倍あった（監査で実測）
         ground.AddChild(MeshI(new PlaneMesh { Size = new Vector2(200f, 200f) }, Vector3.Zero,
-            TexMat(BestTex("gen/TEX-grass_summer.jpg", "grass"), new Vector2(43f, 43f), new Color(0.7f, 0.68f, 0.46f))));
+            TexMat(BestTex("gen/TEX-grass_summer.jpg", "grass"), new Vector2(43f, 43f), new Color(0.56f, 0.56f, 0.36f))));
         root.AddChild(ground);
 
         var roads = new Node3D { Name = "Roads" };
@@ -276,7 +276,7 @@ public partial class BuildSummer : SceneTree
 
         // 本体（実写コンクリ＋雨だれ）と屋上（砂利防水・パラペット・塔屋・アンテナ）
         b.AddChild(MeshI(new BoxMesh { Size = new Vector3(length, height, 5f) },
-            new Vector3(0f, height / 2f, 0f), TexMat("wall_weathered", new Vector2(4f, 3f))));
+            new Vector3(0f, height / 2f, 0f), TexMat("wall_weathered", new Vector2(4f, 3f), new Color(0.8f, 0.78f, 0.74f))));   // 参考画の壁は白より暗い灰
         b.AddChild(MeshI(new BoxMesh { Size = new Vector3(length + 0.4f, 0.3f, 5.6f) },
             new Vector3(0f, height + 0.15f, 0f), TexMat("photo/gravel_concrete.jpg", new Vector2(4f, 1.4f))));
         b.AddChild(Box(new Vector3(length + 0.5f, 0.5f, 0.15f), new Vector3(0f, height + 0.45f, 2.75f), Concrete));
@@ -1314,7 +1314,8 @@ public partial class BuildSummer : SceneTree
             // 参考画の水は (84,94,60) の濁ったオリーブ。鏡面 0.45 では空が全面に乗って
             // ターコイズ (121,164,158) になった（監査で実測）。鏡面を絞って色で見せる
             // 鏡面 0.12・粗さ 0.5 では波も艶も消えて緑の円盤になった。中間に置く
-            AlbedoColor = new Color(0.2f, 0.27f, 0.15f, 0.94f),
+            // 空の反射で青に寄るぶん、アルベドは黄土に振っておくと合成でオリーブになる
+            AlbedoColor = new Color(0.2f, 0.19f, 0.07f, 0.95f),
             Transparency = BaseMaterial3D.TransparencyEnum.Alpha,
             Roughness = 0.4f,
             Metallic = 0.03f,
@@ -1333,7 +1334,7 @@ public partial class BuildSummer : SceneTree
         var rim = MeshI(new TorusMesh { InnerRadius = 6.2f, OuterRadius = 7.1f, Rings = 64, RingSegments = 24 },
             // 参考画のふちは玉石ではなく砂利の洗い出しコンクリート（粒は数 mm、暖かい灰茶）。
             // 玉石を貼ると石垣に読めた
-            new Vector3(6f, 0.02f, -15f), TexMat("photo/gravel_concrete.jpg", new Vector2(60f, 3f), new Color(0.56f, 0.54f, 0.47f), roughness: 1f));
+            new Vector3(6f, 0.02f, -15f), TexMat("photo/gravel_concrete.jpg", new Vector2(120f, 6f), new Color(0.6f, 0.6f, 0.56f), roughness: 1f));
         rim.Scale = new Vector3(1f, 0.7f, 1f);
         park.AddChild(rim);
         // ふちの内側の立ち上がり（水面との境が線で見えるように）
@@ -1390,7 +1391,7 @@ public partial class BuildSummer : SceneTree
         // 一様な緑の上に、薄い濃緑の斑を寝かせる
         var mottle = new StandardMaterial3D
         {
-            AlbedoColor = new Color(0.36f, 0.3f, 0.12f, 0.42f),   // 踏まれて土が透けた茶の斑
+            AlbedoColor = new Color(0.36f, 0.3f, 0.12f, 0.22f),   // 踏まれて土が透けた茶の斑（0.42 は黄色い楕円に見えた）
             Transparency = BaseMaterial3D.TransparencyEnum.Alpha,
             Roughness = 1f,
         };
@@ -1618,7 +1619,7 @@ public partial class BuildSummer : SceneTree
         }
         else
         {
-            Color? tint = species == 2 ? new Color(1.15f, 1.2f, 0.6f) : null; // イチョウは黄緑
+            Color? tint = species == 2 ? new Color(0.95f, 1.0f, 0.5f) : new Color(0.72f, 0.78f, 0.6f); // 参考画の葉はライムより濃い
             var leaf = TexMat(BestTex("gen/TEX-leaf_canopy.jpg", "leaf"), new Vector2(3f, 3f), tint);
             tree.AddChild(MeshI(new CylinderMesh { TopRadius = 0.22f, BottomRadius = 0.38f, Height = 3f },
                 new Vector3(0f, 1.5f, 0f), Trunk));

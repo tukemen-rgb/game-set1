@@ -1293,7 +1293,8 @@ public partial class SummerMain : Node3D
         _sky.SkyHorizonColor = hor;
         _sky.GroundHorizonColor = hor;
         _env.FogLightColor = hor;
-        Color ambient = hor.Lerp(Colors.White, 0.45f) * 0.8f;
+        // 0.8 では正午の絵が全体に白っぽく、参考画の濃い影と深い緑にならなかった
+        Color ambient = hor.Lerp(Colors.White, 0.45f) * 0.66f;
         float arc = Mathf.Sin(t * Mathf.Pi);
         // 最高仰角 70°→60°。真上からだと正午に影がほとんど落ちず、参考画の
         // 「木の影が右へ長く落ちる」絵にならない（材質は影があって初めて読める）
@@ -1313,7 +1314,7 @@ public partial class SummerMain : Node3D
         // 金色になるほど弱くする。明るいまま色だけ変えると絵の具に見える
         _sun.LightEnergy = (0.55f + 0.65f * arc) * (1f - 0.38f * warm);
         // 霞は夕方に濃く、真昼は薄く。0.006 固定では真昼でも 30m 先が白く沈んだ（監査 #8）
-        _env.FogDensity = 0.0025f + 0.0035f * warm;
+        _env.FogDensity = 0.0016f + 0.0034f * warm;
 
         // gl_compatibility では環境光が絵の大半を作る。太陽の色だけ金にしても
         // 芝が真昼のまま緑に光っていた（撮って確かめた）。環境光も一緒に

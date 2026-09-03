@@ -45,7 +45,7 @@ fog_density = 0.003
 size = Vector3(200, 1, 200)
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_v52w0"]
-albedo_color = Color(0.7, 0.68, 0.46, 1)
+albedo_color = Color(0.56, 0.56, 0.36, 1)
 albedo_texture = ExtResource("2_qlg20")
 uv1_scale = Vector3(43, 43, 1)
 texture_filter = 5
@@ -124,6 +124,7 @@ texture_filter = 5
 size = Vector3(2, 0.05, 12)
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_01j4w"]
+albedo_color = Color(0.8, 0.78, 0.74, 1)
 albedo_texture = ExtResource("5_kqhle")
 uv1_scale = Vector3(4, 3, 1)
 texture_filter = 5
@@ -923,6 +924,7 @@ height = 13.5
 size = Vector3(16, 13.5, 6.8)
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_drpiy"]
+albedo_color = Color(0.8, 0.78, 0.74, 1)
 albedo_texture = ExtResource("5_kqhle")
 uv1_scale = Vector3(4, 3, 1)
 texture_filter = 5
@@ -6637,7 +6639,7 @@ height = 0.26
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_lo672"]
 transparency = 1
-albedo_color = Color(0.2, 0.27, 0.15, 0.94)
+albedo_color = Color(0.2, 0.19, 0.07, 0.95)
 metallic = 0.03
 metallic_specular = 0.25
 roughness = 0.4
@@ -6652,9 +6654,9 @@ bottom_radius = 6.4
 height = 0.06
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_2i10v"]
-albedo_color = Color(0.56, 0.54, 0.47, 1)
+albedo_color = Color(0.6, 0.6, 0.56, 1)
 albedo_texture = ExtResource("6_8hp1h")
-uv1_scale = Vector3(60, 3, 1)
+uv1_scale = Vector3(120, 6, 1)
 texture_filter = 5
 
 [sub_resource type="TorusMesh" id="TorusMesh_ky8iv"]
@@ -6968,7 +6970,7 @@ ring_segments = 6
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_j2kda"]
 transparency = 1
-albedo_color = Color(0.36, 0.3, 0.12, 0.42)
+albedo_color = Color(0.36, 0.3, 0.12, 0.22)
 
 [sub_resource type="CylinderMesh" id="CylinderMesh_i10in"]
 top_radius = 1.0
@@ -7529,6 +7531,7 @@ bottom_radius = 0.38
 height = 3.0
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_dqmg7"]
+albedo_color = Color(0.72, 0.78, 0.6, 1)
 albedo_texture = ExtResource("8_vpj7p")
 uv1_scale = Vector3(3, 3, 1)
 texture_filter = 5
@@ -7578,7 +7581,7 @@ bottom_radius = 0.38
 height = 3.0
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_dvyiy"]
-albedo_color = Color(1.15, 1.2, 0.6, 1)
+albedo_color = Color(0.95, 1, 0.5, 1)
 albedo_texture = ExtResource("8_vpj7p")
 uv1_scale = Vector3(3, 3, 1)
 texture_filter = 5
@@ -7604,6 +7607,7 @@ bottom_radius = 0.38
 height = 3.0
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_nb77f"]
+albedo_color = Color(0.72, 0.78, 0.6, 1)
 albedo_texture = ExtResource("8_vpj7p")
 uv1_scale = Vector3(3, 3, 1)
 texture_filter = 5
@@ -7653,7 +7657,7 @@ bottom_radius = 0.38
 height = 3.0
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_00psi"]
-albedo_color = Color(1.15, 1.2, 0.6, 1)
+albedo_color = Color(0.95, 1, 0.5, 1)
 albedo_texture = ExtResource("8_vpj7p")
 uv1_scale = Vector3(3, 3, 1)
 texture_filter = 5
@@ -7679,6 +7683,7 @@ bottom_radius = 0.38
 height = 3.0
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_1wv1h"]
+albedo_color = Color(0.72, 0.78, 0.6, 1)
 albedo_texture = ExtResource("8_vpj7p")
 uv1_scale = Vector3(3, 3, 1)
 texture_filter = 5
@@ -7728,7 +7733,7 @@ bottom_radius = 0.38
 height = 3.0
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_gggnr"]
-albedo_color = Color(1.15, 1.2, 0.6, 1)
+albedo_color = Color(0.95, 1, 0.5, 1)
 albedo_texture = ExtResource("8_vpj7p")
 uv1_scale = Vector3(3, 3, 1)
 texture_filter = 5
@@ -7754,6 +7759,7 @@ bottom_radius = 0.38
 height = 3.0
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_8pcr3"]
+albedo_color = Color(0.72, 0.78, 0.6, 1)
 albedo_texture = ExtResource("8_vpj7p")
 uv1_scale = Vector3(3, 3, 1)
 texture_filter = 5
@@ -7779,6 +7785,7 @@ bottom_radius = 0.38
 height = 3.0
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_524ou"]
+albedo_color = Color(0.72, 0.78, 0.6, 1)
 albedo_texture = ExtResource("8_vpj7p")
 uv1_scale = Vector3(3, 3, 1)
 texture_filter = 5
@@ -7804,6 +7811,7 @@ bottom_radius = 0.38
 height = 3.0
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_3u6nm"]
+albedo_color = Color(0.72, 0.78, 0.6, 1)
 albedo_texture = ExtResource("8_vpj7p")
 uv1_scale = Vector3(3, 3, 1)
 texture_filter = 5
@@ -7829,6 +7837,7 @@ bottom_radius = 0.38
 height = 3.0
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_6crwp"]
+albedo_color = Color(0.72, 0.78, 0.6, 1)
 albedo_texture = ExtResource("8_vpj7p")
 uv1_scale = Vector3(3, 3, 1)
 texture_filter = 5
@@ -7950,6 +7959,7 @@ bottom_radius = 0.38
 height = 3.0
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_c2jll"]
+albedo_color = Color(0.72, 0.78, 0.6, 1)
 albedo_texture = ExtResource("8_vpj7p")
 uv1_scale = Vector3(3, 3, 1)
 texture_filter = 5
@@ -7975,7 +7985,7 @@ bottom_radius = 0.38
 height = 3.0
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_c1ebq"]
-albedo_color = Color(1.15, 1.2, 0.6, 1)
+albedo_color = Color(0.95, 1, 0.5, 1)
 albedo_texture = ExtResource("8_vpj7p")
 uv1_scale = Vector3(3, 3, 1)
 texture_filter = 5

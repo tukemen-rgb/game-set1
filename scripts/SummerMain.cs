@@ -2313,6 +2313,8 @@ public partial class SummerMain : Node3D
         if (free.Count == 0)
             return false;
         int to = free[(int)(_rng.Randi() % (uint)free.Count)];
+        if (OS.GetEnvironment("DEBUG_SPAWN") == "1")
+            GD.Print($"[fly] {sp.Name} {_cicadas[i].Position} → {_treeSpots[to]}");
         _cicadaSpot[i] = to;
         Node3D spot = _cicadas[i];
         Vector3 target = _treeSpots[to];

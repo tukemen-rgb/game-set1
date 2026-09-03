@@ -1330,6 +1330,11 @@ public partial class BuildSummer : SceneTree
         park.AddChild(MeshI(new CylinderMesh { TopRadius = 6.1f, BottomRadius = 6.1f, Height = 0.2f },
             new Vector3(6f, -0.1f, -15f), Mat(new Color(0.2f, 0.24f, 0.18f))));   // 水の下の暗い底
 
+        // 池には入れない（ふちの内側に丸い当たり）。動画で主人公がふちの上を
+        // 歩いていた。ふちの外側の帯（6.85〜8.8m）が釣りの立ち位置
+        var pondBody = new StaticBody3D { Position = new Vector3(6f, 0.5f, -15f) };
+        pondBody.AddChild(new CollisionShape3D { Shape = new CylinderShape3D { Radius = 6.7f, Height = 1f } });
+        park.AddChild(pondBody);
         park.AddChild(BuildSlide(new Vector3(-6f, 0f, -11f)));
 
         var swing = new Node3D { Position = new Vector3(-2f, 0f, -17f) };

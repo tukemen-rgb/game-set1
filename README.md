@@ -238,7 +238,8 @@ python3 tools/check_audio.py screenshots/run                  # 音量を1秒ご
 
 **動いているところ**（音つき）:
 [`docs/video/summer_day.mp4`](docs/video/summer_day.mp4)（20秒・8月1日の一日）/
-[`docs/video/summer_festival.mp4`](docs/video/summer_festival.mp4)（13秒・8月24日の夏まつり）
+[`docs/video/summer_festival.mp4`](docs/video/summer_festival.mp4)（18秒・8月24日の夏まつり）/
+[`docs/video/park_pond.mp4`](docs/video/park_pond.mp4)（16秒・参考画に合わせた公園）
 
 ### 監査レポート
 

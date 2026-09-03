@@ -1364,6 +1364,33 @@ public partial class BuildSummer : SceneTree
         park.AddChild(TexBox(new Vector3(1.5f, 0.05f, 4f), new Vector3(-9f, 0.028f, -5.2f),
             "photo/concrete_floor_01.jpg", new Vector2(1f, 2.5f)));
         park.AddChild(BuildParkLamp(new Vector3(11f, 0f, -8.8f)));
+        // 芝のまだら。参考画の芝は踏まれた所と伸びた所で色が違う。
+        // 一様な緑の上に、薄い濃緑の斑を寝かせる
+        var mottle = new StandardMaterial3D
+        {
+            AlbedoColor = new Color(0.2f, 0.32f, 0.12f, 0.22f),
+            Transparency = BaseMaterial3D.TransparencyEnum.Alpha,
+            Roughness = 1f,
+        };
+        (float X, float Z, float W, float H, float Rot)[] patches =
+        {
+            (14f, -19f, 3.2f, 1.6f, 20f), (9f, -23.5f, 4f, 1.8f, -15f), (-2f, -21f, 3.5f, 2.2f, 40f),
+            (-8f, -14f, 2.6f, 1.4f, 10f), (2f, -8.5f, 3f, 1.5f, -30f), (16f, -12f, 2.4f, 2.4f, 0f),
+            (-12f, -20f, 3.8f, 1.6f, 55f), (6f, -4.5f, 2.8f, 1.3f, -50f),
+        };
+        foreach ((float x, float z, float w, float h, float rot) in patches)
+        {
+            var patch = new MeshInstance3D
+            {
+                Mesh = new CylinderMesh { TopRadius = 1f, BottomRadius = 1f, Height = 0.01f, RadialSegments = 14 },
+                MaterialOverride = mottle,
+                Position = new Vector3(x, 0.012f, z),
+                Scale = new Vector3(w, 1f, h),
+                RotationDegrees = new Vector3(0f, rot, 0f),
+                CastShadow = GeometryInstance3D.ShadowCastingSetting.Off,
+            };
+            park.AddChild(patch);
+        }
         park.AddChild(BuildCommunityHouse(new Vector3(9f, 0f, -0.5f)));
 
         foreach (float bx in new[] { -10f, 16f })
@@ -1862,6 +1889,12 @@ public partial class BuildSummer : SceneTree
                 // つぶして丘の丸みにする。球のままだと山が団子になる
                 lump.Scale = new Vector3(1f, h * hy / (r * sc), 0.85f);
                 backdrop.AddChild(lump);
+                // 麓は霞に溶ける。一色の塊だと塗り絵に見えた（視覚監査 #13）。
+                // 低く広い霞色の層を手前に重ね、稜線だけ濃い緑が残るようにする
+                var foot = MeshI(new SphereMesh { Radius = r * sc * 1.12f, Height = r * sc * 2.24f },
+                    pos + new Vector3(dx, 0f, (dx == 0f ? 0f : 6f) + 3f), c.Lerp(new Color(0.72f, 0.78f, 0.8f), 0.55f), unshaded: true);
+                foot.Scale = new Vector3(1f, h * hy * 0.45f / (r * sc * 1.12f), 0.85f);
+                backdrop.AddChild(foot);
             }
         }
         // 入道雲

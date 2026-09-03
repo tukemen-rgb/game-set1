@@ -146,7 +146,8 @@
 | タイトルのキーアート | **生成済みの実写を使用中** | — |
 | 木漏れ日（葉の影） | **届いた実写を焼き直して使用中** | — |
 | 雨だれ | 焼き直し済み・未使用 | 外壁へ |
-| 団地・商店街・公園・道路の造形 | プロシージャル（BuildSummer.cs） | GLBモデル |
+| 団地・商店街・公園・道路の造形 | プロシージャル（BuildSummer.cs）。公園は GPT の参考画 `docs/reference/park_pond_gpt.png` に合わせて再現 | GLBモデル |
+| 池のふちの石張り | `tools/gen_textures.py` で合成（`assets/textures/gen/cobble.png`） | 実写テクスチャ |
 | 外壁・舗装・屋上 | Poly Haven CC0 実写＋雨だれ加工 | 生成テクスチャ |
 | 草・葉・田・水面法線ほか | ノイズ焼き込み PNG（BuildTextures.cs） | 生成テクスチャ |
 | 音（セミ3種・雨・効果音4種） | 標準ライブラリで合成（gen_audio.py） | — |

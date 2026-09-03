@@ -1345,16 +1345,20 @@ public partial class BuildSummer : SceneTree
         slideNode.RotationDegrees = new Vector3(0f, 180f, 0f);   // 参考画は右にはしご・左へ降りる
         park.AddChild(slideNode);
 
-        var swing = new Node3D { Position = new Vector3(-2f, 0f, -17f) };
+        var swing = new Node3D { Name = "Swing", Position = new Vector3(-2f, 0f, -17f) };
         var frame = new Color(0.35f, 0.55f, 0.65f);
         swing.AddChild(Box(new Vector3(0.15f, 2.4f, 0.15f), new Vector3(-1.6f, 1.2f, 0f), frame));
         swing.AddChild(Box(new Vector3(0.15f, 2.4f, 0.15f), new Vector3(1.6f, 1.2f, 0f), frame));
         swing.AddChild(Box(new Vector3(3.5f, 0.15f, 0.15f), new Vector3(0f, 2.4f, 0f), frame));
+        // 座席と鎖は上の横棒を支点にした節にまとめる。乗ると SummerMain が節ごと揺らす
+        int seatIdx = 0;
         foreach (float sx in new[] { -0.8f, 0.8f })
         {
-            swing.AddChild(Box(new Vector3(0.05f, 1.8f, 0.05f), new Vector3(sx - 0.25f, 1.45f, 0f), ConcreteDark));
-            swing.AddChild(Box(new Vector3(0.05f, 1.8f, 0.05f), new Vector3(sx + 0.25f, 1.45f, 0f), ConcreteDark));
-            swing.AddChild(Box(new Vector3(0.6f, 0.06f, 0.25f), new Vector3(sx, 0.55f, 0f), DarkWood));
+            var pivot = new Node3D { Name = $"Seat{seatIdx++}", Position = new Vector3(sx, 2.4f, 0f) };
+            pivot.AddChild(Box(new Vector3(0.05f, 1.8f, 0.05f), new Vector3(-0.25f, -0.95f, 0f), ConcreteDark));
+            pivot.AddChild(Box(new Vector3(0.05f, 1.8f, 0.05f), new Vector3(0.25f, -0.95f, 0f), ConcreteDark));
+            pivot.AddChild(Box(new Vector3(0.6f, 0.06f, 0.25f), new Vector3(0f, -1.85f, 0f), DarkWood));
+            swing.AddChild(pivot);
         }
         park.AddChild(swing);
 

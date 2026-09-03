@@ -596,14 +596,19 @@ public partial class SummerMain : Node3D
         CheckRadio();
         CheckStartle();
         UpdateWary(delta);
+        CheckSwing();
+        UpdateSwing(delta);
         _fishClock += delta;
         if (_fishingPutAwayAt > 0.0 && _fishClock >= _fishingPutAwayAt)
         {
             _fishingPutAwayAt = -1.0;
             _player.SetFishing(false);
         }
-        if (!CheckFishing())
-            CheckCatch();
+        if (_swinging || (AtSwing() && _lineOutAt < 0.0) || !CheckFishing())
+        {
+            if (!_swinging)
+                CheckCatch();
+        }
         CheckDiscovery();
         if (_hour >= DayEndHour)
             _ = EndDay();
@@ -1501,6 +1506,13 @@ public partial class SummerMain : Node3D
                 : "ラジオたいそう　スペースで はんこ";
             return;
         }
+        if (_swinging)
+            return;   // 乗っている間は独白を出したまま
+        if (AtSwing() && _lineOutAt < 0.0)
+        {
+            _messageLabel.Text = "ブランコ　スペースで こぐ";
+            return;
+        }
         if (AtPond() && (_lineOutAt >= 0.0 || NearestCicada() < 0))
         {
             _messageLabel.Text = _lineOutAt < 0.0
@@ -2359,6 +2371,83 @@ public partial class SummerMain : Node3D
     }
     private const float WaryRange = 2.8f;
 
+    // --- ブランコ（乗れる。独白は「こぎながら」出す） ---
+    private static readonly Vector2 SwingPos = new(-2f, -17f);
+    private const double SwingRideSeconds = 6.5;
+    private bool _swinging;
+    private double _swingT;
+    private Node3D _swingSeat;      // 揺らす節（Park/Swing/SeatN）
+    private Camera3D _swingCam;
+    private float _swingCamPitch;   // 乗る前のカメラの仰角（戻す用）
+    private int _swingSpot = -1;    // Spots の中のブランコの番号
+
+    private bool AtSwing() => Near(SwingPos, 2.4f);
+
+    /// <summary>
+    /// ブランコに乗る。「ブランコを こぎながら 空を 見ると」と言いながら
+    /// 池のふちに突っ立っていた（遊びの監査 #2）。座席を支点ごと揺らし、
+    /// 主人公をそこに座らせ、その間だけカメラを空へ振る。
+    /// </summary>
+    private void CheckSwing()
+    {
+        if (_swinging || !AtSwing() || !TakePress())
+            return;
+        Node3D seat0 = GetNodeOrNull<Node3D>("Park/Swing/Seat0");
+        Node3D seat1 = GetNodeOrNull<Node3D>("Park/Swing/Seat1");
+        if (seat0 == null || seat1 == null)
+            return;
+        _swingSeat = _player.Position.X < SwingPos.X ? seat0 : seat1;
+        _swinging = true;
+        _swingT = 0.0;
+        _player.Frozen = true;
+        _swingCam = _cameras.GetNode<Camera3D>(_zone);
+        _swingCamPitch = _swingCam.RotationDegrees.X;
+        Tween up = CreateTween();
+        up.TweenProperty(_swingCam, "rotation_degrees:x", _swingCamPitch + 5f, 1.6).SetTrans(Tween.TransitionType.Sine).SetEase(Tween.EaseType.InOut);   // 22° だと遠景の円筒の上端が弧として写った
+        if (_swingSpot < 0)
+            _swingSpot = System.Array.FindIndex(Spots, s => s.Pos == SwingPos);
+        string text = _swingSpot >= 0 && _found.Contains(_swingSpot) && _day >= LaterDay
+            ? SpotLater(_swingSpot)
+            : _swingSpot >= 0 ? Spots[_swingSpot].Text : "ブランコを こいだ。";
+        if (_swingSpot >= 0 && _found.Add(_swingSpot))
+        {
+            _foundToday.Add(_swingSpot);
+            if (_todayFound == "")
+                _todayFound = text.Replace("\n", "");
+        }
+        else if (_swingSpot >= 0 && _day >= LaterDay && _foundLater.Add(_swingSpot) && _todayFound == "")
+        {
+            _todayFound = text.Replace("\n", "");
+        }
+        ShowMessage(text, SwingRideSeconds, immediate: true);
+    }
+
+    private void UpdateSwing(double delta)
+    {
+        if (!_swinging)
+            return;
+        _swingT += delta;
+        // 立ち上がり 1.5 秒で振れ幅 35° まで、終わり 1.5 秒で戻す。周期 2.2 秒
+        float ramp = Mathf.Min(1f, (float)Mathf.Min(_swingT / 1.5, (SwingRideSeconds - _swingT) / 1.5));
+        float ang = 35f * Mathf.Max(0f, ramp) * Mathf.Sin((float)(_swingT / 2.2 * Mathf.Tau));
+        _swingSeat.RotationDegrees = new Vector3(ang, 0f, 0f);
+        // 主人公は座席の上。支点から 1.85m 下の点を、同じ角度で回す
+        Vector3 pivot = _swingSeat.GlobalPosition;
+        float rad = Mathf.DegToRad(ang);
+        _player.Position = pivot + new Vector3(0f, -1.85f * Mathf.Cos(rad) - 0.55f, 1.85f * Mathf.Sin(rad));
+        _player.RotationDegrees = new Vector3(ang, 0f, 0f);
+        if (_swingT < SwingRideSeconds)
+            return;
+        _swinging = false;
+        _swingSeat.RotationDegrees = Vector3.Zero;
+        _player.RotationDegrees = Vector3.Zero;
+        _player.Position = new Vector3(pivot.X, 0.1f, pivot.Z + 1.2f);   // 座席の前に降りる
+        _player.Frozen = false;
+        Tween down = CreateTween();
+        down.TweenProperty(_swingCam, "rotation_degrees:x", _swingCamPitch, 1.2).SetTrans(Tween.TransitionType.Sine).SetEase(Tween.EaseType.InOut);
+    }
+
+
     /// <summary>
     /// 数秒おきに小刻みに震わせる。木にとまった置物ではなく
     /// 「いま鳴いている生き物」に見せるための最小限の動き。
@@ -2882,6 +2971,8 @@ public partial class SummerMain : Node3D
         var here = PlayerXZ();
         for (int i = 0; i < Spots.Length; i++)
         {
+            if (Spots[i].Pos == SwingPos)
+                continue;   // ブランコは乗ったときに出す（立つだけでは言わない）
             if (here.DistanceTo(Spots[i].Pos) > DiscoverRange)
                 continue;
 

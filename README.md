@@ -221,6 +221,7 @@ godot --path .                                                   # 実行
 | `Startle.cs` | 走ると虫が逃げる（`STARTLE_WALK=1` で歩きと比較） |
 | `Revisit.cs` | 発見した場所へ翌日戻ると「その後」が出る |
 | `Talk.cs` | 町の人との立ち話 |
+| `Swing.cs` | ブランコに乗る（こぐ→降りる） / `ParkView.cs` 公園を歩く |
 | `Month.cs` | **8/1〜結末を一気に走破**して文・行事・日記を全部ログに流す（ヘッドレス約15分。`MONTH_START=n`） |
 | `AudioProbe.cs` | 音素材の形式・長さ・ループ終端を数字で出す（ヘッドレス） |
 

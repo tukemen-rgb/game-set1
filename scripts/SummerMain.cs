@@ -1263,7 +1263,7 @@ public partial class SummerMain : Node3D
         _sun.ShadowEnabled = true;
         // 天頂と地平線の2色をそれぞれ時刻で補間してグラデーション空を作る
         var topMorning = new Color(0.4f, 0.55f, 0.85f);
-        var topNoon = new Color(0.2f, 0.45f, 0.85f);
+        var topNoon = new Color(0.16f, 0.38f, 0.8f);
         var topSunset = new Color(0.3f, 0.26f, 0.5f);
         var horMorning = new Color(0.85f, 0.87f, 0.9f);
         var horNoon = new Color(0.65f, 0.82f, 0.95f);
@@ -1295,7 +1295,9 @@ public partial class SummerMain : Node3D
         _env.FogLightColor = hor;
         Color ambient = hor.Lerp(Colors.White, 0.45f) * 0.8f;
         float arc = Mathf.Sin(t * Mathf.Pi);
-        _sun.RotationDegrees = new Vector3(-10f - 60f * arc, -150f + 120f * t, 0f);
+        // 最高仰角 70°→60°。真上からだと正午に影がほとんど落ちず、参考画の
+        // 「木の影が右へ長く落ちる」絵にならない（材質は影があって初めて読める）
+        _sun.RotationDegrees = new Vector3(-10f - 50f * arc, -150f + 120f * t, 0f);
 
         // 光の色は「太陽の高さ」ではなく「時刻」で決める。
         // 高さ（arc）に比例させていたときは、17時でもまだ (1, 0.83, 0.72) の

@@ -183,7 +183,7 @@ public partial class BuildSummer : SceneTree
     {
         var skyMat = new ProceduralSkyMaterial
         {
-            SkyTopColor = new Color(0.2f, 0.45f, 0.85f),
+            SkyTopColor = new Color(0.16f, 0.38f, 0.8f),   // 参考画の天頂は濃い青
             SkyHorizonColor = new Color(0.65f, 0.82f, 0.95f),
             SkyCurve = 0.12f,
             GroundBottomColor = new Color(0.2f, 0.17f, 0.13f),
@@ -209,6 +209,9 @@ public partial class BuildSummer : SceneTree
             ShadowEnabled = true,
             RotationDegrees = new Vector3(-55f, -60f, 0f),
             LightEnergy = 1.1f,
+            // 参考画の影は輪郭が少し柔らかい（夏の強い日差しでも、空の散乱で縁がにじむ）
+            ShadowBlur = 1.6f,
+            DirectionalShadowMaxDistance = 90f,
         };
         root.AddChild(sun);
     }
@@ -290,6 +293,10 @@ public partial class BuildSummer : SceneTree
             float y = f * FloorH;
             b.AddChild(Box(new Vector3(length + 0.2f, 0.16f, 0.85f), new Vector3(0f, y + 0.08f, 2.85f), Concrete));
             b.AddChild(Box(new Vector3(length + 0.1f, 1.02f, 0.07f), new Vector3(0f, y + 0.67f, 3.24f), RailPanel));
+            b.AddChild(MeshI(new BoxMesh { Size = new Vector3(length + 0.1f, 0.05f, 0.09f) }, new Vector3(0f, y + 1.2f, 3.24f),
+                new StandardMaterial3D { AlbedoColor = new Color(0.55f, 0.56f, 0.58f), Metallic = 0.7f, Roughness = 0.4f }));   // 手すりの笠木（金属）
+            // 床スラブの下の汚れ帯。参考画のベランダ下は雨だれで暗い
+            b.AddChild(Box(new Vector3(length + 0.2f, 0.3f, 0.02f), new Vector3(0f, y - 0.16f, 2.56f), new Color(0.42f, 0.41f, 0.38f)));
             // 一枚の帯で通していたが、それだと夕方に灯りを点けたとき
             // 建物が「一本の光る棒」になった。住戸ごとに2枚の窓に割る。
             // 割ったことで、点く部屋と点かない部屋ができる
@@ -1373,10 +1380,11 @@ public partial class BuildSummer : SceneTree
         park.AddChild(sandbox);
         // 園路: 砂場の脇から池の北を回って団地の広場へ。参考画の左から奥へ延びる
         // コンクリートの小道。池の手前は芝のまま
-        park.AddChild(TexBox(new Vector3(26f, 0.05f, 1.5f), new Vector3(1f, 0.028f, -7.4f),
-            "photo/concrete_floor_01.jpg", new Vector2(14f, 1f)));
-        park.AddChild(TexBox(new Vector3(1.5f, 0.05f, 4f), new Vector3(-9f, 0.028f, -5.2f),
-            "photo/concrete_floor_01.jpg", new Vector2(1f, 2.5f)));
+        // 参考画の園路は汚れて緑がかる (93,94,49)。白いままだと新しすぎる
+        var pathMat = TexMat("photo/concrete_floor_01.jpg", new Vector2(14f, 1f), new Color(0.8f, 0.8f, 0.68f));
+        park.AddChild(MeshI(new BoxMesh { Size = new Vector3(26f, 0.05f, 1.5f) }, new Vector3(1f, 0.028f, -7.4f), pathMat));
+        park.AddChild(MeshI(new BoxMesh { Size = new Vector3(1.5f, 0.05f, 4f) }, new Vector3(-9f, 0.028f, -5.2f),
+            TexMat("photo/concrete_floor_01.jpg", new Vector2(1f, 2.5f), new Color(0.8f, 0.8f, 0.68f))));
         park.AddChild(BuildParkLamp(new Vector3(11f, 0f, -8.8f)));
         // 芝のまだら。参考画の芝は踏まれた所と伸びた所で色が違う。
         // 一様な緑の上に、薄い濃緑の斑を寝かせる
@@ -1453,7 +1461,7 @@ public partial class BuildSummer : SceneTree
     private static Node3D BuildSlide(Vector3 pos)
     {
         var slide = new Node3D { Position = pos };
-        var blue = new Color(0.2f, 0.45f, 0.8f);
+        var blue = new Color(0.25f, 0.55f, 0.85f);   // 参考画の水色。紺だと重い
         var steelMat = new StandardMaterial3D
         {
             AlbedoColor = new Color(0.78f, 0.8f, 0.82f), Roughness = 0.35f, Metallic = 0.6f,
@@ -1462,7 +1470,7 @@ public partial class BuildSummer : SceneTree
         // はしご（+z 側）: 2本の支柱と5段の横桟、手すり
         foreach (float sx in new[] { -0.4f, 0.4f })
         {
-            var post = MeshI(new CylinderMesh { TopRadius = 0.035f, BottomRadius = 0.035f, Height = 2.75f },
+            var post = MeshI(new CylinderMesh { TopRadius = 0.05f, BottomRadius = 0.05f, Height = 2.75f },
                 new Vector3(sx, 1.3f, 0.95f), Mat(blue));
             post.RotationDegrees = new Vector3(-18f, 0f, 0f);
             slide.AddChild(post);
@@ -1481,6 +1489,8 @@ public partial class BuildSummer : SceneTree
         // 踊り場と背もたれ
         slide.AddChild(Box(new Vector3(0.9f, 0.06f, 0.8f), new Vector3(0f, top, -0.35f), new Color(0.7f, 0.72f, 0.74f)));
         slide.AddChild(Box(new Vector3(0.9f, 0.05f, 0.05f), new Vector3(0f, top + 0.85f, -0.75f), blue));
+        foreach (float sx in new[] { -0.47f, 0.47f })   // 踊り場の両脇の赤い側板（参考画）
+            slide.AddChild(Box(new Vector3(0.06f, 0.32f, 0.8f), new Vector3(sx, top + 0.18f, -0.35f), new Color(0.8f, 0.3f, 0.15f)));
         // 滑走面（-z へ降りる）: 板と両側の立ち上がり、下端の支え
         float len = 3.6f;
         float angle = -28f;
@@ -1538,6 +1548,9 @@ public partial class BuildSummer : SceneTree
                 new Vector3(-w / 2f + 1.1f + i * 1.9f, 0.35f, -d / 2f - 1.9f),
                 TexMat(BestTex("gen/TEX-leaf_canopy.jpg", "leaf"), new Vector2(1.4f, 0.6f), new Color(0.6f, 0.76f, 0.5f))));
         }
+        // 1 階の前に白い塀（参考画の「白い壁」）。生垣はその内側
+        house.AddChild(MeshI(new BoxMesh { Size = new Vector3(w - 1.4f, 1.1f, 0.15f) }, new Vector3(-0.7f, 0.55f, -d / 2f - 2.4f),
+            TexMat("plaster", new Vector2(3f, 0.5f), new Color(0.95f, 0.94f, 0.9f), roughness: 0.9f)));
         house.AddChild(Collider(new Vector3(w, fh * 2f, d + 1.4f), new Vector3(0f, fh, -0.6f)));
         return house;
     }
@@ -1547,7 +1560,9 @@ public partial class BuildSummer : SceneTree
     {
         var lamp = new Node3D { Position = pos };
         var grey = new Color(0.6f, 0.62f, 0.63f);
-        lamp.AddChild(MeshI(new CylinderMesh { TopRadius = 0.05f, BottomRadius = 0.07f, Height = 4.2f }, new Vector3(0f, 2.1f, 0f), Mat(grey)));
+        // 参考画はコンクリート柱（径 0.25m）。細い鉄管に見えていた
+        lamp.AddChild(MeshI(new CylinderMesh { TopRadius = 0.1f, BottomRadius = 0.13f, Height = 4.2f }, new Vector3(0f, 2.1f, 0f),
+            TexMat("photo/concrete_wall_004.jpg", new Vector2(1f, 3f), Concrete)));
         lamp.AddChild(Box(new Vector3(0.6f, 0.06f, 0.06f), new Vector3(0.3f, 4.15f, 0f), grey));
         lamp.AddChild(Box(new Vector3(0.45f, 0.22f, 0.3f), new Vector3(0.6f, 4.05f, 0f), new Color(0.85f, 0.86f, 0.84f)));
         return lamp;
@@ -1815,7 +1830,7 @@ public partial class BuildSummer : SceneTree
                     Transparency = BaseMaterial3D.TransparencyEnum.Alpha,
                     AlbedoColor = new Color(1f, 1f, 1f, 0f),   // 昼は完全に透明
                     // 写真の下端は暗い陸地なので、上 82% だけを使う
-                    Uv1Scale = new Vector3(3f, 0.82f, 1f),
+                    Uv1Scale = new Vector3(3f, 0.7f, 1f),   // 0.82 では夕焼け写真の陸地が右上に残った
                 };
                 var dusk = new MeshInstance3D
                 {

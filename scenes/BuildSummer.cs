@@ -196,7 +196,7 @@ public partial class BuildSummer : SceneTree
             BackgroundMode = Godot.Environment.BGMode.Sky,
             Sky = new Sky { SkyMaterial = skyMat },
             AmbientLightSource = Godot.Environment.AmbientSource.Color,
-            AmbientLightColor = new Color(0.6f, 0.65f, 0.7f),
+            AmbientLightColor = new Color(0.66f, 0.64f, 0.6f),   // 青に寄っていた（団地が (92,105,107)、参考画は (92,94,88)）
             FogEnabled = true,
             FogLightColor = new Color(0.75f, 0.85f, 0.95f),
             FogDensity = 0.003f,   // 0.006 は真昼でも 30m 先が白く沈んだ（監査 #8）
@@ -227,8 +227,10 @@ public partial class BuildSummer : SceneTree
         // 120m 角だと、遠景の円筒（半径62m）の内側で地面が終わり、
         // 高いカメラからは芝の縁が「世界の端」として弧に見えていた。
         // 円筒の外まで伸ばせば、縁は円筒の壁に隠れる
+        // 参考画（docs/reference/park_pond_gpt.png）の芝は暗いオリーブ (98,119,28)。
+        // 素のテクスチャはライム (184,232,134) で明度が 1.8 倍あった（監査で実測）
         ground.AddChild(MeshI(new PlaneMesh { Size = new Vector2(200f, 200f) }, Vector3.Zero,
-            TexMat(BestTex("gen/TEX-grass_summer.jpg", "grass"), new Vector2(43f, 43f))));
+            TexMat(BestTex("gen/TEX-grass_summer.jpg", "grass"), new Vector2(43f, 43f), new Color(0.7f, 0.68f, 0.46f))));
         root.AddChild(ground);
 
         var roads = new Node3D { Name = "Roads" };
@@ -1302,16 +1304,18 @@ public partial class BuildSummer : SceneTree
             // 金属にすると空を映して白い円盤になった（撮って確認）。濁った水は
             // 反射より色で見せる
             // 反射ゼロだと土の円盤に見えた。少しだけ空を映し、底の暗さを透かす
-            AlbedoColor = new Color(0.22f, 0.31f, 0.21f, 0.92f),
+            // 参考画の水は (84,94,60) の濁ったオリーブ。鏡面 0.45 では空が全面に乗って
+            // ターコイズ (121,164,158) になった（監査で実測）。鏡面を絞って色で見せる
+            // 鏡面 0.12・粗さ 0.5 では波も艶も消えて緑の円盤になった。中間に置く
+            AlbedoColor = new Color(0.2f, 0.27f, 0.15f, 0.94f),
             Transparency = BaseMaterial3D.TransparencyEnum.Alpha,
-            // 0.22 では斜めの面が空色に染まり（Fresnel）、0.55 では波が消えて緑の円盤になった
-            Roughness = 0.34f,
-            Metallic = 0.05f,
-            MetallicSpecular = 0.45f,
+            Roughness = 0.4f,
+            Metallic = 0.03f,
+            MetallicSpecular = 0.25f,
             NormalEnabled = true,
             NormalTexture = GD.Load<Texture2D>("res://assets/textures/water_normal.png"),
-            NormalScale = 1.4f,
-            Uv1Scale = new Vector3(3f, 3f, 1f),
+            NormalScale = 1.2f,
+            Uv1Scale = new Vector3(2.5f, 2.5f, 1f),
         };
         var water = MeshI(new CylinderMesh { TopRadius = 6.4f, BottomRadius = 6.4f, Height = 0.06f },
             new Vector3(6f, 0.09f, -15f), waterMat);
@@ -1320,22 +1324,26 @@ public partial class BuildSummer : SceneTree
         // ふち: 玉石を目地で固めた、丸みのある低い壁（高さ 0.32m・幅 0.9m）。
         // 土のトーラスは「盛り土」にしか見えなかった
         var rim = MeshI(new TorusMesh { InnerRadius = 6.2f, OuterRadius = 7.1f, Rings = 64, RingSegments = 24 },
-            new Vector3(6f, 0.02f, -15f), TexMat("gen/cobble.png", new Vector2(44f, 2.2f), new Color(0.72f, 0.68f, 0.62f), roughness: 0.95f));
+            // 参考画のふちは玉石ではなく砂利の洗い出しコンクリート（粒は数 mm、暖かい灰茶）。
+            // 玉石を貼ると石垣に読めた
+            new Vector3(6f, 0.02f, -15f), TexMat("photo/gravel_concrete.jpg", new Vector2(60f, 3f), new Color(0.56f, 0.54f, 0.47f), roughness: 1f));
         rim.Scale = new Vector3(1f, 0.7f, 1f);
         park.AddChild(rim);
         // ふちの内側の立ち上がり（水面との境が線で見えるように）
         // 蓋を付けたままだと、この円柱の上面が池全体を石の円盤で覆う（撮って気づいた）
         park.AddChild(MeshI(new CylinderMesh { TopRadius = 6.25f, BottomRadius = 6.25f, Height = 0.3f, CapTop = false, CapBottom = false },
-            new Vector3(6f, 0.02f, -15f), TexMat("gen/cobble.png", new Vector2(44f, 0.6f), new Color(0.6f, 0.57f, 0.52f), roughness: 0.95f)));
+            new Vector3(6f, 0.02f, -15f), TexMat("photo/gravel_concrete.jpg", new Vector2(60f, 0.8f), new Color(0.44f, 0.43f, 0.38f), roughness: 1f)));
         park.AddChild(MeshI(new CylinderMesh { TopRadius = 6.1f, BottomRadius = 6.1f, Height = 0.2f },
-            new Vector3(6f, -0.1f, -15f), Mat(new Color(0.2f, 0.24f, 0.18f))));   // 水の下の暗い底
+            new Vector3(6f, -0.1f, -15f), Mat(new Color(0.1f, 0.12f, 0.08f))));   // 水の下の暗い底
 
         // 池には入れない（ふちの内側に丸い当たり）。動画で主人公がふちの上を
         // 歩いていた。ふちの外側の帯（6.85〜8.8m）が釣りの立ち位置
         var pondBody = new StaticBody3D { Position = new Vector3(6f, 0.5f, -15f) };
         pondBody.AddChild(new CollisionShape3D { Shape = new CylinderShape3D { Radius = 6.7f, Height = 1f } });
         park.AddChild(pondBody);
-        park.AddChild(BuildSlide(new Vector3(-6f, 0f, -11f)));
+        Node3D slideNode = BuildSlide(new Vector3(-6f, 0f, -11f));
+        slideNode.RotationDegrees = new Vector3(0f, 180f, 0f);   // 参考画は右にはしご・左へ降りる
+        park.AddChild(slideNode);
 
         var swing = new Node3D { Position = new Vector3(-2f, 0f, -17f) };
         var frame = new Color(0.35f, 0.55f, 0.65f);
@@ -1350,8 +1358,10 @@ public partial class BuildSummer : SceneTree
         }
         park.AddChild(swing);
 
-        var sandbox = new Node3D { Position = new Vector3(13f, 0f, -8f) };
-        sandbox.AddChild(TexBox(new Vector3(3.6f, 0.08f, 3.6f), new Vector3(0f, 0.05f, 0f), "dirt", new Vector2(3f, 3f)));
+        // 集会所の生垣（z=-8.4）と重なっていたので南東へ。砂は参考画の明るいベージュ
+        var sandbox = new Node3D { Position = new Vector3(16f, 0f, -10f) };
+        sandbox.AddChild(MeshI(new BoxMesh { Size = new Vector3(3.6f, 0.08f, 3.6f) }, new Vector3(0f, 0.05f, 0f),
+            TexMat("dirt", new Vector2(3f, 3f), new Color(1.25f, 1.2f, 1.0f))));
         sandbox.AddChild(Box(new Vector3(4f, 0.25f, 0.25f), new Vector3(0f, 0.12f, -1.9f), DarkWood));
         sandbox.AddChild(Box(new Vector3(4f, 0.25f, 0.25f), new Vector3(0f, 0.12f, 1.9f), DarkWood));
         sandbox.AddChild(Box(new Vector3(0.25f, 0.25f, 3.6f), new Vector3(-1.9f, 0.12f, 0f), DarkWood));
@@ -1368,7 +1378,7 @@ public partial class BuildSummer : SceneTree
         // 一様な緑の上に、薄い濃緑の斑を寝かせる
         var mottle = new StandardMaterial3D
         {
-            AlbedoColor = new Color(0.2f, 0.32f, 0.12f, 0.22f),
+            AlbedoColor = new Color(0.36f, 0.3f, 0.12f, 0.42f),   // 踏まれて土が透けた茶の斑
             Transparency = BaseMaterial3D.TransparencyEnum.Alpha,
             Roughness = 1f,
         };
@@ -1378,6 +1388,16 @@ public partial class BuildSummer : SceneTree
             (-8f, -14f, 2.6f, 1.4f, 10f), (2f, -8.5f, 3f, 1.5f, -30f), (16f, -12f, 2.4f, 2.4f, 0f),
             (-12f, -20f, 3.8f, 1.6f, 55f), (6f, -4.5f, 2.8f, 1.3f, -50f),
         };
+        // ふちの外周は一番踏まれる。薄い土色の輪を一枚寝かせる（参考画の踏み跡）
+        var worn = MeshI(new TorusMesh { InnerRadius = 7.1f, OuterRadius = 8.3f, Rings = 48, RingSegments = 6 },
+            new Vector3(6f, -0.55f, -15f), new StandardMaterial3D
+            {
+                AlbedoColor = new Color(0.45f, 0.4f, 0.22f, 0.32f),
+                Transparency = BaseMaterial3D.TransparencyEnum.Alpha, Roughness = 1f,
+            });
+        worn.Scale = new Vector3(1f, 0.95f, 1f);   // 上面だけ地面から 0.02 覗く
+        worn.CastShadow = GeometryInstance3D.ShadowCastingSetting.Off;
+        park.AddChild(worn);
         foreach ((float x, float z, float w, float h, float rot) in patches)
         {
             var patch = new MeshInstance3D
@@ -1404,6 +1424,21 @@ public partial class BuildSummer : SceneTree
             bench.AddChild(Box(new Vector3(0.15f, 0.45f, 0.45f), new Vector3(0.7f, 0.22f, 0f), ConcreteDark));
             park.AddChild(bench);
         }
+        // 参考画の右奥に写る白い 4 階建て。団地の南西、遠景の手前
+        var white4 = new Node3D { Name = "WhiteBlock", Position = new Vector3(-34f, 0f, -17f), RotationDegrees = new Vector3(0f, 20f, 0f) };
+        var whiteWall = TexMat("plaster", new Vector2(6f, 4f), new Color(0.93f, 0.92f, 0.88f), roughness: 0.9f);
+        white4.AddChild(MeshI(new BoxMesh { Size = new Vector3(14f, 11.6f, 8f) }, new Vector3(0f, 5.8f, 0f), whiteWall));
+        white4.AddChild(Box(new Vector3(14.4f, 0.3f, 8.4f), new Vector3(0f, 11.75f, 0f), new Color(0.6f, 0.6f, 0.58f)));
+        for (int f = 0; f < 4; f++)
+        {
+            for (int u = 0; u < 5; u++)
+            {
+                white4.AddChild(Box(new Vector3(1.6f, 1.3f, 0.08f), new Vector3(-5.6f + u * 2.8f, f * 2.9f + 1.7f, 4.02f), ShadowGlass));
+                white4.AddChild(Box(new Vector3(1.6f, 1.3f, 0.08f), new Vector3(-5.6f + u * 2.8f, f * 2.9f + 1.7f, -4.02f), ShadowGlass));
+            }
+        }
+        white4.AddChild(Collider(new Vector3(14f, 11.6f, 8f), new Vector3(0f, 5.8f, 0f)));
+        park.AddChild(white4);
         root.AddChild(park);
     }
 
@@ -1493,7 +1528,7 @@ public partial class BuildSummer : SceneTree
         house.AddChild(MeshI(new CylinderMesh { TopRadius = 0.05f, BottomRadius = 0.05f, Height = fh * 2f },
             new Vector3(-w / 2f - 0.08f, fh, d / 2f - 0.3f), Mat(ConcreteDark)));
         // 前の生垣
-        for (int i = 0; i < 4; i++)
+        for (int i = 0; i < 3; i++)
         {
             house.AddChild(MeshI(new BoxMesh { Size = new Vector3(1.7f, 0.7f, 0.6f) },
                 new Vector3(-w / 2f + 1.1f + i * 1.9f, 0.35f, -d / 2f - 1.9f),
@@ -1549,11 +1584,13 @@ public partial class BuildSummer : SceneTree
         {
             // 段刈りの針葉樹（参考画の池のまわりの木）。円錐を3段に積み、
             // 段のあいだに幹が少し見える。一本の円錐だとクリスマスツリーになる
+            // 参考画の針葉樹は濃い緑 (31,42,14) の 2 段: 下に広いスカート、上に細い円錐、
+            // 間に幹が見える。4 段の青緑では別の木だった（監査で実測）
             var dark = TexMat(BestTex("gen/TEX-leaf_canopy.jpg", "leaf"),
-                              new Vector2(3f, 3f), new Color(0.42f, 0.6f, 0.4f));
+                              new Vector2(3f, 3f), new Color(0.3f, 0.42f, 0.22f));
             tree.AddChild(MeshI(new CylinderMesh { TopRadius = 0.14f, BottomRadius = 0.3f, Height = 6.2f },
                 new Vector3(0f, 3.1f, 0f), Trunk));
-            (float y, float r, float h)[] tiers = { (1.6f, 1.7f, 1.9f), (3.3f, 1.35f, 1.7f), (4.8f, 0.95f, 1.6f), (6.0f, 0.5f, 1.2f) };
+            (float y, float r, float h)[] tiers = { (1.3f, 1.9f, 2.4f), (4.1f, 1.05f, 2.6f) };
             foreach ((float ty, float tr, float th) in tiers)
             {
                 tree.AddChild(MeshI(new CylinderMesh { TopRadius = tr * 0.35f, BottomRadius = tr, Height = th },
@@ -1593,8 +1630,10 @@ public partial class BuildSummer : SceneTree
 
         // セミの湧かない飾りの木（メタセコイア並木と植え込み）
         var deco = new Node3D { Name = "DecoTrees" };
-        for (int k = 0; k < 5; k++)
-            deco.AddChild(MakeTree(k * 3 + 1, new Vector3(-27f + k * 3.4f, 0f, -11.5f))); // 団地南の並木
+        // 団地南の並木。針葉樹 5 本の列だと CamPark の右中央に群れとして写り、
+        // 参考画で空き地と白い建物がある場所を塞いだ。丸い広葉樹 3 本に
+        for (int k = 0; k < 3; k++)
+            deco.AddChild(MakeTree(k * 3, new Vector3(-26f + k * 5.5f, 0f, -11.5f)));
         for (int k = 0; k < 4; k++)
             deco.AddChild(MakeTree(k * 3 + 1, new Vector3(-30f, 0f, 4f + k * 4f)));      // 西縁の並木
         // 商店街の通路（z=14〜18）の真西に立っていて、望遠カメラの
@@ -1909,7 +1948,10 @@ public partial class BuildSummer : SceneTree
             }
         }
         // 入道雲
-        Vector3[] clouds = { new(-24f, 22f, -36f), new(8f, 25f, -40f), new(34f, 21f, -30f), new(-8f, 26f, 36f) };
+        // 写真の空があるときは球の雲を作らない（CamPark の左上に白い玉として写った）
+        Vector3[] clouds = hasPlate
+            ? System.Array.Empty<Vector3>()
+            : new Vector3[] { new(-24f, 22f, -36f), new(8f, 25f, -40f), new(34f, 21f, -30f), new(-8f, 26f, 36f) };
         foreach (Vector3 pos in clouds)
         {
             var cloud = new Node3D { Position = pos };

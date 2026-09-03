@@ -1320,7 +1320,7 @@ public partial class SummerMain : Node3D
         // （8/24 の夕方を撮って気づいた）。太陽の色を掛けて沈める
         if (_pondWater != null)
         {
-            Color tint = Colors.White.Lerp(sunColor, 0.8f);
+            Color tint = Colors.White.Lerp(sunColor, 0.25f);   // 0.8 では夕方の水が泥色 (119,83,62) になった
             _pondWater.AlbedoColor = new Color(
                 _pondWaterBase.R * tint.R, _pondWaterBase.G * tint.G, _pondWaterBase.B * tint.B)
                 * (1f - 0.3f * warm);

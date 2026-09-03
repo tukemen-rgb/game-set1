@@ -1391,7 +1391,10 @@ public partial class BuildSummer : SceneTree
             };
             park.AddChild(patch);
         }
-        park.AddChild(BuildCommunityHouse(new Vector3(9f, 0f, -0.5f)));
+        // 位置は2つのカメラの画角から決めた。(9,-0.5) だと大通りカメラ（CamPlaza）の
+        // 右4割を無地の壁で塞いだ。(12,-4) なら CamPark の左端に残り、CamPlaza には
+        // 端に少し掛かるだけ
+        park.AddChild(BuildCommunityHouse(new Vector3(12f, 0f, -4f)));
 
         foreach (float bx in new[] { -10f, 16f })
         {
@@ -1466,7 +1469,7 @@ public partial class BuildSummer : SceneTree
     {
         var house = new Node3D { Name = "CommunityHouse", Position = pos };
         var white = TexMat("plaster", new Vector2(4f, 2f), new Color(0.96f, 0.95f, 0.92f), roughness: 0.9f);
-        const float w = 8f, d = 5.5f, fh = 2.9f;
+        const float w = 7f, d = 5f, fh = 2.9f;
         house.AddChild(MeshI(new BoxMesh { Size = new Vector3(w, fh * 2f, d) }, new Vector3(0f, fh, 0f), white));
         house.AddChild(Box(new Vector3(w + 0.3f, 0.25f, d + 0.3f), new Vector3(0f, fh * 2f + 0.12f, 0f), new Color(0.6f, 0.6f, 0.58f)));
         // 上階ベランダ（-z が公園側）
@@ -1481,6 +1484,14 @@ public partial class BuildSummer : SceneTree
                 house.AddChild(Box(new Vector3(1.5f, 1.2f, 0.08f), new Vector3(x, y, -d / 2f - 0.02f), ShadowGlass));
         }
         house.AddChild(Box(new Vector3(1.2f, 2.1f, 0.1f), new Vector3(w / 2f - 1.2f, 1.05f, d / 2f + 0.02f), new Color(0.35f, 0.38f, 0.4f)));
+        // 西の壁（大通りカメラから見える面）にも窓と雨どい。無地の壁が画面に出ない
+        foreach (float y in new[] { 1.5f, fh + 1.6f })
+        {
+            foreach (float z in new[] { -1.4f, 1.2f })
+                house.AddChild(Box(new Vector3(0.08f, 1.1f, 1.3f), new Vector3(-w / 2f - 0.02f, y, z), ShadowGlass));
+        }
+        house.AddChild(MeshI(new CylinderMesh { TopRadius = 0.05f, BottomRadius = 0.05f, Height = fh * 2f },
+            new Vector3(-w / 2f - 0.08f, fh, d / 2f - 0.3f), Mat(ConcreteDark)));
         // 前の生垣
         for (int i = 0; i < 4; i++)
         {

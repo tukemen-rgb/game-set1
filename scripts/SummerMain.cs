@@ -595,6 +595,7 @@ public partial class SummerMain : Node3D
         CheckCoin();
         CheckRadio();
         CheckStartle();
+        UpdateWary(delta);
         _fishClock += delta;
         if (_fishingPutAwayAt > 0.0 && _fishClock >= _fishingPutAwayAt)
         {
@@ -906,7 +907,7 @@ public partial class SummerMain : Node3D
             "二〇二六年。いつもの 朝。",
             "会議も 見積も、なにも 変わっていない。",
             _found.Count > 0
-                ? "ただ、あの がっこうの 帰り道の においを、\nまだ おぼえて いる 気がした。"
+                ? "ただ、あの だんちの 帰り道の においを、\nまだ おぼえて いる 気がした。"
                 : "ただ、どこかで セミが 鳴いている 気がした。",
             "",
             "（おわり）",
@@ -1982,9 +1983,11 @@ public partial class SummerMain : Node3D
         {
             // 高さ 1.25m。広葉樹の樹冠は 2.1m から、メタセコイアの円錐は
             // 1.7m から始まるので、それより下でないと葉に埋もれて見つけられない
-            Position = new Vector3(0.32f, 1.25f, 0f),
+            Position = new Vector3(0.36f, 1.25f, 0f),
             // 幹に沿って少し傾ける。個体ごとに向きを変えて並びの単調さを消す
             RotationDegrees = new Vector3(-14f, (variant * 53) % 360, 0f),
+            // 体長 0.24m は固定カメラから見えなかった（遊びの監査 #1）。1.5 倍に誇張する
+            Scale = new Vector3(1.5f, 1.5f, 1.5f),
         };
         var shell = new StandardMaterial3D { AlbedoColor = sp.Color, Roughness = 0.65f };
         var dark = new StandardMaterial3D { AlbedoColor = sp.Color * 0.55f, Roughness = 0.6f };
@@ -2259,10 +2262,13 @@ public partial class SummerMain : Node3D
             return;
         int sp = _cicadaSpecies[idx];
         Species species = AllSpecies[sp];
-        RemoveCicada(idx);
-
-        if (_rng.Randf() < species.CatchRate)
+        // 近いほど捕れる。1.2m 以内なら +0.3、2.2m の端ならそのまま。
+        // ぎりぎりまで寄りたい／飛ばれたくない、の綱引きにする
+        float dist = _player.Position.DistanceTo(_cicadas[idx].Position);
+        float rate = species.CatchRate + 0.3f * Mathf.Clamp((CatchRange - dist) / (CatchRange - 1.2f), 0f, 1f);
+        if (_rng.Randf() < rate)
         {
+            RemoveCicada(idx);
             _totalCaught++;
             _todayCaught++;
             if (species.RainOnly || species.SapOnly)
@@ -2273,12 +2279,83 @@ public partial class SummerMain : Node3D
             else
                 ShowMessage($"{species.Name}を つかまえた！");
         }
-        else
+        else if (!FlyAway(idx))
         {
+            RemoveCicada(idx);   // 飛ぶ先が無い（甲虫・雨の生き物）ときだけ消える
             PlaySfx(_sfxEscape);
             ShowMessage($"あっ、{species.Name}に にげられた……");
         }
+        else
+        {
+            PlaySfx(_sfxEscape);
+            ShowMessage($"あっ、{species.Name}が とんで いった……");
+        }
     }
+
+    /// <summary>
+    /// セミが別の木へ飛ぶ。外したときに「その場で消える」のは、逃げる姿すら
+    /// 見せない一番の手抜きだった（遊びの監査 #1）。0.8 秒の放物線で 6m 以上
+    /// 離れた空いている木へ移し、そこにとまり直す。甲虫と雨の生き物は飛ばない。
+    /// </summary>
+    private bool FlyAway(int i)
+    {
+        Species sp = AllSpecies[_cicadaSpecies[i]];
+        if (sp.SapOnly || sp.RainOnly || sp.PondOnly || _cicadaSpot[i] < 0)
+            return false;
+        var free = new List<int>();
+        for (int k = 0; k < _treeSpots.Count; k++)
+        {
+            if (k == _cicadaSpot[i] || _cicadaSpot.Contains(k))
+                continue;
+            if (_treeSpots[k].DistanceTo(_cicadas[i].Position) >= 6f)
+                free.Add(k);
+        }
+        if (free.Count == 0)
+            return false;
+        int to = free[(int)(_rng.Randi() % (uint)free.Count)];
+        _cicadaSpot[i] = to;
+        Node3D spot = _cicadas[i];
+        Vector3 target = _treeSpots[to];
+        Tween tw = CreateTween();
+        tw.TweenProperty(spot, "position", target, 0.8).SetTrans(Tween.TransitionType.Sine);
+        if (spot.GetChildCount() > 0)
+        {
+            var body = spot.GetChild<Node3D>(0);
+            Vector3 rest = body.Position;
+            Tween hop = CreateTween();
+            hop.TweenProperty(body, "position", rest + new Vector3(0f, 1.6f, 0f), 0.4).SetTrans(Tween.TransitionType.Quad).SetEase(Tween.EaseType.Out);
+            hop.TweenProperty(body, "position", rest, 0.4).SetTrans(Tween.TransitionType.Quad).SetEase(Tween.EaseType.In);
+        }
+        return true;
+    }
+
+    /// <summary>
+    /// 警戒。歩いていても 3m 以内に入ると、そのセミは毎秒 20% で隣の木へ飛ぶ。
+    /// 止まっている間は飛ばない。「見つけたら止まる」が技になる。
+    /// </summary>
+    private void UpdateWary(double delta)
+    {
+        if (_player == null || _player.Velocity.Length() < 0.2f)
+            return;
+        for (int i = _cicadas.Count - 1; i >= 0; i--)
+        {
+            if (_player.Position.DistanceTo(_cicadas[i].Position) >= WaryRange)
+                continue;
+            // 毎秒 12%。20% だと 2.8m を歩いて寄るあいだに 3 回に 1 回飛び、
+            // 「寄れば捕れる」がまるごと運になった（通しプレイの動線で確認）
+            if (_rng.Randf() >= 0.12f * (float)delta)
+                continue;
+            if (FlyAway(i))
+            {
+                PlaySfx(_sfxEscape);
+                // 飛ぶ姿は見えている。文は誰も読んでいないときだけ添える
+                if (_messageTimer <= 0.0)
+                    ShowMessage($"{AllSpecies[_cicadaSpecies[i]].Name}が となりの 木へ とんだ。", 2.0, optional: true);
+                return;
+            }
+        }
+    }
+    private const float WaryRange = 2.8f;
 
     /// <summary>
     /// 数秒おきに小刻みに震わせる。木にとまった置物ではなく
@@ -2832,6 +2909,24 @@ public partial class SummerMain : Node3D
 
     // --- 1日の終わり（日記→翌朝） ---
 
+    /// <summary>
+    /// 日記の結び。「あしたは なにを しようかな」を 30 日書いていた。
+    /// 翌日の状態（雨・祭り・最終日）で言い分け、ふだんも 3 通りで回す。
+    /// </summary>
+    private string Closing()
+    {
+        if (_day >= LastDay)
+            return "これで なつやすみは おしまい。";
+        if (_day + 1 == LastDay)
+            return "あしたで おわりだ。";
+        if (_day + 1 == FestivalDay)
+            return "あしたは なつまつりだ。ねむれるかな。";
+        if (WeatherOfDay(_day + 1) == Weather.Rainy)
+            return "あしたは 雨らしい。";
+        string[] ends = { "あしたは なにを しようかな。", "あしたも あつく なりそうだ。", "あしたは はやく おきよう。" };
+        return ends[_day % ends.Length];
+    }
+
     private string DiaryText()
     {
         // ザリガニや甲虫も「セミ」と書いていた。セミ以外が混じる日は「むし」
@@ -2855,37 +2950,41 @@ public partial class SummerMain : Node3D
             // 8/7 は押した数で言い分ける。押していなくても「そろった」と書いていた
             if (_day == RadioLastDay && _stamps < RadioLastDay)
                 ev = $"ラジオたいそうの さいごの日。はんこは {_stamps}こ だった。";
-            return $"【日記】8月{_day}日({Weekday()})\n{line}\n{ev}\nあしたは なにを しようかな。";
+            return $"【日記】8月{_day}日({Weekday()})\n{line}\n{ev}\n{Closing()}";
         }
 
         // 祭りが近づくと日記が数え始める。これが「待ち遠しさ」になる
         int toFestival = FestivalDay - _day;
         if (toFestival is > 0 and <= 5)
             return $"【日記】8月{_day}日({Weekday()})\n{line}\n" +
-                   $"あと {toFestival}日で なつまつり。\nあしたは なにを しようかな。";
+                   $"あと {toFestival}日で なつまつり。\n{Closing()}";
 
         if (_watchedDay == _day && BloomCount(_day) > 0)
             return $"【日記】8月{_day}日({Weekday()})\n{line}\n" +
                    $"あさがおが {BloomCount(_day)}つ 咲いて いた。\n" +
-                   "あしたは なにを しようかな。";
+                   $"{Closing()}";
 
         if (_stampedDay == _day && _day < RadioLastDay)
             return $"【日記】8月{_day}日({Weekday()})\n{line}\n" +
                    $"あさ、はんこを おしてもらった。（{_stamps}/{RadioLastDay}）\n" +
-                   "あしたは なにを しようかな。";
+                   $"{Closing()}";
 
         if (_todayBought != "")
             return $"【日記】8月{_day}日({Weekday()})\n{line}\n" +
-                   $"だがしやで {_todayBought}を かった。\nあしたは なにを しようかな。";
+                   $"だがしやで {_todayBought}を かった。\n{Closing()}";
 
         if (_talkedDay == _day)
             return $"【日記】8月{_day}日({Weekday()})\n{line}\n" +
-                   $"だがしやの おばあさんと はなした。\nあしたは なにを しようかな。";
+                   $"だがしやの おばあさんと はなした。\n{Closing()}";
 
         string extra = _todayFound != ""
             ? _todayFound
             : "とくべつな ことは なかった。それも わるくない。";
-        return $"【日記】8月{_day}日({Weekday()})\n{line}\n{extra}\nあしたは なにを しようかな。";
+        // 何も捕れず何も無い日が続くと、日記が一字一句同じになった（31日走破で 7 日）。
+        // 一行目は「その日いちばんの こと」にし、捕れなかった行は特別が無い日だけ書く
+        if (_todayCaught == 0 && _todayFound != "")
+            line = _weather == Weather.Rainy ? "あめの 日だった。" : "きょうも あつかった。";
+        return $"【日記】8月{_day}日({Weekday()})\n{line}\n{extra}\n{Closing()}";
     }
 
     /// <summary>

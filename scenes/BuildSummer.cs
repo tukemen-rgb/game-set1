@@ -233,7 +233,9 @@ public partial class BuildSummer : SceneTree
         // 参考画（docs/reference/park_pond_gpt.png）の芝は暗いオリーブ (98,119,28)。
         // 素のテクスチャはライム (184,232,134) で明度が 1.8 倍あった（監査で実測）
         ground.AddChild(MeshI(new PlaneMesh { Size = new Vector2(200f, 200f) }, Vector3.Zero,
-            TexMat(BestTex("gen/TEX-grass_summer.jpg", "grass"), new Vector2(43f, 43f), new Color(0.56f, 0.56f, 0.36f))));
+            // 写真の芝は粗い葉が立ち、踏まれた所は土が透ける。細かい実写テクスチャは
+            // 暗くしても「絨毯」に見えた。合成した粗い芝（tools/gen_textures.py）に替える
+            TexMat("gen/grass_coarse.png", new Vector2(24f, 24f), new Color(0.58f, 0.6f, 0.4f))));   // 素のままだと蛍光色の絨毯に戻った
         root.AddChild(ground);
 
         var roads = new Node3D { Name = "Roads" };
@@ -297,6 +299,19 @@ public partial class BuildSummer : SceneTree
                 new StandardMaterial3D { AlbedoColor = new Color(0.55f, 0.56f, 0.58f), Metallic = 0.7f, Roughness = 0.4f }));   // 手すりの笠木（金属）
             // 床スラブの下の汚れ帯。参考画のベランダ下は雨だれで暗い
             b.AddChild(Box(new Vector3(length + 0.2f, 0.3f, 0.02f), new Vector3(0f, y - 0.16f, 2.56f), new Color(0.42f, 0.41f, 0.38f)));
+            // 雨だれの縦筋。スラブの端と排水口の下から、階の高さぶん垂れる
+            for (int s = 0; s < 3; s++)
+            {
+                float sx = -length / 2f + 1.5f + ((f * 7 + s * 5 + (int)Mathf.Abs(pos.Z)) * 3.7f) % (length - 3f);
+                var streak = MeshI(new BoxMesh { Size = new Vector3(0.18f + (s % 2) * 0.1f, FloorH - 0.4f, 0.01f) },
+                    new Vector3(sx, y - 0.2f - (FloorH - 0.4f) / 2f + FloorH, 2.565f), new StandardMaterial3D
+                    {
+                        AlbedoColor = new Color(0.25f, 0.24f, 0.22f, 0.22f),
+                        Transparency = BaseMaterial3D.TransparencyEnum.Alpha, Roughness = 1f,
+                    });
+                streak.CastShadow = GeometryInstance3D.ShadowCastingSetting.Off;
+                b.AddChild(streak);
+            }
             // 一枚の帯で通していたが、それだと夕方に灯りを点けたとき
             // 建物が「一本の光る棒」になった。住戸ごとに2枚の窓に割る。
             // 割ったことで、点く部屋と点かない部屋ができる
@@ -1329,12 +1344,28 @@ public partial class BuildSummer : SceneTree
             new Vector3(6f, 0.09f, -15f), waterMat);
         water.Name = "PondWater";   // SummerMain が時刻で色を掛ける
         park.AddChild(water);
+        // 写真では対岸側の水面に木と団地の暗い映り込みが伸びる。gl_compatibility では
+        // 映り込みが出ないので、対岸（北西）側に暗緑の半透明の帯を寝かせて代える
+        var reflectBand = new MeshInstance3D
+        {
+            Mesh = new CylinderMesh { TopRadius = 1f, BottomRadius = 1f, Height = 0.005f, RadialSegments = 24 },
+            MaterialOverride = new StandardMaterial3D
+            {
+                AlbedoColor = new Color(0.06f, 0.1f, 0.05f, 0.32f),
+                Transparency = BaseMaterial3D.TransparencyEnum.Alpha, Roughness = 0.4f,
+            },
+            Position = new Vector3(3.2f, 0.125f, -12.8f),
+            Scale = new Vector3(4.2f, 1f, 2.4f),
+            RotationDegrees = new Vector3(0f, -30f, 0f),
+            CastShadow = GeometryInstance3D.ShadowCastingSetting.Off,
+        };
+        park.AddChild(reflectBand);
         // ふち: 玉石を目地で固めた、丸みのある低い壁（高さ 0.32m・幅 0.9m）。
         // 土のトーラスは「盛り土」にしか見えなかった
         var rim = MeshI(new TorusMesh { InnerRadius = 6.2f, OuterRadius = 7.1f, Rings = 64, RingSegments = 24 },
             // 参考画のふちは玉石ではなく砂利の洗い出しコンクリート（粒は数 mm、暖かい灰茶）。
             // 玉石を貼ると石垣に読めた
-            new Vector3(6f, 0.02f, -15f), TexMat("photo/gravel_concrete.jpg", new Vector2(120f, 6f), new Color(0.6f, 0.6f, 0.56f), roughness: 1f));
+            new Vector3(6f, 0.02f, -15f), TexMat("photo/gravel_concrete.jpg", new Vector2(200f, 10f), new Color(0.62f, 0.62f, 0.58f), roughness: 1f));
         rim.Scale = new Vector3(1f, 0.7f, 1f);
         park.AddChild(rim);
         // ふちの内側の立ち上がり（水面との境が線で見えるように）
@@ -1611,10 +1642,21 @@ public partial class BuildSummer : SceneTree
             tree.AddChild(MeshI(new CylinderMesh { TopRadius = 0.14f, BottomRadius = 0.3f, Height = 6.2f },
                 new Vector3(0f, 3.1f, 0f), Trunk));
             (float y, float r, float h)[] tiers = { (1.3f, 1.9f, 2.4f), (4.1f, 1.05f, 2.6f) };
+            var darkFine = TexMat(BestTex("gen/TEX-leaf_canopy.jpg", "leaf"), new Vector2(6f, 4f), new Color(0.3f, 0.42f, 0.22f));
+            int bump = 0;
             foreach ((float ty, float tr, float th) in tiers)
             {
                 tree.AddChild(MeshI(new CylinderMesh { TopRadius = tr * 0.35f, BottomRadius = tr, Height = th },
-                    new Vector3(0f, ty + th / 2f, 0f), dark));
+                    new Vector3(0f, ty + th / 2f, 0f), darkFine));
+                // 円錐の輪郭が定規で引いた線に見える。段の下縁に葉の塊を置いて崩す
+                for (int k = 0; k < 6; k++)
+                {
+                    float a = Mathf.DegToRad(k * 60f + bump * 25f);
+                    float rr = tr * 0.85f;
+                    tree.AddChild(MeshI(new SphereMesh { Radius = tr * 0.3f, Height = tr * 0.6f },
+                        new Vector3(Mathf.Cos(a) * rr, ty + tr * 0.22f, Mathf.Sin(a) * rr), darkFine));
+                }
+                bump++;
             }
         }
         else

@@ -601,6 +601,7 @@ public partial class SummerMain : Node3D
         CheckSlide();
         UpdateSlide(delta);
         CheckPipe();
+        UpdateRadioTaiso(delta);
         _fishClock += delta;
         if (_fishingPutAwayAt > 0.0 && _fishClock >= _fishingPutAwayAt)
         {
@@ -2971,6 +2972,105 @@ public partial class SummerMain : Node3D
         _stamps++;
         PlaySfx(_sfxCatch);
         ShowMessage($"ラジオたいそう。\nカードに はんこを おしてもらった。（{_stamps}/{RadioLastDay}）", 3.5);
+        ShowStampCard();
+    }
+
+    // --- ラジオ体操の「見せる」部分: 子どもの腕・伴奏・出席カード ---
+    private Node3D _radioKids, _radioTaisoNode;
+    private AudioStreamPlayer _radioMusic;   // 音量は主人公との距離で決める（聞き手はカメラではなく主人公）
+    private CanvasLayer _stampCard;
+    private Label _stampCardLabel;
+    private double _stampCardTimer;
+
+    private bool RadioTime() => _day <= RadioLastDay && _hour >= RadioFromHour && _hour < RadioFromHour + 0.35;
+
+    /// <summary>8:00〜8:21 の期間中だけ、子どもが並んで腕を上げ下げし、ラジカセが鳴る。</summary>
+    private void UpdateRadioTaiso(double delta)
+    {
+        _radioTaisoNode ??= GetNodeOrNull<Node3D>("RadioTaiso");
+        if (_radioTaisoNode == null)
+            return;
+        _radioKids ??= _radioTaisoNode.GetNodeOrNull<Node3D>("Kids");
+        bool on = RadioTime();
+        if (_radioKids != null)
+        {
+            _radioKids.Visible = on;
+            if (on)
+            {
+                double t = Time.GetTicksMsec() / 1000.0;
+                int k = 0;
+                foreach (Node c in _radioKids.GetChildren())
+                {
+                    if (c is not Node3D kid || kid.GetChildCount() < 5)
+                        continue;
+                    // 3・4 番目の子が腕。周期 1 秒で -160°（上）〜 -20°（下）
+                    float ang = -90f + 70f * Mathf.Sin((float)(t * Mathf.Tau + k * 0.6));
+                    kid.GetChild<Node3D>(3).RotationDegrees = new Vector3(ang, 0f, 0f);
+                    kid.GetChild<Node3D>(4).RotationDegrees = new Vector3(ang, 0f, 0f);
+                    k++;
+                }
+            }
+        }
+        if (_radioMusic == null)
+        {
+            var stream = GD.Load<AudioStreamWav>("res://assets/audio/radio_taiso.wav");
+            if (stream != null)
+            {
+                stream.LoopMode = AudioStreamWav.LoopModeEnum.Forward;
+                stream.LoopBegin = 0;
+                stream.LoopEnd = LoopFrames(stream);
+                _radioMusic = new AudioStreamPlayer { Name = "RadioMusic", Stream = stream, VolumeDb = -6f };
+                AddChild(_radioMusic);
+            }
+        }
+        if (_radioMusic != null && on != _radioMusic.Playing)
+        {
+            if (on) _radioMusic.Play(); else _radioMusic.Stop();
+        }
+        if (_radioMusic != null && on)
+        {
+            // 台から 6m までは −6dB、そこから距離の対数で下げる（40m で −22dB）
+            float dist = PlayerXZ().DistanceTo(RadioPos);
+            _radioMusic.VolumeDb = -6f - 20f * Mathf.Log(Mathf.Max(1f, dist / 6f)) / Mathf.Log(10f);
+        }
+        if (_stampCardTimer > 0.0)
+        {
+            _stampCardTimer -= delta;
+            if (_stampCardTimer <= 0.0 && _stampCard != null)
+                _stampCard.Visible = false;
+        }
+    }
+
+    /// <summary>出席カード。7 つの枠に押した数だけ朱印。押した直後に 1.8 秒だけ出す。</summary>
+    private void ShowStampCard()
+    {
+        if (_stampCard == null)
+        {
+            _stampCard = new CanvasLayer { Name = "StampCard", Layer = 2 };
+            // 既定のアンカー（左上）のまま、画面中央上に置く。Center のアンカーに
+            // 位置を足したら右端に寄って切れた
+            var panel = new Panel { Size = new Vector2(560f, 150f), Position = new Vector2(296f, 150f) };
+            var style = new StyleBoxFlat { BgColor = new Color(0.97f, 0.95f, 0.85f), BorderColor = new Color(0.55f, 0.35f, 0.25f) };
+            style.SetBorderWidthAll(4);
+            panel.AddThemeStyleboxOverride("panel", style);
+            _stampCardLabel = new Label
+            {
+                HorizontalAlignment = HorizontalAlignment.Center,
+                VerticalAlignment = VerticalAlignment.Center,
+            };
+            _stampCardLabel.SetAnchorsPreset(Control.LayoutPreset.FullRect);
+            _stampCardLabel.AddThemeFontSizeOverride("font_size", 34);
+            _stampCardLabel.AddThemeColorOverride("font_color", new Color(0.2f, 0.15f, 0.1f));
+            panel.AddChild(_stampCardLabel);
+            _stampCard.AddChild(panel);
+            AddChild(_stampCard);
+        }
+        var sb = new System.Text.StringBuilder("ラジオたいそう しゅっせきカード\n");
+        for (int i = 0; i < RadioLastDay; i++)
+            sb.Append(i < _stamps ? "㊞ " : "○ ");
+        _stampCardLabel.Text = sb.ToString().TrimEnd();
+        _stampCard.Visible = true;
+        _stampCardTimer = 1.8;
     }
 
     private bool NearShop() => Near(ShopPos, TalkRange);

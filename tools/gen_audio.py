@@ -262,6 +262,33 @@ def sfx_step(buf, n):
         buf[i] += (low + grit * 0.8) * env
 
 
+def radio_taiso(buf, n):
+    """ラジオ体操の伴奏（自作。実在の曲は使わない）。120bpm・4/4・8小節＝16秒。
+    ピアノ風（基音＋2倍音＋3倍音、減衰）で I-IV-V-I の分散和音に、上で簡単な旋律。"""
+    beat = 0.5
+    chords = [(0, 4, 7), (5, 9, 12), (7, 11, 14), (0, 4, 7)] * 2   # C F G C
+    melody = [0, 2, 4, 5, 7, 5, 4, 2, 0, 4, 7, 4, 5, 4, 2, 0,
+              7, 5, 4, 2, 4, 5, 7, 9, 7, 5, 4, 2, 0, 2, 4, 0]
+    base = 261.63
+    def note(semi, start, dur, amp):
+        f = base * (2 ** (semi / 12))
+        i0 = int(start * RATE); k = int(dur * RATE)
+        for j in range(k):
+            t = j / RATE
+            env = math.exp(-t * 4.0) * min(1.0, t / 0.01)
+            v = math.sin(math.tau * f * t) + 0.4 * math.sin(math.tau * 2 * f * t) + 0.15 * math.sin(math.tau * 3 * f * t)
+            idx = i0 + j
+            if idx < n:
+                buf[idx] += v * amp * env
+    for bar in range(8):
+        chord = chords[bar]
+        for b in range(4):
+            t0 = (bar * 4 + b) * beat
+            note(chord[b % 3] - 12, t0, 0.45, 0.35)             # 左手の分散和音
+            note(melody[(bar * 4 + b)], t0, 0.4, 0.5)           # 旋律（1拍）
+            note(melody[(bar * 4 + b) + 0] + 2 if b % 2 else melody[(bar * 4 + b)], t0 + beat / 2, 0.2, 0.25)
+
+
 def save(name, fill):
     buf = [0.0] * N
     wind_bed(buf)
@@ -284,6 +311,7 @@ if __name__ == "__main__":
     save("cicada_day", day)
     save("cicada_evening", evening)
     save("rain", rain)
+    save_oneshot("radio_taiso", radio_taiso, 16.0)
     save_oneshot("chime_five", chime_five, 4.2)
     save_oneshot("sfx_firework", sfx_firework, 0.95)   # 1.6 だと後ろ 44% が無音だった
     save_oneshot("sfx_step", sfx_step, 0.14)

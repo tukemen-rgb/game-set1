@@ -875,6 +875,18 @@ public partial class BuildSummer : SceneTree
         t.AddChild(MeshI(new CylinderMesh { TopRadius = 0.075f, BottomRadius = 0.075f, Height = 0.03f },
             new Vector3(-0.52f, 0.87f, -0.1f), new Color(0.45f, 0.45f, 0.48f)));
         t.AddChild(Box(new Vector3(0.02f, 0.3f, 0.02f), new Vector3(-0.2f, 1.12f, 0f), Stone));   // アンテナ
+        // 台の前に子ども 4 人（2 列）と、机の奥に係のおばさん。机とラジカセだけでは
+        // 「体操」が一度も画面に出なかった（遊びの監査 #2）。腕は SummerMain が動かす
+        var kids = new Node3D { Name = "Kids" };
+        Color[] shirts = { new(0.9f, 0.85f, 0.3f), new(0.35f, 0.6f, 0.9f), new(0.9f, 0.5f, 0.5f), new(0.5f, 0.8f, 0.5f) };
+        for (int i = 0; i < 4; i++)
+        {
+            Node3D kid = Resident($"Kid{i}", new Vector3(-2.2f - (i / 2) * 1.3f, 0f, -0.9f + (i % 2) * 1.8f), 90f, shirts[i], seated: false);
+            kid.Scale = new Vector3(0.72f, 0.72f, 0.72f);
+            kids.AddChild(kid);
+        }
+        t.AddChild(kids);
+        t.AddChild(Resident("Leader", new Vector3(0f, 0f, -0.9f), 0f, new Color(0.85f, 0.85f, 0.9f), seated: false));
         // 出席カードの箱と朱肉
         t.AddChild(Box(new Vector3(0.3f, 0.1f, 0.22f), new Vector3(0.35f, 0.8f, 0f), new Color(0.9f, 0.88f, 0.8f)));
         t.AddChild(Box(new Vector3(0.09f, 0.05f, 0.09f), new Vector3(0.62f, 0.77f, 0.05f), new Color(0.7f, 0.15f, 0.15f)));

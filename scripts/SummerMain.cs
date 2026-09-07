@@ -600,15 +600,16 @@ public partial class SummerMain : Node3D
         UpdateSwing(delta);
         CheckSlide();
         UpdateSlide(delta);
+        CheckPipe();
         _fishClock += delta;
         if (_fishingPutAwayAt > 0.0 && _fishClock >= _fishingPutAwayAt)
         {
             _fishingPutAwayAt = -1.0;
             _player.SetFishing(false);
         }
-        if (_swinging || _sliding || (AtSwing() && _lineOutAt < 0.0) || !CheckFishing())
+        if (_swinging || _sliding || _inPipe || (AtSwing() && _lineOutAt < 0.0) || !CheckFishing())
         {
-            if (!_swinging && !_sliding)
+            if (!_swinging && !_sliding && !_inPipe)
                 CheckCatch();
         }
         CheckDiscovery();
@@ -705,8 +706,8 @@ public partial class SummerMain : Node3D
     /// <summary>開いている間は true。時間も操作も止める。</summary>
     private bool CheckDex()
     {
-        // 品書きの Z は「やめる」。ずかんまで開くと品書きの上に重なる
-        if (!_shopOpen && Input.IsActionJustPressed("dex"))
+        // 品書きの Z は「やめる」、土管の Z は「出る」。ずかんまで開くと重なる
+        if (!_shopOpen && !_inPipe && Input.IsActionJustPressed("dex"))
         {
             _dexOpen = !_dexOpen;
             if (_dex != null)
@@ -1511,8 +1512,13 @@ public partial class SummerMain : Node3D
                 : "ラジオたいそう　スペースで はんこ";
             return;
         }
-        if (_swinging || _sliding)
+        if (_swinging || _sliding || _inPipe)
             return;   // 乗っている間は独白を出したまま
+        if (AtPipe())
+        {
+            _messageLabel.Text = "どかん　スペースで はいる";
+            return;
+        }
         if (AtSlide())
         {
             _messageLabel.Text = "すべりだい　スペースで のぼる";
@@ -2405,6 +2411,105 @@ public partial class SummerMain : Node3D
 
     private bool AtSlide() => Near(new Vector2(SlideFoot.X, SlideFoot.Z), 2.0f);
 
+    // --- 土管（中に入る。外の音がこもり、画面に土管の内側の丸い枠が重なる） ---
+    private static readonly Vector2 PipePos = new(22f, 0f);   // Spots の位置
+    private bool _inPipe;
+    private CanvasLayer _pipeView;
+    private int _pipeSpot = -1;
+    private AudioEffectLowPassFilter _pipeFilter;
+
+    private bool AtPipe() => Near(new Vector2(20.6f, 0f), 2.0f);
+
+    /// <summary>
+    /// 土管に入る。「どかんに かくれると、だれも 見つけられない」と言いながら
+    /// 入れなかった（遊びの監査 #2）。カメラはそのまま、画面に土管の内側の
+    /// 丸い黒枠を重ね、外の音を −8dB とローパスでこもらせる。Z で出る。
+    /// </summary>
+    private void CheckPipe()
+    {
+        if (_inPipe)
+        {
+            if (Input.IsActionJustPressed("dex") || TakePress())
+                LeavePipe();
+            return;
+        }
+        if (_swinging || _sliding || !AtPipe() || !TakePress())
+            return;
+        _inPipe = true;
+        _player.Frozen = true;
+        if (_pipeView == null)
+            _pipeView = MakePipeView();
+        _pipeView.Visible = true;
+        // 外の音をこもらせる。バスの音量を落とし、ローパスを掛ける
+        if (_pipeFilter == null)
+        {
+            _pipeFilter = new AudioEffectLowPassFilter { CutoffHz = 900f };
+            AudioServer.AddBusEffect(0, _pipeFilter);
+        }
+        AudioServer.SetBusEffectEnabled(0, AudioServer.GetBusEffectCount(0) - 1, true);
+        AudioServer.SetBusVolumeDb(0, -8f);
+        if (_pipeSpot < 0)
+            _pipeSpot = System.Array.FindIndex(Spots, s => s.Pos == PipePos);
+        string text = _pipeSpot >= 0 && _found.Contains(_pipeSpot) && _day >= LaterDay
+            ? SpotLater(_pipeSpot)
+            : _pipeSpot >= 0 ? Spots[_pipeSpot].Text : "どかんの なか。";
+        if (_weather == Weather.Rainy)
+            text = "あめが どかんに あたって、\nかんかん 鳴って いる。";
+        if (_pipeSpot >= 0 && _found.Add(_pipeSpot))
+        {
+            _foundToday.Add(_pipeSpot);
+            if (_todayFound == "")
+                _todayFound = text.Replace("\n", "");
+        }
+        else if (_pipeSpot >= 0 && _day >= LaterDay && _foundLater.Add(_pipeSpot) && _todayFound == "")
+        {
+            _todayFound = text.Replace("\n", "");
+        }
+        ShowMessage(text + "\n（Ｚ で そとへ）", 120.0, immediate: true);
+    }
+
+    private void LeavePipe()
+    {
+        _inPipe = false;
+        _player.Frozen = false;
+        if (_pipeView != null)
+            _pipeView.Visible = false;
+        if (_pipeFilter != null)
+            AudioServer.SetBusEffectEnabled(0, AudioServer.GetBusEffectCount(0) - 1, false);
+        AudioServer.SetBusVolumeDb(0, 0f);
+        _messageTimer = 0.0;
+        _messageLabel.Text = "";
+    }
+
+    /// <summary>土管の内側。中心が抜けた放射状の黒い枠を画面に重ねる。</summary>
+    private CanvasLayer MakePipeView()
+    {
+        var g = new Gradient();
+        g.SetColor(0, new Color(0f, 0f, 0f, 0f));
+        g.SetColor(1, new Color(0.02f, 0.02f, 0.02f, 1f));
+        g.AddPoint(0.5f, new Color(0f, 0f, 0f, 0f));
+        g.AddPoint(0.66f, new Color(0.05f, 0.04f, 0.04f, 0.85f));
+        var tex = new GradientTexture2D
+        {
+            Gradient = g, Width = 256, Height = 256,
+            Fill = GradientTexture2D.FillEnum.Radial,
+            FillFrom = new Vector2(0.5f, 0.5f), FillTo = new Vector2(0.5f, 0f),
+        };
+        var layer = new CanvasLayer { Name = "PipeView", Layer = 0, Visible = false };   // UI（文字）より下に置く
+        var rect = new TextureRect
+        {
+            Texture = tex,
+            StretchMode = TextureRect.StretchModeEnum.Scale,
+            ExpandMode = TextureRect.ExpandModeEnum.IgnoreSize,
+            MouseFilter = Control.MouseFilterEnum.Ignore,
+        };
+        rect.SetAnchorsPreset(Control.LayoutPreset.FullRect);
+        // 横長の画面でも枠が円に見えるよう、横に引き伸ばす（土管の口は丸い）
+        layer.AddChild(rect);
+        AddChild(layer);
+        return layer;
+    }
+
     /// <summary>
     /// すべり台。「すべりだいは まなつに さわると あつい」と言うだけで、
     /// 登りも滑りもしなかった（遊びの監査 #2）。はしごを 1.6 秒で登り、1 秒で滑る。
@@ -3049,8 +3154,8 @@ public partial class SummerMain : Node3D
         var here = PlayerXZ();
         for (int i = 0; i < Spots.Length; i++)
         {
-            if (Spots[i].Pos == SwingPos || Spots[i].Pos == SlidePos)
-                continue;   // ブランコとすべり台は乗ったときに出す（立つだけでは言わない）
+            if (Spots[i].Pos == SwingPos || Spots[i].Pos == SlidePos || Spots[i].Pos == PipePos)
+                continue;   // ブランコ・すべり台・土管は乗った／入ったときに出す（立つだけでは言わない）
             if (here.DistanceTo(Spots[i].Pos) > DiscoverRange)
                 continue;
 

@@ -598,15 +598,17 @@ public partial class SummerMain : Node3D
         UpdateWary(delta);
         CheckSwing();
         UpdateSwing(delta);
+        CheckSlide();
+        UpdateSlide(delta);
         _fishClock += delta;
         if (_fishingPutAwayAt > 0.0 && _fishClock >= _fishingPutAwayAt)
         {
             _fishingPutAwayAt = -1.0;
             _player.SetFishing(false);
         }
-        if (_swinging || (AtSwing() && _lineOutAt < 0.0) || !CheckFishing())
+        if (_swinging || _sliding || (AtSwing() && _lineOutAt < 0.0) || !CheckFishing())
         {
-            if (!_swinging)
+            if (!_swinging && !_sliding)
                 CheckCatch();
         }
         CheckDiscovery();
@@ -1509,8 +1511,13 @@ public partial class SummerMain : Node3D
                 : "ラジオたいそう　スペースで はんこ";
             return;
         }
-        if (_swinging)
+        if (_swinging || _sliding)
             return;   // 乗っている間は独白を出したまま
+        if (AtSlide())
+        {
+            _messageLabel.Text = "すべりだい　スペースで のぼる";
+            return;
+        }
         if (AtSwing() && _lineOutAt < 0.0)
         {
             _messageLabel.Text = "ブランコ　スペースで こぐ";
@@ -2386,6 +2393,74 @@ public partial class SummerMain : Node3D
 
     private bool AtSwing() => Near(SwingPos, 2.4f);
 
+    // --- すべり台（登って滑る。独白は滑りながら出す） ---
+    private static readonly Vector2 SlidePos = new(-6f, -11f);       // Spots の位置
+    private static readonly Vector3 SlideFoot = new(-6f, 0.1f, -12.7f);   // はしごの下
+    private static readonly Vector3 SlideTop = new(-6f, 2.05f, -10.65f);  // 踊り場
+    private static readonly Vector3 SlideEnd = new(-6f, 0.4f, -7.0f);     // 滑走面の下端
+    private const double SlideClimb = 1.6, SlideDown = 1.0;
+    private bool _sliding;
+    private double _slideT;
+    private int _slideSpot = -1;
+
+    private bool AtSlide() => Near(new Vector2(SlideFoot.X, SlideFoot.Z), 2.0f);
+
+    /// <summary>
+    /// すべり台。「すべりだいは まなつに さわると あつい」と言うだけで、
+    /// 登りも滑りもしなかった（遊びの監査 #2）。はしごを 1.6 秒で登り、1 秒で滑る。
+    /// </summary>
+    private void CheckSlide()
+    {
+        if (_sliding || _swinging || !AtSlide() || !TakePress())
+            return;
+        _sliding = true;
+        _slideT = 0.0;
+        _player.Frozen = true;
+        if (_slideSpot < 0)
+            _slideSpot = System.Array.FindIndex(Spots, s => s.Pos == SlidePos);
+        string text = _slideSpot >= 0 && _found.Contains(_slideSpot) && _day >= LaterDay
+            ? SpotLater(_slideSpot)
+            : _slideSpot >= 0 ? Spots[_slideSpot].Text : "すべりだいを すべった。";
+        if (_slideSpot >= 0 && _found.Add(_slideSpot))
+        {
+            _foundToday.Add(_slideSpot);
+            if (_todayFound == "")
+                _todayFound = text.Replace("\n", "");
+        }
+        else if (_slideSpot >= 0 && _day >= LaterDay && _foundLater.Add(_slideSpot) && _todayFound == "")
+        {
+            _todayFound = text.Replace("\n", "");
+        }
+        ShowMessage(text, SlideClimb + SlideDown + 2.0, immediate: true);
+    }
+
+    private void UpdateSlide(double delta)
+    {
+        if (!_sliding)
+            return;
+        _slideT += delta;
+        if (_slideT < SlideClimb)
+        {
+            float u = (float)(_slideT / SlideClimb);
+            _player.Position = SlideFoot.Lerp(SlideTop, u);
+            _player.RotationDegrees = new Vector3(0f, 180f, 0f);   // はしごに向く（+z を向く）
+            return;
+        }
+        double t2 = _slideT - SlideClimb;
+        if (t2 < SlideDown)
+        {
+            float u = (float)(t2 / SlideDown);
+            u = u * u;   // 加速しながら滑る
+            _player.Position = SlideTop.Lerp(SlideEnd, u);
+            _player.RotationDegrees = new Vector3(-26f, 0f, 0f);   // 滑走面に沿って寝る（-z 向き）
+            return;
+        }
+        _sliding = false;
+        _player.RotationDegrees = Vector3.Zero;
+        _player.Position = new Vector3(SlideEnd.X, 0.1f, SlideEnd.Z + 0.9f);
+        _player.Frozen = false;
+    }
+
     /// <summary>
     /// ブランコに乗る。「ブランコを こぎながら 空を 見ると」と言いながら
     /// 池のふちに突っ立っていた（遊びの監査 #2）。座席を支点ごと揺らし、
@@ -2974,8 +3049,8 @@ public partial class SummerMain : Node3D
         var here = PlayerXZ();
         for (int i = 0; i < Spots.Length; i++)
         {
-            if (Spots[i].Pos == SwingPos)
-                continue;   // ブランコは乗ったときに出す（立つだけでは言わない）
+            if (Spots[i].Pos == SwingPos || Spots[i].Pos == SlidePos)
+                continue;   // ブランコとすべり台は乗ったときに出す（立つだけでは言わない）
             if (here.DistanceTo(Spots[i].Pos) > DiscoverRange)
                 continue;
 

@@ -346,6 +346,16 @@ public partial class BuildSummer : SceneTree
             }
         }
 
+        // 写真の正面（ベランダ側）には階段室の柱が張り出し、半階ごとに小窓が付く。
+        // ベランダの列をこの柱が区切る
+        foreach (float tx in new[] { -length / 4f, length / 4f })
+        {
+            b.AddChild(MeshI(new BoxMesh { Size = new Vector3(1.9f, height + 0.6f, 1.3f) },
+                new Vector3(tx, (height + 0.6f) / 2f, 2.95f), TexMat("wall_weathered", new Vector2(1f, 3f), new Color(0.78f, 0.76f, 0.72f))));
+            for (int f = 0; f < floors * 2; f++)
+                b.AddChild(Box(new Vector3(0.6f, 0.5f, 0.06f), new Vector3(tx, 1.35f + f * FloorH / 2f, 3.63f), ShadowGlass));
+        }
+
         // 階段室側（-z）: 窓テクスチャ＋階段室3本（縦スリット窓）
         b.AddChild(MeshI(new BoxMesh { Size = new Vector3(length, height, 0.06f) },
             new Vector3(0f, height / 2f, -2.54f), TexMat("facade", new Vector2(length / 2f, floors))));
@@ -1368,6 +1378,12 @@ public partial class BuildSummer : SceneTree
             new Vector3(6f, 0.02f, -15f), TexMat("photo/gravel_concrete.jpg", new Vector2(200f, 10f), new Color(0.62f, 0.62f, 0.58f), roughness: 1f));
         rim.Scale = new Vector3(1f, 0.7f, 1f);
         park.AddChild(rim);
+        // 写真のふちは上面が日に焼けて白っぽく、側面が暗い。上面だけ明るい環を重ねる
+        var rimTop = MeshI(new TorusMesh { InnerRadius = 6.35f, OuterRadius = 6.95f, Rings = 64, RingSegments = 12 },
+            new Vector3(6f, 0.14f, -15f), TexMat("photo/gravel_concrete.jpg", new Vector2(200f, 6f), new Color(0.78f, 0.77f, 0.72f), roughness: 1f));
+        rimTop.Scale = new Vector3(1f, 0.28f, 1f);
+        rimTop.CastShadow = GeometryInstance3D.ShadowCastingSetting.Off;
+        park.AddChild(rimTop);
         // ふちの内側の立ち上がり（水面との境が線で見えるように）
         // 蓋を付けたままだと、この円柱の上面が池全体を石の円盤で覆う（撮って気づいた）
         park.AddChild(MeshI(new CylinderMesh { TopRadius = 6.25f, BottomRadius = 6.25f, Height = 0.3f, CapTop = false, CapBottom = false },

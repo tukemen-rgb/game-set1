@@ -17,6 +17,7 @@ public static class QualityBlockCapture
         // and the high-granularity construction fallback for the danchi. If matching authored
         // prefabs/FBX assets exist they still supersede the generated fallback automatically.
         QualityBlockDanchiDetailUpgrade.BuildDetailedWeatheredQualityBlock();
+        QualityBlockDanchiDetailUpgrade.ValidateOpenScene();
         EditorSceneManager.OpenScene(ScenePath, OpenSceneMode.Single);
 
         var cam = Camera.main;

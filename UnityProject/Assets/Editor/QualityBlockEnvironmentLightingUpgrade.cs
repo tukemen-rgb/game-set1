@@ -68,6 +68,7 @@ public static class QualityBlockEnvironmentLightingUpgrade
         RenderSettings.reflectionIntensity = 0.86f;
         RenderSettings.reflectionBounces = 1;
         RenderSettings.customReflection = null;
+        QualitySettings.realtimeReflectionProbes = true;
 
         // Humid midsummer air: atmosphere is subtle in the hero block and becomes visible mainly
         // toward the far clip. This is actual depth fog, not a blue wash painted onto materials.
@@ -118,7 +119,6 @@ public static class QualityBlockEnvironmentLightingUpgrade
         // Update ambient SH after changing the sky. Local realtime probes are refreshed explicitly
         // by RefreshRealtimeProbesImmediately() immediately before benchmark capture.
         DynamicGI.UpdateEnvironment();
-        ReflectionProbe.UpdateCachedState();
 
         EditorUtility.SetDirty(facade);
         EditorUtility.SetDirty(park);
@@ -134,9 +134,11 @@ public static class QualityBlockEnvironmentLightingUpgrade
     /// </summary>
     public static void RefreshRealtimeProbesImmediately()
     {
-        ReflectionProbe[] probes = Resources.FindObjectsOfTypeAll<ReflectionProbe>()
-            .Where(x => x.gameObject.scene.IsValid() && x.transform.IsChildOf(FindSceneObject(ProbeRootName)?.transform))
-            .ToArray();
+        GameObject probeRoot = FindSceneObject(ProbeRootName);
+        if (probeRoot == null)
+            throw new InvalidOperationException("Physical reflection environment root missing before pre-capture refresh.");
+
+        ReflectionProbe[] probes = probeRoot.GetComponentsInChildren<ReflectionProbe>(true);
         if (probes.Length != 2)
             throw new InvalidOperationException($"Expected exactly two physical reflection probes, found {probes.Length}.");
 
@@ -177,6 +179,8 @@ public static class QualityBlockEnvironmentLightingUpgrade
             throw new InvalidOperationException("Default sky reflection resolution is below the 1024 benchmark minimum.");
         if (RenderSettings.reflectionIntensity < 0.75f || RenderSettings.reflectionIntensity > 1.05f)
             throw new InvalidOperationException("Sky reflection intensity is outside the physically restrained benchmark range.");
+        if (!QualitySettings.realtimeReflectionProbes)
+            throw new InvalidOperationException("Realtime reflection probes are disabled by QualitySettings.");
         if (!RenderSettings.fog || RenderSettings.fogMode != FogMode.Linear ||
             RenderSettings.fogStartDistance < 60f || RenderSettings.fogEndDistance < 130f)
             throw new InvalidOperationException("Midsummer atmospheric-depth fog contract is not satisfied.");

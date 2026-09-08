@@ -1,5 +1,5 @@
 {
-  "generatedUtc": "2026-09-08T13:40:30Z",
+  "generatedUtc": "2026-09-08T15:47:30Z",
   "readinessScore": 93,
   "possibleScore": 100,
   "visualFidelityStatus": "UNSCORED_UNTIL_REAL_4K_RENDER",
@@ -10,14 +10,30 @@
     { "id": "tree_physical_hierarchy", "weight": 10, "passed": true, "evidence": "Root/trunk/branch/twig/leaf hierarchy tooling exists.", "assetPaths": ["Assets/Editor/QualityBlockTreeDetailUpgrade.cs"] },
     { "id": "foliage_optics", "weight": 8, "passed": true, "evidence": "Two-sided foliage optics and transmission shader are present.", "assetPaths": ["Assets/Editor/QualityBlockFoliageOpticsUpgrade.cs", "Assets/Shaders/NewTownFoliageTransmission.shader"] },
     { "id": "cause_based_weathering", "weight": 8, "passed": true, "evidence": "Weathering is driven by rain/splash/drain/contact/UV context rather than arbitrary grime.", "assetPaths": ["Assets/Editor/QualityBlockWeatheringUpgrade.cs"] },
-    { "id": "pbr_generation", "weight": 8, "passed": true, "evidence": "PBR material generation pipeline is present.", "assetPaths": ["Assets/Editor/QualityBlockPbrUpgrade.cs"] },
+    { "id": "pbr_generation", "weight": 8, "passed": true, "evidence": "PBR generation now includes deterministic physical-scale ground micro-normal/roughness/metallic maps plus metric-UV correction for generated detail meshes.", "assetPaths": ["Assets/Editor/QualityBlockPbrUpgrade.cs", "Assets/Editor/QualityBlockGroundMicrodetailUpgrade.cs", "Assets/QA/ground_microdetail_contract.json"] },
     { "id": "physical_solar_context", "weight": 5, "passed": true, "evidence": "Solar direction/elevation context exists for coherent midsummer lighting.", "assetPaths": ["Assets/Scripts/Art/QualityBlockEnvironmentContext.cs"] },
     { "id": "replacement_art_slots", "weight": 5, "passed": true, "evidence": "Generated fallbacks remain replaceable by authored FBX/GLB art.", "assetPaths": ["Assets/Editor/QualityBlockArtReplacement.cs"] },
     { "id": "material_construction_lookdev_registry", "weight": 10, "passed": true, "evidence": "Per-component manufacture/material/angular-light-response registry exists.", "assetPaths": ["Assets/QA/material_construction_lookdev.json"] },
-    { "id": "native_4k_capture_pipeline", "weight": 8, "passed": true, "evidence": "Dedicated 3840x2160 hero/oblique/grazing capture code with pixel-exact 100% crops now exists.", "assetPaths": ["Assets/Editor/QualityBlock4KCapture.cs"] },
+    { "id": "native_4k_capture_pipeline", "weight": 8, "passed": true, "evidence": "Dedicated 3840x2160 hero/oblique/grazing capture code with pixel-exact 100% crops now rebuilds and validates metric ground microdetail before rendering.", "assetPaths": ["Assets/Editor/QualityBlock4KCapture.cs", "Assets/Editor/QualityBlockGroundMicrodetailUpgrade.cs"] },
     { "id": "multi_angle_capture_manifest", "weight": 5, "passed": true, "evidence": "Capture contract records exact view/crop paths and explicitly remains unrendered until Unity executes it.", "assetPaths": ["Assets/QA/4k_capture_manifest.json"] },
     { "id": "unity_compile_verification", "weight": 7, "passed": false, "evidence": "No actual Unity 6.3 editor/runner compile verification artifact exists yet.", "assetPaths": ["Assets/QA/unity_compile_verified.json"] }
   ],
   "blockers": ["unity_compile_verification"],
+  "latestRun": {
+    "startHead": "fcf6bbe3f2bb753697c1d4a065576380376a9de7",
+    "endHead": "5cb4dea619998b78845bb3a63a6171f71bc71907",
+    "commits": [
+      "c381e270cca70c81e57811a42f6be353816229fa",
+      "f8c9c9e256cca889c986e00a3349abd5cd461721",
+      "5cb4dea619998b78845bb3a63a6171f71bc71907"
+    ],
+    "verification": "GitHub source/static inspection only; latest commit has no CI status contexts and Unity 6.3 execution is unavailable in this run.",
+    "expectedVisualScoreImpact": [
+      "Texture/microdetail/texel fidelity: fixes per-face 0..1 UV scale mismatch and adds 1024px physical-scale micro maps for hero ground materials.",
+      "Material/PBR plausibility: adds constrained roughness/metallic variation and micro-normal response for galvanized steel, cast iron, mineral joints and damp concrete.",
+      "Temporal/LOD/aliasing stability: mipmaps, trilinear filtering and anisotropy are configured to reduce shimmer; actual points require render evidence."
+    ],
+    "nextBlocker": "Unity 6.3 editor/runner compile and native 4K render evidence; do not award Visual Fidelity points before this exists."
+  },
   "note": "Implementation Readiness measures source/pipeline coverage only. Visual Fidelity is unscored and cannot pass until real 3840x2160 Unity render evidence is captured and reviewed."
 }

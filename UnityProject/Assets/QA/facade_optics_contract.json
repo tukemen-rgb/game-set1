@@ -9,7 +9,10 @@
   "materials": [
     {
       "id": "facade_painted_rc",
-      "assetPath": "Assets/Art/GeneratedFacadeOptics/MAT_FacadePaintedRC.mat",
+      "assetPaths": [
+        "Assets/Art/GeneratedFacadeOptics/MAT_FacadePaintedRC_Main.mat",
+        "Assets/Art/GeneratedFacadeOptics/MAT_FacadePaintedRC_Stair.mat"
+      ],
       "construction": "reinforced-concrete substrate with cementitious leveling/render and aged exterior protective coating",
       "finish": "matte mineral-looking coating with low-frequency application/aging variation and sub-millimetric-to-millimetric aggregate relief",
       "baseColorSrgb": [0.63, 0.62, 0.58],

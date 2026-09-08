@@ -1,0 +1,23 @@
+{
+  "generatedUtc": "2026-09-08T13:40:30Z",
+  "readinessScore": 93,
+  "possibleScore": 100,
+  "visualFidelityStatus": "UNSCORED_UNTIL_REAL_4K_RENDER",
+  "checks": [
+    { "id": "danchi_high_granularity", "weight": 12, "passed": true, "evidence": "Dimensioned apartment subassemblies, fasteners, sash/rail/AC detail tooling exists.", "assetPaths": ["Assets/Editor/QualityBlockDanchiDetailUpgrade.cs"] },
+    { "id": "dimensioned_bevel_meshes", "weight": 6, "passed": true, "evidence": "Generated detail geometry has a non-razor-edge replacement pass.", "assetPaths": ["Assets/Editor/QualityBlockDetailBevelUpgrade.cs"] },
+    { "id": "danchi_lod0_lod3", "weight": 8, "passed": true, "evidence": "Danchi master geometry has explicit LOD staging.", "assetPaths": ["Assets/Editor/QualityBlockDanchiLodUpgrade.cs"] },
+    { "id": "tree_physical_hierarchy", "weight": 10, "passed": true, "evidence": "Root/trunk/branch/twig/leaf hierarchy tooling exists.", "assetPaths": ["Assets/Editor/QualityBlockTreeDetailUpgrade.cs"] },
+    { "id": "foliage_optics", "weight": 8, "passed": true, "evidence": "Two-sided foliage optics and transmission shader are present.", "assetPaths": ["Assets/Editor/QualityBlockFoliageOpticsUpgrade.cs", "Assets/Shaders/NewTownFoliageTransmission.shader"] },
+    { "id": "cause_based_weathering", "weight": 8, "passed": true, "evidence": "Weathering is driven by rain/splash/drain/contact/UV context rather than arbitrary grime.", "assetPaths": ["Assets/Editor/QualityBlockWeatheringUpgrade.cs"] },
+    { "id": "pbr_generation", "weight": 8, "passed": true, "evidence": "PBR material generation pipeline is present.", "assetPaths": ["Assets/Editor/QualityBlockPbrUpgrade.cs"] },
+    { "id": "physical_solar_context", "weight": 5, "passed": true, "evidence": "Solar direction/elevation context exists for coherent midsummer lighting.", "assetPaths": ["Assets/Scripts/Art/QualityBlockEnvironmentContext.cs"] },
+    { "id": "replacement_art_slots", "weight": 5, "passed": true, "evidence": "Generated fallbacks remain replaceable by authored FBX/GLB art.", "assetPaths": ["Assets/Editor/QualityBlockArtReplacement.cs"] },
+    { "id": "material_construction_lookdev_registry", "weight": 10, "passed": true, "evidence": "Per-component manufacture/material/angular-light-response registry exists.", "assetPaths": ["Assets/QA/material_construction_lookdev.json"] },
+    { "id": "native_4k_capture_pipeline", "weight": 8, "passed": true, "evidence": "Dedicated 3840x2160 hero/oblique/grazing capture code with pixel-exact 100% crops now exists.", "assetPaths": ["Assets/Editor/QualityBlock4KCapture.cs"] },
+    { "id": "multi_angle_capture_manifest", "weight": 5, "passed": true, "evidence": "Capture contract records exact view/crop paths and explicitly remains unrendered until Unity executes it.", "assetPaths": ["Assets/QA/4k_capture_manifest.json"] },
+    { "id": "unity_compile_verification", "weight": 7, "passed": false, "evidence": "No actual Unity 6.3 editor/runner compile verification artifact exists yet.", "assetPaths": ["Assets/QA/unity_compile_verified.json"] }
+  ],
+  "blockers": ["unity_compile_verification"],
+  "note": "Implementation Readiness measures source/pipeline coverage only. Visual Fidelity is unscored and cannot pass until real 3840x2160 Unity render evidence is captured and reviewed."
+}

@@ -1,0 +1,109 @@
+{
+  "schemaVersion": "1.0",
+  "generatedUtc": "2026-09-08T23:37:00Z",
+  "runtimeRenderVerified": false,
+  "visualFidelityStatus": "UNSCORED_UNTIL_REAL_4K_RENDER",
+  "intent": "Increase vegetation/natural complexity through maintained tree pits and cause-based low understory while preserving the benchmark's ordinary midsummer Japanese residential-estate character.",
+  "sceneAssumptions": {
+    "treeAnchorCount": 6,
+    "pavedTreePitCount": 4,
+    "grassGroundTreeCount": 2,
+    "dryBenchmark": true,
+    "noGameplayColliderChanges": true,
+    "prohibitedThemes": ["earthquake", "disaster", "reconstruction"]
+  },
+  "assemblies": [
+    {
+      "id": "maintained_paved_tree_pit",
+      "establishment": "Existing plaza paving is locally interrupted around planted trees; exposed root-zone soil is retained by small modular precast concrete edging rather than allowing the trunk to emerge directly through an undifferentiated paving slab.",
+      "nominalDimensions": "soil opening diameter 1.48-1.72 m depending on anchor; soil visual thickness 24 mm mostly embedded; 12 edging modules; edging section 150 x 80 mm with tangential length derived from pit circumference",
+      "materialsFinish": "dry mineral topsoil with compacted fine aggregate; matte non-metallic precast concrete edging with small physical chamfers",
+      "mounting": "soil disk is visually recessed into the paving top and edging modules follow the perimeter tangentially; generated art is collider-free and leaves the existing ground collision unchanged",
+      "interfaces": "trunk/root flare -> soil opening -> precast edging -> plaza paving; no unexplained dark painted ring is allowed",
+      "orientationExposure": "upward-facing, rain/sun exposed, high pedestrian-pressure edge on the circulation side",
+      "aging": "ordinary compaction, mild soil darkening near the trunk and slight concrete edge wear are permitted; damage/disaster cues are prohibited",
+      "geometryVsMaterial": "pit depth/edge silhouette and module gaps are geometry; soil grain and concrete microtexture remain material detail",
+      "lodPolicy": "tree-pit substrate and edging remain simple static geometry; added biological understory uses explicit LOD0/1/2/3",
+      "lookdevBrief": "At frontal view the pit must read as a maintained planting opening, not a brown decal. At grazing view the 80 mm edging height and physical chamfers should catch a narrow real highlight/shadow. At 100 percent crop the trunk must not appear to grow directly through paving."
+    },
+    {
+      "id": "cause_based_low_understory",
+      "establishment": "Sparse spontaneous/maintained low vegetation establishes within the root zone. Density is reduced toward the nearest pedestrian-pressure source and remains denser on protected sides instead of being distributed uniformly.",
+      "nominalDimensions": "plant height 0.18-0.42 m; leaf-rosette spread approximately 0.20-0.36 m at LOD0; paved pits use 7-9 source plants while grass-ground trees use 16-22 source plants before LOD reduction",
+      "materialsFinish": "thin dielectric foliage using the existing two-sided foliage transmission model; small green stems reuse non-metallic foliage material",
+      "mounting": "plants originate from the root-zone ground surface; no floating plants and no plants attached to concrete or metal",
+      "interfaces": "root-zone soil/grass -> stem -> leaf spray; circulation-facing sector has lower occupancy due to ordinary foot traffic/maintenance pressure",
+      "orientationExposure": "midsummer sun/sky context from the existing deterministic environment; individual rosettes have deterministic yaw and modest pitch variation",
+      "aging": "ordinary summer growth with modest size/color variation only; no dead-tree, storm, disaster or reconstruction narrative",
+      "geometryVsMaterial": "stem direction, rosette silhouette, spacing and LOD reduction are explicit geometry; leaf vein/color and transmitted-light response are material/shader detail",
+      "lodPolicy": "four renderer-distinct levels with animated cross-fade; plant population is progressively reduced and stems are removed after LOD1; visible LOD pop is an automatic fail",
+      "lookdevBrief": "Close view should reveal several independent low plants and small stems without a stamped circular pattern. Oblique view should show a lower-density pedestrian-facing sector. Far view should collapse smoothly without shimmer or a sudden green ring."
+    }
+  ],
+  "materials": [
+    {
+      "id": "root_zone_soil",
+      "sourceAsset": "Assets/Art/GeneratedPBR/PBR_DrySoil.mat",
+      "albedoGuidance": "dry warm-brown mineral soil; no baked lighting or black contact-shadow halo",
+      "roughnessRange": [0.90, 0.98],
+      "metallicRange": [0.0, 0.0],
+      "normalScaleGuidance": "fine soil/aggregate microrelief only; pit depth remains geometric",
+      "microstructure": "fine mineral grains, small aggregate and compaction variation",
+      "wetnessResponse": "not active in the dry benchmark; if a wet variant is later authored, albedo may darken and roughness may fall locally where water plausibly accumulates",
+      "uvAging": "no UV hue shift beyond mild ordinary summer desaturation",
+      "angularFresnelResponse": "weak dielectric grazing reflection; never metallic"
+    },
+    {
+      "id": "precast_tree_pit_edging",
+      "sourceAsset": "Assets/Art/GeneratedPBR/PBR_WashedConcrete.mat",
+      "albedoGuidance": "neutral aged precast concrete without painted edge highlights",
+      "roughnessRange": [0.84, 0.94],
+      "metallicRange": [0.0, 0.0],
+      "normalScaleGuidance": "small aggregate and pores; 80 mm section and chamfer are geometry",
+      "microstructure": "washed/aged cement paste with visible fine aggregate",
+      "wetnessResponse": "dry benchmark only; any future wet state must be source/catchment based",
+      "uvAging": "small exposure-driven lightening permitted, no stylized bleaching",
+      "angularFresnelResponse": "broad subdued dielectric grazing response"
+    },
+    {
+      "id": "understory_leaf",
+      "sourceAsset": "Assets/Art/GeneratedPBR/PBR_LeafMid_Transmission.mat",
+      "albedoGuidance": "midsummer green foliage with cluster-level variation; no emissive green",
+      "roughnessRange": [0.75, 0.90],
+      "metallicRange": [0.0, 0.0],
+      "normalScaleGuidance": "leaf micro-normal/vein response from the existing foliage material",
+      "microstructure": "thin leaf lamina with vein-scale normal variation",
+      "wetnessResponse": "dry benchmark; no generic wet sheen",
+      "uvAging": "small ordinary sun-exposure variation only",
+      "angularFresnelResponse": "two-sided dielectric leaf response with modest transmission under coherent midsummer sun"
+    }
+  ],
+  "qa": {
+    "requiredPatchCount": 6,
+    "requiredPavedPitCount": 4,
+    "requiredEdgingModulesPerPit": 12,
+    "requiredUnderstoryLodCount": 4,
+    "minimumDistinctLod0RendererCountsAcrossTrees": 4,
+    "requireAnimatedCrossFade": true,
+    "requireNoGeneratedColliders": true,
+    "requireNonPrimitiveMeshes": true,
+    "requireNonMetallicSoilAndConcrete": true,
+    "renderInspectionTargets": [
+      "oblique/vegetation_grounding",
+      "grazing/tree_shadow_contact",
+      "hero/ground_contact"
+    ],
+    "automaticFail": [
+      "tree trunk visibly emerging through uninterrupted plaza paving with no planting interface",
+      "uniform circular/stamped understory distribution immediately obvious at benchmark framing",
+      "floating vegetation or vegetation rooted in concrete/metal",
+      "visible Unity primitive mesh in ecology detail",
+      "metallic soil or concrete",
+      "severe foliage aliasing or shimmering",
+      "visible understory LOD pop",
+      "disaster theme",
+      "claiming vegetation visual quality without an actual Unity render"
+    ]
+  },
+  "verification": "Source/contract only. Unity 6000.3.0f1 compile and native 3840x2160 render evidence are still required before any Visual Fidelity points are awarded."
+}

@@ -134,13 +134,14 @@ public static class QualityBlock4KCapture
         // Rebuild the highest-quality generated fallback before capture. Ground detail is the final
         // structural generated-art pass and internally rebuilds the foliage/danchi/tree quality chain.
         // Metric microdetail and broad base-ground anti-repeat PBR are then layered without changing
-        // gameplay collision. Physical grade/contact interfaces are applied last so foundation toes,
-        // hardscape shoulders and eroded desire-path edges are present in every scored crop.
+        // gameplay collision. Physical grade/contact interfaces and the facade optical stack are
+        // applied before validation so every scored crop contains the current construction/material work.
         // Authored replacement art still wins through art slots. Godot/base stay untouched.
         QualityBlockGroundDetailUpgrade.BuildDetailedGround();
         QualityBlockGroundMicrodetailUpgrade.BuildAndApply();
         QualityBlockGroundBaseSurfaceUpgrade.BuildAndApply();
         QualityBlockGroundContactInterfaceUpgrade.ApplyToOpenScene();
+        QualityBlockFacadeOpticsUpgrade.BuildAndApply();
         QualityBlockDanchiDetailUpgrade.ValidateOpenScene();
         QualityBlockDetailBevelUpgrade.ValidateOpenScene();
         QualityBlockDanchiLodUpgrade.ValidateOpenScene();
@@ -150,6 +151,7 @@ public static class QualityBlock4KCapture
         QualityBlockGroundMicrodetailUpgrade.Validate();
         QualityBlockGroundBaseSurfaceUpgrade.Validate();
         QualityBlockGroundContactInterfaceUpgrade.ValidateOpenScene();
+        QualityBlockFacadeOpticsUpgrade.ValidateOpenScene();
         QualityBlockMaterialConstructionQA.ValidateRegistry();
         QualityBlockVisualFidelityGate.ValidateGateConfig();
         ValidateCaptureContract();

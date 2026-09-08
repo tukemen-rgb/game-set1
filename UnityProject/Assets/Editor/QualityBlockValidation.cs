@@ -13,14 +13,15 @@ public static class QualityBlockValidation
     [MenuItem("NewTown/QA/Validate Quality Block")]
     public static void Validate()
     {
-        // Validate the same geometry + PBR scene that is intended for screenshots/review.
-        QualityBlockMeshUpgrade.BuildMeshQualityBlock();
+        // Validate the exact scene intended for review, including replacement slots and LODs.
+        QualityBlockArtReplacement.BuildReplacementReadyQualityBlock();
         EditorSceneManager.OpenScene(ScenePath, OpenSceneMode.Single);
 
         string[] required = {
-            "QualityBlock1990s", "Danchi", "ParkEntrance", "Trees", "StreetFurniture",
+            "QualityBlock1990s", "Danchi", "ParkEntrance", "Trees", "StreetFurniture", "ArtSlots",
             "MainBlock", "StairTower", "SlideChute", "BenchSeat", "LampPole", "QualityCamera",
-            "RoofParapetFront", "StairEntranceCanopy", "SlideLadderRailL", "SlideLadderRailR"
+            "RoofParapetFront", "StairEntranceCanopy", "SlideLadderRailL", "SlideLadderRailR",
+            "ARTSLOT_Danchi", "ARTSLOT_Slide", "ARTSLOT_Tree_0", "ARTSLOT_Tree_5"
         };
 
         var all = Resources.FindObjectsOfTypeAll<GameObject>()
@@ -102,7 +103,48 @@ public static class QualityBlockValidation
             !crownRenderer.sharedMaterial.name.StartsWith("PBR_Leaf", StringComparison.Ordinal))
             throw new Exception("Crown_0_0 is not using the generated PBR foliage material.");
 
-        Debug.Log($"QualityBlock validation passed. objects={all.Length}, balconies={balconyCount}, dividers={dividerCount}, AC={acCount}, crowns={crownCount}, PBR={requiredPbr.Length}, meshes={requiredMeshes.Length}");
+        ValidateArtSlots(all);
+
+        Debug.Log($"QualityBlock validation passed. objects={all.Length}, balconies={balconyCount}, dividers={dividerCount}, AC={acCount}, crowns={crownCount}, PBR={requiredPbr.Length}, meshes={requiredMeshes.Length}, artSlots=8");
+    }
+
+    private static void ValidateArtSlots(GameObject[] all)
+    {
+        var slots = all
+            .Select(x => x.GetComponent<QualityBlockArtSlot>())
+            .Where(x => x != null)
+            .ToArray();
+        if (slots.Length != 8)
+            throw new Exception($"Expected 8 stable art slots (danchi, slide, six trees), got {slots.Length}.");
+
+        string[] expectedIds = {
+            "danchi.main", "park.slide",
+            "vegetation.tree.0", "vegetation.tree.1", "vegetation.tree.2",
+            "vegetation.tree.3", "vegetation.tree.4", "vegetation.tree.5"
+        };
+        foreach (string id in expectedIds)
+            if (!slots.Any(x => string.Equals(x.SlotId, id, StringComparison.Ordinal)))
+                throw new Exception($"Missing art slot id: {id}");
+
+        foreach (var slot in slots)
+        {
+            if (slot.FallbackRoot == null)
+                throw new Exception($"Art slot has no generated fallback: {slot.SlotId}");
+            if (slot.AuthoredInstance == null && !slot.FallbackRoot.activeSelf)
+                throw new Exception($"Fallback is unexpectedly hidden without authored replacement: {slot.SlotId}");
+            if (slot.AuthoredInstance != null && slot.FallbackRoot.activeSelf)
+                throw new Exception($"Fallback and authored art are both visible: {slot.SlotId}");
+        }
+
+        foreach (var slot in slots.Where(x => x.SlotId.StartsWith("vegetation.tree.", StringComparison.Ordinal)))
+        {
+            if (slot.AuthoredInstance != null) continue;
+            var lodGroup = slot.GetComponent<LODGroup>();
+            if (lodGroup == null)
+                throw new Exception($"Generated tree fallback lacks LODGroup: {slot.SlotId}");
+            if (lodGroup.GetLODs().Length != 3)
+                throw new Exception($"Generated tree fallback expected 3 LOD levels: {slot.SlotId}");
+        }
     }
 
     static void AssertMaterial(GameObject[] all, string objectName, string expectedMaterial)

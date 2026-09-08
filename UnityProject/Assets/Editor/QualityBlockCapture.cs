@@ -14,13 +14,14 @@ public static class QualityBlockCapture
     {
         // Always rebuild the exact review target: generated PBR materials, authored geometry pass,
         // replacement-ready art slots, physically derived midsummer sun, source-driven weathering,
-        // high-granularity danchi construction, dimension-baked bevels and explicit LOD0-LOD3
-        // component reductions. If matching authored prefabs/FBX assets exist they still supersede
-        // the generated fallback automatically.
-        QualityBlockDanchiLodUpgrade.BuildLodDetailedQualityBlock();
+        // high-granularity danchi construction, dimension-baked bevels, explicit danchi LOD0-LOD3,
+        // and physically connected root/trunk/branch/twig/leaf tree masters with their own four LODs.
+        // If matching authored prefabs/FBX assets exist they still supersede generated fallbacks.
+        QualityBlockTreeDetailUpgrade.BuildDetailedTrees();
         QualityBlockDanchiDetailUpgrade.ValidateOpenScene();
         QualityBlockDetailBevelUpgrade.ValidateOpenScene();
         QualityBlockDanchiLodUpgrade.ValidateOpenScene();
+        QualityBlockTreeDetailUpgrade.ValidateOpenScene();
         EditorSceneManager.OpenScene(ScenePath, OpenSceneMode.Single);
 
         var cam = Camera.main;

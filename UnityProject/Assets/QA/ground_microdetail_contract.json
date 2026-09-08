@@ -1,0 +1,79 @@
+{
+  "schemaVersion": "1.0.0",
+  "generatorVersion": "ground-microdetail-v1.0.0",
+  "visualTarget": "Native-4K close-up stability with real-metre texture scale and physically plausible micro-normal/roughness response; no baked highlights or arbitrary dirt.",
+  "runtimeRenderVerified": false,
+  "metricUvPolicy": {
+    "uv0Unit": "1.0 UV unit = 1.0 metre before material tiling",
+    "projection": "dominant-normal planar projection on generated high-detail meshes",
+    "reason": "prevents a 24 mm frame lip and 588 mm grate bar from sharing identical 0..1 per-face texture scale",
+    "scope": "Assets/Art/GeneratedDetailMeshes/GM_HD_*"
+  },
+  "profiles": [
+    {
+      "material": "MAT_GalvanizedDrainGrate",
+      "family": "aged hot-dip galvanized ferrous grate/frame",
+      "textureResolution": 1024,
+      "physicalTileMeters": 0.064,
+      "normalAmplitudeMm": 0.12,
+      "roughnessRange": [0.48, 0.70],
+      "metallicRange": [0.75, 1.0],
+      "baseColorSrgb": [0.30, 0.32, 0.32],
+      "microstructure": "subtle zinc crystal/oxidation relief and subdued mottling; not chrome, glitter or orange-rust noise",
+      "grazingExpectation": "bar tops and frame lips carry tighter metallic grazing reflections while recesses stay darker"
+    },
+    {
+      "material": "MAT_CastIronUtilityCover",
+      "family": "dark oxidized cast ferrous utility cover",
+      "textureResolution": 1024,
+      "physicalTileMeters": 0.120,
+      "normalAmplitudeMm": 0.35,
+      "roughnessRange": [0.55, 0.78],
+      "metallicRange": [0.65, 0.95],
+      "baseColorSrgb": [0.15, 0.16, 0.15],
+      "microstructure": "fine cast grain and shallow pitting with no painted edge highlight",
+      "grazingExpectation": "rim/raised geometry reflects more strongly at shallow view angles without becoming chrome"
+    },
+    {
+      "material": "MAT_PavingJointRecess",
+      "family": "rough mineral contraction-joint recess",
+      "textureResolution": 1024,
+      "physicalTileMeters": 0.080,
+      "normalAmplitudeMm": 0.30,
+      "roughnessRange": [0.88, 0.98],
+      "metallicRange": [0.0, 0.0],
+      "baseColorSrgb": [0.11, 0.105, 0.095],
+      "microstructure": "retained mineral grit only; no oily gloss and no floating decal-line appearance",
+      "grazingExpectation": "recess stays dark/rough; physical joint lip carries only broad dielectric lift"
+    },
+    {
+      "material": "MAT_DampDrainChannel",
+      "family": "damp sheltered concrete drainage channel",
+      "textureResolution": 1024,
+      "physicalTileMeters": 0.160,
+      "normalAmplitudeMm": 0.90,
+      "roughnessRange": [0.58, 0.82],
+      "metallicRange": [0.0, 0.0],
+      "baseColorSrgb": [0.24, 0.25, 0.22],
+      "microstructure": "rough mineral aggregate; macro dampness/runoff remains cause-based weathering rather than baked texture",
+      "grazingExpectation": "broad low dielectric sheen only where light reaches through grate; never mirror-wet"
+    }
+  ],
+  "qaRules": [
+    "All generated microdetail maps are deterministic and tileable.",
+    "Normal maps must import as TextureImporterType.NormalMap with mipmaps and trilinear filtering.",
+    "Metallic/smoothness masks must import in linear space; R=metallic and A=smoothness for Unity Standard shader.",
+    "Material texture tiling must derive from the recorded physical tile size and metric UVs, not object dimensions.",
+    "Macro dirt, rust streaks, splash and runoff are prohibited from these maps and belong to cause-based weathering.",
+    "No material may contain a painted/baked sun highlight.",
+    "Cementitious/mineral profiles remain non-metallic.",
+    "Galvanized steel and cast iron retain metallic response without chrome-like smoothness.",
+    "Visual Fidelity points remain unavailable until actual 3840x2160 Unity renders and 100-percent crops are reviewed."
+  ],
+  "expectedVisualScoreImpact": {
+    "textureMicrodetailTexelFidelity": "direct positive impact expected; fixes inconsistent per-face texel scale and scalar-only hero ground materials",
+    "materialPbrPhysicalPlausibility": "direct positive impact expected through normal/roughness/metallic variation constrained to recorded physical ranges",
+    "temporalAliasingStability": "mipmapped trilinear/aniso sampling is intended to reduce high-frequency shimmer, but real render evidence is still required"
+  },
+  "verificationStatus": "IMPLEMENTED_NOT_RENDER_VERIFIED"
+}

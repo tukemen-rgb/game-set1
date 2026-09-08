@@ -131,14 +131,16 @@ public static class QualityBlock4KCapture
 
     private static void PrepareAndValidateScene()
     {
-        // Rebuild the highest-quality generated fallback before capture. Authored replacement art still
-        // wins through the existing art slots. This does not change Godot or any base branch state.
-        QualityBlockFoliageOpticsUpgrade.BuildFoliageOptics();
+        // Rebuild the highest-quality generated fallback before capture. Ground detail is the final
+        // generated-art pass and internally rebuilds the foliage/danchi/tree quality chain first.
+        // Authored replacement art still wins through the existing art slots. Godot/base stay untouched.
+        QualityBlockGroundDetailUpgrade.BuildDetailedGround();
         QualityBlockDanchiDetailUpgrade.ValidateOpenScene();
         QualityBlockDetailBevelUpgrade.ValidateOpenScene();
         QualityBlockDanchiLodUpgrade.ValidateOpenScene();
         QualityBlockTreeDetailUpgrade.ValidateOpenScene();
         QualityBlockFoliageOpticsUpgrade.ValidateOpenScene();
+        QualityBlockGroundDetailUpgrade.ValidateOpenScene();
         QualityBlockMaterialConstructionQA.ValidateRegistry();
         QualityBlockVisualFidelityGate.ValidateGateConfig();
         ValidateCaptureContract();

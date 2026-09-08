@@ -9,19 +9,23 @@ public static class QualityBlockValidation
     private const string ScenePath = "Assets/Scenes/QualityBlock1990s.unity";
     private const string PbrRoot = "Assets/Art/GeneratedPBR";
     private const string MeshRoot = "Assets/Art/GeneratedMeshes";
+    private const string WeatheringRoot = "Assets/Art/GeneratedWeathering";
 
     [MenuItem("NewTown/QA/Validate Quality Block")]
     public static void Validate()
     {
-        // Validate the exact scene intended for review, including replacement slots and LODs.
-        QualityBlockArtReplacement.BuildReplacementReadyQualityBlock();
+        // Validate the exact scene intended for review, including replacement slots, LODs,
+        // physical summer lighting and source-driven weathering.
+        QualityBlockWeatheringUpgrade.BuildWeatheredQualityBlock();
         EditorSceneManager.OpenScene(ScenePath, OpenSceneMode.Single);
 
         string[] required = {
             "QualityBlock1990s", "Danchi", "ParkEntrance", "Trees", "StreetFurniture", "ArtSlots",
             "MainBlock", "StairTower", "SlideChute", "BenchSeat", "LampPole", "QualityCamera",
             "RoofParapetFront", "StairEntranceCanopy", "SlideLadderRailL", "SlideLadderRailR",
-            "ARTSLOT_Danchi", "ARTSLOT_Slide", "ARTSLOT_Tree_0", "ARTSLOT_Tree_5"
+            "ARTSLOT_Danchi", "ARTSLOT_Slide", "ARTSLOT_Tree_0", "ARTSLOT_Tree_5",
+            "PhysicalEnvironmentContext", "WeatheringOverlays",
+            "Weathering_GroundSplash_MainBlock", "Weathering_DrainRunoff_RainGutter"
         };
 
         var all = Resources.FindObjectsOfTypeAll<GameObject>()
@@ -104,8 +108,65 @@ public static class QualityBlockValidation
             throw new Exception("Crown_0_0 is not using the generated PBR foliage material.");
 
         ValidateArtSlots(all);
+        ValidatePhysicalEnvironment(all);
 
-        Debug.Log($"QualityBlock validation passed. objects={all.Length}, balconies={balconyCount}, dividers={dividerCount}, AC={acCount}, crowns={crownCount}, PBR={requiredPbr.Length}, meshes={requiredMeshes.Length}, artSlots=8");
+        Debug.Log($"QualityBlock validation passed. objects={all.Length}, balconies={balconyCount}, dividers={dividerCount}, AC={acCount}, crowns={crownCount}, PBR={requiredPbr.Length}, meshes={requiredMeshes.Length}, artSlots=8, contextualWeathering=yes");
+    }
+
+    private static void ValidatePhysicalEnvironment(GameObject[] all)
+    {
+        var context = all
+            .Select(x => x.GetComponent<QualityBlockEnvironmentContext>())
+            .FirstOrDefault(x => x != null);
+        if (context == null) throw new Exception("Physical environment context is missing.");
+
+        SolarSample sample = context.CalculateSolarSample();
+        if (Mathf.Abs(sample.ElevationDegrees - 58.1f) > 1.0f)
+            throw new Exception($"Unexpected midsummer solar elevation: {sample.ElevationDegrees:F2} deg.");
+        if (Mathf.Abs(sample.AzimuthDegrees - 244.2f) > 1.5f)
+            throw new Exception($"Unexpected midsummer solar azimuth: {sample.AzimuthDegrees:F2} deg.");
+        if (Mathf.Abs(sample.HorizontalShadowPerMetre - 0.62f) > 0.05f)
+            throw new Exception($"Unexpected shadow-length ratio: {sample.HorizontalShadowPerMetre:F3} m per metre height.");
+
+        var sun = all.FirstOrDefault(x => x.name == "SummerSun")?.GetComponent<Light>();
+        if (sun == null || sun.type != LightType.Directional)
+            throw new Exception("SummerSun directional light is missing.");
+        if (Vector3.Dot(sun.transform.forward.normalized, sample.RayDirection.normalized) < 0.999f)
+            throw new Exception("SummerSun transform is inconsistent with the physical solar model.");
+        if (sun.shadows != LightShadows.Soft)
+            throw new Exception("SummerSun must use soft shadows.");
+
+        var weathered = all
+            .Select(x => x.GetComponent<QualityBlockWeatheringSurface>())
+            .Where(x => x != null)
+            .ToArray();
+        if (weathered.Length < 100)
+            throw new Exception($"Expected broad cause-based weathering metadata coverage, got {weathered.Length} surfaces.");
+
+        int rainStreaks = all.Count(x => x.name.StartsWith("Weathering_RainSill_Window_", StringComparison.Ordinal));
+        int rustBleeds = all.Count(x => x.name.StartsWith("Weathering_RustRailBase", StringComparison.Ordinal));
+        if (rainStreaks != 30)
+            throw new Exception($"Each window should source one rain runoff trace; got {rainStreaks}.");
+        if (rustBleeds != 60)
+            throw new Exception($"Each balcony should have two rail-base rust sources; got {rustBleeds}.");
+
+        string[] weatheringMaterials = { "MAT_RainRunoff", "MAT_GroundSplash", "MAT_RustBleed" };
+        foreach (string name in weatheringMaterials)
+        {
+            var mat = AssetDatabase.LoadAssetAtPath<Material>($"{WeatheringRoot}/{name}.mat");
+            if (mat == null) throw new Exception($"Missing generated contextual weathering material: {name}");
+        }
+
+        foreach (var surface in weathered)
+        {
+            if ((surface.StainSources & NewTownStainSource.GroundSplash) != 0 && surface.SplashExposure <= 0f)
+                throw new Exception($"Ground splash source has zero splash exposure: {surface.gameObject.name}");
+            if ((surface.StainSources & NewTownStainSource.UVExposure) != 0 && surface.SunExposure <= 0f)
+                throw new Exception($"UV weathering source has zero sun exposure: {surface.gameObject.name}");
+            if ((surface.StainSources & NewTownStainSource.FerrousFixture) != 0 &&
+                surface.gameObject.name.StartsWith("Window_", StringComparison.Ordinal))
+                throw new Exception($"Impossible rust source assigned to non-ferrous window context: {surface.gameObject.name}");
+        }
     }
 
     private static void ValidateArtSlots(GameObject[] all)

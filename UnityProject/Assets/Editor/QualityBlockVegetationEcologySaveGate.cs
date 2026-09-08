@@ -38,13 +38,14 @@ public static class QualityBlockVegetationEcologySaveGate
         applying = true;
         try
         {
+            QualityBlockVegetationEcologyContractQA.Validate();
             QualityBlockVegetationEcologyUpgrade.ApplyToOpenScene();
             QualityBlockVegetationEcologyUpgrade.ValidateOpenScene();
         }
         catch (Exception ex)
         {
             throw new InvalidOperationException(
-                "Benchmark save blocked: vegetation ecology detail failed its required structural QA.", ex);
+                "Benchmark save blocked: vegetation ecology contract/detail failed its required structural QA.", ex);
         }
         finally
         {

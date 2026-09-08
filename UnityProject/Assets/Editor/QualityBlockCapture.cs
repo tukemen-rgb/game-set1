@@ -14,10 +14,11 @@ public static class QualityBlockCapture
     {
         // Always rebuild the exact review target: generated PBR materials, authored geometry pass,
         // replacement-ready art slots, physically derived midsummer sun, source-driven weathering,
-        // and the high-granularity construction fallback for the danchi. If matching authored
-        // prefabs/FBX assets exist they still supersede the generated fallback automatically.
-        QualityBlockDanchiDetailUpgrade.BuildDetailedWeatheredQualityBlock();
+        // high-granularity danchi construction and the dimension-baked bevel pass. If matching
+        // authored prefabs/FBX assets exist they still supersede the generated fallback automatically.
+        QualityBlockDetailBevelUpgrade.BuildBeveledDetailedQualityBlock();
         QualityBlockDanchiDetailUpgrade.ValidateOpenScene();
+        QualityBlockDetailBevelUpgrade.ValidateOpenScene();
         EditorSceneManager.OpenScene(ScenePath, OpenSceneMode.Single);
 
         var cam = Camera.main;

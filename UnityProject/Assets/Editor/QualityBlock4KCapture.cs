@@ -135,12 +135,14 @@ public static class QualityBlock4KCapture
         // generated-art pass and internally rebuilds the foliage/danchi/tree quality chain first.
         // Authored replacement art still wins through the existing art slots. Godot/base stay untouched.
         QualityBlockGroundDetailUpgrade.BuildDetailedGround();
+        QualityBlockGroundMicrodetailUpgrade.BuildAndApply();
         QualityBlockDanchiDetailUpgrade.ValidateOpenScene();
         QualityBlockDetailBevelUpgrade.ValidateOpenScene();
         QualityBlockDanchiLodUpgrade.ValidateOpenScene();
         QualityBlockTreeDetailUpgrade.ValidateOpenScene();
         QualityBlockFoliageOpticsUpgrade.ValidateOpenScene();
         QualityBlockGroundDetailUpgrade.ValidateOpenScene();
+        QualityBlockGroundMicrodetailUpgrade.Validate();
         QualityBlockMaterialConstructionQA.ValidateRegistry();
         QualityBlockVisualFidelityGate.ValidateGateConfig();
         ValidateCaptureContract();

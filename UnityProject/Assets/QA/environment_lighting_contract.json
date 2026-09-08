@@ -1,0 +1,118 @@
+{
+  "schemaVersion": "1.0",
+  "status": "PENDING_REAL_UNITY_4K_RENDER",
+  "purpose": "Physical outdoor illumination and reflection contract for the 4K live-action fidelity target. This contract does not award Visual Fidelity points without actual Unity render evidence.",
+  "visualFidelityCategoryImpact": [
+    "lighting_shadows_reflections",
+    "material_pbr_physical_plausibility",
+    "cinematic_image_quality_composition_color_exposure"
+  ],
+  "benchmarkContext": {
+    "latitudeDegrees": 35.6,
+    "dayOfYear": 213,
+    "localApparentSolarTimeHours": 14.0,
+    "recentRain": false,
+    "seasonIntent": "midsummer Japanese new-town afternoon",
+    "sunPolicy": "The same SummerSun directional light must drive scene shadows and the procedural sky sun disk. A second contradictory key light is forbidden."
+  },
+  "sky": {
+    "shader": "Skybox/Procedural",
+    "materialPath": "Assets/Art/GeneratedPBR/MAT_MidsummerProceduralSky.mat",
+    "sunDisk": "high_quality_where_supported",
+    "sunSize": 0.028,
+    "sunSizeConvergence": 7.0,
+    "atmosphereThickness": 1.08,
+    "skyTintLinearRgb": [0.43, 0.58, 0.78],
+    "groundColorLinearRgb": [0.34, 0.32, 0.28],
+    "exposure": 1.05,
+    "forbidden": [
+      "painted_or_baked_sun_highlights_on_scene_materials",
+      "sky_sun_direction_inconsistent_with_SummerSun_shadows",
+      "flat_ambient_color_used_as_primary_daylight_fill"
+    ]
+  },
+  "ambientAndDefaultSpecular": {
+    "ambientSource": "Skybox",
+    "ambientIntensity": 0.78,
+    "defaultReflectionMode": "Skybox",
+    "defaultReflectionResolution": 1024,
+    "reflectionIntensity": 0.86,
+    "reflectionBounces": 1,
+    "intent": "Sky fill and default specular energy must respond to the same visible outdoor environment rather than an unrelated flat ambient wash."
+  },
+  "localReflectionProbes": [
+    {
+      "name": "ReflectionProbe_DanchiFacade",
+      "positionMetres": [-8.0, 5.7, -2.5],
+      "sizeMetres": [34.0, 17.0, 27.0],
+      "centerMetresLocal": [0.0, 1.2, -3.0],
+      "resolution": 512,
+      "mode": "Realtime",
+      "refreshMode": "ViaScripting",
+      "timeSlicing": "NoTimeSlicing",
+      "boxProjection": true,
+      "hdr": true,
+      "importance": 100,
+      "primarySubjects": ["apartment_glazing", "aluminum_sash", "balcony_rail", "facade_coating"]
+    },
+    {
+      "name": "ReflectionProbe_ParkGround",
+      "positionMetres": [10.0, 4.2, 2.5],
+      "sizeMetres": [31.0, 13.0, 30.0],
+      "centerMetresLocal": [-1.5, 0.8, -2.5],
+      "resolution": 512,
+      "mode": "Realtime",
+      "refreshMode": "ViaScripting",
+      "timeSlicing": "NoTimeSlicing",
+      "boxProjection": true,
+      "hdr": true,
+      "importance": 90,
+      "primarySubjects": ["ground_infrastructure", "slide_metal", "wetness_sensitive_surfaces", "vegetation_context"]
+    }
+  ],
+  "rendererProbePolicy": {
+    "usage": "BlendProbesAndSkybox",
+    "reason": "Outdoor objects must transition from local reflection context back to default sky reflection rather than exhibit hard cubemap boundaries.",
+    "preCaptureRefreshRequired": true,
+    "everyFrameProbeRefreshForbidden": true
+  },
+  "atmosphere": {
+    "fogMode": "Linear",
+    "fogColorLinearRgb": [0.63, 0.73, 0.82],
+    "startDistanceMetres": 72.0,
+    "endDistanceMetres": 148.0,
+    "causalIntent": "subtle humid midsummer aerial depth only; no near-field blue wash"
+  },
+  "camera": {
+    "hdrRequired": true,
+    "msaaAllowedRequired": true,
+    "clearFlags": "Skybox",
+    "captureResolution": [3840, 2160]
+  },
+  "lookdevGenerationBrief": {
+    "renderEvidenceRequired": ["hero", "oblique", "grazing"],
+    "facadeGlass": "At frontal view, retain readable but subdued non-emissive interior backing. At oblique view, sky/building/ground reflection contribution should rise. At grazing view, specular/Fresnel response should become dominant without turning the pane into cyan chrome or a painted highlight.",
+    "paintedMetal": "Rail and painted steel should show narrow, roughness-controlled environment highlights that change with camera angle and geometry, never fixed bright streaks in albedo.",
+    "concrete": "Rough concrete should retain broad low-energy response and readable micro-normal grazing detail without mirror-like reflections.",
+    "shadowAndSky": "Visible sun position, key-light direction and cast-shadow direction must agree in all benchmark views.",
+    "exposure": "Sunlit facade texture and cloud/sky structure must retain highlight detail; shaded recesses and non-emissive window interiors may be dark but should not collapse into featureless black everywhere.",
+    "probeSeams": "No hard reflection transition, cubemap orientation discontinuity, or sudden brightness jump may be visible while moving through overlapping probe volumes."
+  },
+  "criticalFailMappings": [
+    "obviously_painted_or_baked_highlights",
+    "materially_impossible_metallic_or_specular_values",
+    "inconsistent_sun_shadow_direction",
+    "major_light_leak",
+    "missing_required_construction_or_material_metadata",
+    "claiming_render_quality_without_actual_render"
+  ],
+  "verification": {
+    "compileVerified": false,
+    "native4kRenderVerified": false,
+    "probeSeamVerified": false,
+    "glassFresnelBalanceVerified": false,
+    "highlightClippingVerified": false,
+    "visualFidelityPointsAwarded": 0,
+    "note": "Implementation metadata only. Real Unity 3840x2160 captures and 100% crops are mandatory before visual scoring."
+  }
+}

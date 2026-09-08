@@ -120,6 +120,11 @@ public static class QualityBlockEnvironmentLightingUpgrade
         // by RefreshRealtimeProbesImmediately() immediately before benchmark capture.
         DynamicGI.UpdateEnvironment();
 
+        // The same physical lighting state must feed a deterministic global display transform.
+        // This is applied here so every 4K capture path receives highlight rolloff/shadow toe
+        // without relying on a separate manual menu action.
+        QualityBlockCinematicImageUpgrade.ApplyToOpenScene();
+
         EditorUtility.SetDirty(facade);
         EditorUtility.SetDirty(park);
         EditorUtility.SetDirty(sun);
@@ -217,7 +222,9 @@ public static class QualityBlockEnvironmentLightingUpgrade
         if (wrong != null)
             throw new InvalidOperationException($"Outdoor renderer does not blend local probes with skybox: {wrong.gameObject.name}");
 
-        Debug.Log("Physical sky/reflection environment valid: one coherent solar source, sky-derived fill/specular, two scripted HDR local probes, outdoor probe/sky blending, HDR camera.");
+        QualityBlockCinematicImageUpgrade.ValidateOpenScene();
+
+        Debug.Log("Physical sky/reflection environment valid: one coherent solar source, sky-derived fill/specular, two scripted HDR local probes, outdoor probe/sky blending, HDR camera, deterministic filmic display transform.");
     }
 
     private static Material GetOrCreateProceduralSky()

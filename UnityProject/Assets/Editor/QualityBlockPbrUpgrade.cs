@@ -9,6 +9,8 @@ using UnityEngine;
 /// Generates a deterministic, tileable PBR starter library for the Unity quality block and
 /// applies it to the 1990s new-town benchmark scene. The generated textures are a baseline
 /// that can later be replaced by authored/photogrammetry assets without changing scene code.
+/// Contextual weathering is intentionally applied in a separate pass so the base material does
+/// not bake physically unexplained rain streaks or stains into every surface.
 ///
 /// Menu: NewTown > Materials > Build PBR Library and Rebuild Quality Block
 /// Output: Assets/Art/GeneratedPBR/*.{png,mat}
@@ -199,7 +201,9 @@ public static class QualityBlockPbrUpgrade
             case SurfaceKind.Dirt:
                 return Mathf.Clamp01(baseNoise * 0.82f + PebbleNoise(u, v, seed) * 0.18f);
             case SurfaceKind.Concrete:
-                return Mathf.Clamp01(baseNoise * 0.72f + StreakNoise(u, seed) * 0.28f);
+                // Neutral aggregate/pitting only. Directional stains belong to the contextual
+                // weathering pass where a sill, drain, ground edge, or metal source exists.
+                return Mathf.Clamp01(baseNoise * 0.88f + PebbleNoise(u, v, seed + 41) * 0.12f);
             case SurfaceKind.WashedConcrete:
                 return Mathf.Clamp01(baseNoise * 0.45f + AggregateNoise(u, v, seed) * 0.55f);
             case SurfaceKind.Paving:
@@ -223,11 +227,6 @@ public static class QualityBlockPbrUpgrade
             // Daily wear: sparse dry/bare flecks, not damage or disaster marks.
             float bare = Mathf.SmoothStep(0.80f, 0.98f, FbmPeriodic(u + 0.17f, v + 0.31f, p.Seed + 91));
             c = Color.Lerp(c, new Color(0.34f, 0.25f, 0.13f), bare * 0.42f);
-        }
-        else if (p.Kind == SurfaceKind.Concrete)
-        {
-            float streak = StreakNoise(u, p.Seed + 13);
-            c *= Mathf.Lerp(0.86f, 1.03f, streak);
         }
         else if (p.Kind == SurfaceKind.WashedConcrete)
         {
@@ -279,13 +278,6 @@ public static class QualityBlockPbrUpgrade
         float a = Mathf.Sin(Mathf.PI * 2f * (u * 37f + v * 41f) + seed * 0.17f);
         float b = Mathf.Cos(Mathf.PI * 2f * (u * 53f - v * 31f) + seed * 0.23f);
         return Mathf.Clamp01((a * b) * 0.5f + 0.5f);
-    }
-
-    static float StreakNoise(float u, int seed)
-    {
-        float a = Mathf.Sin(Mathf.PI * 2f * u * 7f + seed * 0.13f);
-        float b = Mathf.Sin(Mathf.PI * 2f * u * 19f + seed * 0.07f);
-        return Mathf.Clamp01(0.5f + a * 0.24f + b * 0.13f);
     }
 
     static float AggregateNoise(float u, float v, int seed)

@@ -1,5 +1,5 @@
 {
-  "generatedUtc": "2026-09-08T15:47:30Z",
+  "generatedUtc": "2026-09-08T15:49:30Z",
   "readinessScore": 93,
   "possibleScore": 100,
   "visualFidelityStatus": "UNSCORED_UNTIL_REAL_4K_RENDER",
@@ -21,19 +21,20 @@
   "blockers": ["unity_compile_verification"],
   "latestRun": {
     "startHead": "fcf6bbe3f2bb753697c1d4a065576380376a9de7",
-    "endHead": "5cb4dea619998b78845bb3a63a6171f71bc71907",
-    "commits": [
+    "substantiveWorkHead": "5cb4dea619998b78845bb3a63a6171f71bc71907",
+    "substantiveCommits": [
       "c381e270cca70c81e57811a42f6be353816229fa",
       "f8c9c9e256cca889c986e00a3349abd5cd461721",
       "5cb4dea619998b78845bb3a63a6171f71bc71907"
     ],
-    "verification": "GitHub source/static inspection only; latest commit has no CI status contexts and Unity 6.3 execution is unavailable in this run.",
+    "verification": "GitHub source/static inspection only; substantive work head had no CI status contexts and Unity 6.3 execution is unavailable in this run.",
     "expectedVisualScoreImpact": [
       "Texture/microdetail/texel fidelity: fixes per-face 0..1 UV scale mismatch and adds 1024px physical-scale micro maps for hero ground materials.",
       "Material/PBR plausibility: adds constrained roughness/metallic variation and micro-normal response for galvanized steel, cast iron, mineral joints and damp concrete.",
       "Temporal/LOD/aliasing stability: mipmaps, trilinear filtering and anisotropy are configured to reduce shimmer; actual points require render evidence."
     ],
-    "nextBlocker": "Unity 6.3 editor/runner compile and native 4K render evidence; do not award Visual Fidelity points before this exists."
+    "nextBlocker": "Unity 6.3 editor/runner compile and native 4K render evidence; do not award Visual Fidelity points before this exists.",
+    "recordingNote": "Bookkeeping commits that write this readiness file are intentionally excluded from substantiveCommits to avoid impossible self-referential commit hashes."
   },
   "note": "Implementation Readiness measures source/pipeline coverage only. Visual Fidelity is unscored and cannot pass until real 3840x2160 Unity render evidence is captured and reviewed."
 }

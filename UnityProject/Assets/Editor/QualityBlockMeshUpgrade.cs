@@ -56,9 +56,9 @@ public static class QualityBlockMeshUpgrade
         {
             string n = mf.gameObject.name;
             if (n.StartsWith("Trunk_", StringComparison.Ordinal))
-                mf.sharedMesh = trunks[Mathf.Abs(StableNameHash(n)) % trunks.Length];
+                mf.sharedMesh = trunks[(StableNameHash(n) & 0x7fffffff) % trunks.Length];
             else if (n.StartsWith("Crown_", StringComparison.Ordinal))
-                mf.sharedMesh = crowns[Mathf.Abs(StableNameHash(n)) % crowns.Length];
+                mf.sharedMesh = crowns[(StableNameHash(n) & 0x7fffffff) % crowns.Length];
             else if (n == "SlideChute")
             {
                 mf.sharedMesh = slide;
@@ -78,10 +78,15 @@ public static class QualityBlockMeshUpgrade
         if (park == null || chute == null) return;
 
         var blue = GameObject.Find("SlideLegL")?.GetComponent<Renderer>()?.sharedMaterial;
-        if (blue == null) blue = new Material(Shader.Find("Standard")) { color = new Color(0.19f, 0.48f, 0.62f) };
+        if (blue == null)
+        {
+            var shader = Shader.Find("Standard");
+            if (shader == null) throw new InvalidOperationException("Standard shader not found for slide geometry pass.");
+            blue = new Material(shader) { color = new Color(0.19f, 0.48f, 0.62f) };
+        }
 
-        // The reference language is a simple steel-pipe neighborhood slide: ladder, rungs and
-        // paired handrails rather than a contemporary molded-plastic play structure.
+        // A simple steel-pipe neighborhood slide: ladder, rungs and paired handrails rather
+        // than a contemporary molded-plastic play structure.
         AddPipeIfMissing("SlideLadderRailL", park.transform,
             new Vector3(12.12f, 0.12f, -5.88f), new Vector3(12.12f, 2.15f, -5.34f), 0.055f, blue);
         AddPipeIfMissing("SlideLadderRailR", park.transform,
@@ -242,10 +247,11 @@ public static class QualityBlockMeshUpgrade
         vertices.Add(new Vector3(0f, -0.50f, 0f));
         uv.Add(new Vector2(0.5f, 0f));
 
+        // Clockwise winding when viewed from outside, matching Unity's front-face convention.
         for (int lon = 0; lon < longitudeSegments; lon++)
         {
             int next = (lon + 1) % longitudeSegments;
-            triangles.Add(0); triangles.Add(1 + lon); triangles.Add(1 + next);
+            triangles.Add(0); triangles.Add(1 + next); triangles.Add(1 + lon);
         }
 
         for (int lat = 0; lat < latitudeSegments - 2; lat++)
@@ -259,8 +265,8 @@ public static class QualityBlockMeshUpgrade
                 int b = row + next;
                 int c = nextRow + lon;
                 int d = nextRow + next;
-                triangles.Add(a); triangles.Add(c); triangles.Add(b);
-                triangles.Add(b); triangles.Add(c); triangles.Add(d);
+                triangles.Add(a); triangles.Add(b); triangles.Add(c);
+                triangles.Add(b); triangles.Add(d); triangles.Add(c);
             }
         }
 
@@ -268,7 +274,7 @@ public static class QualityBlockMeshUpgrade
         for (int lon = 0; lon < longitudeSegments; lon++)
         {
             int next = (lon + 1) % longitudeSegments;
-            triangles.Add(lastRow + lon); triangles.Add(bottom); triangles.Add(lastRow + next);
+            triangles.Add(lastRow + lon); triangles.Add(lastRow + next); triangles.Add(bottom);
         }
 
         var mesh = new Mesh { name = "GM_FoliageClump" };

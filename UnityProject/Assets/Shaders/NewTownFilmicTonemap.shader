@@ -39,8 +39,11 @@ Shader "Hidden/NewTown/FilmicTonemap"
                 return saturate((x * (a * x + b)) / (x * (c * x + d) + e));
             }
 
-            fixed4 frag(v2f_img i) : SV_Target
+            float4 frag(v2f_img i) : SV_Target
             {
+                // Keep full floating-point range through exposure and shoulder compression. The
+                // output is clamped only after tonemapping so scene-linear highlights are not lost
+                // before the filmic rolloff can operate.
                 float3 sceneLinear = max(tex2D(_MainTex, i.uv).rgb, 0.0);
                 float3 color = AcesApprox(sceneLinear * _ExposureMultiplier);
 
@@ -55,7 +58,7 @@ Shader "Hidden/NewTown/FilmicTonemap"
                 float3 shadowWeight = saturate(1.0 - color * 4.0);
                 color += _ShadowSoftening * color * shadowWeight;
 
-                return fixed4(saturate(color), 1.0);
+                return float4(saturate(color), 1.0);
             }
             ENDCG
         }

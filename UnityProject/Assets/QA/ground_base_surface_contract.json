@@ -1,0 +1,104 @@
+{
+  "version": "1.0.0",
+  "runtimeRenderVerified": false,
+  "visualFidelityStatus": "UNSCORED_UNTIL_REAL_4K_RENDER",
+  "uvPolicy": "Broad horizontal ground surfaces use serialized material texture transforms derived from renderer world bounds so macro/detail texture density is expressed in real metres instead of per-primitive 0..1 UV scale.",
+  "antiRepetitionPolicy": "Each surface uses a long-period macro map plus a separate short-period detail albedo/normal layer. Paving macro/albedo contains no painted joint grid because physical paving joints are modeled as geometry by QualityBlockGroundDetailUpgrade.",
+  "prohibited": [
+    "painted or baked directional highlights",
+    "painted paving joints that duplicate modeled joints",
+    "material variation without a material/manufacturing cause",
+    "earthquake/disaster/reconstruction scene content"
+  ],
+  "profiles": [
+    {
+      "id": "grass_verge_metric",
+      "materialFamily": "maintained summer turf over compacted topsoil",
+      "macroTileMeters": 8.0,
+      "detailTileMeters": 0.42,
+      "roughnessMin": 0.86,
+      "roughnessMax": 0.96,
+      "normalAmplitudeMacroMm": 3.0,
+      "normalAmplitudeDetailMm": 8.0,
+      "macroColorVariation": 0.10,
+      "detailColorVariation": 0.08,
+      "metallic": 0.0,
+      "physicalReasoning": "Long-wave turf vigor/thinning follows moisture and mowing heterogeneity; short-wave variation represents blades, thatch and small exposed soil flecks rather than random dirt.",
+      "frontLightResponse": "Very broad, weak non-metallic highlight; blade/detail normal keeps the surface from reading as a flat green card.",
+      "grazingLightResponse": "Rough grazing response remains broad; small normal relief creates restrained sparkle breakup without metallic glints.",
+      "shadeResponse": "Color saturation decreases modestly but local blade/soil contrast remains visible through normal and albedo detail."
+    },
+    {
+      "id": "warm_paving_metric",
+      "materialFamily": "aged mineral plaza/path paving with physical saw-cut/recess joints modeled separately",
+      "macroTileMeters": 7.2,
+      "detailTileMeters": 0.36,
+      "roughnessMin": 0.80,
+      "roughnessMax": 0.93,
+      "normalAmplitudeMacroMm": 0.8,
+      "normalAmplitudeDetailMm": 1.6,
+      "macroColorVariation": 0.055,
+      "detailColorVariation": 0.045,
+      "metallic": 0.0,
+      "physicalReasoning": "Macro variation represents aggregate/cement-batch and exposure differences; detail represents fine aggregate and surface abrasion. No joint line, sun highlight or arbitrary grime is baked into the maps.",
+      "frontLightResponse": "Diffuse mineral response with a weak broad dielectric highlight; physical joint geometry supplies joint shadowing.",
+      "grazingLightResponse": "Aggregate micro-normal slightly strengthens the broad grazing highlight without producing polished or metallic streaks.",
+      "shadeResponse": "Aggregate contrast remains restrained and readable; no painted AO or light direction is present in base color."
+    },
+    {
+      "id": "compacted_soil_metric",
+      "materialFamily": "dry compacted pedestrian shortcut soil with fine gravel",
+      "macroTileMeters": 6.4,
+      "detailTileMeters": 0.30,
+      "roughnessMin": 0.90,
+      "roughnessMax": 0.98,
+      "normalAmplitudeMacroMm": 4.0,
+      "normalAmplitudeDetailMm": 5.5,
+      "macroColorVariation": 0.09,
+      "detailColorVariation": 0.07,
+      "metallic": 0.0,
+      "physicalReasoning": "Macro value changes represent compaction/moisture retention and fines distribution; detail represents grains/pebbles. Foot-traffic direction and rain runoff remain separate cause-based overlays/geometry.",
+      "frontLightResponse": "Extremely broad matte response with small granular breakup and no glossy wet look in the dry benchmark.",
+      "grazingLightResponse": "Grain relief becomes more legible but remains rough and non-metallic.",
+      "shadeResponse": "Dry soil remains matte; broad macro tone persists without directional lighting baked into albedo."
+    }
+  ],
+  "surfaces": [
+    {
+      "objectName": "GrassField",
+      "profileId": "grass_verge_metric",
+      "interfaceLogic": "Underlying continuous turf field; paving, soil and curb assemblies sit above it while later transition geometry may expose/trim verge edges.",
+      "exposure": "sun/rain/upward-facing/ground-contact",
+      "aging": "summer UV, mowing/thatch, localized thinning near repeated pedestrian access"
+    },
+    {
+      "objectName": "DanchiPlaza",
+      "profileId": "warm_paving_metric",
+      "interfaceLogic": "Mineral plaza slab; physical 12 mm joint recess geometry and precast curb modules define construction seams rather than texture lines.",
+      "exposure": "sun/rain/upward-facing/foot-traffic",
+      "aging": "abrasion, aggregate exposure, UV and wash variation; stains only where drainage/contact sources exist"
+    },
+    {
+      "objectName": "ParkPath",
+      "profileId": "warm_paving_metric",
+      "interfaceLogic": "Mineral park path bounded by modeled precast curb modules; world-phase texture offset avoids an arbitrary UV restart at object origin.",
+      "exposure": "sun/rain/upward-facing/foot-traffic",
+      "aging": "pedestrian abrasion and rainfall exposure with no baked directional grime"
+    },
+    {
+      "objectName": "WornPathA",
+      "profileId": "compacted_soil_metric",
+      "interfaceLogic": "Compacted shortcut soil between low edging; broad field material is continuous while edging geometry supplies a physical transition.",
+      "exposure": "sun/rain/upward-facing/foot-traffic/ground-contact",
+      "aging": "compaction, fines migration and dryness; runoff remains cause-based"
+    },
+    {
+      "objectName": "WornPathB",
+      "profileId": "compacted_soil_metric",
+      "interfaceLogic": "Compacted soil shortcut with globally phased macro/detail texture transforms so the material scale does not reset visually at the object origin.",
+      "exposure": "sun/rain/upward-facing/foot-traffic/ground-contact",
+      "aging": "compaction, fines migration and dryness; runoff remains cause-based"
+    }
+  ],
+  "lookdevBrief": "At native 4K inspect hero ground_contact, oblique vegetation_grounding and grazing tree_shadow_contact crops. Reject if paving repeats as an obvious grid, if physical joint geometry is visually duplicated by texture, if grass/soil reads as a flat card, or if texture scale changes between adjacent surfaces without a physical reason."
+}

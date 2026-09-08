@@ -12,9 +12,9 @@ public static class QualityBlockCapture
     [MenuItem("NewTown/QA/Capture Quality Block PNG")]
     public static void Capture()
     {
-        // Always rebuild the review scene through the PBR path so screenshots cannot silently
-        // regress to the older flat-color benchmark scene.
-        QualityBlockPbrUpgrade.BuildPbrQualityBlock();
+        // Always rebuild the exact review target: generated PBR materials plus the authored
+        // geometry pass. This prevents screenshots from silently regressing to primitives.
+        QualityBlockMeshUpgrade.BuildMeshQualityBlock();
         EditorSceneManager.OpenScene(ScenePath, OpenSceneMode.Single);
 
         var cam = Camera.main;

@@ -54,10 +54,7 @@ public static class QualityBlockDanchiLodUpgrade
 
         RemoveExistingLodArtifacts(root);
 
-        MeshRenderer[] sourceRenderers = root.GetComponentsInChildren<MeshRenderer>(true)
-            .Where(r => !IsUnderProxyRoot(r.transform, root.transform))
-            .OrderBy(r => HierarchyPath(r.transform, root.transform), StringComparer.Ordinal)
-            .ToArray();
+        MeshRenderer[] sourceRenderers = GetSourceRenderers(root);
         if (sourceRenderers.Length == 0)
             throw new InvalidOperationException("DanchiHighDetail contains no source renderers for LOD generation.");
 
@@ -69,23 +66,11 @@ public static class QualityBlockDanchiLodUpgrade
         var lod1 = new List<Renderer>();
         var lod2 = new List<Renderer>();
         var lod3 = new List<Renderer>();
-        int microCount = 0;
-        int fineCount = 0;
-        int mediumCount = 0;
-        int macroCount = 0;
 
         foreach (MeshRenderer source in sourceRenderers)
         {
             lod0.Add(source);
             int retainedThrough = RetainedThroughLod(source.gameObject.name);
-            switch (retainedThrough)
-            {
-                case 0: microCount++; break;
-                case 1: fineCount++; break;
-                case 2: mediumCount++; break;
-                default: macroCount++; break;
-            }
-
             if (retainedThrough >= 1)
                 lod1.Add(CreateProxyRenderer(source, lod1Root.transform, 1));
             if (retainedThrough >= 2)
@@ -98,8 +83,7 @@ public static class QualityBlockDanchiLodUpgrade
             throw new InvalidOperationException(
                 $"LOD classification produced an empty level: LOD1={lod1.Count}, LOD2={lod2.Count}, LOD3={lod3.Count}.");
 
-        var group = root.GetComponent<LODGroup>();
-        if (group == null) group = root.AddComponent<LODGroup>();
+        var group = root.AddComponent<LODGroup>();
         group.SetLODs(new[]
         {
             new LOD(Lod0Transition, lod0.ToArray()),
@@ -111,13 +95,6 @@ public static class QualityBlockDanchiLodUpgrade
         group.animateCrossFading = true;
         group.RecalculateBounds();
 
-        var manifest = root.GetComponent<QualityBlockDanchiLodManifest>();
-        if (manifest == null) manifest = root.AddComponent<QualityBlockDanchiLodManifest>();
-        manifest.Configure(
-            lod0.Count, lod1.Count, lod2.Count, lod3.Count,
-            microCount, fineCount, mediumCount, macroCount,
-            Lod0Transition, Lod1Transition, Lod2Transition, Lod3Cull);
-
         EditorSceneManager.MarkSceneDirty(EditorSceneManager.GetActiveScene());
     }
 
@@ -127,30 +104,31 @@ public static class QualityBlockDanchiLodUpgrade
         GameObject root = FindSceneObject(DetailRootName);
         if (root == null) throw new InvalidOperationException("DanchiHighDetail is missing.");
 
-        var manifest = root.GetComponent<QualityBlockDanchiLodManifest>();
-        if (manifest == null)
-            throw new InvalidOperationException("Danchi LOD manifest is missing; LOD pass did not run.");
-
         var group = root.GetComponent<LODGroup>();
         if (group == null) throw new InvalidOperationException("DanchiHighDetail LODGroup is missing.");
         LOD[] lods = group.GetLODs();
         if (lods.Length != 4)
             throw new InvalidOperationException($"Expected exactly four danchi detail LOD levels, got {lods.Length}.");
 
-        if (!(manifest.Lod0RendererCount > manifest.Lod1RendererCount &&
-              manifest.Lod1RendererCount >= manifest.Lod2RendererCount &&
-              manifest.Lod2RendererCount >= manifest.Lod3RendererCount &&
-              manifest.Lod3RendererCount > 0))
+        int lod0Count = lods[0].renderers.Length;
+        int lod1Count = lods[1].renderers.Length;
+        int lod2Count = lods[2].renderers.Length;
+        int lod3Count = lods[3].renderers.Length;
+        if (!(lod0Count > lod1Count && lod1Count >= lod2Count && lod2Count >= lod3Count && lod3Count > 0))
         {
             throw new InvalidOperationException(
                 $"LOD renderer counts are not a valid progressive reduction: " +
-                $"{manifest.Lod0RendererCount}/{manifest.Lod1RendererCount}/" +
-                $"{manifest.Lod2RendererCount}/{manifest.Lod3RendererCount}.");
+                $"{lod0Count}/{lod1Count}/{lod2Count}/{lod3Count}.");
         }
 
-        if (manifest.MicroRendererCount <= 0 || manifest.MacroRendererCount <= 0)
+        MeshRenderer[] sources = GetSourceRenderers(root);
+        int microCount = sources.Count(r => RetainedThroughLod(r.gameObject.name) == 0);
+        int fineCount = sources.Count(r => RetainedThroughLod(r.gameObject.name) == 1);
+        int mediumCount = sources.Count(r => RetainedThroughLod(r.gameObject.name) == 2);
+        int macroCount = sources.Count(r => RetainedThroughLod(r.gameObject.name) == 3);
+        if (microCount <= 0 || macroCount <= 0)
             throw new InvalidOperationException(
-                $"Physical-scale classification is incomplete: micro={manifest.MicroRendererCount}, macro={manifest.MacroRendererCount}.");
+                $"Physical-scale classification is incomplete: micro={microCount}, macro={macroCount}.");
 
         if (Mathf.Abs(lods[0].screenRelativeTransitionHeight - Lod0Transition) > 0.0001f ||
             Mathf.Abs(lods[1].screenRelativeTransitionHeight - Lod1Transition) > 0.0001f ||
@@ -161,16 +139,22 @@ public static class QualityBlockDanchiLodUpgrade
         if (group.fadeMode != LODFadeMode.CrossFade || !group.animateCrossFading)
             throw new InvalidOperationException("Danchi detail LODs must use animated cross-fading to reduce visible component popping.");
 
-        int proxyCount = root.GetComponentsInChildren<QualityBlockDanchiLodProxyMarker>(true).Length;
-        if (proxyCount != 3)
-            throw new InvalidOperationException($"Expected three LOD proxy roots, got {proxyCount}.");
+        if (root.transform.Find(Lod1RootName) == null ||
+            root.transform.Find(Lod2RootName) == null ||
+            root.transform.Find(Lod3RootName) == null)
+            throw new InvalidOperationException("One or more danchi LOD proxy roots are missing.");
+
+        int proxyRendererCount = root.transform.Find(Lod1RootName).GetComponentsInChildren<Renderer>(true).Length +
+                                 root.transform.Find(Lod2RootName).GetComponentsInChildren<Renderer>(true).Length +
+                                 root.transform.Find(Lod3RootName).GetComponentsInChildren<Renderer>(true).Length;
+        if (proxyRendererCount != lod1Count + lod2Count + lod3Count)
+            throw new InvalidOperationException(
+                $"LOD proxy renderer ownership mismatch: proxies={proxyRendererCount}, declared={lod1Count + lod2Count + lod3Count}.");
 
         Debug.Log(
             $"Danchi detail LOD validation passed structurally: renderers " +
-            $"LOD0={manifest.Lod0RendererCount}, LOD1={manifest.Lod1RendererCount}, " +
-            $"LOD2={manifest.Lod2RendererCount}, LOD3={manifest.Lod3RendererCount}; " +
-            $"physical tiers micro/fine/medium/macro={manifest.MicroRendererCount}/" +
-            $"{manifest.FineRendererCount}/{manifest.MediumRendererCount}/{manifest.MacroRendererCount}. " +
+            $"LOD0={lod0Count}, LOD1={lod1Count}, LOD2={lod2Count}, LOD3={lod3Count}; " +
+            $"physical tiers micro/fine/medium/macro={microCount}/{fineCount}/{mediumCount}/{macroCount}. " +
             "Actual cross-fade timing, shadow continuity and silhouette transitions still require Unity render inspection.");
     }
 
@@ -184,15 +168,12 @@ public static class QualityBlockDanchiLodUpgrade
 
         var oldGroup = root.GetComponent<LODGroup>();
         if (oldGroup != null) UnityEngine.Object.DestroyImmediate(oldGroup);
-        var oldManifest = root.GetComponent<QualityBlockDanchiLodManifest>();
-        if (oldManifest != null) UnityEngine.Object.DestroyImmediate(oldManifest);
     }
 
     private static GameObject CreateProxyRoot(string name, Transform parent)
     {
         var go = new GameObject(name);
         go.transform.SetParent(parent, false);
-        go.AddComponent<QualityBlockDanchiLodProxyMarker>();
         return go;
     }
 
@@ -219,6 +200,14 @@ public static class QualityBlockDanchiLodUpgrade
         renderer.lightProbeUsage = source.lightProbeUsage;
         renderer.reflectionProbeUsage = source.reflectionProbeUsage;
         return renderer;
+    }
+
+    private static MeshRenderer[] GetSourceRenderers(GameObject root)
+    {
+        return root.GetComponentsInChildren<MeshRenderer>(true)
+            .Where(r => !IsUnderProxyRoot(r.transform, root.transform))
+            .OrderBy(r => HierarchyPath(r.transform, root.transform), StringComparer.Ordinal)
+            .ToArray();
     }
 
     /// <summary>
@@ -263,7 +252,8 @@ public static class QualityBlockDanchiLodUpgrade
         Transform current = transform;
         while (current != null && current != detailRoot)
         {
-            if (current.GetComponent<QualityBlockDanchiLodProxyMarker>() != null) return true;
+            if (current.name == Lod1RootName || current.name == Lod2RootName || current.name == Lod3RootName)
+                return true;
             current = current.parent;
         }
         return false;
@@ -298,55 +288,5 @@ public static class QualityBlockDanchiLodUpgrade
     {
         return Resources.FindObjectsOfTypeAll<GameObject>()
             .FirstOrDefault(x => x.scene.IsValid() && x.name == name);
-    }
-}
-
-[DisallowMultipleComponent]
-public sealed class QualityBlockDanchiLodProxyMarker : MonoBehaviour
-{
-}
-
-[DisallowMultipleComponent]
-public sealed class QualityBlockDanchiLodManifest : MonoBehaviour
-{
-    [SerializeField] private int lod0RendererCount;
-    [SerializeField] private int lod1RendererCount;
-    [SerializeField] private int lod2RendererCount;
-    [SerializeField] private int lod3RendererCount;
-    [SerializeField] private int microRendererCount;
-    [SerializeField] private int fineRendererCount;
-    [SerializeField] private int mediumRendererCount;
-    [SerializeField] private int macroRendererCount;
-    [SerializeField] private float lod0Transition;
-    [SerializeField] private float lod1Transition;
-    [SerializeField] private float lod2Transition;
-    [SerializeField] private float lod3Cull;
-
-    public int Lod0RendererCount => lod0RendererCount;
-    public int Lod1RendererCount => lod1RendererCount;
-    public int Lod2RendererCount => lod2RendererCount;
-    public int Lod3RendererCount => lod3RendererCount;
-    public int MicroRendererCount => microRendererCount;
-    public int FineRendererCount => fineRendererCount;
-    public int MediumRendererCount => mediumRendererCount;
-    public int MacroRendererCount => macroRendererCount;
-
-    public void Configure(
-        int lod0, int lod1, int lod2, int lod3,
-        int micro, int fine, int medium, int macro,
-        float transition0, float transition1, float transition2, float cull3)
-    {
-        lod0RendererCount = lod0;
-        lod1RendererCount = lod1;
-        lod2RendererCount = lod2;
-        lod3RendererCount = lod3;
-        microRendererCount = micro;
-        fineRendererCount = fine;
-        mediumRendererCount = medium;
-        macroRendererCount = macro;
-        lod0Transition = transition0;
-        lod1Transition = transition1;
-        lod2Transition = transition2;
-        lod3Cull = cull3;
     }
 }

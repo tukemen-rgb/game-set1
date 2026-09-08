@@ -1,0 +1,86 @@
+{
+  "schemaVersion": "1.0",
+  "pipeline": "Built-in Render Pipeline",
+  "purpose": "Reduce shadow crawling, contact detachment, jagged thin geometry and LOD instability without hiding defects in post-processing.",
+  "qualitySettings": {
+    "shadows": "HardAndSoft",
+    "shadowResolution": "VeryHigh",
+    "shadowProjection": "stableFit",
+    "shadowCascades": 4,
+    "shadowCascade4Split": [0.10, 0.25, 0.50],
+    "shadowDistanceMeters": 72.0,
+    "shadowNearPlaneOffset": 2.0,
+    "configuredMsaaSamples": 8,
+    "minimumAcceptedConfiguredMsaaSamples": 4,
+    "lodBias": 2.0,
+    "maximumLodLevel": 0,
+    "dynamicResolutionAllowed": false,
+    "anisotropicFiltering": "ForceEnable"
+  },
+  "summerSun": {
+    "singleCoherentDirectionalSource": true,
+    "softShadows": true,
+    "shadowResolution": "VeryHigh",
+    "shadowStrength": 0.92,
+    "shadowBias": 0.025,
+    "shadowNormalBias": 0.38,
+    "shadowNearPlaneMeters": 0.10,
+    "notes": "Bias is deliberately constrained: excessive bias creates peter-panning/light leaks, while insufficient bias creates self-shadow acne. Final acceptance is render-based."
+  },
+  "thinGeometry": {
+    "targets": [
+      "balcony rails",
+      "window sash and rails",
+      "drain grating bars",
+      "branches and leaf geometry",
+      "utility brackets and pipes"
+    ],
+    "strategy": [
+      "forward multisample anti-aliasing",
+      "native 3840x2160 benchmark rendering",
+      "stable directional shadow projection",
+      "animated LOD cross-fade",
+      "no post sharpen used to manufacture edge detail"
+    ],
+    "transparentGlazingCastsOpaqueShadow": false
+  },
+  "temporalAndLod": {
+    "multiLevelLodGroupsRequireCrossFade": true,
+    "animatedCrossFadeRequired": true,
+    "cameraMotionAcceptance": "No visible LOD pop, severe shadow crawl or geometry shimmer in actual moving-camera verification.",
+    "stillFrameAcceptance": "100% crops must not show objectionable stair-stepping on hero rails, sash, grating or branch silhouettes."
+  },
+  "benchmarkEvidence": {
+    "actualRenderRequired": true,
+    "nativeResolution": [3840, 2160],
+    "views": ["hero", "oblique", "grazing"],
+    "priorityCrops": [
+      "hero/facade_center",
+      "hero/ground_contact",
+      "oblique/construction_depth",
+      "oblique/balcony_services",
+      "grazing/sash_rail_response",
+      "grazing/tree_shadow_contact"
+    ],
+    "doNotAwardVisualPointsFromConfigurationAlone": true
+  },
+  "visualFidelityGateMapping": {
+    "lightingShadowsReflections": "Potential impact only until render review: contact integrity, shadow direction coherence, cascade stability and absence of light leaks.",
+    "temporalLodAliasingStability": "Potential impact only until render review: silhouette edge quality, shadow shimmer and LOD transitions.",
+    "criticalDefects": {
+      "severeAliasingOrShimmering": "automatic FAIL",
+      "visibleLodPop": "automatic FAIL",
+      "majorLightLeak": "automatic FAIL",
+      "inconsistentSunShadowDirection": "automatic FAIL"
+    }
+  },
+  "forbiddenShortcuts": [
+    "Painted or baked contact shadows/highlights used as a substitute for light transport",
+    "Post sharpening used to fake missing geometry or texture fidelity",
+    "Excessive blur used to conceal aliasing",
+    "Shadow bias increased until real contacts visibly detach",
+    "Transparent window planes casting opaque card shadows",
+    "Claiming stable 4K quality without an actual Unity render"
+  ],
+  "verificationStatus": "IMPLEMENTED_CONFIGURATION_UNVERIFIED_NO_UNITY_RUNNER"
+}

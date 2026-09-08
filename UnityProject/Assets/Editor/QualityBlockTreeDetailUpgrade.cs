@@ -30,15 +30,6 @@ public static class QualityBlockTreeDetailUpgrade
     private const float Lod2Transition = 0.065f;
     private const float Lod3Cull = 0.018f;
 
-    private static readonly string[] SegmentMeshes =
-    {
-        "GM_TreeRootFlare",
-        "GM_TreeTrunkSegment",
-        "GM_TreePrimaryBranch",
-        "GM_TreeSecondaryBranch",
-        "GM_TreeTwig"
-    };
-
     [MenuItem("NewTown/Geometry/Build High-Detail Tree Masters + LODs")]
     public static void BuildDetailedTrees()
     {
@@ -179,6 +170,16 @@ public static class QualityBlockTreeDetailUpgrade
             if (legacy.Any(r => r.enabled))
                 throw new InvalidOperationException($"Tree {treeIndex} legacy trunk/crown renderer is still enabled.");
 
+            Collider trunkCollider = slot.FallbackRoot.GetComponentsInChildren<Collider>(true)
+                .FirstOrDefault(c => c.gameObject.name == $"Trunk_{treeIndex}");
+            Collider[] crownColliders = slot.FallbackRoot.GetComponentsInChildren<Collider>(true)
+                .Where(c => c.gameObject.name.StartsWith($"Crown_{treeIndex}_", StringComparison.Ordinal))
+                .ToArray();
+            if (trunkCollider == null || !trunkCollider.enabled)
+                throw new InvalidOperationException($"Tree {treeIndex} requires an enabled simple trunk gameplay collider.");
+            if (crownColliders.Any(c => c.enabled))
+                throw new InvalidOperationException($"Tree {treeIndex} crown art colliders must be disabled; collision stays separated on the trunk.");
+
             validated++;
         }
 
@@ -258,7 +259,8 @@ public static class QualityBlockTreeDetailUpgrade
                     CreateSegment($"Twig_{p}_{s}_{t}", primaryAssembly, twigStart, twigTip,
                         0.030f, "GM_TreeTwig", bark);
 
-                    int keep = clusterOrdinal % 8 == 0 ? 3 : (clusterOrdinal % 4 == 0 ? 2 : 1);
+                    int keep = clusterOrdinal % 8 == 0 ? 3 :
+                               (clusterOrdinal % 4 == 0 ? 2 : (clusterOrdinal % 2 == 0 ? 1 : 0));
                     Material leafMaterial = ((treeIndex + clusterOrdinal) & 1) == 0 ? leafDark : leafMid;
                     CreateLeafCluster(primaryAssembly, treeIndex, clusterOrdinal, keep, twigTip,
                         secondaryDir, leafMaterial);
@@ -382,7 +384,8 @@ public static class QualityBlockTreeDetailUpgrade
         {
             if (objectName.EndsWith("Keep3", StringComparison.Ordinal)) return 3;
             if (objectName.EndsWith("Keep2", StringComparison.Ordinal)) return 2;
-            return 1;
+            if (objectName.EndsWith("Keep1", StringComparison.Ordinal)) return 1;
+            return 0;
         }
         return 1;
     }
@@ -431,6 +434,17 @@ public static class QualityBlockTreeDetailUpgrade
             if (renderer.gameObject.name == $"Trunk_{treeIndex}" ||
                 renderer.gameObject.name.StartsWith($"Crown_{treeIndex}_", StringComparison.Ordinal))
                 renderer.enabled = false;
+        }
+
+        // Keep collision intentionally cheaper than art: one simple trunk collider remains for
+        // gameplay, while invisible spherical crown colliders are disabled so the player does not
+        // collide with empty foliage volume. This preserves collider/art separation as detail rises.
+        foreach (Collider collider in fallbackRoot.GetComponentsInChildren<Collider>(true))
+        {
+            if (collider.gameObject.name == $"Trunk_{treeIndex}")
+                collider.enabled = true;
+            else if (collider.gameObject.name.StartsWith($"Crown_{treeIndex}_", StringComparison.Ordinal))
+                collider.enabled = false;
         }
     }
 

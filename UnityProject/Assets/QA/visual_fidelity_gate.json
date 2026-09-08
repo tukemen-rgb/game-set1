@@ -1,0 +1,120 @@
+{
+  "gateVersion": "1.0",
+  "visualPassThreshold": 92,
+  "requiredRender": {
+    "width": 3840,
+    "height": 2160,
+    "require100PercentCrops": true,
+    "requiredViews": [
+      "hero",
+      "oblique",
+      "grazing"
+    ]
+  },
+  "categories": [
+    {
+      "id": "geometry_construction",
+      "label": "Geometry & construction fidelity",
+      "weight": 20,
+      "hardMinimum": 18
+    },
+    {
+      "id": "material_pbr",
+      "label": "Material/PBR physical plausibility",
+      "weight": 20,
+      "hardMinimum": 18
+    },
+    {
+      "id": "lighting_shadows_reflections",
+      "label": "Lighting/shadows/reflections",
+      "weight": 15,
+      "hardMinimum": 13
+    },
+    {
+      "id": "texture_microdetail",
+      "label": "Texture/microdetail/texel fidelity",
+      "weight": 10,
+      "hardMinimum": 9
+    },
+    {
+      "id": "weathering_causality",
+      "label": "Weathering/context causality",
+      "weight": 10,
+      "hardMinimum": 9
+    },
+    {
+      "id": "vegetation_natural_complexity",
+      "label": "Vegetation/natural complexity",
+      "weight": 8,
+      "hardMinimum": 7
+    },
+    {
+      "id": "period_authenticity",
+      "label": "Period accuracy/scene authenticity",
+      "weight": 7,
+      "hardMinimum": 6
+    },
+    {
+      "id": "cinematic_image",
+      "label": "Cinematic image quality/composition/color/exposure",
+      "weight": 5,
+      "hardMinimum": 4
+    },
+    {
+      "id": "temporal_lod_aliasing",
+      "label": "Temporal/LOD/aliasing stability",
+      "weight": 5,
+      "hardMinimum": 4
+    }
+  ],
+  "criticalDefects": [
+    {
+      "id": "visible_primitive_placeholder",
+      "description": "Visible primitive or placeholder geometry in benchmark framing"
+    },
+    {
+      "id": "baked_or_painted_highlights",
+      "description": "Obviously painted or baked lighting/highlights in base color"
+    },
+    {
+      "id": "impossible_material_physics",
+      "description": "Material uses physically implausible metallic/specular/roughness behavior"
+    },
+    {
+      "id": "obvious_repetition",
+      "description": "Repeated texture/module pattern is immediately obvious"
+    },
+    {
+      "id": "hero_geometry_intersection",
+      "description": "Floating or interpenetrating hero geometry"
+    },
+    {
+      "id": "sun_shadow_inconsistency",
+      "description": "Sun and cast-shadow direction are inconsistent"
+    },
+    {
+      "id": "forbidden_disaster_theme",
+      "description": "Earthquake/disaster/reconstruction theme is present"
+    },
+    {
+      "id": "severe_aliasing_or_shimmer",
+      "description": "Severe aliasing, temporal shimmer or unstable fine detail"
+    },
+    {
+      "id": "visible_lod_pop",
+      "description": "LOD transition is visibly distracting"
+    },
+    {
+      "id": "major_light_leak",
+      "description": "Major light leak or impossible illumination is visible"
+    },
+    {
+      "id": "missing_construction_material_metadata",
+      "description": "Required construction/material provenance metadata is missing"
+    },
+    {
+      "id": "unverified_render_claim",
+      "description": "Visual quality is claimed without actual Unity render evidence"
+    }
+  ]
+}

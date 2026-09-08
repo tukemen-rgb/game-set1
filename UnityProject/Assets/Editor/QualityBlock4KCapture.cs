@@ -8,8 +8,8 @@ using UnityEngine;
 /// <summary>
 /// Native 3840x2160 evidence capture for the visual-fidelity gate.
 /// Produces three deterministic views with pixel-exact 100% crops while preserving one coherent
-/// scene/sun state. A successful capture proves only that Unity rendered the requested frames;
-/// it does not assign a visual-fidelity score.
+/// scene/sun/reflection state. A successful capture proves only that Unity rendered the requested
+/// frames; it does not assign a visual-fidelity score.
 /// </summary>
 public static class QualityBlock4KCapture
 {
@@ -62,6 +62,12 @@ public static class QualityBlock4KCapture
         PrepareAndValidateScene();
         EditorSceneManager.OpenScene(ScenePath, OpenSceneMode.Single);
 
+        // Re-validate the persisted lighting state after the scene reopen, then refresh realtime
+        // reflection cubemaps only after all final geometry/material work is present. This prevents
+        // stale/blank probe evidence from being mistaken for a glazing or PBR failure.
+        QualityBlockEnvironmentLightingUpgrade.ValidateOpenScene();
+        QualityBlockEnvironmentLightingUpgrade.RefreshRealtimeProbesImmediately();
+
         Camera cam = Camera.main;
         if (cam == null)
             throw new InvalidOperationException("4K capture failed: MainCamera not found.");
@@ -94,7 +100,7 @@ public static class QualityBlock4KCapture
         WriteManifest(captured.ToArray());
         AssetDatabase.Refresh();
         Debug.Log(
-            "Native 4K evidence capture completed for hero/oblique/grazing views with pixel-exact crops. " +
+            "Native 4K evidence capture completed for hero/oblique/grazing views with pixel-exact crops and refreshed physical reflections. " +
             "Visual Fidelity remains UNSCORED until the rendered files are reviewed and evidence is entered.");
     }
 
@@ -134,14 +140,16 @@ public static class QualityBlock4KCapture
         // Rebuild the highest-quality generated fallback before capture. Ground detail is the final
         // structural generated-art pass and internally rebuilds the foliage/danchi/tree quality chain.
         // Metric microdetail and broad base-ground anti-repeat PBR are then layered without changing
-        // gameplay collision. Physical grade/contact interfaces and the facade optical stack are
-        // applied before validation so every scored crop contains the current construction/material work.
-        // Authored replacement art still wins through art slots. Godot/base stay untouched.
+        // gameplay collision. Physical grade/contact interfaces, facade optics and finally the saved
+        // sky/reflection environment are applied before validation so every scored crop contains the
+        // current construction/material/light-transport work. Authored replacement art still wins
+        // through art slots. Godot/base stay untouched.
         QualityBlockGroundDetailUpgrade.BuildDetailedGround();
         QualityBlockGroundMicrodetailUpgrade.BuildAndApply();
         QualityBlockGroundBaseSurfaceUpgrade.BuildAndApply();
         QualityBlockGroundContactInterfaceUpgrade.ApplyToOpenScene();
         QualityBlockFacadeOpticsUpgrade.BuildAndApply();
+        QualityBlockEnvironmentLightingUpgrade.BuildAndApply();
         QualityBlockDanchiDetailUpgrade.ValidateOpenScene();
         QualityBlockDetailBevelUpgrade.ValidateOpenScene();
         QualityBlockDanchiLodUpgrade.ValidateOpenScene();
@@ -152,6 +160,7 @@ public static class QualityBlock4KCapture
         QualityBlockGroundBaseSurfaceUpgrade.Validate();
         QualityBlockGroundContactInterfaceUpgrade.ValidateOpenScene();
         QualityBlockFacadeOpticsUpgrade.ValidateOpenScene();
+        QualityBlockEnvironmentLightingUpgrade.ValidateOpenScene();
         QualityBlockMaterialConstructionQA.ValidateRegistry();
         QualityBlockVisualFidelityGate.ValidateGateConfig();
         ValidateCaptureContract();
@@ -289,7 +298,7 @@ public static class QualityBlock4KCapture
 
         var manifest = new CaptureManifest
         {
-            schemaVersion = "1.0",
+            schemaVersion = "1.1",
             generatedUtc = DateTime.UtcNow.ToString("O"),
             unityVersion = Application.unityVersion,
             graphicsDevice = SystemInfo.graphicsDeviceName,
@@ -301,6 +310,16 @@ public static class QualityBlock4KCapture
             renderProducedByUnity = true,
             visualFidelityStatus = "UNSCORED_REVIEW_REQUIRED",
             cropPolicy = "Pixel-exact source-texel crops; no resampling or sharpening.",
+            reflectionEnvironment = new ReflectionEnvironmentState
+            {
+                skyboxMaterial = RenderSettings.skybox != null ? RenderSettings.skybox.name : string.Empty,
+                ambientMode = RenderSettings.ambientMode.ToString(),
+                defaultReflectionMode = RenderSettings.defaultReflectionMode.ToString(),
+                defaultReflectionResolution = RenderSettings.defaultReflectionResolution,
+                reflectionIntensity = RenderSettings.reflectionIntensity,
+                localRealtimeProbeCount = UnityEngine.Object.FindObjectsByType<ReflectionProbe>(FindObjectsSortMode.None).Length,
+                probesRefreshedImmediatelyBeforeCapture = true,
+            },
             sunState = new SunState
             {
                 coherentAcrossAllViews = true,
@@ -379,9 +398,22 @@ public static class QualityBlock4KCapture
         public bool renderProducedByUnity;
         public string visualFidelityStatus;
         public string cropPolicy;
+        public ReflectionEnvironmentState reflectionEnvironment;
         public SunState sunState;
         public CaptureRecord[] captures;
         public string note;
+    }
+
+    [Serializable]
+    private sealed class ReflectionEnvironmentState
+    {
+        public string skyboxMaterial;
+        public string ambientMode;
+        public string defaultReflectionMode;
+        public int defaultReflectionResolution;
+        public float reflectionIntensity;
+        public int localRealtimeProbeCount;
+        public bool probesRefreshedImmediatelyBeforeCapture;
     }
 
     [Serializable]

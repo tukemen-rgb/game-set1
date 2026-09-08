@@ -12,10 +12,11 @@ public static class QualityBlockCapture
     [MenuItem("NewTown/QA/Capture Quality Block PNG")]
     public static void Capture()
     {
-        if (!File.Exists(ScenePath))
-            BuildQualityBlock1990s.Build();
-
+        // Always rebuild the review scene through the PBR path so screenshots cannot silently
+        // regress to the older flat-color benchmark scene.
+        QualityBlockPbrUpgrade.BuildPbrQualityBlock();
         EditorSceneManager.OpenScene(ScenePath, OpenSceneMode.Single);
+
         var cam = Camera.main;
         if (cam == null)
         {

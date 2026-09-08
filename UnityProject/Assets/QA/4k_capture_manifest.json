@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "1.0",
+  "schemaVersion": "1.1",
   "generatedUtc": "",
   "unityVersion": "",
   "graphicsDevice": "",
@@ -11,6 +11,15 @@
   "renderProducedByUnity": false,
   "visualFidelityStatus": "UNSCORED_NO_RENDER_YET",
   "cropPolicy": "Pixel-exact source-texel crops; no resampling or sharpening.",
+  "reflectionEnvironment": {
+    "skyboxMaterial": "MAT_MidsummerProceduralSky",
+    "ambientMode": "Skybox",
+    "defaultReflectionMode": "Skybox",
+    "defaultReflectionResolution": 1024,
+    "reflectionIntensity": 0.86,
+    "localRealtimeProbeCount": 2,
+    "probesRefreshedImmediatelyBeforeCapture": false
+  },
   "sunState": {
     "coherentAcrossAllViews": true,
     "latitudeDegrees": 35.6,
@@ -67,5 +76,5 @@
       ]
     }
   ],
-  "note": "Template only. renderProducedByUnity remains false until QualityBlock4KCapture runs in Unity. This file is not visual_fidelity_evidence.json and cannot award a Visual Fidelity score."
+  "note": "Template only. renderProducedByUnity remains false and probesRefreshedImmediatelyBeforeCapture remains false until QualityBlock4KCapture actually runs in Unity. This file is not visual_fidelity_evidence.json and cannot award a Visual Fidelity score."
 }

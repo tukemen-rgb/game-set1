@@ -1,5 +1,5 @@
 {
-  "generatedUtc": "2026-09-08T16:43:00Z",
+  "generatedUtc": "2026-09-08T17:35:00Z",
   "readinessScore": 93,
   "possibleScore": 100,
   "visualFidelityStatus": "UNSCORED_UNTIL_REAL_4K_RENDER",
@@ -9,32 +9,32 @@
     { "id": "danchi_lod0_lod3", "weight": 8, "passed": true, "evidence": "Danchi master geometry has explicit LOD staging.", "assetPaths": ["Assets/Editor/QualityBlockDanchiLodUpgrade.cs"] },
     { "id": "tree_physical_hierarchy", "weight": 10, "passed": true, "evidence": "Root/trunk/branch/twig/leaf hierarchy tooling exists.", "assetPaths": ["Assets/Editor/QualityBlockTreeDetailUpgrade.cs"] },
     { "id": "foliage_optics", "weight": 8, "passed": true, "evidence": "Two-sided foliage optics and transmission shader are present.", "assetPaths": ["Assets/Editor/QualityBlockFoliageOpticsUpgrade.cs", "Assets/Shaders/NewTownFoliageTransmission.shader"] },
-    { "id": "cause_based_weathering", "weight": 8, "passed": true, "evidence": "Weathering is driven by rain/splash/drain/contact/UV context rather than arbitrary grime.", "assetPaths": ["Assets/Editor/QualityBlockWeatheringUpgrade.cs"] },
-    { "id": "pbr_generation", "weight": 8, "passed": true, "evidence": "PBR generation now includes physical-scale micro maps for infrastructure plus separate metre-derived macro/detail base-ground layers for grass, paving and soil. Broad paving no longer relies on a painted joint grid; modeled joint geometry remains the construction source.", "assetPaths": ["Assets/Editor/QualityBlockPbrUpgrade.cs", "Assets/Editor/QualityBlockGroundMicrodetailUpgrade.cs", "Assets/Editor/QualityBlockGroundBaseSurfaceUpgrade.cs", "Assets/QA/ground_microdetail_contract.json", "Assets/QA/ground_base_surface_contract.json"] },
+    { "id": "cause_based_weathering", "weight": 8, "passed": true, "evidence": "Weathering is driven by rain/splash/drain/contact/UV context rather than arbitrary grime; grade-interface shoulders and foundation contact parts carry explicit exposure/stain-source metadata.", "assetPaths": ["Assets/Editor/QualityBlockWeatheringUpgrade.cs", "Assets/Editor/QualityBlockGroundContactInterfaceUpgrade.cs", "Assets/QA/ground_contact_interface_contract.json"] },
+    { "id": "pbr_generation", "weight": 8, "passed": true, "evidence": "PBR generation includes physical-scale infrastructure micro maps plus metre-derived macro/detail base-ground layers. Broad paving omits painted joint grids, while new mineral contact materials stay explicitly non-metallic and rely on real contact geometry rather than baked AO borders.", "assetPaths": ["Assets/Editor/QualityBlockPbrUpgrade.cs", "Assets/Editor/QualityBlockGroundMicrodetailUpgrade.cs", "Assets/Editor/QualityBlockGroundBaseSurfaceUpgrade.cs", "Assets/Editor/QualityBlockGroundContactInterfaceUpgrade.cs", "Assets/QA/ground_microdetail_contract.json", "Assets/QA/ground_base_surface_contract.json", "Assets/QA/ground_contact_interface_contract.json"] },
     { "id": "physical_solar_context", "weight": 5, "passed": true, "evidence": "Solar direction/elevation context exists for coherent midsummer lighting.", "assetPaths": ["Assets/Scripts/Art/QualityBlockEnvironmentContext.cs"] },
     { "id": "replacement_art_slots", "weight": 5, "passed": true, "evidence": "Generated fallbacks remain replaceable by authored FBX/GLB art.", "assetPaths": ["Assets/Editor/QualityBlockArtReplacement.cs"] },
-    { "id": "material_construction_lookdev_registry", "weight": 10, "passed": true, "evidence": "Per-component manufacture/material/angular-light-response registry exists.", "assetPaths": ["Assets/QA/material_construction_lookdev.json"] },
-    { "id": "native_4k_capture_pipeline", "weight": 8, "passed": true, "evidence": "Dedicated 3840x2160 hero/oblique/grazing capture code with pixel-exact 100% crops now rebuilds and validates infrastructure microdetail and metric anti-repeat base-ground PBR before rendering.", "assetPaths": ["Assets/Editor/QualityBlock4KCapture.cs", "Assets/Editor/QualityBlockGroundMicrodetailUpgrade.cs", "Assets/Editor/QualityBlockGroundBaseSurfaceUpgrade.cs"] },
+    { "id": "material_construction_lookdev_registry", "weight": 10, "passed": true, "evidence": "Per-component manufacture/material/angular-light-response registry exists, with an additional explicit foundation/grade, hardscape/vegetation and eroded-path interface contract.", "assetPaths": ["Assets/QA/material_construction_lookdev.json", "Assets/QA/ground_contact_interface_contract.json"] },
+    { "id": "native_4k_capture_pipeline", "weight": 8, "passed": true, "evidence": "Dedicated 3840x2160 hero/oblique/grazing capture code with pixel-exact 100% crops now rebuilds and validates infrastructure microdetail, metric anti-repeat base ground and physical grade/contact interfaces before rendering.", "assetPaths": ["Assets/Editor/QualityBlock4KCapture.cs", "Assets/Editor/QualityBlockGroundMicrodetailUpgrade.cs", "Assets/Editor/QualityBlockGroundBaseSurfaceUpgrade.cs", "Assets/Editor/QualityBlockGroundContactInterfaceUpgrade.cs"] },
     { "id": "multi_angle_capture_manifest", "weight": 5, "passed": true, "evidence": "Capture contract records exact view/crop paths and explicitly remains unrendered until Unity executes it.", "assetPaths": ["Assets/QA/4k_capture_manifest.json"] },
     { "id": "unity_compile_verification", "weight": 7, "passed": false, "evidence": "No actual Unity 6.3 editor/runner compile verification artifact exists yet.", "assetPaths": ["Assets/QA/unity_compile_verified.json"] }
   ],
   "blockers": ["unity_compile_verification"],
   "latestRun": {
-    "startHead": "f7b97d1c0e0554be2d35984a278ef66b3e578ba9",
-    "substantiveWorkHead": "4c2dabe64b5baa667313b9fa5f5ee7317f639a6a",
+    "startHead": "518b141b5ae141455fd67641fa84828fe958f4c3",
+    "substantiveWorkHead": "f26bd860502956caa39c30654285c7d43fc8acf8",
     "substantiveCommits": [
-      "51bba4cdb4da7484246d888b49489c6ce1fa63b0",
-      "e68d3358e3bdea8cbb63823f80f7cdd5110e71b0",
-      "4c2dabe64b5baa667313b9fa5f5ee7317f639a6a"
+      "be3841a3e04b1a592c7f135ba8a4b63a15d42bc9",
+      "69e820abbd8551f0979517cd85da00a60d6f12ce",
+      "f26bd860502956caa39c30654285c7d43fc8acf8"
     ],
-    "verification": "GitHub source/static inspection only. The substantive head has no commit status contexts or workflow runs, so Unity 6.3 compile/shader/material generation and native render execution remain unverified.",
+    "verification": "GitHub source/static inspection only. Commit f26bd860502956caa39c30654285c7d43fc8acf8 has zero commit-status contexts and the branch has zero workflow runs; Unity 6.3 compile, generated mesh/material execution, contact-shadow appearance and native 4K capture therefore remain unverified.",
     "expectedVisualScoreImpact": [
-      "Texture/microdetail/texel fidelity: broad primitive ground no longer uses a single arbitrary 0..1-scale material; each saved surface material derives macro/detail repeats from real renderer dimensions.",
-      "Material/PBR plausibility: grass, paving and compacted soil receive non-metallic two-frequency PBR with restrained roughness/normal ranges and material-cause variation rather than baked lighting.",
-      "Geometry/construction fidelity and anti-repetition: paving base maps intentionally omit painted joint grids so the existing physical 12 mm joint recess geometry remains the only joint source; world-phase offsets reduce visible texture resets between ground objects.",
-      "Temporal/aliasing stability: both macro and detail maps require mipmaps, trilinear filtering and anisotropy. Actual visual points remain unavailable until rendered motion/stills exist."
+      "Geometry/construction fidelity: the camera-facing apartment base now has a physical plinth toe, stair-tower returns, recessed isolation joints and grade shoulders rather than a building volume meeting the ground as an infinitely sharp line.",
+      "Weathering/context causality: foundation, hardscape/grass shoulders and worn-path erosion edges carry rain/splash/UV/foot-traffic metadata tied to physical interfaces rather than arbitrary dirt overlays.",
+      "Texture/microdetail and realism: ParkPath/plaza grass edges and WornPathB receive deterministic irregular ribbon geometry so 4K crops are not forced to show a perfectly rectangular texture boundary.",
+      "Lighting/shadows: contact depth is now produced by physical projection/recess geometry that can cast/receive real shadows in frontal and grazing light; no Visual Fidelity points are awarded until this is observed in Unity renders."
     ],
-    "nextBlocker": "Unity 6.3 editor/runner compile and native 4K render evidence. If runtime remains unavailable next run, prioritize physical grass/soil/paving boundary and contact geometry rather than adding more scoring infrastructure.",
+    "nextBlocker": "Unity 6.3 editor/runner compile and native 4K render evidence. If runtime remains unavailable next run, prioritize actual facade concrete/window-glass material response and reflection realism because those are now likely larger frame-level CG cues than further ground scoring infrastructure.",
     "recordingNote": "Bookkeeping commits that write this readiness file are intentionally excluded from substantiveCommits to avoid impossible self-referential commit hashes."
   },
   "note": "Implementation Readiness measures source/pipeline coverage only. Visual Fidelity is unscored and cannot pass until real 3840x2160 Unity render evidence is captured and reviewed."

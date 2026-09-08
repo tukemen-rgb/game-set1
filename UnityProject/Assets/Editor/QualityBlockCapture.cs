@@ -13,10 +13,10 @@ public static class QualityBlockCapture
     public static void Capture()
     {
         // Always rebuild the exact review target: generated PBR materials, authored geometry pass,
-        // replacement-ready art slots, physically derived midsummer sun and source-driven weathering.
-        // If matching authored prefabs/FBX assets exist they are included automatically; otherwise
-        // the deterministic generated fallback is captured.
-        QualityBlockWeatheringUpgrade.BuildWeatheredQualityBlock();
+        // replacement-ready art slots, physically derived midsummer sun, source-driven weathering,
+        // and the high-granularity construction fallback for the danchi. If matching authored
+        // prefabs/FBX assets exist they still supersede the generated fallback automatically.
+        QualityBlockDanchiDetailUpgrade.BuildDetailedWeatheredQualityBlock();
         EditorSceneManager.OpenScene(ScenePath, OpenSceneMode.Single);
 
         var cam = Camera.main;

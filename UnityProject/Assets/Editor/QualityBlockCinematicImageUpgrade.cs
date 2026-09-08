@@ -71,6 +71,11 @@ public static class QualityBlockCinematicImageUpgrade
         // grazing-angle ground. Force anisotropic sampling globally; do not add post sharpening.
         QualitySettings.anisotropicFiltering = AnisotropicFiltering.ForceEnable;
 
+        // Edge/shadow stability is part of the same deterministic camera-quality contract. Applying
+        // it here guarantees the environment-lighting and 4K capture paths cannot silently bypass
+        // the high-density cascade/MSAA/LOD configuration.
+        QualityBlockShadowStabilityUpgrade.ApplyToOpenScene();
+
         EditorUtility.SetDirty(camera);
         EditorUtility.SetDirty(tonemap);
     }
@@ -111,7 +116,9 @@ public static class QualityBlockCinematicImageUpgrade
             Mathf.Abs(effect.ShadowSoftening - ShadowSoftening) > 0.001f)
             throw new InvalidOperationException("Filmic display-transform parameters drifted from the benchmark contract.");
 
-        Debug.Log("Cinematic image QA valid: linear-light project, HDR camera, fixed exposure, deterministic filmic shoulder/toe, forced anisotropy, no dynamic resolution.");
+        QualityBlockShadowStabilityUpgrade.ValidateOpenScene();
+
+        Debug.Log("Cinematic image QA valid: linear-light project, HDR camera, fixed exposure, deterministic filmic shoulder/toe, forced anisotropy, no dynamic resolution, and shadow/edge stability contract enforced.");
     }
 
     private static void EnsureSceneOpen()

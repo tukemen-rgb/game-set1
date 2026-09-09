@@ -2,9 +2,10 @@
   "runUtc": "2026-09-09T18:35:44Z",
   "branch": "gpt/unity-migration",
   "startHead": "d67e788a547d2f587a702e8aca7fed30d348f81c",
-  "substantiveWorkHead": "0354f6d09d95815efb532145180051e2115d6429",
+  "substantiveWorkHead": "523524dc318c1137c74b37b397a99243f63fe0ab",
   "substantiveCommits": [
-    "0354f6d09d95815efb532145180051e2115d6429"
+    "0354f6d09d95815efb532145180051e2115d6429",
+    "523524dc318c1137c74b37b397a99243f63fe0ab"
   ],
   "changes": [
     {
@@ -16,8 +17,16 @@
       "purpose": "Machine-readable non-scoring policy: manual review required, zero automatic Visual Fidelity points, and no automatic clearing of severe aliasing/shimmering or visible LOD pop."
     },
     {
+      "path": "Assets/Editor/QualityBlockPreparedTemporalCapture.cs",
+      "purpose": "Capture subpixel-grazing and LOD-walk evidence from the exact already-prepared benchmark scene without rebuilding/reopening after the accepted asynchronous reflection synchronization; bind the temporal manifest to scene and reflection proof SHA-256 hashes."
+    },
+    {
+      "path": "Assets/QA/temporal_prepared_capture_contract.json",
+      "purpose": "Machine-readable fail-closed policy that prohibits a scene rebuild/reopen between accepted reflection synchronization and the authoritative temporal capture."
+    },
+    {
       "path": "Assets/Editor/QualityBlockNative4KReviewPacket.cs",
-      "purpose": "Validate the diagnostics contract before render work and analyze the sealed temporal evidence immediately after native-4K temporal capture."
+      "purpose": "Use the prepared-scene temporal path in the authoritative packet and run still/temporal diagnostics only after sealed evidence and prepared-scene binding validation."
     }
   ],
   "verification": {
@@ -31,7 +40,8 @@
     "notes": [
       "The diagnostic analyzer first invokes ValidateLatestTemporalEvidence, so missing, altered, unsealed, wrong-size or non-pixel-exact temporal evidence is rejected before metrics are generated.",
       "Metrics are advisory triage only: low values never clear severe_aliasing_or_shimmer or visible_lod_pop, while high values create manual review candidates rather than an automatic visual FAIL.",
-      "The Native 4K Review Packet now validates this policy before synchronized capture and runs diagnostics only after the required sealed subpixel_grazing and lod_walk_oblique sequences exist.",
+      "Static audit found that the legacy temporal CaptureAndSeal path rebuilds/reopens the benchmark and then calls RefreshRealtimeProbesImmediately, whose same-call-stack RenderProbe/IsFinishedRendering check can fail before Unity advances a frame. The authoritative Native 4K Review Packet no longer uses that legacy path.",
+      "The new prepared temporal path requires the already-open saved benchmark scene, validates the asynchronous reflection completion receipt/wait proof, performs no build/apply/open calls, captures both required sequences, verifies the persisted scene SHA is unchanged, reuses the established pixel-exact temporal validator, and writes a binding receipt covering scene/temporal/reflection hashes.",
       "No runtime screenshots, Unity compile artifact or Captures4K/Temporal4K evidence was available during this source-side run."
     ]
   },
@@ -48,9 +58,10 @@
     "passClaimed": false
   },
   "expectedVisualScoreImpact": [
-    "Temporal/LOD/aliasing stability: once a runner exists, exact frame pairs with abnormal high-frequency or transition-statistic changes are surfaced first for 100%-pixel review, reducing time to locate real shimmer and LOD discontinuities.",
-    "Critical severe aliasing/shimmering and visible LOD pop: the new path strengthens evidence triage but deliberately cannot clear or assert either critical defect without human inspection of the sealed native frames.",
-    "Evidence integrity: diagnostics are bound to the already validated native temporal manifest/crops and cannot silently substitute resampled or unsealed proxy images for review.",
+    "Temporal/LOD/aliasing stability: once a runner exists, temporal frames now come from the same prepared, reflection-synchronized benchmark state as the still packet, then suspicious adjacent-frame transitions are surfaced first for 100%-pixel review.",
+    "Critical severe aliasing/shimmering and visible LOD pop: the new path strengthens evidence provenance and review efficiency but deliberately cannot clear or assert either critical defect without manual inspection of sealed native frames.",
+    "Lighting/reflections evidence integrity: temporal evidence is SHA-256-bound to the accepted reflection completion receipt and later-Editor-update wait proof instead of relying on a same-call-stack refresh after a scene rebuild.",
+    "Evidence integrity: diagnostics are bound to validated native temporal crops and the prepared temporal binding records that no scene rebuild/reopen occurred in the authoritative path.",
     "Real-time quality iteration: ranked transition pairs should make subsequent corrective work target the largest observed temporal deduction instead of speculative scene expansion."
   ],
   "constraintsPreserved": {
@@ -58,5 +69,5 @@
     "baseMerged": false,
     "excludedThemeAdded": false
   },
-  "nextBlocker": "Unity 6000.3.0f1 editor/runner compile and native 3840x2160 execution. At first availability, run Prepare Complete Native 4K Review Packet; inspect all ranked temporal candidates and the full sequences at 100% before scoring, then fix the largest actual deduction or any critical defect instead of adding speculative detail."
+  "nextBlocker": "Unity 6000.3.0f1 editor/runner compile and native 3840x2160 execution. At first availability, run Prepare Complete Native 4K Review Packet; verify the prepared temporal binding is produced, inspect all ranked temporal candidates and full sequences at 100%, then fix the largest actual deduction or any critical defect instead of adding speculative detail."
 }

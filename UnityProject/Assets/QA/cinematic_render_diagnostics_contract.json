@@ -1,0 +1,77 @@
+{
+  "schemaVersion": "1.0",
+  "purpose": "Objective post-tonemap triage for actual native-4K Unity evidence. Metrics expose clipping/crush risk before human review but never award Visual Fidelity points.",
+  "nativeWidth": 3840,
+  "nativeHeight": 2160,
+  "actualRenderRequired": true,
+  "pixelExact100PercentCropsRequired": true,
+  "visualPointsAwarded": 0,
+  "displaySpace": {
+    "source": "Final rendered PNG after the deterministic filmic display transform",
+    "lumaApproximation": "Rec.709 coefficients applied to 8-bit display RGB codes",
+    "note": "These are display diagnostics, not scene-linear photometry. They cannot prove physical exposure or PBR correctness."
+  },
+  "blackClipCode": 1,
+  "whiteClipCode": 254,
+  "lowLumaCode": 4,
+  "highLumaCode": 250,
+  "fullFrameAnyChannelClipWarningPercent": 2.0,
+  "cropAnyChannelClipWarningPercent": 3.0,
+  "fullFrameLowLumaWarningPercent": 12.0,
+  "cropLowLumaWarningPercent": 18.0,
+  "p99HighlightWarningCode": 252,
+  "medianDarkWarningCode": 42,
+  "warningPolicy": {
+    "automaticVisualFail": false,
+    "automaticPointDeduction": false,
+    "requiresHumanReview": true,
+    "reason": "Global histograms can be legitimately influenced by sky, dark cavities and composition. Thresholds are triage warnings only; the reviewer must inspect the exact sealed full frame and 100% crop before scoring."
+  },
+  "requiredAnalysis": [
+    "hero full frame",
+    "hero/facade_center 100% crop",
+    "hero/ground_contact 100% crop",
+    "hero/facade_right 100% crop",
+    "oblique full frame",
+    "oblique/construction_depth 100% crop",
+    "oblique/balcony_services 100% crop",
+    "oblique/vegetation_grounding 100% crop",
+    "grazing full frame",
+    "grazing/material_grazing 100% crop",
+    "grazing/sash_rail_response 100% crop",
+    "grazing/tree_shadow_contact 100% crop"
+  ],
+  "metrics": [
+    "mean display luma code",
+    "1st/50th/99th percentile display luma codes",
+    "mean display saturation",
+    "all-channel black clip percentage",
+    "all-channel white clip percentage",
+    "any-high-channel clip percentage",
+    "low-luma percentage",
+    "high-luma percentage"
+  ],
+  "reviewIntent": {
+    "lightingShadowsReflections": [
+      "Use shadow/contact crops to identify likely crushed separation before inspecting the actual pixels.",
+      "Do not infer shadow-direction coherence or light leaks from histograms alone."
+    ],
+    "cinematicImage": [
+      "Use highlight warnings to inspect concrete, glazing and metal rolloff rather than accepting clipped white patches.",
+      "Use dark warnings to inspect whether balcony/stair recesses retain construction and material separation.",
+      "Composition, color harmony, sky/foliage naturalness, banding and posterization remain visual-review tasks."
+    ],
+    "textureMicrodetail": [
+      "A broad display-range warning can explain hidden microdetail, but metrics cannot prove texture fidelity."
+    ]
+  },
+  "forbiddenInterpretations": [
+    "Treating a warning-free report as Visual Fidelity PASS",
+    "Awarding Cinematic Image or Lighting points from histogram numbers alone",
+    "Using histogram thresholds to justify post sharpening, bloom or local clarity masking",
+    "Analyzing template/non-render PNG paths",
+    "Analyzing resized or sharpened crops instead of pixel-exact 100% crops"
+  ],
+  "output": "Assets/QA/cinematic_render_diagnostics.json",
+  "verificationStatus": "IMPLEMENTED_RENDER_EXECUTION_PENDING"
+}

@@ -58,6 +58,8 @@ public static class QualityBlockNative4KReviewPacket
         AssetDatabase.Refresh();
 
         // Reconfirm source/runtime invariants after the exact still set has been written and sealed.
+        // Repetition QA runs here as well as on scene save: a fine exact hash alone is insufficient, so
+        // generated trees/ecology must also pass the coarse near-clone signature before evidence review.
         QualityBlockReflectionProbeCaptureSyncQA.ValidateRuntimeReceipt();
         QualityBlockReflectionProbeAwaiter.ValidateLatestWaitProof();
         QualityBlockStructuralSurfaceRefinement.ValidateOpenScene();
@@ -65,6 +67,7 @@ public static class QualityBlockNative4KReviewPacket
         QualityBlockSceneMetadataCoverageQA.ValidateOpenScene();
         QualityBlockTextureSamplingUpgrade.ValidateOpenScene();
         QualityBlockFoliagePhysicalityQA.ValidateOpenScene();
+        QualityBlockSceneRepetitionQA.ValidateOpenScene();
 
         // Objective triage only. This cannot award Cinematic Image or Lighting points.
         QualityBlockRenderedImageDiagnostics.AnalyzeExistingCapture();
@@ -76,7 +79,7 @@ public static class QualityBlockNative4KReviewPacket
         Debug.Log(
             "Complete native-4K review packet prepared: sealed hero/oblique/grazing stills + 100% crops, " +
             "reflection cubemaps proven complete on later Editor updates before capture with a SHA-256-bound wait proof, retained structural geometry and actual material physicality validated, " +
-            "scene-wide construction/material metadata coverage and texture sampling checked, foliage dielectric constraints checked, " +
+            "scene-wide construction/material metadata coverage, texture sampling, foliage dielectric constraints and fine+coarse anti-repetition preflight checked, " +
             "cinematic diagnostics generated, and temporal probes sealed. Visual Fidelity remains UNSCORED until the exact evidence is reviewed and " +
             "the evidence-bound 100-point gate is evaluated.");
     }

@@ -2,8 +2,8 @@ using System;
 using System.IO;
 using System.Reflection;
 using UnityEditor;
-using UnityEditor.SceneManagement;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 /// <summary>
 /// Fail-closed runtime evidence for the benchmark HDR -> LDR display transform.
@@ -131,13 +131,14 @@ public static class QualityBlockHdrTonemapRuntimeQA
         if (!ldrDestination)
             throw new InvalidOperationException($"Benchmark tonemap destination remained HDR ({tonemap.LastDestinationFormat}) despite ImageEffectTransformsToLDR; PNG evidence provenance is ambiguous.");
 
+        Scene activeScene = SceneManager.GetActiveScene();
         RuntimeReceipt receipt = new RuntimeReceipt
         {
             generatedUtc = DateTime.UtcNow.ToString("O"),
             unityVersion = Application.unityVersion,
             graphicsDeviceName = SystemInfo.graphicsDeviceName,
             graphicsDeviceType = SystemInfo.graphicsDeviceType.ToString(),
-            scenePath = EditorSceneManager.GetActiveScene().path,
+            scenePath = activeScene.path,
             cameraName = Camera.main != null ? Camera.main.name : string.Empty,
             shaderName = tonemap.FilmicShader != null ? tonemap.FilmicShader.name : string.Empty,
             imageEffectTransformsToLdr = HasTransformsToLdrAttribute(),
@@ -174,7 +175,8 @@ public static class QualityBlockHdrTonemapRuntimeQA
 
     private static QualityBlockFilmicTonemap RequirePreparedTonemap()
     {
-        if (!EditorSceneManager.GetActiveScene().IsValid() || EditorSceneManager.GetActiveScene().path != ScenePath)
+        Scene activeScene = SceneManager.GetActiveScene();
+        if (!activeScene.IsValid() || activeScene.path != ScenePath)
             throw new InvalidOperationException("HDR-tonemap runtime QA must operate on the already-prepared QualityBlock1990s scene without rebuilding or reopening it.");
 
         if (QualitySettings.activeColorSpace != ColorSpace.Linear)

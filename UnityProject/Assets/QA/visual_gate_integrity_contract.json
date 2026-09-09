@@ -1,0 +1,48 @@
+{
+  "schemaVersion": "1.0",
+  "purpose": "Immutable source-side integrity contract for the non-negotiable 100-point Visual Fidelity Gate. This contract does not award visual points; it prevents accidental relaxation of the required scoring geometry before real Unity evidence is reviewed.",
+  "visualPassThreshold": 92,
+  "requiredRender": {
+    "width": 3840,
+    "height": 2160,
+    "require100PercentCrops": true,
+    "requiredViews": [
+      "hero",
+      "oblique",
+      "grazing"
+    ]
+  },
+  "categories": [
+    { "id": "geometry_construction", "weight": 20, "hardMinimum": 18 },
+    { "id": "material_pbr", "weight": 20, "hardMinimum": 18 },
+    { "id": "lighting_shadows_reflections", "weight": 15, "hardMinimum": 13 },
+    { "id": "texture_microdetail", "weight": 10, "hardMinimum": 9 },
+    { "id": "weathering_causality", "weight": 10, "hardMinimum": 9 },
+    { "id": "vegetation_natural_complexity", "weight": 8, "hardMinimum": 7 },
+    { "id": "period_authenticity", "weight": 7, "hardMinimum": 6 },
+    { "id": "cinematic_image", "weight": 5, "hardMinimum": 4 },
+    { "id": "temporal_lod_aliasing", "weight": 5, "hardMinimum": 4 }
+  ],
+  "criticalDefectIds": [
+    "visible_primitive_placeholder",
+    "baked_or_painted_highlights",
+    "impossible_material_physics",
+    "obvious_repetition",
+    "hero_geometry_intersection",
+    "sun_shadow_inconsistency",
+    "forbidden_disaster_theme",
+    "severe_aliasing_or_shimmer",
+    "visible_lod_pop",
+    "major_light_leak",
+    "missing_construction_material_metadata",
+    "unverified_render_claim"
+  ],
+  "hardRules": [
+    "The category weights above must sum to exactly 100 and each weight/hardMinimum pair is immutable unless the owner explicitly replaces the non-negotiable specification.",
+    "PASS requires total >= 92, every category >= its hard minimum, and every listed critical defect explicitly reviewed as absent against actual evidence.",
+    "The critical defect set is exact: entries may not be removed, renamed, substituted, duplicated, or silently supplemented as a way to change gate semantics.",
+    "Only native 3840x2160 hero, oblique and grazing Unity renders plus pixel-exact 100% crops qualify as still evidence.",
+    "Temporal/LOD/aliasing evidence remains separately sealed and must not be inferred from implementation settings.",
+    "Implementation Readiness never contributes Visual Fidelity points."
+  ]
+}

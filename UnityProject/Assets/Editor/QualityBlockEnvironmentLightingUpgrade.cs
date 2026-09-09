@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using System.Linq;
 using UnityEditor;
 using UnityEditor.SceneManagement;
@@ -18,6 +19,7 @@ public static class QualityBlockEnvironmentLightingUpgrade
     private const string ProbeRootName = "PhysicalReflectionEnvironment";
     private const string FacadeProbeName = "ReflectionProbe_DanchiFacade";
     private const string ParkProbeName = "ReflectionProbe_ParkGround";
+    private const string ProbeRefreshReceiptPath = "Assets/QA/reflection_probe_refresh_receipt.json";
     private const int ProbeResolution = 512;
 
     [MenuItem("NewTown/Lighting/Build Physical Sky + Reflection Environment")]
@@ -133,25 +135,83 @@ public static class QualityBlockEnvironmentLightingUpgrade
     }
 
     /// <summary>
-    /// Refreshes all benchmark probes with no time slicing. This should run only after geometry,
-    /// materials and facade optics are final for a capture. It is intentionally not an every-frame
-    /// gameplay cost.
+    /// Refreshes all benchmark probes with no time slicing and verifies that Unity completed each
+    /// requested cubemap before a benchmark camera is allowed to render. This closes an evidence gap:
+    /// issuing RenderProbe() alone only requests a refresh, while the returned RenderID is the API's
+    /// completion handle. The method writes a runtime receipt but awards no Visual Fidelity points.
     /// </summary>
-    public static void RefreshRealtimeProbesImmediately()
+    public static QualityBlockReflectionProbeRefreshReceipt RefreshRealtimeProbesImmediately()
     {
         GameObject probeRoot = FindSceneObject(ProbeRootName);
         if (probeRoot == null)
             throw new InvalidOperationException("Physical reflection environment root missing before pre-capture refresh.");
 
-        ReflectionProbe[] probes = probeRoot.GetComponentsInChildren<ReflectionProbe>(true);
+        ReflectionProbe[] probes = probeRoot.GetComponentsInChildren<ReflectionProbe>(true)
+            .OrderBy(x => x.name, StringComparer.Ordinal)
+            .ToArray();
         if (probes.Length != 2)
             throw new InvalidOperationException($"Expected exactly two physical reflection probes, found {probes.Length}.");
 
-        foreach (ReflectionProbe probe in probes)
+        var records = new QualityBlockReflectionProbeRefreshRecord[probes.Length];
+        bool allFinished = true;
+        for (int i = 0; i < probes.Length; ++i)
         {
+            ReflectionProbe probe = probes[i];
             probe.timeSlicingMode = ReflectionProbeTimeSlicingMode.NoTimeSlicing;
-            probe.RenderProbe();
+
+            int renderId = probe.RenderProbe();
+            bool finished = renderId >= 0 && probe.IsFinishedRendering(renderId);
+            RenderTexture realtime = probe.realtimeTexture;
+            bool textureReady = realtime != null && realtime.IsCreated() &&
+                realtime.dimension == TextureDimension.Cube &&
+                realtime.width == probe.resolution && realtime.height == probe.resolution;
+
+            records[i] = new QualityBlockReflectionProbeRefreshRecord
+            {
+                name = probe.name,
+                renderId = renderId,
+                finished = finished,
+                textureReady = textureReady,
+                expectedResolution = probe.resolution,
+                actualWidth = realtime != null ? realtime.width : 0,
+                actualHeight = realtime != null ? realtime.height : 0,
+                textureDimension = realtime != null ? realtime.dimension.ToString() : string.Empty,
+                hdr = probe.hdr,
+                timeSlicingMode = probe.timeSlicingMode.ToString(),
+                refreshMode = probe.refreshMode.ToString(),
+            };
+
+            allFinished &= finished && textureReady;
         }
+
+        var receipt = new QualityBlockReflectionProbeRefreshReceipt
+        {
+            schemaVersion = "1.0",
+            generatedUtc = DateTime.UtcNow.ToString("O"),
+            unityVersion = Application.unityVersion,
+            graphicsDevice = SystemInfo.graphicsDeviceName,
+            scenePath = EditorSceneManager.GetActiveScene().path,
+            requestedProbeCount = probes.Length,
+            completedProbeCount = records.Count(x => x.finished && x.textureReady),
+            allFinishedBeforeBenchmarkCapture = allFinished,
+            visualFidelityStatus = "UNSCORED_REVIEW_REQUIRED",
+            probes = records,
+            note = "Runtime synchronization receipt only. It proves the requested realtime cubemaps completed and exist at the required resolution before still capture; it does not award visual points."
+        };
+        WriteProbeRefreshReceipt(receipt);
+
+        if (!allFinished)
+        {
+            string detail = string.Join(" | ", records.Select(x =>
+                $"{x.name}: renderId={x.renderId}, finished={x.finished}, textureReady={x.textureReady}, size={x.actualWidth}x{x.actualHeight}, dimension={x.textureDimension}"));
+            throw new InvalidOperationException(
+                "Realtime reflection probes were requested but were not proven complete before native-4K capture. " + detail);
+        }
+
+        Debug.Log(
+            $"Realtime reflection synchronization verified: {receipt.completedProbeCount}/{receipt.requestedProbeCount} probes completed, " +
+            $"each with a created {ProbeResolution}px cubemap. Receipt: {ProbeRefreshReceiptPath}");
+        return receipt;
     }
 
     [MenuItem("NewTown/QA/Validate Physical Sky + Reflection Environment")]
@@ -278,6 +338,19 @@ public static class QualityBlockEnvironmentLightingUpgrade
         return probe;
     }
 
+    private static void WriteProbeRefreshReceipt(QualityBlockReflectionProbeRefreshReceipt receipt)
+    {
+        string absolute = AbsolutePath(ProbeRefreshReceiptPath);
+        Directory.CreateDirectory(Path.GetDirectoryName(absolute));
+        File.WriteAllText(absolute, JsonUtility.ToJson(receipt, true));
+    }
+
+    private static string AbsolutePath(string assetPath)
+    {
+        string projectRoot = Directory.GetParent(Application.dataPath).FullName;
+        return Path.GetFullPath(Path.Combine(projectRoot, assetPath));
+    }
+
     private static GameObject FindSceneObject(string name)
     {
         return Resources.FindObjectsOfTypeAll<GameObject>()
@@ -293,4 +366,36 @@ public static class QualityBlockEnvironmentLightingUpgrade
     {
         if (material.HasProperty(property)) material.SetColor(property, value);
     }
+}
+
+[Serializable]
+public sealed class QualityBlockReflectionProbeRefreshReceipt
+{
+    public string schemaVersion;
+    public string generatedUtc;
+    public string unityVersion;
+    public string graphicsDevice;
+    public string scenePath;
+    public int requestedProbeCount;
+    public int completedProbeCount;
+    public bool allFinishedBeforeBenchmarkCapture;
+    public string visualFidelityStatus;
+    public QualityBlockReflectionProbeRefreshRecord[] probes;
+    public string note;
+}
+
+[Serializable]
+public sealed class QualityBlockReflectionProbeRefreshRecord
+{
+    public string name;
+    public int renderId;
+    public bool finished;
+    public bool textureReady;
+    public int expectedResolution;
+    public int actualWidth;
+    public int actualHeight;
+    public string textureDimension;
+    public bool hdr;
+    public string timeSlicingMode;
+    public string refreshMode;
 }

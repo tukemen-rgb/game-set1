@@ -1,0 +1,90 @@
+{
+  "schemaVersion": "1.0",
+  "id": "qualityblock-hdr-tonemap-capture",
+  "purpose": "Prove at runtime that the authoritative native still path preserves scene HDR values until the filmic display transform and explicitly terminates the Built-in image-effect chain in LDR before PNG evidence is sealed.",
+  "pipeline": {
+    "renderPipeline": "Built-in Render Pipeline",
+    "renderingPath": "Forward",
+    "colorSpace": "Linear",
+    "cameraAllowHDR": true,
+    "dynamicResolutionAllowed": false,
+    "requiredImageEffect": "QualityBlockFilmicTonemap.OnRenderImage",
+    "requiredImageEffectAttribute": "ImageEffectTransformsToLDR"
+  },
+  "runtimeEvidence": {
+    "hdrSourceRequired": true,
+    "acceptedObservedHdrSourceFormats": [
+      "ARGBHalf",
+      "ARGBFloat",
+      "RGB111110Float",
+      "DefaultHDR"
+    ],
+    "ldrDestinationRequired": true,
+    "destinationMustBeNonHdrFormat": true,
+    "destinationMustBeNonNull": true,
+    "nativeWidth": 3840,
+    "nativeHeight": 2160,
+    "minimumTonemappedInvocations": 3,
+    "authoritativeStillCount": 3,
+    "requiredStillCases": [
+      "hero/frontal",
+      "oblique",
+      "grazing-light"
+    ],
+    "fallbackBlitAllowedInAuthoritativeEvidence": false,
+    "receiptPath": "Assets/QA/hdr_tonemap_runtime_receipt.json"
+  },
+  "displayTransform": {
+    "shader": "Hidden/NewTown/FilmicTonemap",
+    "sceneLinearInput": true,
+    "globalExposureOnly": true,
+    "filmicShoulderToe": true,
+    "outputRange": "LDR 0..1",
+    "forbiddenDefectMasking": [
+      "bloom used to conceal highlights",
+      "sharpening used to fabricate microdetail",
+      "local contrast used to hide material errors",
+      "painted or baked highlight substitution"
+    ]
+  },
+  "evidenceRules": {
+    "actualRenderRequired": true,
+    "runtimeReceiptRequired": true,
+    "runtimeReceiptGeneratedOnlyAfterThreeNativeStills": true,
+    "sourceFlagsAloneAreInsufficient": true,
+    "runtimeReceiptDoesNotProveVisualQuality": true,
+    "manualPixelReviewStillRequired": true,
+    "automaticVisualPoints": 0,
+    "visualFidelityStatusBeforePixelReview": "UNSCORED"
+  },
+  "failurePolicy": {
+    "missingImageEffectTransformsToLDR": "FAIL native review packet before capture",
+    "nonHdrObservedSource": "FAIL native review packet; highlight preservation is not proven",
+    "hdrObservedDestination": "FAIL native review packet; HDR-to-LDR termination is not proven",
+    "missingTonemapInvocation": "FAIL native review packet; do not seal or score stills",
+    "fallbackInvocation": "FAIL native review packet; do not seal or score stills",
+    "missingRuntimeReceipt": "FAIL evidence provenance"
+  },
+  "rationale": [
+    "The benchmark uses physically plausible sunlight, specular response and a filmic shoulder, so clipping scene values before the display transform would invalidate lighting/material judgments even if the final PNG looks superficially acceptable.",
+    "ImageEffectTransformsToLDR makes the intended transition explicit to Unity's Built-in image-effect pipeline instead of relying on an implicit destination format.",
+    "Runtime telemetry proves execution and buffer class only. It cannot clear clipping, exposure, color, material, reflection or other visible defects without the actual 3840x2160 frames and 100% crops."
+  ],
+  "researchReferences": [
+    {
+      "title": "Unity ImageEffectTransformsToLDR Scripting API",
+      "url": "https://docs.unity3d.com/ScriptReference/ImageEffectTransformsToLDR.html",
+      "use": "Attribute requests an LDR destination and places subsequent image effects in LDR; the effect is responsible for LDR-range output."
+    },
+    {
+      "title": "Unity 6 Built-in Render Pipeline HDR",
+      "url": "https://docs.unity3d.com/6000.0/Documentation/Manual/hdr-birp.html",
+      "use": "Forward Built-in HDR requires a camera post-processing effect so the scene can render through an HDR buffer before display conversion."
+    },
+    {
+      "title": "Unity 6 Camera.OnRenderImage",
+      "url": "https://docs.unity3d.com/6000.0/Documentation/ScriptReference/Camera.OnRenderImage.html",
+      "use": "Built-in pipeline invokes OnRenderImage after camera rendering for fullscreen image effects."
+    }
+  ]
+}

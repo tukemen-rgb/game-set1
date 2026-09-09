@@ -41,15 +41,21 @@ public static class QualityBlockNative4KReviewPacket
         QualityBlockReflectionProbeCaptureSyncQA.ValidateContractConfigOnly();
         QualityBlock4KCapture.ValidateCaptureContract();
 
-        // Build/save/reopen first. Realtime probes are rendered only after the final persisted geometry,
-        // materials, foliage, weathering and light environment exist. The awaiter then yields back to the
-        // Editor until IsFinishedRendering(RenderID) and the actual 512px Cube textures are both proven.
+        // Build/save/reopen first. The physical texel-density check must run against this final persisted
+        // renderer/material/mesh state before we spend a reflection render or write any benchmark pixels.
+        // A source-density failure is corrected at the texture/UV/tiling level; it is never hidden by
+        // sharpening, grading or by weakening the native 4K gate.
         QualityBlock4KCapture.PrepareSceneForSynchronizedCapture();
+        QualityBlockPhysicalTexelDensityQA.ValidateOpenScene();
+
+        // Realtime probes are rendered only after the final persisted geometry, materials, foliage,
+        // weathering and light environment exist. The awaiter yields back to the Editor until
+        // IsFinishedRendering(RenderID) and the actual 512px Cube textures are both proven.
         QualityBlockReflectionProbeAwaiter.Begin(FinishAfterReflectionSynchronization);
 
         Debug.Log(
-            "Native-4K review packet entered reflection synchronization. Still and temporal capture are deferred until later Editor updates prove both realtime probe RenderIDs complete. " +
-            "Visual Fidelity remains UNSCORED.");
+            "Native-4K review packet entered reflection synchronization after the final prepared scene passed the physical texel-density source floor. " +
+            "Still and temporal capture are deferred until later Editor updates prove both realtime probe RenderIDs complete. Visual Fidelity remains UNSCORED.");
     }
 
     private static void FinishAfterReflectionSynchronization()
@@ -95,9 +101,10 @@ public static class QualityBlockNative4KReviewPacket
         Debug.Log(
             "Complete native-4K review packet prepared: sealed hero/oblique/grazing stills + 100% crops, " +
             "immutable 92/100 category/minimum/critical-defect gate integrity checked before capture, " +
+            "final persisted generated textured geometry proven above the conservative physical texel-density floor before reflection/capture work, " +
             "reflection cubemaps proven complete on later Editor updates before capture with a SHA-256-bound wait proof, retained structural geometry and actual material physicality validated, " +
             "all three native stills proven at runtime by the capture method itself to execute the filmic HDR-source to LDR-destination display transform with no fallback blit, " +
-            "scene-wide construction/material metadata coverage, texture sampling, physical texel-density floor, foliage dielectric constraints and fine+coarse anti-repetition preflight checked, " +
+            "scene-wide construction/material metadata coverage, texture sampling, foliage dielectric constraints and fine+coarse anti-repetition preflight checked, " +
             "temporal probes captured from the same prepared scene without rebuild/reopen and SHA-256-bound to the persisted scene plus reflection completion/wait proofs, " +
             "and non-scoring still/temporal diagnostics generated for manual 100%-pixel review. Visual Fidelity remains UNSCORED until the exact evidence is reviewed and the evidence-bound 100-point gate is evaluated.");
     }

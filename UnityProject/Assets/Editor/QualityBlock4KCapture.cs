@@ -56,17 +56,45 @@ public static class QualityBlock4KCapture
             }),
     };
 
+    /// <summary>
+    /// Legacy one-call capture. It remains available for compatibility, but the complete review
+    /// packet uses PrepareSceneForSynchronizedCapture + QualityBlockReflectionProbeAwaiter +
+    /// CapturePreparedSceneAfterProbeSync so RenderProbe completion is observed across Editor frames.
+    /// </summary>
     [MenuItem("NewTown/QA/Capture Native 4K Fidelity Evidence")]
     public static void CaptureAll()
     {
+        PrepareSceneForSynchronizedCapture();
+
+        // Compatibility path only. The production review packet does not rely on this same-call-stack
+        // synchronization because RenderProbe completion may require Editor frame progression.
+        QualityBlockEnvironmentLightingUpgrade.RefreshRealtimeProbesImmediately();
+        CapturePreparedSceneAfterProbeSync();
+    }
+
+    /// <summary>
+    /// Rebuilds, persists and reopens the benchmark scene, then validates the exact scene state from
+    /// which an asynchronous reflection refresh may safely begin. This method performs no scoring.
+    /// </summary>
+    public static void PrepareSceneForSynchronizedCapture()
+    {
         PrepareAndValidateScene();
         EditorSceneManager.OpenScene(ScenePath, OpenSceneMode.Single);
-
-        // Re-validate the persisted lighting state after the scene reopen, then refresh realtime
-        // reflection cubemaps only after all final geometry/material work is present. This prevents
-        // stale/blank probe evidence from being mistaken for a glazing or PBR failure.
         QualityBlockEnvironmentLightingUpgrade.ValidateOpenScene();
-        QualityBlockEnvironmentLightingUpgrade.RefreshRealtimeProbesImmediately();
+    }
+
+    /// <summary>
+    /// Captures hero/oblique/grazing only after a separate synchronization stage has proved both
+    /// realtime reflection cubemaps complete and written a valid runtime receipt. Rebuilding scene
+    /// content here is forbidden because it would invalidate the synchronized cubemaps.
+    /// </summary>
+    public static void CapturePreparedSceneAfterProbeSync()
+    {
+        if (!EditorSceneManager.GetActiveScene().IsValid() || EditorSceneManager.GetActiveScene().path != ScenePath)
+            throw new InvalidOperationException($"Prepared native-4K capture requires the persisted benchmark scene: {ScenePath}");
+
+        QualityBlockEnvironmentLightingUpgrade.ValidateOpenScene();
+        QualityBlockReflectionProbeCaptureSyncQA.ValidateRuntimeReceipt();
 
         Camera cam = Camera.main;
         if (cam == null)
@@ -100,7 +128,7 @@ public static class QualityBlock4KCapture
         WriteManifest(captured.ToArray());
         AssetDatabase.Refresh();
         Debug.Log(
-            "Native 4K evidence capture completed for hero/oblique/grazing views with pixel-exact crops and refreshed physical reflections. " +
+            "Native 4K evidence capture completed for hero/oblique/grazing views with pixel-exact crops and proven pre-capture physical reflections. " +
             "Visual Fidelity remains UNSCORED until the rendered files are reviewed and evidence is entered.");
     }
 

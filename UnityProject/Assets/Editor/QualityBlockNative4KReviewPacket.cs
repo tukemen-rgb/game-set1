@@ -35,6 +35,7 @@ public static class QualityBlockNative4KReviewPacket
         QualityBlockSceneMaterialPhysicalityUpgrade.ValidateContract();
         QualityBlockSceneMetadataCoverageQA.ValidateContractConfigOnly();
         QualityBlockTextureSamplingUpgrade.ValidateContractConfigOnly();
+        QualityBlockPhysicalTexelDensityQA.ValidateContractConfigOnly();
         QualityBlockFoliagePhysicalityQA.ValidateContractConfigOnly();
         QualityBlockHdrTonemapRuntimeQA.ValidateContractConfigOnly();
         QualityBlockReflectionProbeCaptureSyncQA.ValidateContractConfigOnly();
@@ -76,6 +77,7 @@ public static class QualityBlockNative4KReviewPacket
         QualityBlockSceneMaterialPhysicalityUpgrade.ValidateOpenScene();
         QualityBlockSceneMetadataCoverageQA.ValidateOpenScene();
         QualityBlockTextureSamplingUpgrade.ValidateOpenScene();
+        QualityBlockPhysicalTexelDensityQA.ValidateOpenScene();
         QualityBlockFoliagePhysicalityQA.ValidateOpenScene();
         QualityBlockSceneRepetitionQA.ValidateOpenScene();
 
@@ -95,7 +97,7 @@ public static class QualityBlockNative4KReviewPacket
             "immutable 92/100 category/minimum/critical-defect gate integrity checked before capture, " +
             "reflection cubemaps proven complete on later Editor updates before capture with a SHA-256-bound wait proof, retained structural geometry and actual material physicality validated, " +
             "all three native stills proven at runtime by the capture method itself to execute the filmic HDR-source to LDR-destination display transform with no fallback blit, " +
-            "scene-wide construction/material metadata coverage, texture sampling, foliage dielectric constraints and fine+coarse anti-repetition preflight checked, " +
+            "scene-wide construction/material metadata coverage, texture sampling, physical texel-density floor, foliage dielectric constraints and fine+coarse anti-repetition preflight checked, " +
             "temporal probes captured from the same prepared scene without rebuild/reopen and SHA-256-bound to the persisted scene plus reflection completion/wait proofs, " +
             "and non-scoring still/temporal diagnostics generated for manual 100%-pixel review. Visual Fidelity remains UNSCORED until the exact evidence is reviewed and the evidence-bound 100-point gate is evaluated.");
     }

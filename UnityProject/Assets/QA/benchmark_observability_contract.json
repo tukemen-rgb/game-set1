@@ -1,0 +1,95 @@
+{
+  "schemaVersion": "1.0",
+  "status": "IMPLEMENTATION_ONLY_RENDER_VERIFICATION_PENDING",
+  "purpose": "Prevent correctly modeled benchmark details from being outside, clipped by, or too small in the native 4K evidence that will be scored. This contract cannot award Visual Fidelity points.",
+  "nativeFrame": {
+    "width": 3840,
+    "height": 2160,
+    "coordinateOrigin": "bottom-left, matching Unity Texture2D/GetPixels convention",
+    "fullFrameEdgeMarginPx": 8
+  },
+  "asset": {
+    "sceneRoot": "PeriodAuthenticity2000",
+    "role": "late-analogue-era communal VHF/UHF rooftop receiving assembly",
+    "reasonForObservabilityGate": "The asset contributes period authenticity only if its silhouette and installation remain inspectable in actual benchmark pixels; source existence alone is not evidence."
+  },
+  "requiredViews": [
+    {
+      "id": "hero",
+      "cameraPositionM": [2.8, 2.2, 18.5],
+      "cameraTargetM": [-7.6, 4.0, -7.8],
+      "verticalFovDegrees": 44.0,
+      "minimumProjectedBoundsPx": {
+        "width": 120,
+        "height": 240
+      },
+      "required100PercentCrop": {
+        "id": "rooftop_period_hardware",
+        "x": 1280,
+        "y": 1440,
+        "width": 1280,
+        "height": 720,
+        "minimumContainmentMarginPx": 16,
+        "resamplingAllowed": false
+      }
+    },
+    {
+      "id": "oblique",
+      "cameraPositionM": [18.0, 3.4, 12.5],
+      "cameraTargetM": [-6.0, 4.0, -8.3],
+      "verticalFovDegrees": 42.0,
+      "minimumProjectedBoundsPx": {
+        "width": 130,
+        "height": 220
+      },
+      "required100PercentCrop": {
+        "id": "rooftop_reception_oblique",
+        "x": 1280,
+        "y": 1440,
+        "width": 1280,
+        "height": 720,
+        "minimumContainmentMarginPx": 16,
+        "resamplingAllowed": false
+      }
+    }
+  ],
+  "grazingApplicability": {
+    "overallBenchmarkViewStillRequired": true,
+    "periodRooftopAssetRequiredInGrazingFrame": false,
+    "reason": "The fixed grazing benchmark is reserved for facade/material angular response and tree/contact stability. Period rooftop authenticity is evaluated from frontal and oblique views where the roofline is physically in frame."
+  },
+  "projectionQA": {
+    "method": "Project every world-space Renderer.bounds corner through the exact benchmark camera transform, vertical FOV and 16:9 aspect without rendering.",
+    "checks": [
+      "Every projected corner remains in front of the camera plane.",
+      "The full projected asset bounds remain inside the 3840x2160 frame with the required edge margin.",
+      "Projected width and height meet the per-view minimum pixel footprint.",
+      "The planned 100% crop contains the full projected asset bounds plus the required inspection margin."
+    ],
+    "prohibition": "Do not enlarge antenna rods/elements beyond physical dimensions merely to satisfy pixel thresholds. If observability fails, adjust benchmark framing/target while preserving construction dimensions."
+  },
+  "automaticCropExtraction": {
+    "enabled": true,
+    "trigger": "Import of Assets/QA/Captures4K/hero_3840x2160.png or oblique_3840x2160.png after native Unity capture",
+    "sourcePixelHandling": "Decode source PNG to Color32, copy crop texels 1:1 by array row, encode crop PNG.",
+    "filtering": "none",
+    "sharpening": "none",
+    "interpolation": "none",
+    "outputManifest": "Assets/QA/rooftop_observability_evidence.json",
+    "visualScorePolicy": "Crop generation records evidence availability only. No Visual Fidelity points may be awarded until the actual rendered images are reviewed."
+  },
+  "criticalFailConditions": [
+    "Period-authentic rooftop hardware is outside or clipped by its required benchmark frame.",
+    "The projected rooftop assembly is below the minimum observable pixel footprint in hero or oblique evidence.",
+    "A required 100% crop does not contain the full projected assembly plus inspection margin.",
+    "A roof evidence crop is resized, filtered, sharpened or otherwise resampled.",
+    "Period Accuracy or any Visual Fidelity category is awarded from projection math/source code without an actual Unity render.",
+    "Physical antenna dimensions are inflated solely to game the observability threshold."
+  ],
+  "expectedVisualScoreImpactWhenRenderedAndVerified": {
+    "periodAccuracySceneAuthenticity": "Makes the era-specific rooftop infrastructure inspectable rather than nominally present but visually irrelevant.",
+    "geometryConstructionFidelity": "Ensures ballast, mast, boom, elements and coax load/service path can be judged in actual pixels.",
+    "materialPbrPhysicalPlausibility": "Creates a dedicated oblique crop where galvanized angular response, dielectric feed boxes and roof contact can be inspected.",
+    "temporalLodAliasingStability": "Thin VHF/UHF elements have sufficient pixel footprint for later shimmer/LOD-pop review; source projection itself does not prove stability."
+  }
+}

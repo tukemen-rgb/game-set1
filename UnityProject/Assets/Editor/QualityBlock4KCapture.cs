@@ -8,8 +8,9 @@ using UnityEngine;
 /// <summary>
 /// Native 3840x2160 evidence capture for the visual-fidelity gate.
 /// Produces three deterministic views with pixel-exact 100% crops while preserving one coherent
-/// scene/sun/reflection state. A successful capture proves only that Unity rendered the requested
-/// frames; it does not assign a visual-fidelity score.
+/// scene/sun/reflection state. A successful authoritative capture also proves all three stills executed
+/// the configured filmic HDR-source -> LDR-destination image effect without fallback. These checks prove
+/// capture/evidence plumbing only; they do not assign a visual-fidelity score.
 /// </summary>
 public static class QualityBlock4KCapture
 {
@@ -89,7 +90,8 @@ public static class QualityBlock4KCapture
     /// Captures hero/oblique/grazing only after a separate synchronization stage has proved both
     /// realtime reflection cubemaps complete and written a valid runtime receipt plus an async wait
     /// proof bound to that receipt. Rebuilding scene content here is forbidden because it would
-    /// invalidate the synchronized cubemaps.
+    /// invalidate the synchronized cubemaps. The method itself owns the HDR-tonemap telemetry reset
+    /// and post-capture proof so alternate callers cannot bypass that evidence requirement.
     /// </summary>
     public static void CapturePreparedSceneAfterProbeSync()
     {
@@ -99,6 +101,7 @@ public static class QualityBlock4KCapture
         QualityBlockEnvironmentLightingUpgrade.ValidateOpenScene();
         QualityBlockReflectionProbeCaptureSyncQA.ValidateRuntimeReceipt();
         QualityBlockReflectionProbeAwaiter.ValidateLatestWaitProof();
+        QualityBlockHdrTonemapRuntimeQA.ResetBeforeNative4KCapture();
 
         Camera cam = Camera.main;
         if (cam == null)
@@ -129,10 +132,15 @@ public static class QualityBlock4KCapture
             RenderTexture.active = originalActive;
         }
 
+        // Fail before manifest/provenance production if the three stills did not actually traverse the
+        // intended HDR source -> filmic transform -> LDR destination path. Raw PNGs may exist on disk after
+        // a failure, but without this proof the authoritative packet will not seal or score them.
+        QualityBlockHdrTonemapRuntimeQA.ValidateLatestNative4KCapture();
+
         WriteManifest(captured.ToArray());
         AssetDatabase.Refresh();
         Debug.Log(
-            "Native 4K evidence capture completed for hero/oblique/grazing views with pixel-exact crops and proven pre-capture physical reflections. " +
+            "Native 4K evidence capture completed for hero/oblique/grazing views with pixel-exact crops, proven pre-capture physical reflections, and proven runtime HDR->LDR filmic execution. " +
             "Visual Fidelity remains UNSCORED until the rendered files are reviewed and evidence is entered.");
     }
 

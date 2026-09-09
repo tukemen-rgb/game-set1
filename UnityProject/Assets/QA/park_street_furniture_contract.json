@@ -1,0 +1,155 @@
+{
+  "schemaVersion": "1.0",
+  "id": "park_street_furniture_construction",
+  "purpose": "Machine-readable manufacture/install/lookdev contract for benchmark-visible municipal park and street furniture. This is implementation evidence only; visual points require actual Unity renders.",
+  "assemblies": [
+    {
+      "id": "slide",
+      "periodIntent": "ordinary Japanese municipal/neighborhood park equipment plausible for the late 1980s through early 2000s",
+      "manufacture": "welded painted steel pipe support frame with bolted deck; separate stainless-steel chute sheet and raised side lips",
+      "components": [
+        {"name": "support pipes", "diameter_mm": 48.6, "finish": "aged exterior paint over steel"},
+        {"name": "deck", "thickness_mm": 55, "representation": "structural deck proxy with real edge thickness"},
+        {"name": "stainless chute sheet", "visual_thickness_mm": 35, "note": "render thickness includes edge/readability allowance; material response must remain metallic"},
+        {"name": "deck fasteners", "head_diameter_mm": 16, "head_height_mm": 9, "lod": "LOD0 only"}
+      ],
+      "interfaces": "frame bears on ground through legacy gameplay supports; visual shell must not float or intersect the chute/deck; fasteners stay at deck interfaces",
+      "agingCauses": ["UV/chalking on exterior paint", "hand/contact polishing on rails", "fine abrasion along stainless chute travel direction", "rain exposure at horizontal joints"],
+      "forbidden": ["monolithic plastic playground shell", "painted/baked highlight on chute", "random rust covering stainless chute", "visible Unity Cylinder/Cube placeholder"]
+    },
+    {
+      "id": "bench",
+      "manufacture": "five timber seat slats mechanically fastened to a steel bearer supported by two precast concrete legs",
+      "components": [
+        {"name": "timber slats", "count_lod0_lod1": 5, "size_mm": [3020, 42, 102], "finish": "aged exterior timber coating"},
+        {"name": "precast supports", "count": 2, "size_mm": [160, 560, 480]},
+        {"name": "steel bearer", "finish": "exposed/aged metal"},
+        {"name": "seat bolts", "lod": "LOD0 only"}
+      ],
+      "interfaces": "lower 120 mm of concrete support has a darker, rougher ground-contact material because of capillary moisture/soil splash; no painted AO/contact shadow",
+      "agingCauses": ["sun bleaching on upward timber faces", "hand/clothing polishing on slat edges", "capillary moisture and splash at concrete feet"],
+      "forbidden": ["single giant wood cube at close range", "metallic wood or concrete", "uniform random dirt mask"]
+    },
+    {
+      "id": "park_lamp",
+      "manufacture": "precast/spun concrete pole with metal neck/cap and globe-era diffuser; daytime lamp remains off",
+      "components": [
+        {"name": "concrete pole lower", "diameter_mm": 190},
+        {"name": "concrete pole upper", "diameter_mm": 150},
+        {"name": "painted metal neck", "diameter_mm": 55},
+        {"name": "aged diffuser", "diameter_mm_lod0_lod1": 430}
+      ],
+      "periodAccuracy": "globe/mercury-vapor-era silhouette; explicitly reject a modern flat LED luminaire",
+      "interfaces": "ground moisture band is confined to lowest 200 mm and follows capillary/splash exposure",
+      "forbidden": ["daytime emissive glow", "modern LED slab", "metallic concrete/diffuser", "painted highlight"]
+    },
+    {
+      "id": "notice_board",
+      "manufacture": "two painted tubular posts supporting a framed weathered board/backing",
+      "components": [
+        {"name": "posts", "count": 2, "diameter_mm": 55},
+        {"name": "backing panel", "size_mm": [2280, 1230, 55]},
+        {"name": "metal frame rails", "width_mm": 60},
+        {"name": "frame fasteners", "head_diameter_mm": 12, "lod": "LOD0 only"}
+      ],
+      "interfaces": "post-foot darkening limited to lowest 160 mm; frame bolts stay at frame corners",
+      "periodAccuracy": "no digital display, QR code, LED panel or other post-2000 visual cue in benchmark geometry",
+      "forbidden": ["single central post proxy", "floating panel", "metallic backing board", "modern electronic signage"]
+    }
+  ],
+  "materials": [
+    {
+      "id": "painted_steel",
+      "albedo_linear_rgb": [0.105, 0.305, 0.39],
+      "roughness": 0.68,
+      "metallic": 0.0,
+      "specularF0_target": 0.04,
+      "normalScale": 0.25,
+      "microstructure": "subtle orange-peel/chalking; no specular baked into albedo",
+      "wetness": "only localized after rain; dry benchmark default",
+      "uvAging": "slight chalking on sun-exposed upward/west-facing surfaces",
+      "angularResponse": "dielectric Fresnel; no metallic edge tint"
+    },
+    {
+      "id": "stainless_chute",
+      "albedo_linear_rgb": [0.49, 0.515, 0.52],
+      "roughness": 0.22,
+      "metallic": 0.86,
+      "normalScale": 0.18,
+      "microstructure": "fine directional abrasion along travel direction",
+      "wetness": "raises coherence and lowers apparent roughness only when rain state is active",
+      "uvAging": "none beyond contamination; stainless does not chalk like paint",
+      "angularResponse": "strong grazing reflection driven by environment and Fresnel, never painted highlight"
+    },
+    {
+      "id": "exposed_steel",
+      "albedo_linear_rgb": [0.34, 0.355, 0.36],
+      "roughness": 0.31,
+      "metallic": 0.78,
+      "normalScale": 0.22,
+      "microstructure": "fine machining/oxidation variance",
+      "wetness": "localized only",
+      "uvAging": "not applicable",
+      "angularResponse": "metallic reflection from actual sky/probes"
+    },
+    {
+      "id": "bench_timber",
+      "albedo_linear_rgb": [0.255, 0.145, 0.072],
+      "roughness": 0.72,
+      "metallic": 0.0,
+      "specularF0_target": 0.04,
+      "normalScale": 0.45,
+      "microstructure": "grain/checks run with slat length; geometry handles slat gaps",
+      "wetness": "darkens and reduces roughness only in rain state",
+      "uvAging": "up-facing slats may desaturate more than protected undersides",
+      "angularResponse": "dielectric Fresnel with broad finish response"
+    },
+    {
+      "id": "precast_concrete",
+      "albedo_linear_rgb": [0.49, 0.485, 0.46],
+      "roughness": 0.86,
+      "metallic": 0.0,
+      "specularF0_target": 0.04,
+      "normalScale": 0.55,
+      "microstructure": "fine aggregate/pinholes at millimetric scale",
+      "wetness": "capillary/contact zones may darken causally",
+      "uvAging": "minor tone change; no metallic or glossy aging",
+      "angularResponse": "broad dielectric lobe"
+    }
+  ],
+  "lod": {
+    "levels": 4,
+    "screenRelativeTransitionHeights": [0.36, 0.18, 0.075, 0.025],
+    "crossFade": "animated",
+    "policy": "LOD0 retains fasteners and small interfaces; LOD1 removes fasteners; LOD2/LOD3 collapse subcomponents while preserving silhouette and material class",
+    "criticalFail": "visible pop or silhouette/material-class discontinuity in benchmark motion"
+  },
+  "qaRules": {
+    "requiredAssemblies": ["HD_Slide", "HD_Bench", "HD_Lamp", "HD_NoticeBoard"],
+    "requiredLodCount": 4,
+    "generatedColliderCount": 0,
+    "legacyPrimitiveRenderersMustBeDisabled": true,
+    "dielectricMetallicMax": 0.05,
+    "roughnessAllowed": [0.12, 0.98],
+    "criticalAutomaticFail": [
+      "visible primitive-placeholder geometry in benchmark framing",
+      "obviously painted/baked highlights",
+      "materially impossible metallic/specular values",
+      "immediately obvious repeated module pattern",
+      "floating/interpenetrating hero geometry",
+      "visible LOD pop",
+      "missing required construction/material metadata",
+      "disaster theme"
+    ]
+  },
+  "renderVerification": {
+    "status": "PENDING_UNITY_RUNTIME",
+    "visualFidelityPointsAwarded": 0,
+    "requiredEvidence": [
+      "3840x2160 benchmark frame where park/street furniture is visible",
+      "100% crop of slide chute/frame interfaces under oblique or grazing light",
+      "100% crop of bench slat gaps/bolts/concrete ground interface",
+      "camera-motion check through all four LOD transitions"
+    ]
+  }
+}

@@ -1,7 +1,7 @@
 {
   "schemaVersion": "1.0",
   "status": "PENDING_REAL_UNITY_4K_RENDER",
-  "purpose": "Prevent native-4K benchmark evidence from being captured against stale or merely-requested realtime reflection cubemaps. This contract is implementation/evidence integrity only and cannot award Visual Fidelity points.",
+  "purpose": "Prevent native-4K benchmark evidence from being captured against stale, merely-requested, or not-yet-finished realtime reflection cubemaps. This contract is implementation/evidence integrity only and cannot award Visual Fidelity points.",
   "visualFidelityCategoryImpact": [
     "lighting_shadows_reflections",
     "material_pbr_physical_plausibility",
@@ -9,8 +9,8 @@
   ],
   "unityApiBasis": {
     "renderProbe": "ReflectionProbe.RenderProbe returns a RenderID for the requested cubemap refresh.",
-    "completionCheck": "ReflectionProbe.IsFinishedRendering(RenderID) is the completion check for a requested probe render.",
-    "timeSlicing": "ReflectionProbeTimeSlicingMode.NoTimeSlicing renders the probe entirely in one frame.",
+    "completionCheck": "ReflectionProbe.IsFinishedRendering(RenderID) is the completion check for a requested probe render; Unity's example checks it during later Update calls rather than assuming RenderProbe completed synchronously.",
+    "timeSlicing": "ReflectionProbeTimeSlicingMode.NoTimeSlicing renders the probe entirely in one frame; one frame is not treated as proof of same-call-stack completion.",
     "realtimeTexture": "ReflectionProbe.realtimeTexture is the realtime cubemap resource used by the probe."
   },
   "requiredSceneState": {
@@ -28,13 +28,26 @@
     "hdrRequired": true,
     "boxProjectionRequired": true
   },
+  "completionObservation": {
+    "mechanism": "EditorApplication.update",
+    "requireLaterEditorUpdate": true,
+    "timeoutSeconds": 30,
+    "requestPlayerLoopUpdateWhileWaiting": true,
+    "repaintSceneViewWhileWaiting": true,
+    "sameCallStackIsFinishedRenderingCheckIsSufficient": false,
+    "reason": "RenderProbe schedules a render identified by RenderID. The capture pipeline must allow Unity to advance the frame that performs a NoTimeSlicing probe render before accepting completion."
+  },
   "preCaptureAlgorithm": [
+    "Build, save, reopen and validate the final benchmark scene before requesting any realtime probe refresh.",
     "Find and sort the two registered benchmark probes deterministically by name.",
     "Force NoTimeSlicing immediately before still capture.",
-    "Call RenderProbe() for each probe and retain its returned RenderID.",
-    "Require RenderID >= 0 and IsFinishedRendering(RenderID) == true before any benchmark Camera.Render is accepted.",
+    "Call RenderProbe() for each probe and retain its returned RenderID; reject negative RenderIDs.",
+    "Return control to the Unity Editor and poll completion on subsequent EditorApplication.update callbacks instead of treating the RenderProbe call itself as a completed render frame.",
+    "While waiting, request PlayerLoop progression and SceneView repaint; abort after 30 seconds if completion cannot be proven.",
+    "Require RenderID >= 0 and IsFinishedRendering(RenderID) == true for every probe before any benchmark Camera.Render is accepted.",
     "Require realtimeTexture to be non-null, created, Cube-dimensional, and exactly 512x512 per face.",
-    "Write reflection_probe_refresh_receipt.json with Unity version, graphics device, RenderIDs, completion flags and cubemap state.",
+    "Write reflection_probe_refresh_receipt.json with Unity version, graphics device, RenderIDs, completion flags and cubemap state only after all probes are complete.",
+    "Validate the runtime receipt, then capture hero/oblique/grazing without rebuilding scene geometry/materials between reflection synchronization and Camera.Render.",
     "Abort native-4K capture if any requested probe is not proven complete and texture-ready."
   ],
   "runtimeReceipt": {
@@ -62,16 +75,20 @@
     "captureMustAbortWhen": [
       "probe_count_or_identity_drift",
       "negative_render_id",
-      "render_not_finished",
+      "render_not_finished_after_editor_progression",
+      "reflection_wait_timeout",
       "missing_or_uncreated_realtime_texture",
       "wrong_cubemap_resolution",
-      "wrong_texture_dimension"
+      "wrong_texture_dimension",
+      "scene_rebuilt_after_probe_sync_before_still_capture"
     ],
-    "reason": "A stale reflection cubemap can make glass, aluminum, painted steel and wetness response appear plausible while not corresponding to the current sky/sun/scene state. Such pixels are not valid evidence for the lighting or material categories."
+    "reason": "A stale or unfinished reflection cubemap can make glass, aluminum, painted steel and wetness response appear plausible while not corresponding to the current sky/sun/scene state. Such pixels are not valid evidence for the lighting or material categories."
   },
   "prohibitedClaims": [
     "Do not treat calling RenderProbe() alone as proof that the cubemap finished.",
-    "Do not set probesRefreshedImmediatelyBeforeCapture=true unless the completion/texture checks succeeded.",
+    "Do not treat an IsFinishedRendering check in the same RenderProbe call stack as sufficient evidence when Unity has not advanced a rendering frame.",
+    "Do not rebuild the benchmark after synchronization and then reuse the old completion receipt.",
+    "Do not set probesRefreshedImmediatelyBeforeCapture=true unless later-update completion/texture checks succeeded for the exact scene state being captured.",
     "Do not infer visual quality from a successful synchronization receipt.",
     "Do not award Lighting, Material/PBR or Cinematic points until the actual sealed 3840x2160 frames and 100% crops are reviewed."
   ],

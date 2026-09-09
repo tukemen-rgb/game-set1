@@ -1,0 +1,69 @@
+{
+  "runUtc": "2026-09-09T12:45:00Z",
+  "branch": "gpt/unity-migration",
+  "startHead": "6a8dd1fc618da99503ae1cec35274beaea253e31",
+  "substantiveWorkHead": "02405f64831451744421f927a068975fd70b75bd",
+  "substantiveCommits": [
+    "51588e5f8f9f211e48cf43b09ef72c060679bd2c",
+    "c139f2009b044256aa5b7c370f6dec523cf2aec3",
+    "a3f0293f060dd964fa0948a9a66cf4f3fe57be5c",
+    "02405f64831451744421f927a068975fd70b75bd"
+  ],
+  "scopeSafety": {
+    "godotModified": false,
+    "baseMerged": false,
+    "excludedThemesAdded": false,
+    "changedPathPrefix": "UnityProject/"
+  },
+  "implementationReadiness": {
+    "score": 93,
+    "possible": 100,
+    "visualFidelityStatus": "UNSCORED_UNTIL_REAL_4K_RENDER",
+    "visualPointsAwardedThisRun": 0,
+    "unchangedReason": "Unity 6000.3.0f1 compile and native render evidence remain unavailable; source-side sampling QA does not satisfy the runtime verification weight."
+  },
+  "problemFound": {
+    "summary": "Generated Standard PBR materials can tile _MainTex independently from _BumpMap/_MetallicGlossMap. The baseline generator explicitly assigns mainTextureScale while secondary map ST values are not assigned there. Even when source textures are co-authored from the same height/surface signals, that permits physically inconsistent feature sizes on one surface until corrected.",
+    "risk": [
+      "normal/roughness structure no longer spatially registers with albedo",
+      "grazing-angle sparkle or perceived fake microdetail",
+      "uncontrolled texture crawl when fine maps reach sub-pixel scale"
+    ]
+  },
+  "changes": [
+    {
+      "path": "Assets/QA/texture_sampling_contract.json",
+      "purpose": "Machine-readable sampling, semantic import, map-registration and render-evidence policy for generated benchmark textures."
+    },
+    {
+      "path": "Assets/Editor/QualityBlockTextureSamplingUpgrade.cs",
+      "purpose": "Normalizes generated Standard-map scale/offset to _MainTex, enforces semantic sRGB/normal/mask import, mipmaps, Trilinear filtering, Repeat wrapping, anisotropy >=8 and >=512px imported dimensions, then validates actual active generated materials/textures."
+    },
+    {
+      "path": "Assets/Editor/QualityBlockTextureSamplingSaveGate.cs",
+      "purpose": "Makes the sampling/map-registration policy a persisted quality-scene invariant once the detailed facade/ground chain exists."
+    },
+    {
+      "path": "Assets/Editor/QualityBlockNative4KReviewPacket.cs",
+      "purpose": "Requires contract validation before native capture and actual scene sampling validation after the rebuild/capture path."
+    }
+  ],
+  "verification": {
+    "sourceInspection": "PASS",
+    "branchCompare": "ahead 4 / behind 0 before bookkeeping commit; four changed files, all under UnityProject",
+    "commitStatusContexts": 0,
+    "workflowRuns": 0,
+    "captures4KDirectory": "NOT_FOUND",
+    "unityCompile": "PENDING_UNITY_RUNTIME",
+    "native3840x2160Stills": "PENDING_UNITY_RUNTIME",
+    "pixelExact100PercentCrops": "PENDING_UNITY_RUNTIME",
+    "nativeTemporalSequences": "PENDING_UNITY_RUNTIME"
+  },
+  "expectedVisualScoreImpact": [
+    "Texture/microdetail/texel fidelity: reduces source-side risk that 512/1024px physical-scale detail is sampled without mipmaps, trilinear filtering or sufficient anisotropy and ensures generated co-authored maps represent the same physical scale.",
+    "Material/PBR physical plausibility: aligns normal and metallic/smoothness map ST with albedo on generated Standard materials instead of allowing one surface to carry contradictory microstructure scales.",
+    "Temporal/LOD/aliasing stability: mipmapped Trilinear + anisotropy>=8 is enforced for managed generated textures, reducing expected grazing crawl/moire risk; actual shimmer remains a sealed temporal-sequence judgment and receives zero source-side Visual points."
+  ],
+  "nextBlocker": "Unity 6000.3.0f1 editor/runner. On first available runtime, stop speculative expansion, execute Prepare Complete Native 4K Review Packet, confirm the save-time sampler normalization compiles and processes the actual active material set, then inspect hero/facade_center, oblique/ground_contact, grazing/material_grazing and subpixel_grazing for moire, map-scale mismatch, blur or sparkle. Fix observed pixels before adding detail.",
+  "visualGatePolicy": "No Visual Fidelity score or PASS is permitted from this source-only run. PASS still requires >=92/100, all category hard minimums, no critical defect, sealed native 3840x2160 evidence and required temporal evidence."
+}

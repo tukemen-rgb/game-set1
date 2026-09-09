@@ -74,13 +74,14 @@ public static class QualityBlockVisualGateIntegrityQA
             "This is source-side gate integrity only and awards 0 Visual Fidelity points.");
     }
 
-    // These validation menu items prevent the normal UI review path from being invoked with a relaxed
-    // gate. The Native 4K packet also calls ValidateContract directly, so -executeMethod on that packet
-    // cannot bypass this preflight.
-    [MenuItem("NewTown/QA/Evaluate 4K Visual Fidelity Gate", true)]
-    private static bool ValidateVisualGateMenu()
+    // The legacy unbound evaluator already has a validator in QualityBlockRenderEvidenceProvenanceQA
+    // that intentionally disables it. Guard the evidence-bound evaluator instead, avoiding duplicate
+    // MenuItem validators while ensuring normal scoring UI cannot run with a relaxed gate. The Native
+    // 4K packet also calls ValidateContract directly, so -executeMethod on that packet cannot bypass it.
+    [MenuItem("NewTown/QA/Evaluate Evidence-Bound 4K Visual Fidelity Gate", true)]
+    private static bool ValidateEvidenceBoundVisualGateMenu()
     {
-        return ValidateForMenu("Evaluate 4K Visual Fidelity Gate");
+        return ValidateForMenu("Evaluate Evidence-Bound 4K Visual Fidelity Gate");
     }
 
     [MenuItem("NewTown/QA/Prepare Complete Native 4K Review Packet", true)]

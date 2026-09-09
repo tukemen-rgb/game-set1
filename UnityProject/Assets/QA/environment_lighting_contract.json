@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "1.0",
+  "schemaVersion": "1.1",
   "status": "PENDING_REAL_UNITY_4K_RENDER",
   "purpose": "Physical outdoor illumination and reflection contract for the 4K live-action fidelity target. This contract does not award Visual Fidelity points without actual Unity render evidence.",
   "visualFidelityCategoryImpact": [
@@ -74,6 +74,10 @@
     "usage": "BlendProbesAndSkybox",
     "reason": "Outdoor objects must transition from local reflection context back to default sky reflection rather than exhibit hard cubemap boundaries.",
     "preCaptureRefreshRequired": true,
+    "preCaptureCompletionProofRequired": true,
+    "completionContractPath": "Assets/QA/reflection_probe_capture_sync_contract.json",
+    "runtimeReceiptPath": "Assets/QA/reflection_probe_refresh_receipt.json",
+    "requiredCompletionCondition": "Every registered probe must return a non-negative RenderID, report IsFinishedRendering(RenderID)=true, and expose a created 512x512 Cube realtimeTexture before native-4K Camera.Render starts.",
     "everyFrameProbeRefreshForbidden": true
   },
   "atmosphere": {
@@ -109,10 +113,11 @@
   "verification": {
     "compileVerified": false,
     "native4kRenderVerified": false,
+    "probeRefreshCompletionReceiptVerified": false,
     "probeSeamVerified": false,
     "glassFresnelBalanceVerified": false,
     "highlightClippingVerified": false,
     "visualFidelityPointsAwarded": 0,
-    "note": "Implementation metadata only. Real Unity 3840x2160 captures and 100% crops are mandatory before visual scoring."
+    "note": "Implementation metadata only. Real Unity 3840x2160 captures, verified probe refresh receipt, and 100% crops are mandatory before visual scoring."
   }
 }

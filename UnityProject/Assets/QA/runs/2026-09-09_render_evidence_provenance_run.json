@@ -1,0 +1,73 @@
+{
+  "schemaVersion": "1.0",
+  "runDateUtc": "2026-09-09",
+  "focus": "Render-evidence provenance and false-PASS prevention for the 100-point Visual Fidelity Gate",
+  "startHead": "2e4a0a58a74c273993d4894726b69fab449e3fb7",
+  "substantiveWorkHead": "6e2f281cd48e9eb2e7162d985f28b84be03acd0f",
+  "substantiveCommits": [
+    "1a8762504e33f1102d3ecac0498f4ae85acd6a9d",
+    "6e2f281cd48e9eb2e7162d985f28b84be03acd0f"
+  ],
+  "changedFiles": [
+    "UnityProject/Assets/Editor/QualityBlockRenderEvidenceProvenanceQA.cs",
+    "UnityProject/Assets/QA/render_evidence_provenance_contract.json"
+  ],
+  "implementationReadiness": {
+    "score": 93,
+    "possible": 100,
+    "status": "UNCHANGED",
+    "reason": "The remaining seven readiness points require an actual Unity 6000.3.0f1 compile/runner verification artifact. Source-side provenance work does not satisfy that runtime requirement."
+  },
+  "visualFidelity": {
+    "status": "UNSCORED_NO_RENDER",
+    "pointsAwardedThisRun": 0,
+    "passClaimed": false,
+    "reason": "Assets/QA/Captures4K is absent on the branch and 4k_capture_manifest.json remains a non-runtime template until Unity executes the native capture path. No observable render property was self-scored."
+  },
+  "problemFound": {
+    "severity": "CRITICAL_GATE_INTEGRITY",
+    "finding": "The existing numeric evaluator checked that image paths existed, but did not cryptographically bind visual_fidelity_evidence.json to the exact Unity-generated 4K manifest/render bytes and did not independently prove that claimed 100% crops were pixel-identical source-frame regions.",
+    "risk": "A manually authored or stale evidence file could potentially point at unrelated/replaced PNGs and reach numeric evaluation, conflicting with the automatic FAIL rule against claiming render quality without an actual render."
+  },
+  "implemented": [
+    "Added a supported Capture + Seal path that runs QualityBlock4KCapture, extracts existing rooftop observability crops, validates runtime manifest metadata, then SHA-256 seals the manifest and every required hero/oblique/grazing full frame and manifest crop.",
+    "Added captureSessionId plus a byte-identity receipt at Assets/QA/render_capture_receipt.json when a real Unity capture exists.",
+    "Added a bound review-template generator that records captureSessionId, manifest SHA-256 and receipt SHA-256 while remaining renderVerified=false and unscored until explicit review.",
+    "Added evidence-bound scoring that requires reviewed evidence hashes/session/version/frame paths/crop sets to match the sealed current render set before calling the existing 100-point numeric gate.",
+    "Added decoded Color32 1:1 crop verification: every crop texel must equal the corresponding native 3840x2160 source-frame texel; any mismatch, resample, sharpen, stale/replaced crop or altered post-seal bytes fails provenance.",
+    "Disabled the legacy unbound Visual Fidelity editor menu entry. The machine-readable contract forbids automation/CI/CLI from directly calling the legacy evaluator and names the evidence-bound evaluator as the supported path.",
+    "Kept provenance/capture validation separate from Visual Fidelity scoring; successful sealing or provenance validation awards zero visual points."
+  ],
+  "verification": {
+    "type": "GitHub source/static inspection only",
+    "compare": {
+      "base": "2e4a0a58a74c273993d4894726b69fab449e3fb7",
+      "head": "6e2f281cd48e9eb2e7162d985f28b84be03acd0f",
+      "aheadBy": 2,
+      "behindBy": 0,
+      "filesChanged": 2,
+      "scope": "Both changed files are under UnityProject; no Godot file changed."
+    },
+    "commitStatusContextsOnSubstantiveHead": 0,
+    "workflowRunsOnSubstantiveHead": 0,
+    "captures4KDirectoryPresent": false,
+    "unityCompileVerified": false,
+    "native3840x2160RenderVerified": false,
+    "pixelExactRuntimeCropVerificationExecuted": false,
+    "note": "The new crop/hash checks are implemented but intentionally remain unexecuted until Unity produces real runtime files. No simulated evidence was generated to make them pass."
+  },
+  "expectedVisualScoreImpact": [
+    "No direct category points are awarded from this source-only run.",
+    "Critical-defect risk is reduced across all 100 points because future numeric scoring is bound to the exact sealed Unity render set rather than arbitrary file existence.",
+    "Temporal/LOD, lighting/reflection, material response, texture microdetail and geometry deductions can no longer be silently carried over after the underlying render bytes change; a changed frame/crop invalidates the receipt and forces re-review.",
+    "The true-100%-crop check strengthens scrutiny of fine rail/sash/foliage aliasing, microdetail and contact defects without permitting resampling or sharpening to hide them."
+  ],
+  "policyChecks": {
+    "godotPreserved": true,
+    "baseMerged": false,
+    "earthquakeDisasterReconstructionThemesAdded": false,
+    "visualPassClaimedWithoutRender": false
+  },
+  "nextBlocker": "Unity 6000.3.0f1 editor/runner compile plus the first real native 3840x2160 hero/oblique/grazing capture. When it appears, stop speculative scene expansion, use CaptureAndSealNative4KEvidence, review the exact sealed frames and 100% crops, populate the bound evidence document, run EvaluateEvidenceBoundVisualGate, and fix observed deductions/critical defects before adding new detail.",
+  "recordingNote": "This run-record commit is bookkeeping and is intentionally excluded from substantiveCommits to avoid self-referential commit hashes."
+}

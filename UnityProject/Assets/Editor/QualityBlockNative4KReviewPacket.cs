@@ -36,17 +36,20 @@ public static class QualityBlockNative4KReviewPacket
         QualityBlockSceneMetadataCoverageQA.ValidateContractConfigOnly();
         QualityBlockTextureSamplingUpgrade.ValidateContractConfigOnly();
         QualityBlockPhysicalTexelDensityQA.ValidateContractConfigOnly();
+        QualityBlockAlbedoLightingNeutralityQA.ValidateContractConfigOnly();
         QualityBlockFoliagePhysicalityQA.ValidateContractConfigOnly();
         QualityBlockHdrTonemapRuntimeQA.ValidateContractConfigOnly();
         QualityBlockReflectionProbeCaptureSyncQA.ValidateContractConfigOnly();
         QualityBlock4KCapture.ValidateCaptureContract();
 
-        // Build/save/reopen first. The physical texel-density check must run against this final persisted
+        // Build/save/reopen first. Source adequacy checks must run against this final persisted
         // renderer/material/mesh state before we spend a reflection render or write any benchmark pixels.
-        // A source-density failure is corrected at the texture/UV/tiling level; it is never hidden by
-        // sharpening, grading or by weakening the native 4K gate.
+        // Low physical texel density is corrected at texture/UV/tiling level. Broad illumination patterns
+        // found in generated base albedo are corrected in the source/PBR split; they are never hidden by
+        // sharpening, grading, painted highlights or by weakening the native 4K gate.
         QualityBlock4KCapture.PrepareSceneForSynchronizedCapture();
         QualityBlockPhysicalTexelDensityQA.ValidateOpenScene();
+        QualityBlockAlbedoLightingNeutralityQA.ValidateGeneratedBaseAlbedos();
 
         // Realtime probes are rendered only after the final persisted geometry, materials, foliage,
         // weathering and light environment exist. The awaiter yields back to the Editor until
@@ -54,7 +57,7 @@ public static class QualityBlockNative4KReviewPacket
         QualityBlockReflectionProbeAwaiter.Begin(FinishAfterReflectionSynchronization);
 
         Debug.Log(
-            "Native-4K review packet entered reflection synchronization after the final prepared scene passed the physical texel-density source floor. " +
+            "Native-4K review packet entered reflection synchronization after the final prepared scene passed physical texel-density and generated base-albedo lighting-neutrality source preflight. " +
             "Still and temporal capture are deferred until later Editor updates prove both realtime probe RenderIDs complete. Visual Fidelity remains UNSCORED.");
     }
 
@@ -84,6 +87,7 @@ public static class QualityBlockNative4KReviewPacket
         QualityBlockSceneMetadataCoverageQA.ValidateOpenScene();
         QualityBlockTextureSamplingUpgrade.ValidateOpenScene();
         QualityBlockPhysicalTexelDensityQA.ValidateOpenScene();
+        QualityBlockAlbedoLightingNeutralityQA.ValidateGeneratedBaseAlbedos();
         QualityBlockFoliagePhysicalityQA.ValidateOpenScene();
         QualityBlockSceneRepetitionQA.ValidateOpenScene();
 
@@ -101,7 +105,7 @@ public static class QualityBlockNative4KReviewPacket
         Debug.Log(
             "Complete native-4K review packet prepared: sealed hero/oblique/grazing stills + 100% crops, " +
             "immutable 92/100 category/minimum/critical-defect gate integrity checked before capture, " +
-            "final persisted generated textured geometry proven above the conservative physical texel-density floor before reflection/capture work, " +
+            "final persisted generated textured geometry proven above the conservative physical texel-density floor and generated baseline albedos checked for broad baked-lighting patterns before reflection/capture work, " +
             "reflection cubemaps proven complete on later Editor updates before capture with a SHA-256-bound wait proof, retained structural geometry and actual material physicality validated, " +
             "all three native stills proven at runtime by the capture method itself to execute the filmic HDR-source to LDR-destination display transform with no fallback blit, " +
             "scene-wide construction/material metadata coverage, texture sampling, foliage dielectric constraints and fine+coarse anti-repetition preflight checked, " +

@@ -17,10 +17,14 @@ public static class QualityBlockNative4KReviewPacket
         QualityBlockShadowStabilityUpgrade.ValidateOpenScene();
         QualityBlockRenderedImageDiagnostics.ValidateContractConfigOnly();
         QualityBlockTemporalStabilityCapture.ValidateContractConfigOnly();
+        QualityBlockStructuralSurfaceSaveGate.ValidateContract();
 
         // Still path: rebuilds the scored benchmark, refreshes realtime probes, captures native 4K,
         // creates pixel-exact crops, seals SHA-256 provenance, and writes the bound review template.
+        // The quality-scene save gates also replace retained structural Cube/Cylinder renderer meshes
+        // with dimension-baked edge geometry while preserving collision footprints.
         QualityBlockRenderEvidenceProvenanceQA.CaptureAndSealNative4KEvidence();
+        QualityBlockStructuralSurfaceRefinement.ValidateOpenScene();
 
         // Objective triage only. This cannot award Cinematic Image or Lighting points.
         QualityBlockRenderedImageDiagnostics.AnalyzeExistingCapture();
@@ -31,7 +35,7 @@ public static class QualityBlockNative4KReviewPacket
         AssetDatabase.Refresh();
         Debug.Log(
             "Complete native-4K review packet prepared: sealed hero/oblique/grazing stills + 100% crops, " +
-            "cinematic display diagnostics, and sealed temporal probes. Visual Fidelity remains UNSCORED " +
-            "until the exact evidence is reviewed and the evidence-bound 100-point gate is evaluated.");
+            "validated retained structural surface geometry, cinematic display diagnostics, and sealed temporal probes. " +
+            "Visual Fidelity remains UNSCORED until the exact evidence is reviewed and the evidence-bound 100-point gate is evaluated.");
     }
 }

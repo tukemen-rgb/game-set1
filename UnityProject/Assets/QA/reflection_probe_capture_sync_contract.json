@@ -46,9 +46,11 @@
     "While waiting, request PlayerLoop progression and SceneView repaint; abort after 30 seconds if completion cannot be proven.",
     "Require RenderID >= 0 and IsFinishedRendering(RenderID) == true for every probe before any benchmark Camera.Render is accepted.",
     "Require realtimeTexture to be non-null, created, Cube-dimensional, and exactly 512x512 per face.",
-    "Write reflection_probe_refresh_receipt.json with Unity version, graphics device, RenderIDs, completion flags and cubemap state only after all probes are complete.",
-    "Validate the runtime receipt, then capture hero/oblique/grazing without rebuilding scene geometry/materials between reflection synchronization and Camera.Render.",
-    "Abort native-4K capture if any requested probe is not proven complete and texture-ready."
+    "Write reflection_probe_refresh_receipt.json only after all probes are complete.",
+    "Write reflection_probe_async_wait_receipt.json containing the Editor poll count, elapsed wait, RenderIDs and SHA-256 of the exact reflection completion receipt.",
+    "Require the async wait proof to be current-Unity/current-scene, at least one later Editor poll, no older than two minutes, and hash-bound to the current reflection completion receipt.",
+    "Validate both receipts, then capture hero/oblique/grazing without rebuilding scene geometry/materials between reflection synchronization and Camera.Render.",
+    "Abort native-4K capture if any requested probe or wait proof is unproven."
   ],
   "runtimeReceipt": {
     "path": "Assets/QA/reflection_probe_refresh_receipt.json",
@@ -71,6 +73,27 @@
     ],
     "visualScoreAuthority": "none"
   },
+  "asyncWaitProof": {
+    "path": "Assets/QA/reflection_probe_async_wait_receipt.json",
+    "schemaVersion": "1.0",
+    "requiredObservationMechanism": "EditorApplication.update",
+    "minimumEditorPollCount": 1,
+    "maximumAgeMinutesAtStillCapture": 2,
+    "bindsRuntimeReceiptWith": "SHA-256",
+    "requiredFields": [
+      "generatedUtc",
+      "unityVersion",
+      "scenePath",
+      "observationMechanism",
+      "editorPollCount",
+      "elapsedSeconds",
+      "timeoutSeconds",
+      "renderIds[]",
+      "allFinishedAndTextureReady",
+      "reflectionReceiptSha256"
+    ],
+    "visualScoreAuthority": "none"
+  },
   "criticalFailurePolicy": {
     "captureMustAbortWhen": [
       "probe_count_or_identity_drift",
@@ -80,6 +103,10 @@
       "missing_or_uncreated_realtime_texture",
       "wrong_cubemap_resolution",
       "wrong_texture_dimension",
+      "missing_async_wait_proof",
+      "async_wait_proof_has_no_later_editor_poll",
+      "async_wait_proof_is_stale",
+      "async_wait_proof_runtime_receipt_sha256_mismatch",
       "scene_rebuilt_after_probe_sync_before_still_capture"
     ],
     "reason": "A stale or unfinished reflection cubemap can make glass, aluminum, painted steel and wetness response appear plausible while not corresponding to the current sky/sun/scene state. Such pixels are not valid evidence for the lighting or material categories."
@@ -87,9 +114,10 @@
   "prohibitedClaims": [
     "Do not treat calling RenderProbe() alone as proof that the cubemap finished.",
     "Do not treat an IsFinishedRendering check in the same RenderProbe call stack as sufficient evidence when Unity has not advanced a rendering frame.",
-    "Do not rebuild the benchmark after synchronization and then reuse the old completion receipt.",
+    "Do not accept a reflection completion receipt unless a fresh async-wait proof is SHA-256-bound to that exact receipt.",
+    "Do not rebuild the benchmark after synchronization and then reuse the old completion/wait receipts.",
     "Do not set probesRefreshedImmediatelyBeforeCapture=true unless later-update completion/texture checks succeeded for the exact scene state being captured.",
-    "Do not infer visual quality from a successful synchronization receipt.",
+    "Do not infer visual quality from successful synchronization receipts.",
     "Do not award Lighting, Material/PBR or Cinematic points until the actual sealed 3840x2160 frames and 100% crops are reviewed."
   ],
   "expectedVisualScoreImpactAfterRealRender": {
@@ -102,6 +130,7 @@
     "sourceImplemented": true,
     "unityCompileVerified": false,
     "runtimeReceiptGenerated": false,
+    "asyncWaitProofGenerated": false,
     "native4kRenderVerified": false,
     "visualFidelityPointsAwarded": 0,
     "note": "Real Unity execution is mandatory. Until then this is Implementation Readiness only."

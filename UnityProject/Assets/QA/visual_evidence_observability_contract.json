@@ -1,0 +1,104 @@
+{
+  "schemaVersion": "1.0",
+  "purpose": "Prevent category points or critical-defect dismissals from being awarded from generic notes that do not identify observable native-4K evidence.",
+  "referenceFormat": "viewId/cropId for pixel-exact crop evidence; viewId for full-frame evidence.",
+  "allowedViews": ["hero", "oblique", "grazing"],
+  "allowedCropRefs": [
+    "hero/facade_center",
+    "hero/ground_contact",
+    "hero/facade_right",
+    "oblique/construction_depth",
+    "oblique/balcony_services",
+    "oblique/vegetation_grounding",
+    "grazing/material_grazing",
+    "grazing/sash_rail_response",
+    "grazing/tree_shadow_contact"
+  ],
+  "categoryRequirements": [
+    {
+      "id": "geometry_construction",
+      "requiredViews": ["hero", "oblique"],
+      "requiredCropRefs": ["hero/facade_center", "oblique/construction_depth"],
+      "minimumCropReferences": 2,
+      "reason": "Construction depth and interfaces must be visible from frontal and oblique evidence."
+    },
+    {
+      "id": "material_pbr",
+      "requiredViews": ["oblique", "grazing"],
+      "requiredCropRefs": ["grazing/material_grazing", "grazing/sash_rail_response"],
+      "minimumCropReferences": 2,
+      "reason": "PBR plausibility requires angular response and a grazing-light inspection."
+    },
+    {
+      "id": "lighting_shadows_reflections",
+      "requiredViews": ["hero", "grazing"],
+      "requiredCropRefs": ["hero/ground_contact", "grazing/tree_shadow_contact"],
+      "minimumCropReferences": 2,
+      "reason": "Lighting needs both broad-frame coherence and close shadow/contact evidence."
+    },
+    {
+      "id": "texture_microdetail",
+      "requiredViews": ["grazing"],
+      "requiredCropRefs": ["grazing/material_grazing", "grazing/sash_rail_response"],
+      "minimumCropReferences": 2,
+      "reason": "Microdetail and texel fidelity must be judged at native 100% scale under grazing light."
+    },
+    {
+      "id": "weathering_causality",
+      "requiredViews": ["hero", "oblique", "grazing"],
+      "requiredCropRefs": ["hero/facade_center", "oblique/balcony_services", "grazing/material_grazing"],
+      "minimumCropReferences": 3,
+      "reason": "Weathering must be traceable to facade exposure, services/drainage and angular material response."
+    },
+    {
+      "id": "vegetation_natural_complexity",
+      "requiredViews": ["oblique", "grazing"],
+      "requiredCropRefs": ["oblique/vegetation_grounding", "grazing/tree_shadow_contact"],
+      "minimumCropReferences": 2,
+      "reason": "Natural complexity must include plant structure, grounding and cast/contact shadow behavior."
+    },
+    {
+      "id": "period_authenticity",
+      "requiredViews": ["hero", "oblique"],
+      "requiredCropRefs": ["hero/facade_right", "oblique/balcony_services"],
+      "minimumCropReferences": 2,
+      "reason": "Period authenticity must be visible in occupied facade and service/fixture evidence, not only metadata."
+    },
+    {
+      "id": "cinematic_image",
+      "requiredViews": ["hero", "oblique", "grazing"],
+      "requiredCropRefs": [],
+      "minimumCropReferences": 0,
+      "reason": "Composition, exposure and color are full-frame judgments and must be reviewed across all benchmark views."
+    },
+    {
+      "id": "temporal_lod_aliasing",
+      "requiredViews": ["hero", "oblique", "grazing"],
+      "requiredCropRefs": ["grazing/sash_rail_response", "oblique/vegetation_grounding"],
+      "minimumCropReferences": 2,
+      "reason": "Current still evidence can reveal spatial aliasing and LOD discontinuities at the sampled viewpoints; true temporal shimmer/transition verification remains a runtime blocker and must not be claimed from these stills alone."
+    }
+  ],
+  "criticalDefectRequirements": [
+    {"id":"visible_primitive_placeholder","requiredViews":["hero","oblique"],"requiredCropRefs":["hero/facade_center","oblique/construction_depth"],"minimumCropReferences":2},
+    {"id":"baked_or_painted_highlights","requiredViews":["grazing"],"requiredCropRefs":["grazing/material_grazing"],"minimumCropReferences":1},
+    {"id":"impossible_material_physics","requiredViews":["grazing"],"requiredCropRefs":["grazing/material_grazing","grazing/sash_rail_response"],"minimumCropReferences":2},
+    {"id":"obvious_repetition","requiredViews":["hero","oblique"],"requiredCropRefs":["hero/facade_center","oblique/vegetation_grounding"],"minimumCropReferences":2},
+    {"id":"hero_geometry_intersection","requiredViews":["hero","oblique"],"requiredCropRefs":["hero/ground_contact","oblique/construction_depth"],"minimumCropReferences":2},
+    {"id":"sun_shadow_inconsistency","requiredViews":["hero","grazing"],"requiredCropRefs":["hero/ground_contact","grazing/tree_shadow_contact"],"minimumCropReferences":2},
+    {"id":"forbidden_disaster_theme","requiredViews":["hero","oblique","grazing"],"requiredCropRefs":[],"minimumCropReferences":0},
+    {"id":"severe_aliasing_or_shimmer","requiredViews":["oblique","grazing"],"requiredCropRefs":["oblique/vegetation_grounding","grazing/sash_rail_response"],"minimumCropReferences":2},
+    {"id":"visible_lod_pop","requiredViews":["oblique","grazing"],"requiredCropRefs":["oblique/vegetation_grounding","grazing/sash_rail_response"],"minimumCropReferences":2},
+    {"id":"major_light_leak","requiredViews":["hero","oblique"],"requiredCropRefs":["hero/facade_center","oblique/construction_depth"],"minimumCropReferences":2},
+    {"id":"missing_construction_material_metadata","requiredViews":[],"requiredCropRefs":[],"minimumCropReferences":0},
+    {"id":"unverified_render_claim","requiredViews":["hero","oblique","grazing"],"requiredCropRefs":[],"minimumCropReferences":0}
+  ],
+  "hardRules": [
+    "Every scored category must identify every required full-frame view and required 100% crop reference.",
+    "Every critical-defect review must include non-empty evidence notes, even when present=false.",
+    "Unknown view or crop references are invalid.",
+    "A direct call to the numeric gate must still run render-provenance validation; the provenance wrapper is not optional.",
+    "Implementation readiness or source-code inspection can never substitute for these observed render references.",
+    "Still-frame references do not prove temporal shimmer or LOD transition stability; those claims remain pending until dedicated temporal runtime evidence exists."
+  ]
+}

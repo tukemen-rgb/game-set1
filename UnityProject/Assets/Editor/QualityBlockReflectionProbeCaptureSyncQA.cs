@@ -16,9 +16,12 @@ public static class QualityBlockReflectionProbeCaptureSyncQA
     private const string ScenePath = "Assets/Scenes/QualityBlock1990s.unity";
     private const string ContractPath = "Assets/QA/reflection_probe_capture_sync_contract.json";
     private const string ReceiptPath = "Assets/QA/reflection_probe_refresh_receipt.json";
+    private const string WaitProofPath = "Assets/QA/reflection_probe_async_wait_receipt.json";
     private const int RequiredProbeCount = 2;
     private const int RequiredResolution = 512;
     private const int RequiredTimeoutSeconds = 30;
+    private const int RequiredMinimumEditorPollCount = 1;
+    private const int RequiredMaximumProofAgeMinutes = 2;
 
     private static readonly string[] RequiredProbeNames =
     {
@@ -64,7 +67,19 @@ public static class QualityBlockReflectionProbeCaptureSyncQA
             throw new InvalidOperationException(
                 "Reflection-probe completion must be observed on later EditorApplication.update callbacks with the 30s fail-closed wait policy; same-call-stack completion is not sufficient.");
 
-        Debug.Log("Reflection-probe capture synchronization contract valid: later-Editor-update completion is mandatory. Visual Fidelity remains render-evidence dependent.");
+        AsyncWaitProofConfig waitProof = contract.asyncWaitProof;
+        if (waitProof == null)
+            throw new InvalidOperationException("Reflection-probe synchronization contract asyncWaitProof is missing.");
+        if (waitProof.path != WaitProofPath ||
+            waitProof.schemaVersion != "1.0" ||
+            waitProof.requiredObservationMechanism != "EditorApplication.update" ||
+            waitProof.minimumEditorPollCount != RequiredMinimumEditorPollCount ||
+            waitProof.maximumAgeMinutesAtStillCapture != RequiredMaximumProofAgeMinutes ||
+            waitProof.bindsRuntimeReceiptWith != "SHA-256")
+            throw new InvalidOperationException(
+                "Reflection async-wait proof contract drifted; the 4K gate requires one or more later Editor polls, <=2 minute freshness and SHA-256 binding to the current probe receipt.");
+
+        Debug.Log("Reflection-probe capture synchronization contract valid: later-Editor-update completion + SHA-256-bound async wait proof are mandatory. Visual Fidelity remains render-evidence dependent.");
     }
 
     [MenuItem("NewTown/QA/Validate Latest Reflection Probe Refresh Receipt")]
@@ -136,6 +151,7 @@ public static class QualityBlockReflectionProbeCaptureSyncQA
         public string schemaVersion;
         public RequiredSceneState requiredSceneState;
         public CompletionObservation completionObservation;
+        public AsyncWaitProofConfig asyncWaitProof;
     }
 
     [Serializable]
@@ -162,5 +178,16 @@ public static class QualityBlockReflectionProbeCaptureSyncQA
         public bool requestPlayerLoopUpdateWhileWaiting;
         public bool repaintSceneViewWhileWaiting;
         public bool sameCallStackIsFinishedRenderingCheckIsSufficient;
+    }
+
+    [Serializable]
+    private sealed class AsyncWaitProofConfig
+    {
+        public string path;
+        public string schemaVersion;
+        public string requiredObservationMechanism;
+        public int minimumEditorPollCount;
+        public int maximumAgeMinutesAtStillCapture;
+        public string bindsRuntimeReceiptWith;
     }
 }

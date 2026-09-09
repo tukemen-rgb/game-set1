@@ -4,12 +4,21 @@ using UnityEngine;
 /// Deterministic Built-in Render Pipeline display transform for the visual-fidelity benchmark.
 /// It preserves physical scene lighting and performs only global exposure/tonemapping; no bloom,
 /// sharpening, chromatic aberration, vignette or local-contrast effect is allowed to hide defects.
+///
+/// ImageEffectTransformsToLDR is deliberate: the source reaching this effect must remain HDR so
+/// scene-linear highlights survive until the filmic shoulder, while the destination is explicitly
+/// the LDR buffer consumed by the native PNG evidence path. Runtime telemetry is evidence plumbing
+/// only; it never awards Visual Fidelity points.
 /// </summary>
 [ExecuteAlways]
+[ImageEffectTransformsToLDR]
 [DisallowMultipleComponent]
 [RequireComponent(typeof(Camera))]
 public sealed class QualityBlockFilmicTonemap : MonoBehaviour
 {
+    private const int NativeEvidenceWidth = 3840;
+    private const int NativeEvidenceHeight = 2160;
+
     [SerializeField] private Shader filmicShader;
     [SerializeField, Range(-2f, 1f)] private float exposureEV = -0.45f;
     [SerializeField, Range(0.85f, 1.10f)] private float contrast = 1.03f;
@@ -18,11 +27,43 @@ public sealed class QualityBlockFilmicTonemap : MonoBehaviour
 
     private Material material;
 
+    // Runtime-only capture telemetry. These counters are reset by the authoritative native-4K
+    // review packet immediately before Camera.Render() is invoked for hero/oblique/grazing.
+    private int renderInvocationCount;
+    private int tonemapAppliedInvocationCount;
+    private int native4KInvocationCount;
+    private int native4KTonemapAppliedCount;
+    private int fallbackInvocationCount;
+    private RenderTextureFormat lastSourceFormat = RenderTextureFormat.Default;
+    private RenderTextureFormat lastDestinationFormat = RenderTextureFormat.Default;
+    private int lastSourceWidth;
+    private int lastSourceHeight;
+    private int lastDestinationWidth;
+    private int lastDestinationHeight;
+    private bool lastDestinationWasNull;
+    private bool lastSourceSrgb;
+    private bool lastDestinationSrgb;
+
     public Shader FilmicShader => filmicShader;
     public float ExposureEV => exposureEV;
     public float Contrast => contrast;
     public float Saturation => saturation;
     public float ShadowSoftening => shadowSoftening;
+
+    public int RenderInvocationCount => renderInvocationCount;
+    public int TonemapAppliedInvocationCount => tonemapAppliedInvocationCount;
+    public int Native4KInvocationCount => native4KInvocationCount;
+    public int Native4KTonemapAppliedCount => native4KTonemapAppliedCount;
+    public int FallbackInvocationCount => fallbackInvocationCount;
+    public RenderTextureFormat LastSourceFormat => lastSourceFormat;
+    public RenderTextureFormat LastDestinationFormat => lastDestinationFormat;
+    public int LastSourceWidth => lastSourceWidth;
+    public int LastSourceHeight => lastSourceHeight;
+    public int LastDestinationWidth => lastDestinationWidth;
+    public int LastDestinationHeight => lastDestinationHeight;
+    public bool LastDestinationWasNull => lastDestinationWasNull;
+    public bool LastSourceSrgb => lastSourceSrgb;
+    public bool LastDestinationSrgb => lastDestinationSrgb;
 
     public void Configure(Shader shader, float ev, float displayContrast, float displaySaturation, float toeSoftening)
     {
@@ -32,6 +73,28 @@ public sealed class QualityBlockFilmicTonemap : MonoBehaviour
         saturation = displaySaturation;
         shadowSoftening = toeSoftening;
         RebuildMaterial();
+    }
+
+    /// <summary>
+    /// Clears runtime-only evidence counters. This must be called immediately before the three
+    /// authoritative native-4K still renders. It does not alter any visual parameter or scene state.
+    /// </summary>
+    public void ResetRuntimeTelemetry()
+    {
+        renderInvocationCount = 0;
+        tonemapAppliedInvocationCount = 0;
+        native4KInvocationCount = 0;
+        native4KTonemapAppliedCount = 0;
+        fallbackInvocationCount = 0;
+        lastSourceFormat = RenderTextureFormat.Default;
+        lastDestinationFormat = RenderTextureFormat.Default;
+        lastSourceWidth = 0;
+        lastSourceHeight = 0;
+        lastDestinationWidth = 0;
+        lastDestinationHeight = 0;
+        lastDestinationWasNull = false;
+        lastSourceSrgb = false;
+        lastDestinationSrgb = false;
     }
 
     private void OnEnable()
@@ -51,8 +114,38 @@ public sealed class QualityBlockFilmicTonemap : MonoBehaviour
 
     private void OnRenderImage(RenderTexture source, RenderTexture destination)
     {
+        renderInvocationCount++;
+
+        bool native4K = source != null && source.width == NativeEvidenceWidth && source.height == NativeEvidenceHeight;
+        if (native4K)
+            native4KInvocationCount++;
+
+        if (source != null)
+        {
+            lastSourceFormat = source.format;
+            lastSourceWidth = source.width;
+            lastSourceHeight = source.height;
+            lastSourceSrgb = source.sRGB;
+        }
+
+        lastDestinationWasNull = destination == null;
+        if (destination != null)
+        {
+            lastDestinationFormat = destination.format;
+            lastDestinationWidth = destination.width;
+            lastDestinationHeight = destination.height;
+            lastDestinationSrgb = destination.sRGB;
+        }
+        else
+        {
+            lastDestinationWidth = 0;
+            lastDestinationHeight = 0;
+            lastDestinationSrgb = false;
+        }
+
         if (!SystemInfo.supportsImageEffects || filmicShader == null || !filmicShader.isSupported)
         {
+            fallbackInvocationCount++;
             Graphics.Blit(source, destination);
             return;
         }
@@ -62,6 +155,7 @@ public sealed class QualityBlockFilmicTonemap : MonoBehaviour
 
         if (material == null)
         {
+            fallbackInvocationCount++;
             Graphics.Blit(source, destination);
             return;
         }
@@ -71,6 +165,10 @@ public sealed class QualityBlockFilmicTonemap : MonoBehaviour
         material.SetFloat("_Saturation", saturation);
         material.SetFloat("_ShadowSoftening", shadowSoftening);
         Graphics.Blit(source, destination, material, 0);
+
+        tonemapAppliedInvocationCount++;
+        if (native4K)
+            native4KTonemapAppliedCount++;
     }
 
     private void RebuildMaterial()

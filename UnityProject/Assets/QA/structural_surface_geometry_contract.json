@@ -1,0 +1,84 @@
+{
+  "schemaVersion": "1.0",
+  "purpose": "Remove retained Unity built-in primitive renderer meshes from benchmark-facing structural fallback components while preserving physical dimensions, construction logic and gameplay collision footprint.",
+  "visualFidelityRelationship": {
+    "targetCategories": [
+      "geometry_construction",
+      "lighting_shadows_reflections",
+      "temporal_lod_aliasing"
+    ],
+    "criticalDefectRiskReduced": "visible_primitive_placeholder_geometry",
+    "visualFidelityPointsAwarded": 0,
+    "status": "PENDING_UNITY_RUNTIME",
+    "rule": "Source-side replacement reduces primitive shading and razor-edge risk only. The critical defect may be cleared only from the sealed native-4K hero/oblique/grazing evidence and 100% crops."
+  },
+  "manufactureAndInstallationReasoning": {
+    "reinforcedConcreteMasses": {
+      "components": ["MainBlock", "StairTower", "BalconyFloor_*", "BalconyDivider_*", "RoofParapet*", "StairEntranceCanopy"],
+      "construction": "cast/precast reinforced-concrete structural masses and balcony/parapet interfaces",
+      "dimensionsMetres": {
+        "MainBlock": [26.0, 13.2, 8.4],
+        "StairTower": [3.2, 13.8, 2.0],
+        "BalconyFloor": [3.65, 0.12, 1.15],
+        "BalconyDivider": [0.10, 1.85, 1.10],
+        "RoofParapet": [26.1, 0.42, 0.18],
+        "StairEntranceCanopy": [2.55, 0.16, 1.35]
+      },
+      "edgeConstruction": "formed arrises receive a small real geometric edge break; maximum source-side bevel 6 mm, never a broad stylized roundover",
+      "mountingAndInterfaces": "dimensions and world bounds are inherited exactly from the established benchmark assembly; no repositioning is allowed",
+      "exposureAndAging": "existing rain/UV/splash/recess metadata and material contracts remain authoritative; this pass changes geometry only"
+    },
+    "paintedSteelRails": {
+      "components": ["RailTop_*", "Rail_*"],
+      "construction": "manufactured painted-steel square/rectangular rail sections",
+      "dimensionsMetres": {
+        "RailTop": [3.55, 0.09, 0.09],
+        "RailPost": [0.045, 0.88, 0.045]
+      },
+      "edgeConstruction": "2 mm maximum geometric edge break to avoid razor-edge specular response without turning square stock into tubing",
+      "mountingAndInterfaces": "existing high-detail base plates, bolts and wall interfaces remain unchanged"
+    },
+    "equipmentAndDrainage": {
+      "components": ["AC_*", "RainGutter"],
+      "construction": "aged outdoor-unit casing plus attached vertical drainage/downpipe hardware",
+      "edgeConstruction": "AC casing maximum 4 mm edge radius proxy; cylindrical downpipe uses a dimension-baked beveled circular mesh",
+      "mountingAndInterfaces": "existing feet, pipe pairs, collars, drain hose and downpipe stand-off clamps remain authoritative"
+    },
+    "groundLayers": {
+      "components": ["GrassField", "DanchiPlaza", "ParkPath", "WornPathA", "WornPathB"],
+      "construction": "coarse gameplay-support ground layers retained beneath high-detail paving/joints/curbs/drainage",
+      "edgeConstruction": "maximum 3 mm edge break; high-detail interfaces, not the base slab edge, carry construction readability",
+      "collisionRole": "coarse gameplay collision must remain unchanged while visual mesh scale is baked"
+    }
+  },
+  "materialResponsibility": {
+    "rule": "This contract does not create or alter albedo, metallic/specular, roughness, normal, microstructure, wetness, UV aging or Fresnel response. Existing material/construction contracts remain authoritative.",
+    "geometryVsMaterialDetail": {
+      "geometry": "physical edge break, silhouette, retained structural dimensions",
+      "material": "surface color, PBR response, normal-scale microstructure and cause-based weathering"
+    },
+    "paintedHighlightsForbidden": true
+  },
+  "geometryRules": {
+    "meshAssetPrefix": "GM_SURF_ChamferBox_",
+    "dimensionBaked": true,
+    "transformScaleAfterBake": [1.0, 1.0, 1.0],
+    "rendererBoundsMaximumDeltaMetres": 0.002,
+    "colliderBoundsMaximumDeltaMetres": 0.002,
+    "negativeScaleForbidden": true,
+    "unsupportedColliderMutationForbidden": true,
+    "minimumActiveStructuralTargets": 300,
+    "minimumChamferedBoxes": 300,
+    "minimumBeveledCylinders": 1,
+    "activeBuiltInPrimitiveMeshCountForTargetedStructuralRenderers": 0
+  },
+  "legacyRegressionRules": {
+    "LampGlobe": "The old built-in Sphere must not be actively rendered; the physical period lamp diffuser replacement must control the benchmark.",
+    "rawPrimitiveNames": ["Cube", "Cylinder", "Sphere", "Capsule", "Plane", "Quad"]
+  },
+  "lodAndTemporal": {
+    "rule": "Renderer references and LODGroup membership are preserved because only sharedMesh and scale/collider dimensions are changed. Real native-4K temporal probes remain mandatory for shimmer/LOD-pop assessment.",
+    "levelsRequiredWhereAssemblyHasLod": 4,
+    "renderVerification": "PENDING_UNITY_RUNTIME"
+  }
+}

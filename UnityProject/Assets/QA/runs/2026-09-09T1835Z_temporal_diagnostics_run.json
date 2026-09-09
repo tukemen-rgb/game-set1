@@ -1,0 +1,62 @@
+{
+  "runUtc": "2026-09-09T18:35:44Z",
+  "branch": "gpt/unity-migration",
+  "startHead": "d67e788a547d2f587a702e8aca7fed30d348f81c",
+  "substantiveWorkHead": "0354f6d09d95815efb532145180051e2115d6429",
+  "substantiveCommits": [
+    "0354f6d09d95815efb532145180051e2115d6429"
+  ],
+  "changes": [
+    {
+      "path": "Assets/Editor/QualityBlockTemporalDiagnostics.cs",
+      "purpose": "Analyze only SHA-256-validated native temporal 100% crops and rank adjacent-frame transitions using luminance histogram, edge/high-frequency energy and small translation-compensated luma error."
+    },
+    {
+      "path": "Assets/QA/temporal_diagnostics_contract.json",
+      "purpose": "Machine-readable non-scoring policy: manual review required, zero automatic Visual Fidelity points, and no automatic clearing of severe aliasing/shimmering or visible LOD pop."
+    },
+    {
+      "path": "Assets/Editor/QualityBlockNative4KReviewPacket.cs",
+      "purpose": "Validate the diagnostics contract before render work and analyze the sealed temporal evidence immediately after native-4K temporal capture."
+    }
+  ],
+  "verification": {
+    "mode": "GitHub source/static inspection only",
+    "unityVersionRequired": "6000.3.0f1",
+    "unityCompileVerified": false,
+    "native4KRendered": false,
+    "temporalEvidenceProduced": false,
+    "renderEvidenceReviewed": false,
+    "visualFidelityPointsAwarded": 0,
+    "notes": [
+      "The diagnostic analyzer first invokes ValidateLatestTemporalEvidence, so missing, altered, unsealed, wrong-size or non-pixel-exact temporal evidence is rejected before metrics are generated.",
+      "Metrics are advisory triage only: low values never clear severe_aliasing_or_shimmer or visible_lod_pop, while high values create manual review candidates rather than an automatic visual FAIL.",
+      "The Native 4K Review Packet now validates this policy before synchronized capture and runs diagnostics only after the required sealed subpixel_grazing and lod_walk_oblique sequences exist.",
+      "No runtime screenshots, Unity compile artifact or Captures4K/Temporal4K evidence was available during this source-side run."
+    ]
+  },
+  "implementationReadiness": {
+    "score": 93,
+    "possible": 100,
+    "status": "SOURCE_PIPELINE_READY_RUNTIME_BLOCKED",
+    "scoreChangeThisRun": 0,
+    "blocker": "unity_compile_verification"
+  },
+  "visualFidelity": {
+    "status": "UNSCORED_UNTIL_REAL_4K_RENDER",
+    "pointsAwardedThisRun": 0,
+    "passClaimed": false
+  },
+  "expectedVisualScoreImpact": [
+    "Temporal/LOD/aliasing stability: once a runner exists, exact frame pairs with abnormal high-frequency or transition-statistic changes are surfaced first for 100%-pixel review, reducing time to locate real shimmer and LOD discontinuities.",
+    "Critical severe aliasing/shimmering and visible LOD pop: the new path strengthens evidence triage but deliberately cannot clear or assert either critical defect without human inspection of the sealed native frames.",
+    "Evidence integrity: diagnostics are bound to the already validated native temporal manifest/crops and cannot silently substitute resampled or unsealed proxy images for review.",
+    "Real-time quality iteration: ranked transition pairs should make subsequent corrective work target the largest observed temporal deduction instead of speculative scene expansion."
+  ],
+  "constraintsPreserved": {
+    "godotModified": false,
+    "baseMerged": false,
+    "excludedThemeAdded": false
+  },
+  "nextBlocker": "Unity 6000.3.0f1 editor/runner compile and native 3840x2160 execution. At first availability, run Prepare Complete Native 4K Review Packet; inspect all ranked temporal candidates and the full sequences at 100% before scoring, then fix the largest actual deduction or any critical defect instead of adding speculative detail."
+}

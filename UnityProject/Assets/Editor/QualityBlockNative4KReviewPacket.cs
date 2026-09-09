@@ -45,10 +45,12 @@ public static class QualityBlockNative4KReviewPacket
 
     private static void FinishAfterReflectionSynchronization()
     {
-        // Still path: reflection receipt was generated only after later Editor-update completion.
+        // Still path: the reflection receipt is accepted only when it is SHA-256-bound to a fresh
+        // async-wait proof produced after at least one later EditorApplication.update callback.
         // CapturePreparedSceneAfterProbeSync must not rebuild the scene, otherwise the just-proven
         // cubemaps would become stale relative to the benchmark geometry/material state.
         QualityBlockReflectionProbeCaptureSyncQA.ValidateRuntimeReceipt();
+        QualityBlockReflectionProbeAwaiter.ValidateLatestWaitProof();
         QualityBlock4KCapture.CapturePreparedSceneAfterProbeSync();
         QualityBlockBenchmarkObservabilityQA.ExtractPeriodAuthenticityCropsFromExistingFrames();
         QualityBlockRenderEvidenceProvenanceQA.SealCurrentCapture();
@@ -57,6 +59,7 @@ public static class QualityBlockNative4KReviewPacket
 
         // Reconfirm source/runtime invariants after the exact still set has been written and sealed.
         QualityBlockReflectionProbeCaptureSyncQA.ValidateRuntimeReceipt();
+        QualityBlockReflectionProbeAwaiter.ValidateLatestWaitProof();
         QualityBlockStructuralSurfaceRefinement.ValidateOpenScene();
         QualityBlockSceneMaterialPhysicalityUpgrade.ValidateOpenScene();
         QualityBlockSceneMetadataCoverageQA.ValidateOpenScene();
@@ -72,7 +75,7 @@ public static class QualityBlockNative4KReviewPacket
         AssetDatabase.Refresh();
         Debug.Log(
             "Complete native-4K review packet prepared: sealed hero/oblique/grazing stills + 100% crops, " +
-            "reflection cubemaps proven complete on later Editor updates before capture, retained structural geometry and actual material physicality validated, " +
+            "reflection cubemaps proven complete on later Editor updates before capture with a SHA-256-bound wait proof, retained structural geometry and actual material physicality validated, " +
             "scene-wide construction/material metadata coverage and texture sampling checked, foliage dielectric constraints checked, " +
             "cinematic diagnostics generated, and temporal probes sealed. Visual Fidelity remains UNSCORED until the exact evidence is reviewed and " +
             "the evidence-bound 100-point gate is evaluated.");

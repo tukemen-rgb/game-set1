@@ -19,15 +19,18 @@ public static class QualityBlockNative4KReviewPacket
         QualityBlockTemporalStabilityCapture.ValidateContractConfigOnly();
         QualityBlockStructuralSurfaceSaveGate.ValidateContract();
         QualityBlockSceneMaterialPhysicalityUpgrade.ValidateContract();
+        QualityBlockSceneMetadataCoverageQA.ValidateContractConfigOnly();
 
         // Still path: rebuilds the scored benchmark, refreshes realtime probes, captures native 4K,
         // creates pixel-exact crops, seals SHA-256 provenance, and writes the bound review template.
         // Quality-scene save gates also replace retained structural Cube/Cylinder renderer meshes,
-        // preserve gameplay collision footprints, and bind actual hero materials to construction-physical
-        // metallic/specular families before the scored scene is persisted for capture.
+        // preserve gameplay collision footprints, bind actual hero materials to construction-physical
+        // metallic/specular families, and reject any active renderer outside registered manufacture/
+        // installation/material metadata domains before the scored scene is persisted for capture.
         QualityBlockRenderEvidenceProvenanceQA.CaptureAndSealNative4KEvidence();
         QualityBlockStructuralSurfaceRefinement.ValidateOpenScene();
         QualityBlockSceneMaterialPhysicalityUpgrade.ValidateOpenScene();
+        QualityBlockSceneMetadataCoverageQA.ValidateOpenScene();
 
         // Objective triage only. This cannot award Cinematic Image or Lighting points.
         QualityBlockRenderedImageDiagnostics.AnalyzeExistingCapture();
@@ -38,8 +41,8 @@ public static class QualityBlockNative4KReviewPacket
         AssetDatabase.Refresh();
         Debug.Log(
             "Complete native-4K review packet prepared: sealed hero/oblique/grazing stills + 100% crops, " +
-            "validated retained structural geometry and actual material physicality bindings, cinematic display diagnostics, " +
-            "and sealed temporal probes. Visual Fidelity remains UNSCORED until the exact evidence is reviewed and the " +
-            "evidence-bound 100-point gate is evaluated.");
+            "validated retained structural geometry, actual material physicality bindings and scene-wide construction/material metadata coverage, " +
+            "cinematic display diagnostics, and sealed temporal probes. Visual Fidelity remains UNSCORED until the exact evidence is reviewed " +
+            "and the evidence-bound 100-point gate is evaluated.");
     }
 }

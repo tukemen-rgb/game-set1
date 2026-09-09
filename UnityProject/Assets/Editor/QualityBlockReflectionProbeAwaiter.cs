@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Linq;
+using System.Security.Cryptography;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
@@ -12,18 +13,22 @@ using UnityEngine.Rendering;
 /// RenderID for later completion testing; checking IsFinishedRendering(RenderID) in the same call
 /// stack can fail before Unity has advanced the frame that performs a NoTimeSlicing render.
 ///
-/// Successful completion writes the same schema-1.0 runtime receipt consumed by
-/// QualityBlockReflectionProbeCaptureSyncQA. The receipt proves synchronization only and cannot award
-/// Visual Fidelity points.
+/// Successful completion writes the schema-1.0 probe receipt consumed by
+/// QualityBlockReflectionProbeCaptureSyncQA plus a SHA-256-bound async-wait proof. The latter prevents
+/// a legacy same-call-stack refresh receipt from being mistaken for evidence that the Editor actually
+/// advanced between RenderProbe() and benchmark Camera.Render. Neither artifact can award Visual
+/// Fidelity points.
 /// </summary>
 public static class QualityBlockReflectionProbeAwaiter
 {
     private const string ScenePath = "Assets/Scenes/QualityBlock1990s.unity";
     private const string ProbeRootName = "PhysicalReflectionEnvironment";
     private const string ReceiptPath = "Assets/QA/reflection_probe_refresh_receipt.json";
+    private const string WaitProofPath = "Assets/QA/reflection_probe_async_wait_receipt.json";
     private const int RequiredProbeCount = 2;
     private const int RequiredResolution = 512;
     private const double TimeoutSeconds = 30.0;
+    private const double MaxProofAgeMinutes = 2.0;
 
     private static readonly string[] RequiredProbeNames =
     {
@@ -96,6 +101,48 @@ public static class QualityBlockReflectionProbeAwaiter
         Debug.Log("Reflection probe refresh requested. Native-4K capture is deferred until later Editor updates prove both RenderIDs complete.");
     }
 
+    /// <summary>
+    /// Validates that the current probe completion receipt was produced by the asynchronous waiter,
+    /// not by the legacy same-call-stack compatibility path. This is required immediately before the
+    /// benchmark stills are rendered.
+    /// </summary>
+    public static void ValidateLatestWaitProof()
+    {
+        string proofAbsolute = AbsolutePath(WaitProofPath);
+        string receiptAbsolute = AbsolutePath(ReceiptPath);
+        if (!File.Exists(proofAbsolute))
+            throw new InvalidOperationException("No async reflection wait proof exists. Benchmark still capture must use the complete native-4K review packet.");
+        if (!File.Exists(receiptAbsolute))
+            throw new InvalidOperationException("Reflection probe refresh receipt is missing while validating async wait proof.");
+
+        ReflectionProbeAsyncWaitProof proof = JsonUtility.FromJson<ReflectionProbeAsyncWaitProof>(File.ReadAllText(proofAbsolute));
+        if (proof == null || proof.schemaVersion != "1.0")
+            throw new InvalidOperationException("Async reflection wait proof is unreadable or has an unsupported schema.");
+        if (proof.scenePath != ScenePath || proof.unityVersion != Application.unityVersion)
+            throw new InvalidOperationException("Async reflection wait proof does not match the active benchmark scene/current Unity editor.");
+        if (proof.observationMechanism != "EditorApplication.update" || proof.editorPollCount < 1)
+            throw new InvalidOperationException("Async reflection wait proof does not demonstrate a later EditorApplication.update completion observation.");
+        if (proof.timeoutSeconds != TimeoutSeconds || proof.elapsedSeconds < 0.0)
+            throw new InvalidOperationException("Async reflection wait proof timing policy drifted.");
+        if (proof.renderIds == null || proof.renderIds.Length != RequiredProbeCount || proof.renderIds.Any(x => x < 0))
+            throw new InvalidOperationException("Async reflection wait proof does not contain the two valid benchmark RenderIDs.");
+        if (!proof.allFinishedAndTextureReady)
+            throw new InvalidOperationException("Async reflection wait proof does not assert completed and texture-ready probes.");
+
+        string currentReceiptSha = Sha256(receiptAbsolute);
+        if (!string.Equals(proof.reflectionReceiptSha256, currentReceiptSha, StringComparison.OrdinalIgnoreCase))
+            throw new InvalidOperationException("Async reflection wait proof is not SHA-256-bound to the current reflection completion receipt.");
+
+        if (!DateTime.TryParse(proof.generatedUtc, null,
+                System.Globalization.DateTimeStyles.RoundtripKind, out DateTime generatedUtc))
+            throw new InvalidOperationException("Async reflection wait proof generatedUtc is invalid.");
+        TimeSpan age = DateTime.UtcNow - generatedUtc.ToUniversalTime();
+        if (age.TotalMinutes < -1.0 || age.TotalMinutes > MaxProofAgeMinutes)
+            throw new InvalidOperationException($"Async reflection wait proof is not fresh enough for immediate still capture (ageMinutes={age.TotalMinutes:F2}).");
+
+        Debug.Log($"Async reflection wait proof valid: polls={proof.editorPollCount}, elapsed={proof.elapsedSeconds:F3}s, receipt SHA-256 bound. No visual points awarded.");
+    }
+
     private static void Poll()
     {
         if (!running)
@@ -126,14 +173,18 @@ public static class QualityBlockReflectionProbeAwaiter
             }
 
             double elapsedSeconds = EditorApplication.timeSinceStartup - startedAt;
+            int completedPollCount = editorPollCount;
+            int[] completedRenderIds = (int[])renderIds.Clone();
             QualityBlockReflectionProbeRefreshReceipt receipt = BuildReceipt(elapsedSeconds);
             WriteReceipt(receipt);
+            WriteWaitProof(elapsedSeconds, completedPollCount, completedRenderIds);
             AssetDatabase.Refresh();
             QualityBlockReflectionProbeCaptureSyncQA.ValidateRuntimeReceipt();
+            ValidateLatestWaitProof();
 
             Action next = continuation;
             Cleanup();
-            Debug.Log($"Reflection synchronization completed after {editorPollCount} Editor polls / {elapsedSeconds:F3}s. Continuing native-4K capture.");
+            Debug.Log($"Reflection synchronization completed after {completedPollCount} Editor polls / {elapsedSeconds:F3}s. Continuing native-4K capture.");
             next();
         }
         catch (Exception ex)
@@ -224,6 +275,42 @@ public static class QualityBlockReflectionProbeAwaiter
         File.WriteAllText(absolute, JsonUtility.ToJson(receipt, true));
     }
 
+    private static void WriteWaitProof(double elapsedSeconds, int pollCount, int[] completedRenderIds)
+    {
+        string receiptAbsolute = AbsolutePath(ReceiptPath);
+        if (!File.Exists(receiptAbsolute))
+            throw new InvalidOperationException("Cannot bind async wait proof because the reflection completion receipt was not written.");
+
+        var proof = new ReflectionProbeAsyncWaitProof
+        {
+            schemaVersion = "1.0",
+            generatedUtc = DateTime.UtcNow.ToString("O"),
+            unityVersion = Application.unityVersion,
+            scenePath = EditorSceneManager.GetActiveScene().path,
+            observationMechanism = "EditorApplication.update",
+            editorPollCount = pollCount,
+            elapsedSeconds = elapsedSeconds,
+            timeoutSeconds = TimeoutSeconds,
+            renderIds = completedRenderIds,
+            allFinishedAndTextureReady = true,
+            reflectionReceiptPath = ReceiptPath,
+            reflectionReceiptSha256 = Sha256(receiptAbsolute),
+            visualFidelityStatus = "UNSCORED_REVIEW_REQUIRED",
+            note = "Evidence-integrity proof only. It proves Editor-frame progression between RenderProbe requests and accepted completion; no image-quality points are implied."
+        };
+
+        string proofAbsolute = AbsolutePath(WaitProofPath);
+        Directory.CreateDirectory(Path.GetDirectoryName(proofAbsolute));
+        File.WriteAllText(proofAbsolute, JsonUtility.ToJson(proof, true));
+    }
+
+    private static string Sha256(string absolutePath)
+    {
+        using var sha = SHA256.Create();
+        using FileStream stream = File.OpenRead(absolutePath);
+        return BitConverter.ToString(sha.ComputeHash(stream)).Replace("-", string.Empty).ToLowerInvariant();
+    }
+
     private static string AbsolutePath(string assetPath)
     {
         string projectRoot = Directory.GetParent(Application.dataPath).FullName;
@@ -239,5 +326,24 @@ public static class QualityBlockReflectionProbeAwaiter
         startedAt = 0.0;
         editorPollCount = 0;
         running = false;
+    }
+
+    [Serializable]
+    private sealed class ReflectionProbeAsyncWaitProof
+    {
+        public string schemaVersion;
+        public string generatedUtc;
+        public string unityVersion;
+        public string scenePath;
+        public string observationMechanism;
+        public int editorPollCount;
+        public double elapsedSeconds;
+        public double timeoutSeconds;
+        public int[] renderIds;
+        public bool allFinishedAndTextureReady;
+        public string reflectionReceiptPath;
+        public string reflectionReceiptSha256;
+        public string visualFidelityStatus;
+        public string note;
     }
 }

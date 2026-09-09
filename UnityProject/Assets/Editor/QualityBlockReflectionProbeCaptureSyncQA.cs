@@ -7,8 +7,9 @@ using UnityEngine;
 
 /// <summary>
 /// Machine-enforced integrity checks for realtime reflection-probe state used by native-4K evidence.
-/// The runtime receipt is written by QualityBlockEnvironmentLightingUpgrade immediately before still
-/// capture. Passing this QA proves synchronization only; it never awards Visual Fidelity points.
+/// The production review packet writes the runtime receipt only after QualityBlockReflectionProbeAwaiter
+/// has observed completion on later Editor updates. Passing this QA proves synchronization only; it
+/// never awards Visual Fidelity points.
 /// </summary>
 public static class QualityBlockReflectionProbeCaptureSyncQA
 {
@@ -17,6 +18,7 @@ public static class QualityBlockReflectionProbeCaptureSyncQA
     private const string ReceiptPath = "Assets/QA/reflection_probe_refresh_receipt.json";
     private const int RequiredProbeCount = 2;
     private const int RequiredResolution = 512;
+    private const int RequiredTimeoutSeconds = 30;
 
     private static readonly string[] RequiredProbeNames =
     {
@@ -50,7 +52,19 @@ public static class QualityBlockReflectionProbeCaptureSyncQA
             !contract.requiredSceneState.hdrRequired || !contract.requiredSceneState.boxProjectionRequired)
             throw new InvalidOperationException("Reflection-probe synchronization contract physical/render-state requirements drifted.");
 
-        Debug.Log("Reflection-probe capture synchronization contract valid. Visual Fidelity remains render-evidence dependent.");
+        CompletionObservation observation = contract.completionObservation;
+        if (observation == null)
+            throw new InvalidOperationException("Reflection-probe synchronization contract completionObservation is missing.");
+        if (observation.mechanism != "EditorApplication.update" ||
+            !observation.requireLaterEditorUpdate ||
+            observation.timeoutSeconds != RequiredTimeoutSeconds ||
+            !observation.requestPlayerLoopUpdateWhileWaiting ||
+            !observation.repaintSceneViewWhileWaiting ||
+            observation.sameCallStackIsFinishedRenderingCheckIsSufficient)
+            throw new InvalidOperationException(
+                "Reflection-probe completion must be observed on later EditorApplication.update callbacks with the 30s fail-closed wait policy; same-call-stack completion is not sufficient.");
+
+        Debug.Log("Reflection-probe capture synchronization contract valid: later-Editor-update completion is mandatory. Visual Fidelity remains render-evidence dependent.");
     }
 
     [MenuItem("NewTown/QA/Validate Latest Reflection Probe Refresh Receipt")]
@@ -121,6 +135,7 @@ public static class QualityBlockReflectionProbeCaptureSyncQA
     {
         public string schemaVersion;
         public RequiredSceneState requiredSceneState;
+        public CompletionObservation completionObservation;
     }
 
     [Serializable]
@@ -136,5 +151,16 @@ public static class QualityBlockReflectionProbeCaptureSyncQA
         public string textureDimension;
         public bool hdrRequired;
         public bool boxProjectionRequired;
+    }
+
+    [Serializable]
+    private sealed class CompletionObservation
+    {
+        public string mechanism;
+        public bool requireLaterEditorUpdate;
+        public int timeoutSeconds;
+        public bool requestPlayerLoopUpdateWhileWaiting;
+        public bool repaintSceneViewWhileWaiting;
+        public bool sameCallStackIsFinishedRenderingCheckIsSufficient;
     }
 }

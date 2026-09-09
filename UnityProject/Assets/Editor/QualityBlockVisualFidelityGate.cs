@@ -8,12 +8,13 @@ using UnityEngine;
 /// <summary>
 /// Numeric release gate for the 4K-film visual target.
 /// IMPORTANT: this class never converts implementation coverage into a visual-fidelity score.
-/// Visual PASS requires real 3840x2160 Unity renders, 100% crops, explicit category scores,
-/// and explicit review of every critical automatic-fail defect.
+/// Visual PASS requires real 3840x2160 Unity renders, pixel-exact 100% crops, provenance validation,
+/// explicit category scores tied to observable evidence, and explicit review of every critical defect.
 /// </summary>
 public static class QualityBlockVisualFidelityGate
 {
     private const string ConfigPath = "Assets/QA/visual_fidelity_gate.json";
+    private const string ObservabilityPath = "Assets/QA/visual_evidence_observability_contract.json";
     private const string EvidencePath = "Assets/QA/visual_fidelity_evidence.json";
     private const string ResultPath = "Assets/QA/visual_fidelity_result.json";
     private const string ReadinessPath = "Assets/QA/implementation_readiness.json";
@@ -22,15 +23,26 @@ public static class QualityBlockVisualFidelityGate
     public static void ValidateGateConfig()
     {
         GateConfig config = LoadJson<GateConfig>(ConfigPath);
+        ObservabilityConfig observability = LoadJson<ObservabilityConfig>(ObservabilityPath);
         ValidateConfig(config);
-        Debug.Log($"Visual fidelity gate config valid: threshold={config.visualPassThreshold}/100, categories={config.categories.Length}, criticalDefects={config.criticalDefects.Length}.");
+        ValidateObservabilityConfig(config, observability);
+        Debug.Log(
+            $"Visual fidelity gate config valid: threshold={config.visualPassThreshold}/100, " +
+            $"categories={config.categories.Length}, criticalDefects={config.criticalDefects.Length}, evidence coverage contract={observability.schemaVersion}.");
     }
 
     [MenuItem("NewTown/QA/Evaluate 4K Visual Fidelity Gate")]
     public static void EvaluateVisualGate()
     {
         GateConfig config = LoadJson<GateConfig>(ConfigPath);
+        ObservabilityConfig observability = LoadJson<ObservabilityConfig>(ObservabilityPath);
         ValidateConfig(config);
+        ValidateObservabilityConfig(config, observability);
+
+        // This makes provenance enforcement intrinsic to the numeric gate. Even a direct CLI/reflection
+        // call cannot bypass the SHA-256 capture/receipt and pixel-exact crop checks by skipping the
+        // evidence-bound wrapper.
+        QualityBlockRenderEvidenceProvenanceQA.ValidateEvidenceProvenance();
 
         if (!File.Exists(AbsolutePath(EvidencePath)))
             throw new InvalidOperationException(
@@ -46,8 +58,8 @@ public static class QualityBlockVisualFidelityGate
             failures.Add("Unity version was not recorded with the evidence.");
 
         ValidateCaptureEvidence(config, evidence, failures);
-        ValidateCategoryEvidence(config, evidence, failures, out int totalScore);
-        ValidateCriticalDefects(config, evidence, failures);
+        ValidateCategoryEvidence(config, observability, evidence, failures, out int totalScore);
+        ValidateCriticalDefects(config, observability, evidence, failures);
 
         bool pass = failures.Count == 0 && totalScore >= config.visualPassThreshold;
         var result = new VisualGateResult
@@ -58,7 +70,9 @@ public static class QualityBlockVisualFidelityGate
             visualScore = totalScore,
             threshold = config.visualPassThreshold,
             failures = failures.ToArray(),
-            note = "A PASS is valid only for the exact render evidence referenced by visual_fidelity_evidence.json."
+            note =
+                "A PASS is valid only for the exact sealed Unity render evidence referenced by visual_fidelity_evidence.json. " +
+                "Observed view/crop references are mandatory and implementation readiness never contributes visual points."
         };
         WriteJson(ResultPath, result);
 
@@ -72,8 +86,6 @@ public static class QualityBlockVisualFidelityGate
     [MenuItem("NewTown/QA/Write Implementation Readiness Scorecard")]
     public static void WriteImplementationReadinessScorecard()
     {
-        // This is intentionally a source/pipeline readiness score, not a visual-quality score.
-        // Missing runtime/render checks keep the score below 100 even when source coverage is broad.
         ReadinessCheck[] checks =
         {
             CheckAsset("danchi_high_granularity", 12, "Assets/Editor/QualityBlockDanchiDetailUpgrade.cs",
@@ -149,6 +161,61 @@ public static class QualityBlockVisualFidelityGate
             throw new InvalidOperationException("Critical automatic-fail list is unexpectedly incomplete.");
     }
 
+    private static void ValidateObservabilityConfig(GateConfig gate, ObservabilityConfig coverage)
+    {
+        if (coverage == null)
+            throw new InvalidOperationException("Visual evidence observability contract is null.");
+        if (coverage.categoryRequirements == null || coverage.categoryRequirements.Length != gate.categories.Length)
+            throw new InvalidOperationException("Observability contract must define every Visual Fidelity category exactly once.");
+        if (coverage.criticalDefectRequirements == null || coverage.criticalDefectRequirements.Length != gate.criticalDefects.Length)
+            throw new InvalidOperationException("Observability contract must define every critical defect exactly once.");
+
+        string[] allowedViews = coverage.allowedViews ?? Array.Empty<string>();
+        string[] allowedCropRefs = coverage.allowedCropRefs ?? Array.Empty<string>();
+        if (!new HashSet<string>(allowedViews, StringComparer.Ordinal).SetEquals(gate.requiredRender.requiredViews))
+            throw new InvalidOperationException("Observability allowedViews must exactly match the required render views.");
+        if (allowedCropRefs.Distinct(StringComparer.Ordinal).Count() != allowedCropRefs.Length)
+            throw new InvalidOperationException("Observability allowedCropRefs contains duplicates.");
+
+        foreach (GateCategory category in gate.categories)
+        {
+            CoverageRequirement[] matches = coverage.categoryRequirements
+                .Where(x => x != null && x.id == category.id).ToArray();
+            if (matches.Length != 1)
+                throw new InvalidOperationException($"Observability contract missing/duplicates category requirement: {category.id}");
+            ValidateCoverageRequirement(matches[0], allowedViews, allowedCropRefs, $"category/{category.id}");
+        }
+
+        foreach (CriticalDefect defect in gate.criticalDefects)
+        {
+            CoverageRequirement[] matches = coverage.criticalDefectRequirements
+                .Where(x => x != null && x.id == defect.id).ToArray();
+            if (matches.Length != 1)
+                throw new InvalidOperationException($"Observability contract missing/duplicates critical requirement: {defect.id}");
+            ValidateCoverageRequirement(matches[0], allowedViews, allowedCropRefs, $"critical/{defect.id}");
+        }
+    }
+
+    private static void ValidateCoverageRequirement(CoverageRequirement requirement, string[] allowedViews,
+        string[] allowedCropRefs, string label)
+    {
+        string[] requiredViews = requirement.requiredViews ?? Array.Empty<string>();
+        string[] requiredCrops = requirement.requiredCropRefs ?? Array.Empty<string>();
+        if (requiredViews.Distinct(StringComparer.Ordinal).Count() != requiredViews.Length)
+            throw new InvalidOperationException($"{label} contains duplicate requiredViews.");
+        if (requiredCrops.Distinct(StringComparer.Ordinal).Count() != requiredCrops.Length)
+            throw new InvalidOperationException($"{label} contains duplicate requiredCropRefs.");
+        foreach (string view in requiredViews)
+            if (!allowedViews.Contains(view))
+                throw new InvalidOperationException($"{label} references unknown view '{view}'.");
+        foreach (string crop in requiredCrops)
+            if (!allowedCropRefs.Contains(crop))
+                throw new InvalidOperationException($"{label} references unknown crop '{crop}'.");
+        if (requirement.minimumCropReferences < requiredCrops.Length)
+            throw new InvalidOperationException(
+                $"{label} minimumCropReferences={requirement.minimumCropReferences} is below its required crop count {requiredCrops.Length}.");
+    }
+
     private static void ValidateCaptureEvidence(GateConfig config, VisualEvidence evidence, List<string> failures)
     {
         if (evidence.captures == null)
@@ -181,7 +248,7 @@ public static class QualityBlockVisualFidelityGate
         }
     }
 
-    private static void ValidateCategoryEvidence(GateConfig config, VisualEvidence evidence,
+    private static void ValidateCategoryEvidence(GateConfig config, ObservabilityConfig coverage, VisualEvidence evidence,
         List<string> failures, out int totalScore)
     {
         totalScore = 0;
@@ -204,15 +271,23 @@ public static class QualityBlockVisualFidelityGate
                 failures.Add($"Category score is out of range: {category.id}={scored.score}/{category.weight}.");
                 continue;
             }
+
             totalScore += scored.score;
             if (scored.score < category.hardMinimum)
                 failures.Add($"Category below hard minimum: {category.id}={scored.score}, minimum={category.hardMinimum}.");
             if (string.IsNullOrWhiteSpace(scored.evidence))
                 failures.Add($"Category lacks observed render evidence notes: {category.id}.");
+            if (scored.score < category.weight && string.IsNullOrWhiteSpace(scored.deductions))
+                failures.Add($"Category has deductions but no deduction rationale: {category.id}={scored.score}/{category.weight}.");
+
+            CoverageRequirement requirement = coverage.categoryRequirements.Single(x => x.id == category.id);
+            ValidateObservedReferences(requirement, scored.observedViews, scored.observedCropRefs,
+                coverage, failures, $"category {category.id}");
         }
     }
 
-    private static void ValidateCriticalDefects(GateConfig config, VisualEvidence evidence, List<string> failures)
+    private static void ValidateCriticalDefects(GateConfig config, ObservabilityConfig coverage, VisualEvidence evidence,
+        List<string> failures)
     {
         if (evidence.criticalDefects == null)
         {
@@ -228,9 +303,47 @@ public static class QualityBlockVisualFidelityGate
                 failures.Add($"Critical defect was not explicitly reviewed: {definition.id}.");
                 continue;
             }
+            if (string.IsNullOrWhiteSpace(reviewed.evidence))
+                failures.Add($"Critical defect review has no evidence note: {definition.id}.");
+
+            CoverageRequirement requirement = coverage.criticalDefectRequirements.Single(x => x.id == definition.id);
+            ValidateObservedReferences(requirement, reviewed.observedViews, reviewed.observedCropRefs,
+                coverage, failures, $"critical defect {definition.id}");
+
             if (reviewed.present)
                 failures.Add($"CRITICAL AUTO-FAIL: {definition.id} — {definition.description}. Evidence: {reviewed.evidence}");
         }
+    }
+
+    private static void ValidateObservedReferences(CoverageRequirement requirement, string[] observedViews,
+        string[] observedCropRefs, ObservabilityConfig coverage, List<string> failures, string label)
+    {
+        string[] views = observedViews ?? Array.Empty<string>();
+        string[] crops = observedCropRefs ?? Array.Empty<string>();
+        var viewSet = new HashSet<string>(views, StringComparer.Ordinal);
+        var cropSet = new HashSet<string>(crops, StringComparer.Ordinal);
+
+        if (viewSet.Count != views.Length)
+            failures.Add($"{label} contains duplicate observedViews.");
+        if (cropSet.Count != crops.Length)
+            failures.Add($"{label} contains duplicate observedCropRefs.");
+
+        foreach (string view in views)
+            if (!(coverage.allowedViews ?? Array.Empty<string>()).Contains(view))
+                failures.Add($"{label} references unknown view '{view}'.");
+        foreach (string crop in crops)
+            if (!(coverage.allowedCropRefs ?? Array.Empty<string>()).Contains(crop))
+                failures.Add($"{label} references unknown crop '{crop}'.");
+
+        foreach (string requiredView in requirement.requiredViews ?? Array.Empty<string>())
+            if (!viewSet.Contains(requiredView))
+                failures.Add($"{label} did not observe required full-frame view '{requiredView}'.");
+        foreach (string requiredCrop in requirement.requiredCropRefs ?? Array.Empty<string>())
+            if (!cropSet.Contains(requiredCrop))
+                failures.Add($"{label} did not observe required 100% crop '{requiredCrop}'.");
+        if (cropSet.Count < requirement.minimumCropReferences)
+            failures.Add(
+                $"{label} cites only {cropSet.Count} unique 100% crops; minimum is {requirement.minimumCropReferences}.");
     }
 
     private static ReadinessCheck CheckAsset(string id, int weight, string assetPath, string evidence)
@@ -304,6 +417,29 @@ public static class QualityBlockVisualFidelityGate
     }
 
     [Serializable]
+    public sealed class ObservabilityConfig
+    {
+        public string schemaVersion;
+        public string purpose;
+        public string referenceFormat;
+        public string[] allowedViews;
+        public string[] allowedCropRefs;
+        public CoverageRequirement[] categoryRequirements;
+        public CoverageRequirement[] criticalDefectRequirements;
+        public string[] hardRules;
+    }
+
+    [Serializable]
+    public sealed class CoverageRequirement
+    {
+        public string id;
+        public string[] requiredViews;
+        public string[] requiredCropRefs;
+        public int minimumCropReferences;
+        public string reason;
+    }
+
+    [Serializable]
     public sealed class VisualEvidence
     {
         public bool renderVerified;
@@ -331,6 +467,8 @@ public static class QualityBlockVisualFidelityGate
         public string evidence;
         public string deductions;
         public string correctiveAction;
+        public string[] observedViews;
+        public string[] observedCropRefs;
     }
 
     [Serializable]
@@ -339,6 +477,8 @@ public static class QualityBlockVisualFidelityGate
         public string id;
         public bool present;
         public string evidence;
+        public string[] observedViews;
+        public string[] observedCropRefs;
     }
 
     [Serializable]

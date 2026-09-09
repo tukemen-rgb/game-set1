@@ -1,10 +1,10 @@
 {
-  "schemaVersion": "1.0",
+  "schemaVersion": "1.1",
   "id": "benchmark_scene_repetition_preflight",
   "status": "PENDING_UNITY_RUNTIME",
   "visualFidelityPointsAwarded": 0,
   "critical_defect": "immediately_obvious_repeated_texture_or_module_pattern",
-  "principle": "Repetition is judged against real manufacture, installation and biology. Mass-produced construction may repeat when it would repeat in reality; natural growth, occupant behavior, weathering causality and large-area material phase may not collapse into conspicuous exact clones.",
+  "principle": "Repetition is judged against real manufacture, installation and biology. Mass-produced construction may repeat when it would repeat in reality; natural growth, occupant behavior, weathering causality and large-area material phase may not collapse into conspicuous exact or perceptual near-clones.",
   "approved_repetition": [
     {
       "assembly": "danchi exterior sash and balcony modules",
@@ -26,6 +26,7 @@
     "same 0-to-1 texture tile stretched independently across every broad ground surface",
     "two or more generated natural tree masters with exact matching render-hierarchy geometry fingerprints",
     "three or more exact-clone ecology patch render hierarchies",
+    "procedural natural assemblies made nominally unique only by tiny positional/rotational/scale jitter that is visually irrelevant at benchmark distance",
     "all apartment windows showing the same curtain opening/material/room-value card",
     "identical baked highlight, shadow or reflection marks repeated across modules",
     "obvious repeated weathering stamp disconnected from drainage, grade splash, fixing or exposure cause"
@@ -46,29 +47,54 @@
     {
       "id": "generated_tree_fingerprint",
       "owner": "QualityBlockSceneRepetitionQA.ValidateOpenScene",
-      "rule": "Every simultaneously active generated tree master must have a unique quantized render-hierarchy fingerprint after root-space normalization.",
+      "rule": "Every simultaneously active generated tree master must have a unique fine render-hierarchy fingerprint after root-space normalization.",
       "render_review_required": "Inspect crown silhouettes from hero and oblique views; a numerically unique tree can still look perceptually cloned."
     },
     {
       "id": "ecology_patch_fingerprint",
       "owner": "QualityBlockSceneRepetitionQA.ValidateOpenScene",
-      "rule": "Six ecology patches require at least five unique render-hierarchy fingerprints and no exact fingerprint more than twice.",
+      "rule": "Six ecology patches require at least five unique fine render-hierarchy fingerprints and no exact fingerprint more than twice.",
       "render_review_required": "Inspect vegetation_grounding and tree_shadow_contact crops for radial planting patterns or repeated understory clusters."
+    },
+    {
+      "id": "perceptual_coarse_signature",
+      "owner": "QualityBlockSceneRepetitionQA.ValidateOpenScene",
+      "rule": "Natural tree masters and ecology patches are re-fingerprinted after generated numeric suffixes and sub-threshold transform differences are discarded. Tree masters require at least ceil(60 percent of active masters) coarse-unique signatures with no more than two coarse near-clones; six ecology patches require at least four coarse-unique signatures with no coarse signature occurring more than twice.",
+      "small_transform_jitter_does_not_count": true,
+      "coarse_normalization": {
+        "renderer_center_step_of_root_span": 0.08,
+        "rotation_step_deg": 12,
+        "relative_scale_step": 0.08,
+        "mesh_vertex_bucket": 16,
+        "generated_numeric_suffixes_ignored": true
+      },
+      "reason": "Tiny branch/leaf/understory jitter can defeat an exact hash without changing the silhouette or planting rhythm visible in a 4K benchmark. Static QA therefore rejects fake uniqueness before render review.",
+      "render_review_required": "Still inspect crown silhouettes and understory rhythm in native 4K. The coarse signature is intentionally conservative and cannot prove perceptual uniqueness."
     }
   ],
   "fingerprint_quantization": {
-    "position_m": 0.005,
-    "rotation_deg": 1.0,
-    "scale": 0.005,
-    "includes": ["mesh name", "material name", "root-relative position", "root-relative rotation", "root-relative scale"],
-    "excludes": ["root object name/index", "world anchor position"],
-    "reason": "Object indices and world positions must not create false uniqueness when internal geometry is actually cloned."
+    "fine": {
+      "position_m": 0.005,
+      "rotation_deg": 1.0,
+      "scale": 0.005,
+      "includes": ["mesh name", "material name", "root-relative position", "root-relative rotation", "root-relative scale"],
+      "excludes": ["root object name/index", "world anchor position"],
+      "reason": "Object indices and world positions must not create false uniqueness when internal geometry is actually cloned."
+    },
+    "coarse": {
+      "position": "renderer centers normalized to each root's active-renderer span, quantized at 0.08",
+      "rotation_deg": 12,
+      "relative_scale": 0.08,
+      "mesh_complexity": "vertex count rounded to 16-vertex buckets plus submesh count",
+      "names": "generated numeric suffixes ignored",
+      "reason": "The coarse pass intentionally ignores changes smaller than likely silhouette/planting-pattern significance so procedural jitter cannot masquerade as natural complexity."
+    }
   },
   "render_review_required": {
     "native_resolution": [3840, 2160],
     "views": ["hero", "oblique", "grazing"],
     "minimum_crops": ["facade_center", "facade_right", "ground_contact", "vegetation_grounding", "tree_shadow_contact"],
-    "decision": "Static preflight can only reject obvious implementation clones. It cannot award Visual Fidelity points or clear the critical repeated-pattern defect without actual Unity render evidence."
+    "decision": "Static fine/coarse preflight can only reject implementation clone risk. It cannot award Visual Fidelity points or clear the critical repeated-pattern defect without actual Unity render evidence."
   },
   "exclusions": [
     "No earthquake/disaster/reconstruction interpretation is permitted.",

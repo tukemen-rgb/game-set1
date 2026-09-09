@@ -1,0 +1,77 @@
+{
+  "schemaVersion": "1.0",
+  "generatedUtc": "2026-09-09T22:45:00Z",
+  "branch": "gpt/unity-migration",
+  "startHead": "efcfbf46fb20eb4dde23f73c522925a8ff4d531f",
+  "substantiveWorkHead": "a4c7ccc962d45040131cfda1f39d1b72779a94f6",
+  "substantiveCommits": [
+    {
+      "sha": "6e9c1937011f715c3edc91037af8eb5fbdf8d199",
+      "message": "qa: define benchmark primitive exposure contract"
+    },
+    {
+      "sha": "1e794979e5411c853f9fcc75ddca66488480b742",
+      "message": "qa: gate visible stock primitives in benchmark framing"
+    },
+    {
+      "sha": "d0431ec0ce67b5da49d57f3b02bce6f6d36244cc",
+      "message": "qa: lock primitive gate to capture view source"
+    },
+    {
+      "sha": "23f98c4c544a8713193bf93783125e1a4bb62fae",
+      "message": "qa: bind primitive exposure gate to capture view lock"
+    },
+    {
+      "sha": "a4c7ccc962d45040131cfda1f39d1b72779a94f6",
+      "message": "qa: enforce benchmark primitive exposure before 4k render"
+    }
+  ],
+  "focus": "Geometry & construction fidelity / critical visible primitive-placeholder risk",
+  "implementation": {
+    "contract": "Assets/QA/benchmark_primitive_exposure_contract.json",
+    "qaCode": "Assets/Editor/QualityBlockBenchmarkPrimitiveExposureQA.cs",
+    "authoritativePacket": "Assets/Editor/QualityBlockNative4KReviewPacket.cs",
+    "runtimeReport": "Assets/QA/benchmark_primitive_exposure_runtime_report.json",
+    "policy": "Project every actively rendered Unity stock solid Cube/Cylinder/Sphere/Capsule under QualityBlock1990s into the locked 3840x2160 hero, oblique and grazing camera framing. Fail before reflection/capture work if a projected stock solid is visibly significant by the hard screen-space thresholds or spans the camera plane. Plane/Quad are not automatically classified because thin physical/decal/foliage carriers may legitimately be planar; their actual appearance remains render-review evidence.",
+    "hardThresholds": {
+      "minimumVisibleWidthPixels": 48,
+      "minimumVisibleHeightPixels": 18,
+      "minimumVisibleAreaPixels": 1200,
+      "largeAreaAutomaticFailurePixels": 4096,
+      "nearPlaneGuardMetres": 0.05
+    },
+    "captureBinding": "The gate duplicates the deterministic view values only after config QA proves QualityBlock4KCapture.cs still contains the exact locked 3840x2160 camera positions, targets and FOV values. Any capture-framing drift therefore fails closed instead of silently weakening primitive screening."
+  },
+  "verification": {
+    "type": "GitHub source/static inspection only; no Unity runtime was available",
+    "branchComparison": "Start head to substantive work head is ahead by 5 and behind by 0. All writes in this run were confined to UnityProject/Assets/Editor or UnityProject/Assets/QA; Godot was not modified and no base merge was performed.",
+    "captureSourceInspection": "QualityBlock4KCapture still defines native 3840x2160 hero, oblique and grazing views at the exact positions/targets/FOV locked by the new contract.",
+    "runnerState": "GitHub Actions workflow runs for gpt/unity-migration remain 0; substantive head commit status contexts remain 0.",
+    "renderEvidenceState": "Assets/QA/Captures4K is absent from the current repository tree. No actual Unity-rendered pixels, primitive runtime report, 100% crops or temporal sequence were produced or reviewed.",
+    "compileState": "PENDING_UNITY_6000_3_0f1_RUNTIME"
+  },
+  "implementationReadiness": {
+    "score": 93,
+    "possible": 100,
+    "status": "UNCHANGED",
+    "reason": "The new screen-space critical-risk gate improves evidence readiness but cannot replace the missing Unity 6000.3.0f1 compile/runtime verification weighted by the existing readiness model."
+  },
+  "visualFidelity": {
+    "status": "UNSCORED_UNTIL_REAL_4K_RENDER",
+    "pointsAwardedThisRun": 0,
+    "passClaimed": false,
+    "criticalDefectCleared": false
+  },
+  "expectedVisualScoreImpact": [
+    "Geometry & construction fidelity (20): prevents authoritative evidence generation while a large active Unity stock solid survives in the exact benchmark framing; expected to expose overlooked placeholder meshes that curated name-based structural refinement can miss.",
+    "Critical-defect integrity: visible primitive-placeholder geometry remains automatic FAIL, and a source-side empty violation list still cannot clear it without native 4K pixel inspection.",
+    "Workflow efficiency: source projection preflight runs before realtime reflection rendering, and is rechecked immediately before still capture and again before temporal work, so expensive evidence generation does not proceed from a known placeholder-risk scene."
+  ],
+  "correctivePolicyIfRuntimeFails": "Do not weaken thresholds or add name-based exemptions. Use the runtime report's hierarchy path, mesh name, benchmark view and pixel footprint to identify the exposed assembly; reconstruct its real manufacture/installation with dimensioned physical geometry or authored art, preserve mounting/interfaces/material metadata and LOD policy, then rerun the same gate.",
+  "nextBlocker": "Unity 6000.3.0f1 editor/runner compile and execution. At first availability, run Prepare Complete Native 4K Review Packet. If benchmark_primitive_exposure_runtime_report.json reports any violations, stop before speculative expansion and replace the largest projected stock-solid assembly first. Only after the source gate passes should reflection synchronization and real hero/oblique/grazing 3840x2160 evidence proceed; Visual Fidelity scoring must then use the actual pixels and 100% crops.",
+  "constraintsPreserved": {
+    "godotUntouched": true,
+    "baseMerged": false,
+    "earthquakeDisasterReconstructionThemesAdded": false
+  }
+}

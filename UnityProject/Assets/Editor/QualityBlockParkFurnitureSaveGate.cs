@@ -9,7 +9,8 @@ using UnityEngine.SceneManagement;
 /// <summary>
 /// Makes the park/street-furniture construction pass part of the persisted benchmark scene whenever
 /// the existing high-detail ground chain is present. The gate checks machine-readable manufacture/
-/// material metadata, rebuilds the assembly, applies physical-profile refinement, then runs structural QA.
+/// material metadata, rebuilds the assembly, applies physical-profile refinement, rebinds explicit
+/// LOD renderer sets, then runs structural QA.
 /// </summary>
 [InitializeOnLoad]
 public static class QualityBlockParkFurnitureSaveGate
@@ -38,8 +39,10 @@ public static class QualityBlockParkFurnitureSaveGate
             ValidateContract();
             QualityBlockParkFurnitureUpgrade.BuildAndApply();
             QualityBlockParkFurniturePhysicalRefinement.ApplyAndValidate();
+            QualityBlockParkFurnitureLodRebind.RebindAndValidate();
             QualityBlockParkFurnitureUpgrade.ValidateOpenScene();
             QualityBlockParkFurniturePhysicalRefinement.ValidateOpenScene();
+            QualityBlockParkFurnitureLodRebind.ValidateOpenScene();
         }
         catch (Exception ex)
         {

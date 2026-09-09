@@ -1,0 +1,137 @@
+{
+  "schemaVersion": "1.0.0",
+  "scenePath": "Assets/Scenes/QualityBlock1990s.unity",
+  "sceneRootName": "QualityBlock1990s",
+  "coverageMode": "all_active_renderers_in_benchmark",
+  "policy": "Every active Renderer used by the benchmark must inherit one and only one registered scene-domain metadata scope. The scope must state manufacture/installation logic and link to detailed machine-readable contracts. A renderer parented outside these scopes is a metadata critical defect; source coverage never substitutes for rendered evidence.",
+  "requiredMetadataFields": [
+    "manufacture",
+    "dimensionsThickness",
+    "materialsFinish",
+    "mounting",
+    "interfacesGapsSeals",
+    "orientationExposure",
+    "aging",
+    "geometryVsMaterial",
+    "lodPolicy"
+  ],
+  "domains": [
+    {
+      "id": "ground_domain",
+      "rootName": "Ground",
+      "required": true,
+      "manufacture": "Landscape/plaza fallback assembled from compacted ground support, paved or soil/grass finish zones, kerb/drain interfaces and metre-scaled surface layers; decorative shading is not baked into geometry or albedo.",
+      "dimensionsThickness": "Generated visible base layers are approximately 30-160 mm thick depending on grass, paving and worn-path support; kerb/drain/joint dimensions remain explicit in the ground infrastructure contracts.",
+      "materialsFinish": "Dry summer grass/soil, non-metallic concrete/paving and physically separate drainage/metal interfaces. Albedo, roughness, normal amplitude, wetness and physical UV scales are defined by the linked ground contracts.",
+      "mounting": "Horizontal finish zones bear on the ground support; kerbs, drain channels, covers and tree/root interfaces are seated into or against the paved/soil substrate instead of floating above it.",
+      "interfacesGapsSeals": "Paving-to-soil edges, kerb joints, drain slots, covers, root zones and contact margins must retain physical gaps/contact shadows at the scale specified by linked contracts.",
+      "orientationExposure": "Upward-facing exterior surfaces receive strong midsummer UV/rain; traffic routes receive wear and soil transfer; sheltered drain recesses retain more moisture and grime.",
+      "aging": "Cause-based foot traffic, splash, drainage and UV variation only; no arbitrary catastrophe damage, crater patterns or unexplained global dirt masks.",
+      "geometryVsMaterial": "Kerbs, joints, drains, level changes, roots/contact interfaces and silhouette-scale relief are geometry; aggregate, grains, pores, fine abrasion and wet/dry optical change are material response.",
+      "lodPolicy": "Silhouette/construction geometry uses explicit scene LOD policy where generated detail requires it; metre-scaled microdetail relies on mipmapped/aniso textures and must not create visible LOD pop.",
+      "contractPaths": [
+        "Assets/QA/ground_construction_lookdev.json",
+        "Assets/QA/ground_base_surface_contract.json",
+        "Assets/QA/ground_contact_interface_contract.json",
+        "Assets/QA/ground_microdetail_contract.json"
+      ]
+    },
+    {
+      "id": "danchi_domain",
+      "rootName": "Danchi",
+      "required": true,
+      "manufacture": "RC apartment block with coated exterior concrete, balcony slabs, sliding aluminum sash, rail assemblies, service equipment, rainwater hardware and period-plausible rooftop receiving equipment assembled as physically distinct components.",
+      "dimensionsThickness": "Five-storey generated fallback uses approximately 2.55 m floor pitch and 4.15 m bay pitch; window, rail, fastener, AC, rainwater and rooftop component dimensions/thicknesses are specified in linked construction contracts.",
+      "materialsFinish": "Painted RC, dielectric glazing/seals/plastics/PVC, anodized aluminum, galvanized or stainless/exposed steel and textile interior dressing remain physically separated with material-specific PBR response.",
+      "mounting": "Sash and service hardware are fixed to openings/slabs; rails use base plates/fasteners; AC and pipes use brackets/collars/clamps; rooftop antenna uses ballast/support rails/mast hardware rather than floating placement.",
+      "interfacesGapsSeals": "Window perimeter seals, sash tracks, sill drips, balcony slab edges, rail bases, pipe penetrations, service collars, curtain-to-glass/backing depth and roof ballast contact must be explicit and non-interpenetrating.",
+      "orientationExposure": "Facade, balcony and rooftop faces receive coherent midsummer sun/rain according to orientation; recesses and tracks retain more grime while upward sills/slabs receive water spotting and dust.",
+      "aging": "UV chalking, ledge runoff, ground splash, drain runoff, localized ferrous-source rust, service contact and occupancy variation only; no disaster/reconstruction narrative or arbitrary structural damage.",
+      "geometryVsMaterial": "Openings, slab lips, extrusions, rails, seals, tracks, fasteners, brackets, cables and curtain pleats are geometry at observable scale; coating grain, oxidation, weave, fine scratches and residue optics are material/microdetail.",
+      "lodPolicy": "High-detail facade, curtain, rooftop and service assemblies use explicit LOD0/1/2/3 or documented construction-safe simplification with animated cross-fade where applicable; rendered pop remains a temporal critical check.",
+      "contractPaths": [
+        "Assets/QA/material_construction_lookdev.json",
+        "Assets/QA/facade_optics_contract.json",
+        "Assets/QA/facade_window_dressing_contract.json",
+        "Assets/QA/facade_weathering_contract.json",
+        "Assets/QA/scene_material_physicality_contract.json",
+        "Assets/QA/period_authenticity_contract.json",
+        "Assets/QA/structural_surface_geometry_contract.json"
+      ]
+    },
+    {
+      "id": "park_domain",
+      "rootName": "ParkEntrance",
+      "required": true,
+      "manufacture": "Ordinary neighborhood-park slide and bench fallback assembled from coated steel tube/plate, stainless slide surface, timber seating and precast/concrete supports using visible joins and supports.",
+      "dimensionsThickness": "Slide shell, legs/platform/rails and bench seat/support dimensions are recorded in the park/street-furniture contracts; the slide running surface retains millimetre-scale physical thickness rather than a painted plane.",
+      "materialsFinish": "Aged coated steel, stainless/exposed metal, timber and precast concrete use separate PBR families with manufacture-scale texture structure, plausible metallic values and no baked highlights.",
+      "mounting": "Legs and bench supports meet ground/footings; slide shell attaches to the supporting frame; timber seating is supported/fastened rather than floating.",
+      "interfacesGapsSeals": "Ground contacts, frame joints, shell/frame seams, fastener locations and timber/support interfaces must retain plausible clearances and contact shadow.",
+      "orientationExposure": "Outdoor equipment receives strong UV/rain; hand/foot contact, water runoff and near-ground splash vary wear by use and exposure.",
+      "aging": "Paint chalking, contact polish, stainless abrasion direction, timber UV/checking and ground splash follow causal exposure; no random damage layer.",
+      "geometryVsMaterial": "Tube/plate/shell thickness, joins, supports and fastening are geometry; orange-peel, fine slide scratches, wood grain/checking and concrete pores are microtexture/material response.",
+      "lodPolicy": "LOD0 preserves physical construction and fine silhouette; LOD1/2/3 progressively reduce sub-pixel detail with cross-fade and mipmapped microdetail.",
+      "contractPaths": [
+        "Assets/QA/park_street_furniture_contract.json",
+        "Assets/QA/park_furniture_microdetail_contract.json"
+      ]
+    },
+    {
+      "id": "vegetation_domain",
+      "rootName": "Trees",
+      "required": true,
+      "manufacture": "Planted landscape trees are modeled as biological root/trunk/branch/twig/leaf hierarchies with root-zone/soil interfaces and cause-based understory density rather than stacked primitive crowns.",
+      "dimensionsThickness": "Generated mature-tree height and branching/leaf scales vary by deterministic individual; root-zone, trunk, twig, leaf and understory dimensions are constrained by the vegetation ecology contract.",
+      "materialsFinish": "Bark is rough dielectric organic material; thin leaves use two-sided transmission optics; root-zone soil/precast interfaces remain non-metallic with exposure-dependent moisture response.",
+      "mounting": "Trunks emerge from root/soil interfaces; branches attach through hierarchy; leaves attach to twig/branch structure; understory originates from plausible soil/edge zones rather than floating cards.",
+      "interfacesGapsSeals": "Root flare/soil contact and tree-pit/paving interfaces require grounding/contact shadow; vegetation must not visibly interpenetrate hardscape hero geometry.",
+      "orientationExposure": "Canopy receives directional midsummer sun and sky fill; lower/recessed foliage is shaded/humid; foot-traffic pressure reduces understory near pedestrian routes.",
+      "aging": "Ordinary seasonal/maintenance variation only: UV, moisture, shade and pedestrian pressure. No storm/disaster breakage or reconstruction cues.",
+      "geometryVsMaterial": "Root/trunk/branch/twig/leaf silhouette and grounding are geometry; bark microfissure, leaf venation/transmission and soil grains are material response.",
+      "lodPolicy": "Tree and understory renderers use explicit LOD levels/cross-fade; clone-risk QA rejects identical natural hierarchies; shimmer/LOD pop is judged only from sealed temporal evidence.",
+      "contractPaths": [
+        "Assets/QA/vegetation_ecology_contract.json",
+        "Assets/QA/scene_repetition_contract.json"
+      ]
+    },
+    {
+      "id": "street_furniture_domain",
+      "rootName": "StreetFurniture",
+      "required": true,
+      "manufacture": "Neighborhood lamp and notice-board fallback assembled from concrete/steel support, luminaire diffuser/housing and board frame/backing with visible support logic appropriate to an ordinary circa-2000 public-space context.",
+      "dimensionsThickness": "Pole, globe/diffuser, frame, panel and support dimensions are recorded by the park/street-furniture contract; thin housings/diffusers use dedicated physical refinement where observable.",
+      "materialsFinish": "Concrete, coated/exposed metal, frosted dielectric diffuser and board backing remain separate material families with restrained roughness/metallicity and physical angular response.",
+      "mounting": "Pole and posts meet ground support; luminaire head attaches to the pole; board panel attaches to posts/frame instead of unsupported placement.",
+      "interfacesGapsSeals": "Pole-to-ground, head-to-pole, diffuser-housing and panel/post interfaces require plausible joins/contact; no floating or hero-scale penetration.",
+      "orientationExposure": "Outdoor faces receive UV/rain; upper surfaces collect dust/water; contact and near-ground splash vary locally.",
+      "aging": "Ordinary weathering from UV, rain, dust and contact; no damage-story overlays.",
+      "geometryVsMaterial": "Pole/head/frame/panel thickness and joints are geometry; concrete pores, paint orange-peel, diffuser frost and fine board texture are material response.",
+      "lodPolicy": "Street-furniture LOD0 preserves physical silhouette/construction with LOD1/2/3 simplification and cross-fade where the generated fallback defines it.",
+      "contractPaths": [
+        "Assets/QA/park_street_furniture_contract.json",
+        "Assets/QA/park_furniture_microdetail_contract.json"
+      ]
+    },
+    {
+      "id": "replacement_slots_domain",
+      "rootName": "ArtSlots",
+      "required": false,
+      "manufacture": "Container for authored-or-generated replacement assets. Each rendered slot inherits the manufacture/installation specification of the scene domain it replaces; this scope exists so replacement content cannot bypass metadata coverage by being parented outside the original fallback root.",
+      "dimensionsThickness": "Replacement assets must preserve the slot's physical envelope, construction thickness and interfaces unless their linked slot-specific contract explicitly supersedes the generated fallback.",
+      "materialsFinish": "Replacement assets must retain physically plausible material families and PBR values from their linked domain contracts; authored art does not exempt metallic/specular or baked-highlight rules.",
+      "mounting": "Slot anchors preserve world installation and interface positions for ground, building and vegetation replacements.",
+      "interfacesGapsSeals": "Authored replacements must maintain ground contact, wall/opening interfaces, seals/gaps and non-interpenetration at slot boundaries.",
+      "orientationExposure": "Replacement content inherits the scene's solar, rain, UV, contact and moisture exposure metadata.",
+      "aging": "Replacement weathering remains cause-based and period-authentic; arbitrary damage/story cues are not accepted.",
+      "geometryVsMaterial": "Authored geometry owns observable construction/silhouette; materials own microstructure and angular response, never painted illumination.",
+      "lodPolicy": "Authored replacements must supply or inherit LOD0/1/2/3 behavior appropriate to benchmark footprint; temporal evidence remains mandatory for visible-pop clearance.",
+      "contractPaths": [
+        "Assets/QA/material_construction_lookdev.json",
+        "Assets/QA/ground_construction_lookdev.json",
+        "Assets/QA/park_street_furniture_contract.json",
+        "Assets/QA/vegetation_ecology_contract.json"
+      ]
+    }
+  ]
+}

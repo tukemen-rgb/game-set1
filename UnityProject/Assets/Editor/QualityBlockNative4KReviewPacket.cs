@@ -6,9 +6,11 @@ using UnityEngine;
 /// Single runner entry point for the first real Unity verification session. Once a Unity editor/runner
 /// is available, this command should be preferred over speculative source expansion. The still path
 /// deliberately spans Editor updates while realtime reflection probes render; only after their returned
-/// RenderIDs are proven finished does it capture/seal hero, oblique and grazing frames. Temporal probes
-/// are then captured from that exact prepared scene without rebuilding/reopening, and diagnostic tools
-/// only triage the resulting evidence for manual review.
+/// RenderIDs are proven finished does it capture/seal hero, oblique and grazing frames. The benchmark
+/// filmic image effect then proves that all three native stills actually traversed an HDR source -> LDR
+/// destination display transform before they can be sealed. Temporal probes are captured from that exact
+/// prepared scene without rebuilding/reopening, and diagnostic tools only triage the resulting evidence
+/// for manual review.
 ///
 /// The packet intentionally stops before Visual Fidelity scoring because a reviewer must inspect the
 /// actual pixels and record evidence/deductions/corrective actions.
@@ -35,6 +37,7 @@ public static class QualityBlockNative4KReviewPacket
         QualityBlockSceneMetadataCoverageQA.ValidateContractConfigOnly();
         QualityBlockTextureSamplingUpgrade.ValidateContractConfigOnly();
         QualityBlockFoliagePhysicalityQA.ValidateContractConfigOnly();
+        QualityBlockHdrTonemapRuntimeQA.ValidateContractConfigOnly();
         QualityBlockReflectionProbeCaptureSyncQA.ValidateContractConfigOnly();
         QualityBlock4KCapture.ValidateCaptureContract();
 
@@ -57,7 +60,15 @@ public static class QualityBlockNative4KReviewPacket
         // cubemaps would become stale relative to the benchmark geometry/material state.
         QualityBlockReflectionProbeCaptureSyncQA.ValidateRuntimeReceipt();
         QualityBlockReflectionProbeAwaiter.ValidateLatestWaitProof();
+
+        // Reset runtime display-transform telemetry only after the prepared scene/probes are final and
+        // immediately before the three synchronous Camera.Render calls. The post-capture validation must
+        // observe exactly those three 3840x2160 image-effect executions, an HDR source, an LDR destination,
+        // and zero fallback blits before the image set is allowed to enter provenance sealing.
+        QualityBlockHdrTonemapRuntimeQA.ResetBeforeNative4KCapture();
         QualityBlock4KCapture.CapturePreparedSceneAfterProbeSync();
+        QualityBlockHdrTonemapRuntimeQA.ValidateLatestNative4KCapture();
+
         QualityBlockBenchmarkObservabilityQA.ExtractPeriodAuthenticityCropsFromExistingFrames();
         QualityBlockRenderEvidenceProvenanceQA.SealCurrentCapture();
         QualityBlockRenderEvidenceProvenanceQA.WriteBoundEvidenceTemplate();
@@ -89,6 +100,7 @@ public static class QualityBlockNative4KReviewPacket
             "Complete native-4K review packet prepared: sealed hero/oblique/grazing stills + 100% crops, " +
             "immutable 92/100 category/minimum/critical-defect gate integrity checked before capture, " +
             "reflection cubemaps proven complete on later Editor updates before capture with a SHA-256-bound wait proof, retained structural geometry and actual material physicality validated, " +
+            "all three native stills proven at runtime to execute the filmic HDR-source to LDR-destination display transform with no fallback blit, " +
             "scene-wide construction/material metadata coverage, texture sampling, foliage dielectric constraints and fine+coarse anti-repetition preflight checked, " +
             "temporal probes captured from the same prepared scene without rebuild/reopen and SHA-256-bound to the persisted scene plus reflection completion/wait proofs, " +
             "and non-scoring still/temporal diagnostics generated for manual 100%-pixel review. Visual Fidelity remains UNSCORED until the exact evidence is reviewed and the evidence-bound 100-point gate is evaluated.");

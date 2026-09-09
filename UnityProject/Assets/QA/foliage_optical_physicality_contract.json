@@ -1,0 +1,124 @@
+{
+  "contractVersion": "foliage-optical-physicality-v1.0.0",
+  "generatedUtc": "2026-09-09T13:35:00Z",
+  "runtimeRenderVerification": "PENDING_UNITY_RUNTIME",
+  "visualFidelityPointsAwarded": 0,
+  "visualFidelityStatus": "UNSCORED_UNTIL_REAL_4K_RENDER",
+  "intent": "Constrain generated midsummer foliage to a dry thin-dielectric optical response with measured-order refractive behavior, broad microfacet highlights, coherent two-sided normals and cause-based transmitted sunlight. This contract cannot clear the visual gate without sealed native 4K evidence.",
+  "physicalBasis": {
+    "materialClass": "living dry-surface plant leaf / thin dielectric lamina",
+    "metallic": 0.0,
+    "effectiveVisibleRefractiveIndexReferenceRange": [1.415, 1.425],
+    "normalIncidenceF0Formula": "((n - 1) / (n + 1))^2",
+    "referenceF0Range": [0.0297, 0.0307],
+    "selectedDielectricF0": 0.03,
+    "selectedNormalScale": 0.72,
+    "perceptualRoughnessClamp": [0.45, 0.95],
+    "expectedDryLeafRoughnessInCurrentMaterials": [0.76, 0.95],
+    "baseSmoothnessScaleRange": [0.20, 0.26],
+    "diffuseWrapRange": [0.24, 0.30],
+    "clusterTransmissionStrengthRange": [0.20, 0.50],
+    "wetness": "disabled in the dry benchmark; no generic wet sheen is permitted",
+    "uvAging": "small ordinary canopy exposure/value variation only; no emissive green and no painted sun highlight",
+    "angularFresnelResponse": "Schlick Fresnel driven by dielectric F0=0.03; specular lobe uses isotropic GGX with Schlick-Smith masking and roughness derived from the co-registered smoothness mask",
+    "geometryVsMaterial": "leaf/cluster silhouette, branch attachment and LOD population remain geometry; lamina micro-normal, broad dielectric specular and transmitted-light response remain material/shader detail"
+  },
+  "manufactureInstallationReasoning": {
+    "assembly": "natural leaf attached to explicit twig/cluster geometry",
+    "components": "twig/branch support -> leaf cluster transform -> explicit leaf lamina mesh -> co-registered albedo/normal/smoothness textures",
+    "dimensionsThickness": "leaf thickness is optically modeled as a thin lamina and is not exaggerated into visible slab thickness; branch/twig dimensions remain in tree-detail geometry metadata",
+    "materialsFinish": "non-metallic living leaf surface with dry cuticle/cell-wall dielectric response and vein-scale micro-normal structure",
+    "mounting": "leaf clusters remain parented to generated branch/twig hierarchy; optical QA must not create colliders or move gameplay geometry",
+    "interfacesGapsSeals": "no manufactured seals; required interface is a physically located branch/twig attachment with no floating leaf cluster",
+    "orientationExposure": "two-sided shading uses the viewed face normal; canopy height/radial/sun-side context drives modest exposure/transmission variation under the same SummerSun used by the sky and shadows",
+    "aging": "ordinary midsummer value variation only; damage, storm, disaster and reconstruction cues are prohibited",
+    "lodPolicy": "existing LOD0/1/2/3 leaf/cluster hierarchy remains renderer-distinct with animated cross-fade; actual shimmer/pop requires temporal render evidence"
+  },
+  "shaderRequirements": {
+    "shader": "Assets/Shaders/NewTownFoliageTransmission.shader",
+    "shaderName": "NewTown/FoliageTransmission",
+    "requiredProperties": [
+      "_MainTex",
+      "_BumpMap",
+      "_MetallicGlossMap",
+      "_TransmissionColor",
+      "_TransmissionStrength",
+      "_Wrap",
+      "_SmoothnessScale",
+      "_DielectricF0",
+      "_NormalScale"
+    ],
+    "requiredBehavior": [
+      "Cull Off with view-facing back-face shading normal",
+      "dielectric F0 rather than metallic/specular art scalar",
+      "Schlick Fresnel angular response",
+      "GGX direct specular with Schlick-Smith masking",
+      "transmission multiplied by main-light attenuation and non-reflected dielectric energy",
+      "no emission",
+      "no baked or painted highlight"
+    ]
+  },
+  "materialBindings": [
+    {
+      "asset": "Assets/Art/GeneratedPBR/PBR_LeafDark_Transmission.mat",
+      "dielectricF0": 0.03,
+      "normalScale": 0.72,
+      "smoothnessScale": 0.24,
+      "baseTransmissionStrength": 0.33,
+      "metallic": 0.0
+    },
+    {
+      "asset": "Assets/Art/GeneratedPBR/PBR_LeafMid_Transmission.mat",
+      "dielectricF0": 0.03,
+      "normalScale": 0.72,
+      "smoothnessScale": 0.23,
+      "baseTransmissionStrength": 0.35,
+      "metallic": 0.0
+    }
+  ],
+  "externalOpticalReferences": [
+    {
+      "title": "Refractive index of plant cell walls",
+      "journal": "Applied Optics",
+      "year": 1974,
+      "doi": "10.1364/AO.13.000109",
+      "pmid": "20125929",
+      "relevance": "Reports an average plant cell-wall refractive index near 1.425 across four genera; used only to anchor order-of-magnitude dielectric F0, not to claim a species-specific leaf measurement."
+    },
+    {
+      "title": "Refractive index of soybean leaf cell walls",
+      "journal": "Plant Physiology",
+      "year": 1975,
+      "doi": "10.1104/pp.55.2.172",
+      "pmid": "16659044",
+      "relevance": "Reports about 1.415 for fully hydrated living soybean leaf cell walls; brackets the selected visible-order F0 around 0.03."
+    }
+  ],
+  "qa": {
+    "requiredGeneratedLeafMaterials": 2,
+    "dielectricF0AllowedRange": [0.028, 0.032],
+    "normalScaleAllowedRange": [0.65, 0.80],
+    "smoothnessScaleAllowedRange": [0.20, 0.26],
+    "wrapAllowedRange": [0.24, 0.30],
+    "rendererTransmissionAllowedRange": [0.20, 0.50],
+    "requireDoubleSidedGI": true,
+    "requireGPUInstancing": true,
+    "requireNoEmission": true,
+    "renderInspectionTargets": [
+      "oblique/vegetation_grounding",
+      "grazing/tree_shadow_contact",
+      "grazing/material_grazing",
+      "temporal/subpixel_grazing"
+    ],
+    "automaticFail": [
+      "metallic leaf response",
+      "painted or baked leaf highlight",
+      "chrome/plastic-like foliage sparkle",
+      "incoherent back-face lighting",
+      "severe foliage aliasing or shimmer",
+      "visible foliage LOD pop",
+      "claiming foliage visual quality without an actual Unity render"
+    ]
+  },
+  "verification": "Source and machine-readable optical constraints only. Unity 6000.3.0f1 compile plus sealed native 3840x2160 still/crop and temporal evidence remain required before any Visual Fidelity points can be awarded."
+}

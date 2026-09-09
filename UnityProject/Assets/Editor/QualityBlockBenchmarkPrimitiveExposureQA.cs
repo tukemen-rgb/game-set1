@@ -55,7 +55,7 @@ public static class QualityBlockBenchmarkPrimitiveExposureQA
         string[] requiredContractTokens =
         {
             "\"criticalDefectRiskReduced\": \"visible_primitive_placeholder_geometry\"",
-            "\"authoritativeViewSource\": \"QualityBlock4KCapture.TryGetBenchmarkViewProjection\"",
+            "\"authoritativeViewSource\": \"QualityBlock4KCapture.Views; source-token lock must match exact 3840x2160 hero/oblique/grazing positions, targets and FOV before projection QA can run\"",
             "\"requiredViews\": [\"hero\", \"oblique\", \"grazing\"]",
             "\"nativeResolution\": [3840, 2160]",
             "\"solidBuiltInMeshes\": [\"Cube\", \"Cylinder\", \"Sphere\", \"Capsule\"]",

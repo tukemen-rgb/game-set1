@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "1.0",
+  "schemaVersion": "1.1",
   "pipeline": "Built-in Render Pipeline",
   "purpose": "Reduce shadow crawling, contact detachment, jagged thin geometry and LOD instability without hiding defects in post-processing.",
   "qualitySettings": {
@@ -50,6 +50,15 @@
     "cameraMotionAcceptance": "No visible LOD pop, severe shadow crawl or geometry shimmer in actual moving-camera verification.",
     "stillFrameAcceptance": "100% crops must not show objectionable stair-stepping on hero rails, sash, grating or branch silhouettes."
   },
+  "enforcement": {
+    "configurationPass": "Assets/Editor/QualityBlockShadowStabilityUpgrade.cs",
+    "sceneSaveGate": "Assets/Editor/QualityBlockShadowStabilitySaveGate.cs",
+    "scenePath": "Assets/Scenes/QualityBlock1990s.unity",
+    "activationPrerequisites": ["QualityBlock1990s", "SummerSun"],
+    "saveBehavior": "Apply configuration, then validate before the benchmark scene save completes.",
+    "captureChainRelationship": "QualityBlockEnvironmentLightingUpgrade saves the benchmark during native-4K preparation, so the save gate persists the shadow/edge policy before the final capture-scene reopen.",
+    "visualPointsAwardedByEnforcement": 0
+  },
   "benchmarkEvidence": {
     "actualRenderRequired": true,
     "nativeResolution": [3840, 2160],
@@ -62,6 +71,7 @@
       "grazing/sash_rail_response",
       "grazing/tree_shadow_contact"
     ],
+    "temporalSequences": ["subpixel_grazing", "lod_walk_oblique"],
     "doNotAwardVisualPointsFromConfigurationAlone": true
   },
   "visualFidelityGateMapping": {
@@ -82,5 +92,5 @@
     "Transparent window planes casting opaque card shadows",
     "Claiming stable 4K quality without an actual Unity render"
   ],
-  "verificationStatus": "IMPLEMENTED_CONFIGURATION_UNVERIFIED_NO_UNITY_RUNNER"
+  "verificationStatus": "IMPLEMENTED_AND_SAVE_GATED_UNVERIFIED_NO_UNITY_RUNNER"
 }

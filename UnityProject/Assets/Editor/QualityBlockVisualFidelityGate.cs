@@ -8,8 +8,9 @@ using UnityEngine;
 /// <summary>
 /// Numeric release gate for the 4K-film visual target.
 /// IMPORTANT: this class never converts implementation coverage into a visual-fidelity score.
-/// Visual PASS requires real 3840x2160 Unity renders, pixel-exact 100% crops, provenance validation,
-/// explicit category scores tied to observable evidence, and explicit review of every critical defect.
+/// Visual PASS requires real 3840x2160 Unity still renders, pixel-exact 100% crops, sealed native-4K
+/// temporal probes for shimmer/LOD review, provenance validation, explicit category scores tied to
+/// observable evidence, and explicit review of every critical defect.
 /// </summary>
 public static class QualityBlockVisualFidelityGate
 {
@@ -19,6 +20,8 @@ public static class QualityBlockVisualFidelityGate
     private const string ResultPath = "Assets/QA/visual_fidelity_result.json";
     private const string ReadinessPath = "Assets/QA/implementation_readiness.json";
 
+    private static readonly string[] RequiredTemporalRefs = { "subpixel_grazing", "lod_walk_oblique" };
+
     [MenuItem("NewTown/QA/Validate Visual Fidelity Gate Config")]
     public static void ValidateGateConfig()
     {
@@ -26,9 +29,11 @@ public static class QualityBlockVisualFidelityGate
         ObservabilityConfig observability = LoadJson<ObservabilityConfig>(ObservabilityPath);
         ValidateConfig(config);
         ValidateObservabilityConfig(config, observability);
+        QualityBlockTemporalStabilityCapture.ValidateContractConfigOnly();
         Debug.Log(
             $"Visual fidelity gate config valid: threshold={config.visualPassThreshold}/100, " +
-            $"categories={config.categories.Length}, criticalDefects={config.criticalDefects.Length}, evidence coverage contract={observability.schemaVersion}.");
+            $"categories={config.categories.Length}, criticalDefects={config.criticalDefects.Length}, " +
+            $"still+temporal evidence coverage contract={observability.schemaVersion}.");
     }
 
     [MenuItem("NewTown/QA/Evaluate 4K Visual Fidelity Gate")]
@@ -38,10 +43,10 @@ public static class QualityBlockVisualFidelityGate
         ObservabilityConfig observability = LoadJson<ObservabilityConfig>(ObservabilityPath);
         ValidateConfig(config);
         ValidateObservabilityConfig(config, observability);
+        QualityBlockTemporalStabilityCapture.ValidateContractConfigOnly();
 
-        // This makes provenance enforcement intrinsic to the numeric gate. Even a direct CLI/reflection
-        // call cannot bypass the SHA-256 capture/receipt and pixel-exact crop checks by skipping the
-        // evidence-bound wrapper.
+        // Intrinsic still-evidence provenance. A direct CLI/reflection call cannot bypass SHA-256
+        // capture/receipt and pixel-exact 100% crop checks by skipping the evidence-bound wrapper.
         QualityBlockRenderEvidenceProvenanceQA.ValidateEvidenceProvenance();
 
         if (!File.Exists(AbsolutePath(EvidencePath)))
@@ -58,6 +63,7 @@ public static class QualityBlockVisualFidelityGate
             failures.Add("Unity version was not recorded with the evidence.");
 
         ValidateCaptureEvidence(config, evidence, failures);
+        ValidateTemporalEvidence(evidence, failures);
         ValidateCategoryEvidence(config, observability, evidence, failures, out int totalScore);
         ValidateCriticalDefects(config, observability, evidence, failures);
 
@@ -71,8 +77,8 @@ public static class QualityBlockVisualFidelityGate
             threshold = config.visualPassThreshold,
             failures = failures.ToArray(),
             note =
-                "A PASS is valid only for the exact sealed Unity render evidence referenced by visual_fidelity_evidence.json. " +
-                "Observed view/crop references are mandatory and implementation readiness never contributes visual points."
+                "A PASS is valid only for the exact sealed Unity still-render and temporal evidence referenced by visual_fidelity_evidence.json. " +
+                "Observed view/crop/temporal references are mandatory and implementation readiness never contributes visual points."
         };
         WriteJson(ResultPath, result);
 
@@ -80,7 +86,7 @@ public static class QualityBlockVisualFidelityGate
             throw new InvalidOperationException(
                 $"4K Visual Fidelity Gate FAILED: {totalScore}/100. " + string.Join(" | ", failures));
 
-        Debug.Log($"4K Visual Fidelity Gate PASSED: {totalScore}/100 with no critical defects.");
+        Debug.Log($"4K Visual Fidelity Gate PASSED: {totalScore}/100 with no critical defects and valid sealed temporal evidence.");
     }
 
     [MenuItem("NewTown/QA/Write Implementation Readiness Scorecard")]
@@ -130,7 +136,7 @@ public static class QualityBlockVisualFidelityGate
             note = "Implementation Readiness measures pipeline coverage only. It must never be presented as the 4K Visual Fidelity score."
         };
         WriteJson(ReadinessPath, report);
-        Debug.Log($"Implementation Readiness: {score}/{possible}. Visual Fidelity remains UNSCORED until real 4K render evidence is reviewed.");
+        Debug.Log($"Implementation Readiness: {score}/{possible}. Visual Fidelity remains UNSCORED until real 4K still and temporal render evidence is reviewed.");
     }
 
     private static void ValidateConfig(GateConfig config)
@@ -172,10 +178,14 @@ public static class QualityBlockVisualFidelityGate
 
         string[] allowedViews = coverage.allowedViews ?? Array.Empty<string>();
         string[] allowedCropRefs = coverage.allowedCropRefs ?? Array.Empty<string>();
+        string[] allowedTemporalRefs = coverage.allowedTemporalRefs ?? Array.Empty<string>();
         if (!new HashSet<string>(allowedViews, StringComparer.Ordinal).SetEquals(gate.requiredRender.requiredViews))
             throw new InvalidOperationException("Observability allowedViews must exactly match the required render views.");
         if (allowedCropRefs.Distinct(StringComparer.Ordinal).Count() != allowedCropRefs.Length)
             throw new InvalidOperationException("Observability allowedCropRefs contains duplicates.");
+        if (allowedTemporalRefs.Distinct(StringComparer.Ordinal).Count() != allowedTemporalRefs.Length ||
+            !new HashSet<string>(allowedTemporalRefs, StringComparer.Ordinal).SetEquals(RequiredTemporalRefs))
+            throw new InvalidOperationException("Observability allowedTemporalRefs must be exactly subpixel_grazing and lod_walk_oblique.");
 
         foreach (GateCategory category in gate.categories)
         {
@@ -183,7 +193,7 @@ public static class QualityBlockVisualFidelityGate
                 .Where(x => x != null && x.id == category.id).ToArray();
             if (matches.Length != 1)
                 throw new InvalidOperationException($"Observability contract missing/duplicates category requirement: {category.id}");
-            ValidateCoverageRequirement(matches[0], allowedViews, allowedCropRefs, $"category/{category.id}");
+            ValidateCoverageRequirement(matches[0], allowedViews, allowedCropRefs, allowedTemporalRefs, $"category/{category.id}");
         }
 
         foreach (CriticalDefect defect in gate.criticalDefects)
@@ -192,28 +202,50 @@ public static class QualityBlockVisualFidelityGate
                 .Where(x => x != null && x.id == defect.id).ToArray();
             if (matches.Length != 1)
                 throw new InvalidOperationException($"Observability contract missing/duplicates critical requirement: {defect.id}");
-            ValidateCoverageRequirement(matches[0], allowedViews, allowedCropRefs, $"critical/{defect.id}");
+            ValidateCoverageRequirement(matches[0], allowedViews, allowedCropRefs, allowedTemporalRefs, $"critical/{defect.id}");
         }
+
+        CoverageRequirement temporalCategory = coverage.categoryRequirements.Single(x => x.id == "temporal_lod_aliasing");
+        if (!new HashSet<string>(temporalCategory.requiredTemporalRefs ?? Array.Empty<string>(), StringComparer.Ordinal)
+                .SetEquals(RequiredTemporalRefs))
+            throw new InvalidOperationException("Temporal/LOD/aliasing category must require both sealed temporal probes.");
+        CoverageRequirement shimmer = coverage.criticalDefectRequirements.Single(x => x.id == "severe_aliasing_or_shimmer");
+        if (!new HashSet<string>(shimmer.requiredTemporalRefs ?? Array.Empty<string>(), StringComparer.Ordinal)
+                .SetEquals(RequiredTemporalRefs))
+            throw new InvalidOperationException("severe_aliasing_or_shimmer must require both sealed temporal probes.");
+        CoverageRequirement lodPop = coverage.criticalDefectRequirements.Single(x => x.id == "visible_lod_pop");
+        if (!new HashSet<string>(lodPop.requiredTemporalRefs ?? Array.Empty<string>(), StringComparer.Ordinal)
+                .SetEquals(new[] { "lod_walk_oblique" }))
+            throw new InvalidOperationException("visible_lod_pop must require lod_walk_oblique temporal evidence.");
     }
 
     private static void ValidateCoverageRequirement(CoverageRequirement requirement, string[] allowedViews,
-        string[] allowedCropRefs, string label)
+        string[] allowedCropRefs, string[] allowedTemporalRefs, string label)
     {
         string[] requiredViews = requirement.requiredViews ?? Array.Empty<string>();
         string[] requiredCrops = requirement.requiredCropRefs ?? Array.Empty<string>();
+        string[] requiredTemporal = requirement.requiredTemporalRefs ?? Array.Empty<string>();
         if (requiredViews.Distinct(StringComparer.Ordinal).Count() != requiredViews.Length)
             throw new InvalidOperationException($"{label} contains duplicate requiredViews.");
         if (requiredCrops.Distinct(StringComparer.Ordinal).Count() != requiredCrops.Length)
             throw new InvalidOperationException($"{label} contains duplicate requiredCropRefs.");
+        if (requiredTemporal.Distinct(StringComparer.Ordinal).Count() != requiredTemporal.Length)
+            throw new InvalidOperationException($"{label} contains duplicate requiredTemporalRefs.");
         foreach (string view in requiredViews)
             if (!allowedViews.Contains(view))
                 throw new InvalidOperationException($"{label} references unknown view '{view}'.");
         foreach (string crop in requiredCrops)
             if (!allowedCropRefs.Contains(crop))
                 throw new InvalidOperationException($"{label} references unknown crop '{crop}'.");
+        foreach (string temporal in requiredTemporal)
+            if (!allowedTemporalRefs.Contains(temporal))
+                throw new InvalidOperationException($"{label} references unknown temporal probe '{temporal}'.");
         if (requirement.minimumCropReferences < requiredCrops.Length)
             throw new InvalidOperationException(
                 $"{label} minimumCropReferences={requirement.minimumCropReferences} is below its required crop count {requiredCrops.Length}.");
+        if (requirement.minimumTemporalReferences < requiredTemporal.Length)
+            throw new InvalidOperationException(
+                $"{label} minimumTemporalReferences={requirement.minimumTemporalReferences} is below its required temporal count {requiredTemporal.Length}.");
     }
 
     private static void ValidateCaptureEvidence(GateConfig config, VisualEvidence evidence, List<string> failures)
@@ -245,6 +277,31 @@ public static class QualityBlockVisualFidelityGate
                         if (string.IsNullOrWhiteSpace(crop) || !File.Exists(AbsolutePath(crop)))
                             failures.Add($"{requiredView} 100% crop is missing: {crop}");
             }
+        }
+    }
+
+    private static void ValidateTemporalEvidence(VisualEvidence evidence, List<string> failures)
+    {
+        if (evidence.temporalEvidence == null)
+        {
+            failures.Add(
+                "Sealed native-4K temporal evidence is missing. Temporal/LOD/aliasing stability and shimmer/LOD critical defects cannot be cleared from stills alone.");
+            return;
+        }
+
+        TemporalEvidenceReference temporal = evidence.temporalEvidence;
+        try
+        {
+            QualityBlockTemporalStabilityCapture.ValidateTemporalEvidenceForScoring(
+                temporal.captureSessionId,
+                temporal.manifestAssetPath,
+                temporal.manifestSha256,
+                temporal.receiptAssetPath,
+                temporal.receiptSha256);
+        }
+        catch (Exception ex)
+        {
+            failures.Add("Temporal evidence provenance/pixel validation failed: " + ex.Message);
         }
     }
 
@@ -281,7 +338,7 @@ public static class QualityBlockVisualFidelityGate
                 failures.Add($"Category has deductions but no deduction rationale: {category.id}={scored.score}/{category.weight}.");
 
             CoverageRequirement requirement = coverage.categoryRequirements.Single(x => x.id == category.id);
-            ValidateObservedReferences(requirement, scored.observedViews, scored.observedCropRefs,
+            ValidateObservedReferences(requirement, scored.observedViews, scored.observedCropRefs, scored.observedTemporalRefs,
                 coverage, failures, $"category {category.id}");
         }
     }
@@ -307,7 +364,7 @@ public static class QualityBlockVisualFidelityGate
                 failures.Add($"Critical defect review has no evidence note: {definition.id}.");
 
             CoverageRequirement requirement = coverage.criticalDefectRequirements.Single(x => x.id == definition.id);
-            ValidateObservedReferences(requirement, reviewed.observedViews, reviewed.observedCropRefs,
+            ValidateObservedReferences(requirement, reviewed.observedViews, reviewed.observedCropRefs, reviewed.observedTemporalRefs,
                 coverage, failures, $"critical defect {definition.id}");
 
             if (reviewed.present)
@@ -316,17 +373,22 @@ public static class QualityBlockVisualFidelityGate
     }
 
     private static void ValidateObservedReferences(CoverageRequirement requirement, string[] observedViews,
-        string[] observedCropRefs, ObservabilityConfig coverage, List<string> failures, string label)
+        string[] observedCropRefs, string[] observedTemporalRefs, ObservabilityConfig coverage,
+        List<string> failures, string label)
     {
         string[] views = observedViews ?? Array.Empty<string>();
         string[] crops = observedCropRefs ?? Array.Empty<string>();
+        string[] temporal = observedTemporalRefs ?? Array.Empty<string>();
         var viewSet = new HashSet<string>(views, StringComparer.Ordinal);
         var cropSet = new HashSet<string>(crops, StringComparer.Ordinal);
+        var temporalSet = new HashSet<string>(temporal, StringComparer.Ordinal);
 
         if (viewSet.Count != views.Length)
             failures.Add($"{label} contains duplicate observedViews.");
         if (cropSet.Count != crops.Length)
             failures.Add($"{label} contains duplicate observedCropRefs.");
+        if (temporalSet.Count != temporal.Length)
+            failures.Add($"{label} contains duplicate observedTemporalRefs.");
 
         foreach (string view in views)
             if (!(coverage.allowedViews ?? Array.Empty<string>()).Contains(view))
@@ -334,6 +396,9 @@ public static class QualityBlockVisualFidelityGate
         foreach (string crop in crops)
             if (!(coverage.allowedCropRefs ?? Array.Empty<string>()).Contains(crop))
                 failures.Add($"{label} references unknown crop '{crop}'.");
+        foreach (string temporalRef in temporal)
+            if (!(coverage.allowedTemporalRefs ?? Array.Empty<string>()).Contains(temporalRef))
+                failures.Add($"{label} references unknown temporal probe '{temporalRef}'.");
 
         foreach (string requiredView in requirement.requiredViews ?? Array.Empty<string>())
             if (!viewSet.Contains(requiredView))
@@ -341,9 +406,15 @@ public static class QualityBlockVisualFidelityGate
         foreach (string requiredCrop in requirement.requiredCropRefs ?? Array.Empty<string>())
             if (!cropSet.Contains(requiredCrop))
                 failures.Add($"{label} did not observe required 100% crop '{requiredCrop}'.");
+        foreach (string requiredTemporal in requirement.requiredTemporalRefs ?? Array.Empty<string>())
+            if (!temporalSet.Contains(requiredTemporal))
+                failures.Add($"{label} did not observe required sealed temporal probe '{requiredTemporal}'.");
         if (cropSet.Count < requirement.minimumCropReferences)
             failures.Add(
                 $"{label} cites only {cropSet.Count} unique 100% crops; minimum is {requirement.minimumCropReferences}.");
+        if (temporalSet.Count < requirement.minimumTemporalReferences)
+            failures.Add(
+                $"{label} cites only {temporalSet.Count} unique temporal probes; minimum is {requirement.minimumTemporalReferences}.");
     }
 
     private static ReadinessCheck CheckAsset(string id, int weight, string assetPath, string evidence)
@@ -424,6 +495,7 @@ public static class QualityBlockVisualFidelityGate
         public string referenceFormat;
         public string[] allowedViews;
         public string[] allowedCropRefs;
+        public string[] allowedTemporalRefs;
         public CoverageRequirement[] categoryRequirements;
         public CoverageRequirement[] criticalDefectRequirements;
         public string[] hardRules;
@@ -436,6 +508,8 @@ public static class QualityBlockVisualFidelityGate
         public string[] requiredViews;
         public string[] requiredCropRefs;
         public int minimumCropReferences;
+        public string[] requiredTemporalRefs;
+        public int minimumTemporalReferences;
         public string reason;
     }
 
@@ -445,6 +519,7 @@ public static class QualityBlockVisualFidelityGate
         public bool renderVerified;
         public string unityVersion;
         public CaptureEvidence[] captures;
+        public TemporalEvidenceReference temporalEvidence;
         public CategoryEvidence[] categories;
         public CriticalDefectEvidence[] criticalDefects;
     }
@@ -460,6 +535,16 @@ public static class QualityBlockVisualFidelityGate
     }
 
     [Serializable]
+    public sealed class TemporalEvidenceReference
+    {
+        public string captureSessionId;
+        public string manifestAssetPath;
+        public string manifestSha256;
+        public string receiptAssetPath;
+        public string receiptSha256;
+    }
+
+    [Serializable]
     public sealed class CategoryEvidence
     {
         public string id;
@@ -469,6 +554,7 @@ public static class QualityBlockVisualFidelityGate
         public string correctiveAction;
         public string[] observedViews;
         public string[] observedCropRefs;
+        public string[] observedTemporalRefs;
     }
 
     [Serializable]
@@ -479,6 +565,7 @@ public static class QualityBlockVisualFidelityGate
         public string evidence;
         public string[] observedViews;
         public string[] observedCropRefs;
+        public string[] observedTemporalRefs;
     }
 
     [Serializable]

@@ -20,6 +20,9 @@ public static class QualityBlockNative4KReviewPacket
         if (QualityBlockReflectionProbeAwaiter.IsRunning)
             throw new InvalidOperationException("The native-4K review packet is already waiting for reflection-probe completion.");
 
+        // Freeze the owner-approved 100-point geometry before any render work starts. A balanced 100-point
+        // file is not sufficient if individual weights/minima or a critical defect were silently relaxed.
+        QualityBlockVisualGateIntegrityQA.ValidateContract();
         QualityBlockVisualFidelityGate.ValidateGateConfig();
         QualityBlockShadowStabilityUpgrade.ValidateOpenScene();
         QualityBlockRenderedImageDiagnostics.ValidateContractConfigOnly();
@@ -78,6 +81,7 @@ public static class QualityBlockNative4KReviewPacket
         AssetDatabase.Refresh();
         Debug.Log(
             "Complete native-4K review packet prepared: sealed hero/oblique/grazing stills + 100% crops, " +
+            "immutable 92/100 category/minimum/critical-defect gate integrity checked before capture, " +
             "reflection cubemaps proven complete on later Editor updates before capture with a SHA-256-bound wait proof, retained structural geometry and actual material physicality validated, " +
             "scene-wide construction/material metadata coverage, texture sampling, foliage dielectric constraints and fine+coarse anti-repetition preflight checked, " +
             "cinematic diagnostics generated, and temporal probes sealed. Visual Fidelity remains UNSCORED until the exact evidence is reviewed and " +

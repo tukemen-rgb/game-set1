@@ -5,7 +5,7 @@
   "scope": {
     "scene": "Assets/Scenes/QualityBlock1990s.unity",
     "root": "QualityBlock1990s",
-    "authoritativeViewSource": "QualityBlock4KCapture.TryGetBenchmarkViewProjection",
+    "authoritativeViewSource": "QualityBlock4KCapture.Views; source-token lock must match exact 3840x2160 hero/oblique/grazing positions, targets and FOV before projection QA can run",
     "requiredViews": ["hero", "oblique", "grazing"],
     "nativeResolution": [3840, 2160],
     "rendererPolicy": "Inspect active MeshFilter + Renderer pairs under the quality-block root. Authored replacement art is naturally included when active; inactive generated fallbacks are ignored.",
@@ -13,7 +13,7 @@
     "planarCarrierPolicy": "Unity Plane and Quad are not automatically classified as placeholder solids because physically justified decal, foliage, fabric or other thin-surface carriers may legitimately be planar. Their rendered appearance remains subject to native-4K visual review and other construction/material gates."
   },
   "projection": {
-    "basis": "Project world-space Renderer.bounds corners through the exact deterministic benchmark camera pose/FOV supplied by QualityBlock4KCapture.",
+    "basis": "Project world-space Renderer.bounds corners through camera pose/FOV values duplicated from QualityBlock4KCapture only after config QA proves the capture source still contains the exact locked values.",
     "nearPlaneGuardMetres": 0.05,
     "frameClipping": "Projected bounds are intersected with the 3840x2160 frame; fully off-screen or fully behind-camera objects do not count as benchmark exposure.",
     "crossingCameraPlanePolicy": "A stock solid primitive with bounds spanning the benchmark camera plane is treated as visibly significant and fails closed."

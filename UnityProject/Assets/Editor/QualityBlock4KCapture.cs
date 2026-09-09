@@ -60,14 +60,16 @@ public static class QualityBlock4KCapture
     /// Legacy one-call capture. It remains available for compatibility, but the complete review
     /// packet uses PrepareSceneForSynchronizedCapture + QualityBlockReflectionProbeAwaiter +
     /// CapturePreparedSceneAfterProbeSync so RenderProbe completion is observed across Editor frames.
+    /// The final capture method requires a SHA-256-bound async wait proof, so this legacy route fails
+    /// closed rather than creating scoreable evidence from same-call-stack completion.
     /// </summary>
     [MenuItem("NewTown/QA/Capture Native 4K Fidelity Evidence")]
     public static void CaptureAll()
     {
         PrepareSceneForSynchronizedCapture();
 
-        // Compatibility path only. The production review packet does not rely on this same-call-stack
-        // synchronization because RenderProbe completion may require Editor frame progression.
+        // Compatibility request only. CapturePreparedSceneAfterProbeSync additionally requires a
+        // fresh async wait proof; therefore this path cannot accidentally create authoritative frames.
         QualityBlockEnvironmentLightingUpgrade.RefreshRealtimeProbesImmediately();
         CapturePreparedSceneAfterProbeSync();
     }
@@ -85,8 +87,9 @@ public static class QualityBlock4KCapture
 
     /// <summary>
     /// Captures hero/oblique/grazing only after a separate synchronization stage has proved both
-    /// realtime reflection cubemaps complete and written a valid runtime receipt. Rebuilding scene
-    /// content here is forbidden because it would invalidate the synchronized cubemaps.
+    /// realtime reflection cubemaps complete and written a valid runtime receipt plus an async wait
+    /// proof bound to that receipt. Rebuilding scene content here is forbidden because it would
+    /// invalidate the synchronized cubemaps.
     /// </summary>
     public static void CapturePreparedSceneAfterProbeSync()
     {
@@ -95,6 +98,7 @@ public static class QualityBlock4KCapture
 
         QualityBlockEnvironmentLightingUpgrade.ValidateOpenScene();
         QualityBlockReflectionProbeCaptureSyncQA.ValidateRuntimeReceipt();
+        QualityBlockReflectionProbeAwaiter.ValidateLatestWaitProof();
 
         Camera cam = Camera.main;
         if (cam == null)

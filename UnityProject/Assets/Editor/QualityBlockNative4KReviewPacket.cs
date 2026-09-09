@@ -22,16 +22,19 @@ public static class QualityBlockNative4KReviewPacket
         QualityBlockSceneMetadataCoverageQA.ValidateContractConfigOnly();
         QualityBlockTextureSamplingUpgrade.ValidateContractConfigOnly();
         QualityBlockFoliagePhysicalityQA.ValidateContractConfigOnly();
+        QualityBlockReflectionProbeCaptureSyncQA.ValidateContractConfigOnly();
 
-        // Still path: rebuilds the scored benchmark, refreshes realtime probes, captures native 4K,
-        // creates pixel-exact crops, seals SHA-256 provenance, and writes the bound review template.
-        // Quality-scene save gates also replace retained structural Cube/Cylinder renderer meshes,
-        // preserve gameplay collision footprints, bind actual hero materials to construction-physical
-        // metallic/specular families, normalize generated map registration + 4K texture sampling,
-        // enforce measured-order dielectric/Fresnel foliage material constraints, and reject any active
-        // renderer outside registered manufacture/installation/material metadata domains before the
-        // scored scene is persisted for capture.
+        // Still path: rebuilds the scored benchmark, refreshes realtime probes, proves every requested
+        // cubemap completed and is texture-ready, captures native 4K, creates pixel-exact crops, seals
+        // SHA-256 provenance, and writes the bound review template. Quality-scene save gates also
+        // replace retained structural Cube/Cylinder renderer meshes, preserve gameplay collision
+        // footprints, bind actual hero materials to construction-physical metallic/specular families,
+        // normalize generated map registration + 4K texture sampling, enforce measured-order
+        // dielectric/Fresnel foliage material constraints, and reject any active renderer outside
+        // registered manufacture/installation/material metadata domains before the scored scene is
+        // persisted for capture.
         QualityBlockRenderEvidenceProvenanceQA.CaptureAndSealNative4KEvidence();
+        QualityBlockReflectionProbeCaptureSyncQA.ValidateRuntimeReceipt();
         QualityBlockStructuralSurfaceRefinement.ValidateOpenScene();
         QualityBlockSceneMaterialPhysicalityUpgrade.ValidateOpenScene();
         QualityBlockSceneMetadataCoverageQA.ValidateOpenScene();
@@ -47,9 +50,9 @@ public static class QualityBlockNative4KReviewPacket
         AssetDatabase.Refresh();
         Debug.Log(
             "Complete native-4K review packet prepared: sealed hero/oblique/grazing stills + 100% crops, " +
-            "validated retained structural geometry, actual material physicality bindings, scene-wide construction/material metadata coverage, " +
-            "generated map registration + mipmapped trilinear anisotropic texture sampling, measured-order foliage dielectric BRDF constraints, " +
-            "cinematic display diagnostics, and sealed temporal probes. Visual Fidelity remains UNSCORED until the exact evidence is reviewed " +
-            "and the evidence-bound 100-point gate is evaluated.");
+            "verified completed realtime reflection cubemaps before capture, validated retained structural geometry, actual material physicality bindings, " +
+            "scene-wide construction/material metadata coverage, generated map registration + mipmapped trilinear anisotropic texture sampling, " +
+            "measured-order foliage dielectric BRDF constraints, cinematic display diagnostics, and sealed temporal probes. Visual Fidelity remains " +
+            "UNSCORED until the exact evidence is reviewed and the evidence-bound 100-point gate is evaluated.");
     }
 }

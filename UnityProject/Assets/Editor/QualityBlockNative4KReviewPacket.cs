@@ -6,8 +6,9 @@ using UnityEngine;
 /// Single runner entry point for the first real Unity verification session. Once a Unity editor/runner
 /// is available, this command should be preferred over speculative source expansion. The still path
 /// deliberately spans Editor updates while realtime reflection probes render; only after their returned
-/// RenderIDs are proven finished does it capture/seal hero, oblique and grazing frames. It then creates
-/// objective display diagnostics and captures/seals the temporal shimmer/LOD probes.
+/// RenderIDs are proven finished does it capture/seal hero, oblique and grazing frames. Temporal probes
+/// are then captured from that exact prepared scene without rebuilding/reopening, and diagnostic tools
+/// only triage the resulting evidence for manual review.
 ///
 /// The packet intentionally stops before Visual Fidelity scoring because a reviewer must inspect the
 /// actual pixels and record evidence/deductions/corrective actions.
@@ -27,6 +28,7 @@ public static class QualityBlockNative4KReviewPacket
         QualityBlockShadowStabilityUpgrade.ValidateOpenScene();
         QualityBlockRenderedImageDiagnostics.ValidateContractConfigOnly();
         QualityBlockTemporalStabilityCapture.ValidateContractConfigOnly();
+        QualityBlockPreparedTemporalCapture.ValidateContractConfigOnly();
         QualityBlockTemporalDiagnostics.ValidateContractConfigOnly();
         QualityBlockStructuralSurfaceSaveGate.ValidateContract();
         QualityBlockSceneMaterialPhysicalityUpgrade.ValidateContract();
@@ -43,8 +45,8 @@ public static class QualityBlockNative4KReviewPacket
         QualityBlockReflectionProbeAwaiter.Begin(FinishAfterReflectionSynchronization);
 
         Debug.Log(
-            "Native-4K review packet entered reflection synchronization. Still capture is intentionally deferred across Editor updates; " +
-            "Visual Fidelity remains UNSCORED and no benchmark frame is accepted until both realtime probe RenderIDs are complete.");
+            "Native-4K review packet entered reflection synchronization. Still and temporal capture are deferred until later Editor updates prove both realtime probe RenderIDs complete. " +
+            "Visual Fidelity remains UNSCORED.");
     }
 
     private static void FinishAfterReflectionSynchronization()
@@ -62,8 +64,7 @@ public static class QualityBlockNative4KReviewPacket
         AssetDatabase.Refresh();
 
         // Reconfirm source/runtime invariants after the exact still set has been written and sealed.
-        // Repetition QA runs here as well as on scene save: a fine exact hash alone is insufficient, so
-        // generated trees/ecology must also pass the coarse near-clone signature before evidence review.
+        // No build/apply/open operation is allowed below this point before temporal capture.
         QualityBlockReflectionProbeCaptureSyncQA.ValidateRuntimeReceipt();
         QualityBlockReflectionProbeAwaiter.ValidateLatestWaitProof();
         QualityBlockStructuralSurfaceRefinement.ValidateOpenScene();
@@ -73,14 +74,14 @@ public static class QualityBlockNative4KReviewPacket
         QualityBlockFoliagePhysicalityQA.ValidateOpenScene();
         QualityBlockSceneRepetitionQA.ValidateOpenScene();
 
-        // Objective still-image triage only. This cannot award Cinematic Image or Lighting points.
+        // Motion path must use the exact already-prepared scene/probe state. This explicitly replaces the
+        // legacy temporal menu path that rebuilds/reopens and attempts an immediate same-call-stack probe refresh.
+        QualityBlockPreparedTemporalCapture.CaptureAndSealPreparedScene();
+        QualityBlockPreparedTemporalCapture.ValidateLatestPreparedBinding();
+
+        // Objective triage only. Neither still nor temporal diagnostics can award visual points or clear
+        // critical defects; they only direct the reviewer to the most informative exact evidence.
         QualityBlockRenderedImageDiagnostics.AnalyzeExistingCapture();
-
-        // Motion path: native-4K subpixel grazing and LOD-walk sequences with sealed manifests.
-        QualityBlockTemporalStabilityCapture.CaptureAndSeal();
-
-        // Temporal diagnostics are also advisory only. They rank exact sealed transition pairs for
-        // 100%-pixel review but can neither clear nor assert shimmer/LOD critical defects automatically.
         QualityBlockTemporalDiagnostics.AnalyzeLatestEvidence();
 
         AssetDatabase.Refresh();
@@ -89,7 +90,7 @@ public static class QualityBlockNative4KReviewPacket
             "immutable 92/100 category/minimum/critical-defect gate integrity checked before capture, " +
             "reflection cubemaps proven complete on later Editor updates before capture with a SHA-256-bound wait proof, retained structural geometry and actual material physicality validated, " +
             "scene-wide construction/material metadata coverage, texture sampling, foliage dielectric constraints and fine+coarse anti-repetition preflight checked, " +
-            "cinematic diagnostics generated, temporal probes sealed, and non-scoring transition diagnostics ranked suspicious temporal pairs for manual 100%-pixel inspection. " +
-            "Visual Fidelity remains UNSCORED until the exact evidence is reviewed and the evidence-bound 100-point gate is evaluated.");
+            "temporal probes captured from the same prepared scene without rebuild/reopen and SHA-256-bound to the persisted scene plus reflection completion/wait proofs, " +
+            "and non-scoring still/temporal diagnostics generated for manual 100%-pixel review. Visual Fidelity remains UNSCORED until the exact evidence is reviewed and the evidence-bound 100-point gate is evaluated.");
     }
 }

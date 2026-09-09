@@ -1,0 +1,45 @@
+{
+  "runId": "2026-09-10_0442_albedo_lighting_neutrality",
+  "startHead": "18526f98809bf9cdf0ead3a814605f4d7651ba53",
+  "substantiveWorkHead": "24ba5be1bd5bf40477bc1efefaa9ed29c1c4fd23",
+  "substantiveCommits": [
+    "19cd4378710e27de7161a39e3b16576392e8e39e",
+    "7c716b44f3aeff0f2d15b7c34c9ef56aed676097",
+    "24ba5be1bd5bf40477bc1efefaa9ed29c1c4fd23"
+  ],
+  "scope": "Critical-defect source preflight for obviously painted/baked highlights in generated baseline albedo textures.",
+  "changes": [
+    "Added QualityBlockAlbedoLightingNeutralityQA.cs. It inspects generated GeneratedPBR *_Albedo.png source pixels independently of TextureImporter readability, verifies sRGB import intent, decodes source color values to linear luminance for analysis, fits a broad 8x8 luminance plane, measures centre-vs-edge bias, and measures opposite-edge tile seam RMSE.",
+    "Added albedo_lighting_neutrality_contract.json with fail-closed thresholds, required baseline textures, the physical base-color/PBR split, explicit limitations, zero automatic Visual Fidelity points and runtime-render verification pending.",
+    "Integrated the contract and generated-source test into Prepare Complete Native 4K Review Packet both before reflection-probe rendering and again after the sealed still set before temporal capture. A failed source test stops the authoritative evidence path rather than being hidden with grading/sharpening or a relaxed gate."
+  ],
+  "verification": {
+    "method": "GitHub source/static inspection only; no Unity editor/runner was available.",
+    "branchComparison": "Start head to substantive work head is 3 commits ahead / 0 behind and changes only UnityProject/Assets/Editor plus UnityProject/Assets/QA.",
+    "unityApiReview": "Checked current Unity 6 documentation for CPU Texture2D pixel reads and the ImageConversion module while designing the source decoder. The QA remains explicitly runtime-unverified until Unity 6000.3.0f1 compiles and executes it.",
+    "runnerState": "GitHub Actions workflow runs for gpt/unity-migration remain 0; no Assets/QA/Captures4K evidence exists in the repository tree.",
+    "godotPreservation": "No Godot-side path changed in this run.",
+    "baseMerge": "No base merge performed.",
+    "excludedThemes": "No earthquake, disaster or reconstruction theme added."
+  },
+  "implementationReadiness": {
+    "score": 93,
+    "possible": 100,
+    "status": "IMPLEMENTATION_READINESS_ONLY",
+    "reasonNotRaised": "The only weighted readiness blocker remains actual Unity 6000.3.0f1 compile/runtime verification; adding another source QA does not justify self-awarding readiness or visual points."
+  },
+  "visualFidelity": {
+    "status": "UNSCORED_UNTIL_REAL_4K_RENDER",
+    "pointsAwardedThisRun": 0,
+    "passClaimed": false,
+    "criticalDefectStatus": "painted/baked-highlight risk reduced at generated-base source level only; not cleared without actual rendered evidence"
+  },
+  "expectedVisualScoreImpact": [
+    "Material/PBR physical plausibility 20: prevents broad sun/key-light energy from being encoded in baseline albedo where it would double-count real BRDF/Fresnel response.",
+    "Texture/microdetail/texel fidelity 10: opposite-edge luminance seam preflight reduces a source cause of obvious periodic texture boundaries, but actual repetition remains a pixel-review question.",
+    "Lighting/shadows/reflections 15: protects future lighting evaluation from albedo-authored illumination that could masquerade as coherent sun/specular response.",
+    "Critical automatic FAIL: directly reduces the source-side risk of obviously painted/baked highlights, while deliberately refusing to clear that defect until native frontal/oblique/grazing renders and 100% crops are inspected."
+  ],
+  "nextBlocker": "Unity 6000.3.0f1 editor/runner compile and authoritative native review execution. At first runtime availability, run Prepare Complete Native 4K Review Packet. If the new albedo-neutrality preflight fails, fix the generated base-color/PBR separation or tile source rather than weakening thresholds. If it passes, continue through async reflection proof, three native 3840x2160 stills, 100% crops and prepared temporal sequences, then score/fix only from observed pixels.",
+  "recordingNote": "This run-record commit is bookkeeping and is intentionally excluded from substantiveCommits because a commit cannot include its own final hash."
+}

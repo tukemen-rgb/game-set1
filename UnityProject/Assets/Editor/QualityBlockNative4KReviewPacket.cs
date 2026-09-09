@@ -27,6 +27,7 @@ public static class QualityBlockNative4KReviewPacket
         QualityBlockShadowStabilityUpgrade.ValidateOpenScene();
         QualityBlockRenderedImageDiagnostics.ValidateContractConfigOnly();
         QualityBlockTemporalStabilityCapture.ValidateContractConfigOnly();
+        QualityBlockTemporalDiagnostics.ValidateContractConfigOnly();
         QualityBlockStructuralSurfaceSaveGate.ValidateContract();
         QualityBlockSceneMaterialPhysicalityUpgrade.ValidateContract();
         QualityBlockSceneMetadataCoverageQA.ValidateContractConfigOnly();
@@ -72,11 +73,15 @@ public static class QualityBlockNative4KReviewPacket
         QualityBlockFoliagePhysicalityQA.ValidateOpenScene();
         QualityBlockSceneRepetitionQA.ValidateOpenScene();
 
-        // Objective triage only. This cannot award Cinematic Image or Lighting points.
+        // Objective still-image triage only. This cannot award Cinematic Image or Lighting points.
         QualityBlockRenderedImageDiagnostics.AnalyzeExistingCapture();
 
         // Motion path: native-4K subpixel grazing and LOD-walk sequences with sealed manifests.
         QualityBlockTemporalStabilityCapture.CaptureAndSeal();
+
+        // Temporal diagnostics are also advisory only. They rank exact sealed transition pairs for
+        // 100%-pixel review but can neither clear nor assert shimmer/LOD critical defects automatically.
+        QualityBlockTemporalDiagnostics.AnalyzeLatestEvidence();
 
         AssetDatabase.Refresh();
         Debug.Log(
@@ -84,7 +89,7 @@ public static class QualityBlockNative4KReviewPacket
             "immutable 92/100 category/minimum/critical-defect gate integrity checked before capture, " +
             "reflection cubemaps proven complete on later Editor updates before capture with a SHA-256-bound wait proof, retained structural geometry and actual material physicality validated, " +
             "scene-wide construction/material metadata coverage, texture sampling, foliage dielectric constraints and fine+coarse anti-repetition preflight checked, " +
-            "cinematic diagnostics generated, and temporal probes sealed. Visual Fidelity remains UNSCORED until the exact evidence is reviewed and " +
-            "the evidence-bound 100-point gate is evaluated.");
+            "cinematic diagnostics generated, temporal probes sealed, and non-scoring transition diagnostics ranked suspicious temporal pairs for manual 100%-pixel inspection. " +
+            "Visual Fidelity remains UNSCORED until the exact evidence is reviewed and the evidence-bound 100-point gate is evaluated.");
     }
 }

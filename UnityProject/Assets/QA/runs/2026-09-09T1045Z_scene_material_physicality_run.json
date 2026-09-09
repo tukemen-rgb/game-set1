@@ -1,0 +1,154 @@
+{
+  "schemaVersion": "1.0",
+  "runUtc": "2026-09-09T10:45:00Z",
+  "branch": "gpt/unity-migration",
+  "startHead": "f775a4d0cc65b69958f27059c5d0f4c3eb14509b",
+  "implementationHead": "8aaa44e065a2017a54be6c45501bc0c3d807035f",
+  "objective": "Reduce Material/PBR and critical materially-impossible-value risk by making actual active Unity materials and renderer bindings conform to the construction/lookdev metadata rather than merely documenting plausible values.",
+  "commits": [
+    {
+      "sha": "58dc039f66a37b5d186b8ecae59af5f1c20c001c",
+      "summary": "Added actual-scene material physicality binding and validation for benchmark-facing danchi parts."
+    },
+    {
+      "sha": "774887ed5034c10a5196764f8f8e10409ecee698",
+      "summary": "Added machine-readable scene material physicality/manufacture contract, including period-plausible rigid PVC-U downpipe reasoning."
+    },
+    {
+      "sha": "ad36365563cbc9fd23db60a035664ca2ca04c545",
+      "summary": "Added quality-scene save gate so material-family/value mismatches cannot persist after the detailed benchmark chain exists."
+    },
+    {
+      "sha": "8aaa44e065a2017a54be6c45501bc0c3d807035f",
+      "summary": "Bound material physicality contract and active-scene validation into the complete native-4K review packet."
+    }
+  ],
+  "findingsAndCorrections": [
+    {
+      "finding": "MAT_AgedAluminum was generated at metallic=0.55 although the existing construction registry specifies aged anodized aluminium metallic range 0.70-1.00.",
+      "correction": "Final physicality pass sets the actual Unity material to metallic=0.85 and smoothness=0.50, then validates active sash/rail bindings."
+    },
+    {
+      "finding": "MAT_DarkGalvanizedSteel was generated at metallic=0.62 although the existing registry specifies galvanized steel metallic range 0.75-1.00.",
+      "correction": "Final physicality pass sets metallic=0.88 and smoothness=0.40, disables emission, and validates rail anchorage/downpipe clamp bindings."
+    },
+    {
+      "finding": "Base RailTop_* and Rail_* members used a mid-metallic legacy Rail material despite the high-detail metadata defining them as aged anodized aluminium extrusion.",
+      "correction": "All active base rail members are rebound to the same final anodized-aluminium material family as the detailed rail/window extrusion hierarchy."
+    },
+    {
+      "finding": "The visible full-height RainGutter pipe inherited ConcreteDark while only its added clamps/bolts had dedicated galvanized-metal reasoning.",
+      "correction": "The pipe body is now a dedicated non-metallic aged rigid PVC-U fallback while the separate clamp/bolt hardware remains galvanized metal. The exact manufacturer/model is explicitly unverified."
+    },
+    {
+      "finding": "HD_BalconySlabLip extends the reinforced-concrete balcony slab silhouette but was created with the anodized-aluminium material.",
+      "correction": "The slab lip is rebound to the painted-RC facade material so its grazing response comes from coated concrete plus physical edge geometry, not metal."
+    }
+  ],
+  "manufactureReasoning": {
+    "downpipe": {
+      "construction": "extruded rigid PVC-U rainwater/downpipe body with separate galvanized stand-off clamps and ferrous fasteners",
+      "mounting": "mechanically retained off the facade at roughly 1.55 m intervals by the existing generated clamp hierarchy",
+      "interfaces": "pipe-to-clamp contact, clamp-to-wall anchor and pipe-wall stand-off remain geometry/contact shadow",
+      "exposure": "rain and midsummer UV on exposed face; wall-facing recess remains relatively dirtier",
+      "aging": "mild polymer chalking/bleaching and causal runoff only; no rust on PVC and no baked light response",
+      "source": "https://www.eslontimes.com/kenzai/history/",
+      "sourceNote": "Sekisui Chemical's Eslon history documents rigid PVC rain-gutter commercialization in Japan from 1957 and long-term adoption. This supports PVC-U as a period-plausible circa-2000 generated fallback, not a claim about a specific real complex."
+    },
+    "balconySlabLip": {
+      "construction": "coated reinforced-concrete slab edge continuation",
+      "mounting": "monolithic visual continuation of the balcony slab, not a separate metal extrusion",
+      "interfaces": "slab edge/drip and rail anchorage remain physically distinct",
+      "aging": "rain/UV and ledge-driven residue only",
+      "geometryVsMaterial": "slab thickness/edge break are geometry; mineral coating microstructure/chalking are PBR material response"
+    }
+  },
+  "materialRules": {
+    "agedAnodizedAluminium": {
+      "metallic": 0.85,
+      "smoothness": 0.50,
+      "registryRoughnessRange": [0.38, 0.58],
+      "emission": 0.0
+    },
+    "weatheredGalvanizedSteel": {
+      "metallic": 0.88,
+      "smoothness": 0.40,
+      "registryRoughnessRange": [0.48, 0.72],
+      "emission": 0.0
+    },
+    "agedDownpipePvc": {
+      "metallic": 0.0,
+      "smoothness": 0.18,
+      "roughnessIntent": "high-roughness dielectric polymer",
+      "emission": 0.0
+    },
+    "paintedRc": {
+      "metallicRequiredMaximum": 0.05,
+      "roughnessContractRange": [0.79, 0.93],
+      "emission": 0.0
+    }
+  },
+  "qa": {
+    "actualRendererBindingValidation": true,
+    "actualMaterialValueValidation": true,
+    "allActiveMaterialMetallicSmoothnessFiniteRangeCheck": true,
+    "activeEmissionForbidden": true,
+    "paintedOrBakedHighlightsForbidden": true,
+    "native4kReviewStillRequiredToClearCriticalDefect": true
+  },
+  "verification": {
+    "sourceCompare": {
+      "base": "f775a4d0cc65b69958f27059c5d0f4c3eb14509b",
+      "head": "8aaa44e065a2017a54be6c45501bc0c3d807035f",
+      "ahead": 4,
+      "behind": 0,
+      "changedFiles": 4,
+      "allChangedFilesUnderUnityProject": true
+    },
+    "staticReview": [
+      "Actual Unity Material properties are now checked against construction-family ranges instead of trusting metadata alone.",
+      "Base rail renderers are forced onto the same anodized-aluminium material family as their high-detail construction hierarchy.",
+      "The drainage pipe and its metal clamps are now separate material classes, matching manufacture/installation causality.",
+      "The concrete balcony slab lip no longer inherits a metallic aluminium material.",
+      "The quality-scene save gate and complete 4K review packet both validate these bindings before visual scoring is allowed.",
+      "No visual score or critical-defect clearance is inferred from source values."
+    ],
+    "unityCompile": "PENDING_UNITY_6000_3_0F1_RUNNER",
+    "native3840x2160StillCapture": "ABSENT",
+    "native100PercentCrops": "ABSENT",
+    "nativeTemporalSequences": "ABSENT",
+    "githubWorkflowRunCount": 0,
+    "godotModified": false,
+    "baseMerged": false,
+    "disasterThemeAdded": false
+  },
+  "scores": {
+    "implementationReadiness": {
+      "score": 93,
+      "possible": 100,
+      "changeThisRun": 0,
+      "blocker": "unity_compile_verification"
+    },
+    "visualFidelity": {
+      "status": "UNSCORED",
+      "pointsAwardedThisRun": 0,
+      "passClaimed": false
+    }
+  },
+  "expectedVisualScoreImpact": {
+    "material_pbr_physical_plausibility": "HIGH_EXPECTED_RISK_REDUCTION: actual aluminium/galvanized/PVC/painted-RC renderer bindings now match explicit material families and plausible metallic/roughness behavior.",
+    "geometry_construction": "MEDIUM_EXPECTED: the balcony slab lip and drainage assembly now communicate correct material boundaries/interfaces instead of contradictory construction.",
+    "period_accuracy_scene_authenticity": "LOW_TO_MEDIUM_EXPECTED: rigid PVC-U drainage is a documented long-established Japanese building-material technology and is used only as a period-plausible fallback.",
+    "lighting_shadows_reflections": "MEDIUM_EXPECTED: grazing highlights should now separate metal, PVC and coated concrete through actual PBR response rather than mid-metallic ambiguity.",
+    "critical_materially_impossible_metallic_specular_values": "HIGH_EXPECTED_RISK_REDUCTION_BUT_NOT_CLEARED_WITHOUT_RENDER"
+  },
+  "nextBlocker": "A Unity 6000.3.0f1 editor/runner is still required to compile the new scripts, execute the scene-save material gate, verify generated MAT_AgedDownpipePVC in-engine, and produce sealed 3840x2160 hero/oblique/grazing evidence plus temporal probes.",
+  "nextActionWhenRunnerAppears": [
+    "Stop speculative expansion.",
+    "Run Prepare Complete Native 4K Review Packet.",
+    "Fix any compile/save-gate/material-binding failure before scoring.",
+    "Inspect hero/oblique/grazing 100% crops for aluminium that reads like plastic/chrome, galvanized hardware that reads painted, PVC pipe that reads metallic, and balcony slab lip that reads as metal.",
+    "Verify reflections/highlights arise from actual light/view response and not texture information.",
+    "Score only the sealed rendered evidence and fix the largest actual deductions first."
+  ]
+}

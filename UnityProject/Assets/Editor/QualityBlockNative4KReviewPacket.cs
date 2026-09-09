@@ -1,18 +1,25 @@
+using System;
 using UnityEditor;
 using UnityEngine;
 
 /// <summary>
 /// Single runner entry point for the first real Unity verification session. Once a Unity editor/runner
-/// is available, this command should be preferred over speculative source expansion: it captures and
-/// seals the still evidence, generates objective display diagnostics, then captures/seals the temporal
-/// shimmer/LOD probes. It intentionally stops before Visual Fidelity scoring because a reviewer must
-/// inspect the actual pixels and record evidence/deductions/corrective actions.
+/// is available, this command should be preferred over speculative source expansion. The still path
+/// deliberately spans Editor updates while realtime reflection probes render; only after their returned
+/// RenderIDs are proven finished does it capture/seal hero, oblique and grazing frames. It then creates
+/// objective display diagnostics and captures/seals the temporal shimmer/LOD probes.
+///
+/// The packet intentionally stops before Visual Fidelity scoring because a reviewer must inspect the
+/// actual pixels and record evidence/deductions/corrective actions.
 /// </summary>
 public static class QualityBlockNative4KReviewPacket
 {
     [MenuItem("NewTown/QA/Prepare Complete Native 4K Review Packet")]
     public static void Prepare()
     {
+        if (QualityBlockReflectionProbeAwaiter.IsRunning)
+            throw new InvalidOperationException("The native-4K review packet is already waiting for reflection-probe completion.");
+
         QualityBlockVisualFidelityGate.ValidateGateConfig();
         QualityBlockShadowStabilityUpgrade.ValidateOpenScene();
         QualityBlockRenderedImageDiagnostics.ValidateContractConfigOnly();
@@ -23,17 +30,32 @@ public static class QualityBlockNative4KReviewPacket
         QualityBlockTextureSamplingUpgrade.ValidateContractConfigOnly();
         QualityBlockFoliagePhysicalityQA.ValidateContractConfigOnly();
         QualityBlockReflectionProbeCaptureSyncQA.ValidateContractConfigOnly();
+        QualityBlock4KCapture.ValidateCaptureContract();
 
-        // Still path: rebuilds the scored benchmark, refreshes realtime probes, proves every requested
-        // cubemap completed and is texture-ready, captures native 4K, creates pixel-exact crops, seals
-        // SHA-256 provenance, and writes the bound review template. Quality-scene save gates also
-        // replace retained structural Cube/Cylinder renderer meshes, preserve gameplay collision
-        // footprints, bind actual hero materials to construction-physical metallic/specular families,
-        // normalize generated map registration + 4K texture sampling, enforce measured-order
-        // dielectric/Fresnel foliage material constraints, and reject any active renderer outside
-        // registered manufacture/installation/material metadata domains before the scored scene is
-        // persisted for capture.
-        QualityBlockRenderEvidenceProvenanceQA.CaptureAndSealNative4KEvidence();
+        // Build/save/reopen first. Realtime probes are rendered only after the final persisted geometry,
+        // materials, foliage, weathering and light environment exist. The awaiter then yields back to the
+        // Editor until IsFinishedRendering(RenderID) and the actual 512px Cube textures are both proven.
+        QualityBlock4KCapture.PrepareSceneForSynchronizedCapture();
+        QualityBlockReflectionProbeAwaiter.Begin(FinishAfterReflectionSynchronization);
+
+        Debug.Log(
+            "Native-4K review packet entered reflection synchronization. Still capture is intentionally deferred across Editor updates; " +
+            "Visual Fidelity remains UNSCORED and no benchmark frame is accepted until both realtime probe RenderIDs are complete.");
+    }
+
+    private static void FinishAfterReflectionSynchronization()
+    {
+        // Still path: reflection receipt was generated only after later Editor-update completion.
+        // CapturePreparedSceneAfterProbeSync must not rebuild the scene, otherwise the just-proven
+        // cubemaps would become stale relative to the benchmark geometry/material state.
+        QualityBlockReflectionProbeCaptureSyncQA.ValidateRuntimeReceipt();
+        QualityBlock4KCapture.CapturePreparedSceneAfterProbeSync();
+        QualityBlockBenchmarkObservabilityQA.ExtractPeriodAuthenticityCropsFromExistingFrames();
+        QualityBlockRenderEvidenceProvenanceQA.SealCurrentCapture();
+        QualityBlockRenderEvidenceProvenanceQA.WriteBoundEvidenceTemplate();
+        AssetDatabase.Refresh();
+
+        // Reconfirm source/runtime invariants after the exact still set has been written and sealed.
         QualityBlockReflectionProbeCaptureSyncQA.ValidateRuntimeReceipt();
         QualityBlockStructuralSurfaceRefinement.ValidateOpenScene();
         QualityBlockSceneMaterialPhysicalityUpgrade.ValidateOpenScene();
@@ -50,9 +72,9 @@ public static class QualityBlockNative4KReviewPacket
         AssetDatabase.Refresh();
         Debug.Log(
             "Complete native-4K review packet prepared: sealed hero/oblique/grazing stills + 100% crops, " +
-            "verified completed realtime reflection cubemaps before capture, validated retained structural geometry, actual material physicality bindings, " +
-            "scene-wide construction/material metadata coverage, generated map registration + mipmapped trilinear anisotropic texture sampling, " +
-            "measured-order foliage dielectric BRDF constraints, cinematic display diagnostics, and sealed temporal probes. Visual Fidelity remains " +
-            "UNSCORED until the exact evidence is reviewed and the evidence-bound 100-point gate is evaluated.");
+            "reflection cubemaps proven complete on later Editor updates before capture, retained structural geometry and actual material physicality validated, " +
+            "scene-wide construction/material metadata coverage and texture sampling checked, foliage dielectric constraints checked, " +
+            "cinematic diagnostics generated, and temporal probes sealed. Visual Fidelity remains UNSCORED until the exact evidence is reviewed and " +
+            "the evidence-bound 100-point gate is evaluated.");
     }
 }

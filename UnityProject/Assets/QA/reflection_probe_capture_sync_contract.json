@@ -1,0 +1,92 @@
+{
+  "schemaVersion": "1.0",
+  "status": "PENDING_REAL_UNITY_4K_RENDER",
+  "purpose": "Prevent native-4K benchmark evidence from being captured against stale or merely-requested realtime reflection cubemaps. This contract is implementation/evidence integrity only and cannot award Visual Fidelity points.",
+  "visualFidelityCategoryImpact": [
+    "lighting_shadows_reflections",
+    "material_pbr_physical_plausibility",
+    "cinematic_image_quality_composition_color_exposure"
+  ],
+  "unityApiBasis": {
+    "renderProbe": "ReflectionProbe.RenderProbe returns a RenderID for the requested cubemap refresh.",
+    "completionCheck": "ReflectionProbe.IsFinishedRendering(RenderID) is the completion check for a requested probe render.",
+    "timeSlicing": "ReflectionProbeTimeSlicingMode.NoTimeSlicing renders the probe entirely in one frame.",
+    "realtimeTexture": "ReflectionProbe.realtimeTexture is the realtime cubemap resource used by the probe."
+  },
+  "requiredSceneState": {
+    "probeRoot": "PhysicalReflectionEnvironment",
+    "probeCount": 2,
+    "probeNames": [
+      "ReflectionProbe_DanchiFacade",
+      "ReflectionProbe_ParkGround"
+    ],
+    "mode": "Realtime",
+    "refreshMode": "ViaScripting",
+    "timeSlicingMode": "NoTimeSlicing",
+    "resolution": 512,
+    "textureDimension": "Cube",
+    "hdrRequired": true,
+    "boxProjectionRequired": true
+  },
+  "preCaptureAlgorithm": [
+    "Find and sort the two registered benchmark probes deterministically by name.",
+    "Force NoTimeSlicing immediately before still capture.",
+    "Call RenderProbe() for each probe and retain its returned RenderID.",
+    "Require RenderID >= 0 and IsFinishedRendering(RenderID) == true before any benchmark Camera.Render is accepted.",
+    "Require realtimeTexture to be non-null, created, Cube-dimensional, and exactly 512x512 per face.",
+    "Write reflection_probe_refresh_receipt.json with Unity version, graphics device, RenderIDs, completion flags and cubemap state.",
+    "Abort native-4K capture if any requested probe is not proven complete and texture-ready."
+  ],
+  "runtimeReceipt": {
+    "path": "Assets/QA/reflection_probe_refresh_receipt.json",
+    "generatedOnlyByUnityRuntimePath": true,
+    "requiredFields": [
+      "generatedUtc",
+      "unityVersion",
+      "graphicsDevice",
+      "scenePath",
+      "requestedProbeCount",
+      "completedProbeCount",
+      "allFinishedBeforeBenchmarkCapture",
+      "probes[].name",
+      "probes[].renderId",
+      "probes[].finished",
+      "probes[].textureReady",
+      "probes[].actualWidth",
+      "probes[].actualHeight",
+      "probes[].textureDimension"
+    ],
+    "visualScoreAuthority": "none"
+  },
+  "criticalFailurePolicy": {
+    "captureMustAbortWhen": [
+      "probe_count_or_identity_drift",
+      "negative_render_id",
+      "render_not_finished",
+      "missing_or_uncreated_realtime_texture",
+      "wrong_cubemap_resolution",
+      "wrong_texture_dimension"
+    ],
+    "reason": "A stale reflection cubemap can make glass, aluminum, painted steel and wetness response appear plausible while not corresponding to the current sky/sun/scene state. Such pixels are not valid evidence for the lighting or material categories."
+  },
+  "prohibitedClaims": [
+    "Do not treat calling RenderProbe() alone as proof that the cubemap finished.",
+    "Do not set probesRefreshedImmediatelyBeforeCapture=true unless the completion/texture checks succeeded.",
+    "Do not infer visual quality from a successful synchronization receipt.",
+    "Do not award Lighting, Material/PBR or Cinematic points until the actual sealed 3840x2160 frames and 100% crops are reviewed."
+  ],
+  "expectedVisualScoreImpactAfterRealRender": {
+    "lighting_shadows_reflections": "reduces risk of stale or contradictory reflection evidence; points remain reviewer-observed only",
+    "material_pbr": "makes angular/Fresnel review of glass and metal correspond to the current physical environment",
+    "cinematic_image": "prevents exposure/composition review from being contaminated by stale specular energy",
+    "automaticPoints": 0
+  },
+  "verification": {
+    "sourceImplemented": true,
+    "unityCompileVerified": false,
+    "runtimeReceiptGenerated": false,
+    "native4kRenderVerified": false,
+    "visualFidelityPointsAwarded": 0,
+    "note": "Real Unity execution is mandatory. Until then this is Implementation Readiness only."
+  }
+}

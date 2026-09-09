@@ -35,6 +35,7 @@ public static class QualityBlockNative4KReviewPacket
         QualityBlockBenchmarkPrimitiveExposureQA.ValidateContractConfigOnly();
         QualityBlockSceneMaterialPhysicalityUpgrade.ValidateContract();
         QualityBlockSceneMetadataCoverageQA.ValidateContractConfigOnly();
+        QualityBlockBalconyConstructionInterfaceQA.ValidateContractConfigOnly();
         QualityBlockTextureSamplingUpgrade.ValidateContractConfigOnly();
         QualityBlockPhysicalTexelDensityQA.ValidateContractConfigOnly();
         QualityBlockAlbedoLightingNeutralityQA.ValidateContractConfigOnly();
@@ -43,14 +44,18 @@ public static class QualityBlockNative4KReviewPacket
         QualityBlockReflectionProbeCaptureSyncQA.ValidateContractConfigOnly();
         QualityBlock4KCapture.ValidateCaptureContract();
 
-        // Build/save/reopen first. Source adequacy checks must run against this final persisted
-        // renderer/material/mesh state before we spend a reflection render or write any benchmark pixels.
+        // Build/save/reopen first. The generated fallback previously left balcony fascia/hardware on
+        // the wrong vertical interfaces (including an aluminum slab fascia and buried base plates).
+        // Correct those installation relationships against the actual persisted slab-top renderer plane,
+        // save them, then run source adequacy checks before any reflection render or benchmark pixels.
         // Low physical texel density is corrected at texture/UV/tiling level. Broad illumination patterns
         // found in generated base albedo are corrected in the source/PBR split; they are never hidden by
         // sharpening, grading, painted highlights or by weakening the native 4K gate. Any visibly significant
         // active Unity stock solid in the exact hero/oblique/grazing framing fails here as a primitive-placeholder
         // risk and must be reconstructed rather than renamed or threshold-exempted.
         QualityBlock4KCapture.PrepareSceneForSynchronizedCapture();
+        QualityBlockBalconyConstructionInterfaceQA.ApplyAndPersist();
+        QualityBlockBalconyConstructionInterfaceQA.ValidateOpenScene();
         QualityBlockPhysicalTexelDensityQA.ValidateOpenScene();
         QualityBlockAlbedoLightingNeutralityQA.ValidateGeneratedBaseAlbedos();
         QualityBlockBenchmarkPrimitiveExposureQA.ValidateOpenScene();
@@ -61,7 +66,7 @@ public static class QualityBlockNative4KReviewPacket
         QualityBlockReflectionProbeAwaiter.Begin(FinishAfterReflectionSynchronization);
 
         Debug.Log(
-            "Native-4K review packet entered reflection synchronization after the final prepared scene passed physical texel-density, generated base-albedo lighting-neutrality, and exact-framing stock-solid primitive exposure source preflight. " +
+            "Native-4K review packet entered reflection synchronization after the final prepared scene passed balcony slab/rail construction-interface correction+QA, physical texel-density, generated base-albedo lighting-neutrality, and exact-framing stock-solid primitive exposure source preflight. " +
             "Still and temporal capture are deferred until later Editor updates prove both realtime probe RenderIDs complete. Visual Fidelity remains UNSCORED.");
     }
 
@@ -75,6 +80,7 @@ public static class QualityBlockNative4KReviewPacket
         // callers cannot bypass the display-transform evidence requirement.
         QualityBlockReflectionProbeCaptureSyncQA.ValidateRuntimeReceipt();
         QualityBlockReflectionProbeAwaiter.ValidateLatestWaitProof();
+        QualityBlockBalconyConstructionInterfaceQA.ValidateOpenScene();
         QualityBlockBenchmarkPrimitiveExposureQA.ValidateOpenScene();
         QualityBlock4KCapture.CapturePreparedSceneAfterProbeSync();
 
@@ -88,6 +94,7 @@ public static class QualityBlockNative4KReviewPacket
         QualityBlockReflectionProbeCaptureSyncQA.ValidateRuntimeReceipt();
         QualityBlockReflectionProbeAwaiter.ValidateLatestWaitProof();
         QualityBlockStructuralSurfaceRefinement.ValidateOpenScene();
+        QualityBlockBalconyConstructionInterfaceQA.ValidateOpenScene();
         QualityBlockBenchmarkPrimitiveExposureQA.ValidateOpenScene();
         QualityBlockSceneMaterialPhysicalityUpgrade.ValidateOpenScene();
         QualityBlockSceneMetadataCoverageQA.ValidateOpenScene();
@@ -111,6 +118,7 @@ public static class QualityBlockNative4KReviewPacket
         Debug.Log(
             "Complete native-4K review packet prepared: sealed hero/oblique/grazing stills + 100% crops, " +
             "immutable 92/100 category/minimum/critical-defect gate integrity checked before capture, " +
+            "generated balcony slab fascia/material and rail base-plate/bolt/lower-rail/bracket interfaces corrected from the persisted slab-top plane and revalidated before/after still capture, " +
             "final persisted generated textured geometry proven above the conservative physical texel-density floor, generated baseline albedos checked for broad baked-lighting patterns, and exact benchmark projections checked for visibly significant active Unity stock solid primitive risk before reflection/capture work, " +
             "reflection cubemaps proven complete on later Editor updates before capture with a SHA-256-bound wait proof, retained structural geometry and actual material physicality validated, " +
             "all three native stills proven at runtime by the capture method itself to execute the filmic HDR-source to LDR-destination display transform with no fallback blit, " +

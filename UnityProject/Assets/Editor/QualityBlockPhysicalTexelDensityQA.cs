@@ -167,7 +167,7 @@ public static class QualityBlockPhysicalTexelDensityQA
 
             Vector2 tiling = material.GetTextureScale("_MainTex");
             double tilingArea = Math.Abs((double)tiling.x * tiling.y);
-            if (!FinitePositive(tiling.x) || !FinitePositive(tiling.y) || tilingArea <= AreaEpsilon)
+            if (!FiniteNonZero(tiling.x) || !FiniteNonZero(tiling.y) || tilingArea <= AreaEpsilon)
             {
                 errors.Add(
                     $"Managed textured material has invalid physical tiling: {material.name} on {HierarchyPath(renderer.transform)} = {tiling}.");
@@ -276,6 +276,11 @@ public static class QualityBlockPhysicalTexelDensityQA
     private static bool FinitePositive(float value)
     {
         return !float.IsNaN(value) && !float.IsInfinity(value) && value > 0f;
+    }
+
+    private static bool FiniteNonZero(float value)
+    {
+        return !float.IsNaN(value) && !float.IsInfinity(value) && Mathf.Abs(value) > 0.000001f;
     }
 
     private static string HierarchyPath(Transform transform)

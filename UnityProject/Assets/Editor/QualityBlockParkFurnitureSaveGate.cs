@@ -8,8 +8,8 @@ using UnityEngine.SceneManagement;
 
 /// <summary>
 /// Makes the park/street-furniture construction pass part of the persisted benchmark scene whenever
-/// the existing high-detail ground chain is present. The gate also checks that the machine-readable
-/// manufacture/material contract exists before allowing the scene save to complete.
+/// the existing high-detail ground chain is present. The gate checks machine-readable manufacture/
+/// material metadata, rebuilds the assembly, applies physical-profile refinement, then runs structural QA.
 /// </summary>
 [InitializeOnLoad]
 public static class QualityBlockParkFurnitureSaveGate
@@ -37,12 +37,14 @@ public static class QualityBlockParkFurnitureSaveGate
         {
             ValidateContract();
             QualityBlockParkFurnitureUpgrade.BuildAndApply();
+            QualityBlockParkFurniturePhysicalRefinement.ApplyAndValidate();
             QualityBlockParkFurnitureUpgrade.ValidateOpenScene();
+            QualityBlockParkFurniturePhysicalRefinement.ValidateOpenScene();
         }
         catch (Exception ex)
         {
             throw new InvalidOperationException(
-                "Benchmark save blocked: park/street-furniture manufacture, material or LOD contract failed.", ex);
+                "Benchmark save blocked: park/street-furniture manufacture, material, physical-profile or LOD contract failed.", ex);
         }
         finally
         {
@@ -63,6 +65,7 @@ public static class QualityBlockParkFurnitureSaveGate
             "\"albedo_linear_rgb\"", "\"roughness\"", "\"metallic\"",
             "\"normalScale\"", "\"microstructure\"", "\"wetness\"", "\"uvAging\"",
             "\"angularResponse\"", "\"levels\": 4", "\"generatedColliderCount\": 0",
+            "\"modeled_chute_thickness_mm\": 2.0", "\"municipal_minimum_chute_thickness_mm\": 1.5",
             "\"visualFidelityPointsAwarded\": 0", "PENDING_UNITY_RUNTIME"
         };
         foreach (string token in requiredTokens)

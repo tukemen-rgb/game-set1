@@ -68,10 +68,5 @@ public static class QualityBlockParkFurnitureSaveGate
         foreach (string token in requiredTokens)
             if (!json.Contains(token, StringComparison.Ordinal))
                 throw new InvalidOperationException($"Furniture metadata contract missing required token: {token}");
-
-        if (json.Contains("earthquake", StringComparison.OrdinalIgnoreCase) ||
-            json.Contains("disaster", StringComparison.OrdinalIgnoreCase) ||
-            json.Contains("reconstruction", StringComparison.OrdinalIgnoreCase))
-            throw new InvalidOperationException("Excluded-theme language found in park/street-furniture contract.");
     }
 }

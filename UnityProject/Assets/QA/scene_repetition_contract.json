@@ -1,0 +1,80 @@
+{
+  "schemaVersion": "1.0",
+  "id": "benchmark_scene_repetition_preflight",
+  "status": "PENDING_UNITY_RUNTIME",
+  "visualFidelityPointsAwarded": 0,
+  "critical_defect": "immediately_obvious_repeated_texture_or_module_pattern",
+  "principle": "Repetition is judged against real manufacture, installation and biology. Mass-produced construction may repeat when it would repeat in reality; natural growth, occupant behavior, weathering causality and large-area material phase may not collapse into conspicuous exact clones.",
+  "approved_repetition": [
+    {
+      "assembly": "danchi exterior sash and balcony modules",
+      "reason": "Standardized public/suburban housing was intentionally modular and repeated bay construction is authentic.",
+      "constraint": "Exterior module repetition cannot be used as an excuse to repeat identical interior occupancy, weathering, reflection or texture phase."
+    },
+    {
+      "assembly": "precast tree-pit edging modules",
+      "reason": "Factory-made edging units legitimately repeat section and dimensions.",
+      "constraint": "Whole tree-pit ecology and understory layout must still respond to each anchor and pedestrian-pressure context."
+    },
+    {
+      "assembly": "park furniture fastener/profile families",
+      "reason": "Bolts, pipe sections and extrusion sections are manufactured components.",
+      "constraint": "Usage wear and material microstructure must remain physical and cannot become a repeated painted highlight."
+    }
+  ],
+  "prohibited_repetition": [
+    "same 0-to-1 texture tile stretched independently across every broad ground surface",
+    "two or more generated natural tree masters with exact matching render-hierarchy geometry fingerprints",
+    "three or more exact-clone ecology patch render hierarchies",
+    "all apartment windows showing the same curtain opening/material/room-value card",
+    "identical baked highlight, shadow or reflection marks repeated across modules",
+    "obvious repeated weathering stamp disconnected from drainage, grade splash, fixing or exposure cause"
+  ],
+  "static_checks": [
+    {
+      "id": "ground_world_phase",
+      "owner": "QualityBlockGroundBaseSurfaceUpgrade.Validate",
+      "rule": "Grass, paving and compacted soil use metre-derived macro/detail scale and renderer-world phase rather than primitive 0..1 UV repetition.",
+      "render_review_required": "Inspect hero/ground_contact and grazing/tree_shadow_contact for visible tiling beats, especially across DanchiPlaza/ParkPath boundaries."
+    },
+    {
+      "id": "apartment_occupancy_layout",
+      "owner": "QualityBlockFacadeOccupancyVariationUpgrade.ValidateOpenScene",
+      "rule": "Thirty generated apartment bays require at least 18 unique LOD0 curtain signatures; an exact visible signature may occur no more than three times.",
+      "render_review_required": "Inspect hero/facade_center, hero/facade_right and oblique/balcony_services for cloned-window rhythm."
+    },
+    {
+      "id": "generated_tree_fingerprint",
+      "owner": "QualityBlockSceneRepetitionQA.ValidateOpenScene",
+      "rule": "Every simultaneously active generated tree master must have a unique quantized render-hierarchy fingerprint after root-space normalization.",
+      "render_review_required": "Inspect crown silhouettes from hero and oblique views; a numerically unique tree can still look perceptually cloned."
+    },
+    {
+      "id": "ecology_patch_fingerprint",
+      "owner": "QualityBlockSceneRepetitionQA.ValidateOpenScene",
+      "rule": "Six ecology patches require at least five unique render-hierarchy fingerprints and no exact fingerprint more than twice.",
+      "render_review_required": "Inspect vegetation_grounding and tree_shadow_contact crops for radial planting patterns or repeated understory clusters."
+    }
+  ],
+  "fingerprint_quantization": {
+    "position_m": 0.005,
+    "rotation_deg": 1.0,
+    "scale": 0.005,
+    "includes": ["mesh name", "material name", "root-relative position", "root-relative rotation", "root-relative scale"],
+    "excludes": ["root object name/index", "world anchor position"],
+    "reason": "Object indices and world positions must not create false uniqueness when internal geometry is actually cloned."
+  },
+  "render_review_required": {
+    "native_resolution": [3840, 2160],
+    "views": ["hero", "oblique", "grazing"],
+    "minimum_crops": ["facade_center", "facade_right", "ground_contact", "vegetation_grounding", "tree_shadow_contact"],
+    "decision": "Static preflight can only reject obvious implementation clones. It cannot award Visual Fidelity points or clear the critical repeated-pattern defect without actual Unity render evidence."
+  },
+  "exclusions": [
+    "No earthquake/disaster/reconstruction interpretation is permitted.",
+    "Do not randomize authentic manufactured dimensions merely to create visual noise.",
+    "Do not hide repetition with blur, bloom, depth-of-field or sharpening artifacts."
+  ],
+  "runtimeRenderVerified": false,
+  "verification": "PENDING_UNITY_RUNTIME"
+}

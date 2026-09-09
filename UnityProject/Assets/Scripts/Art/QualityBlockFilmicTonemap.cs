@@ -5,13 +5,12 @@ using UnityEngine;
 /// It preserves physical scene lighting and performs only global exposure/tonemapping; no bloom,
 /// sharpening, chromatic aberration, vignette or local-contrast effect is allowed to hide defects.
 ///
-/// ImageEffectTransformsToLDR is deliberate: the source reaching this effect must remain HDR so
-/// scene-linear highlights survive until the filmic shoulder, while the destination is explicitly
-/// the LDR buffer consumed by the native PNG evidence path. Runtime telemetry is evidence plumbing
-/// only; it never awards Visual Fidelity points.
+/// ImageEffectTransformsToLDR is deliberate on OnRenderImage: the source reaching this effect must
+/// remain HDR so scene-linear highlights survive until the filmic shoulder, while the destination is
+/// explicitly the LDR buffer consumed by the native PNG evidence path. Runtime telemetry is evidence
+/// plumbing only; it never awards Visual Fidelity points.
 /// </summary>
 [ExecuteAlways]
-[ImageEffectTransformsToLDR]
 [DisallowMultipleComponent]
 [RequireComponent(typeof(Camera))]
 public sealed class QualityBlockFilmicTonemap : MonoBehaviour
@@ -112,6 +111,7 @@ public sealed class QualityBlockFilmicTonemap : MonoBehaviour
         DestroyMaterial();
     }
 
+    [ImageEffectTransformsToLDR]
     private void OnRenderImage(RenderTexture source, RenderTexture destination)
     {
         renderInvocationCount++;

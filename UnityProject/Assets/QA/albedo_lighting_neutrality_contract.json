@@ -1,0 +1,48 @@
+{
+  "contractVersion": "albedo-lighting-neutrality-v1.0.0",
+  "target": "Generated baseline base-color textures used by the Unity 4K benchmark",
+  "criticalDefectRiskReduced": "obviously_painted_or_baked_highlights",
+  "generatedBaseAlbedoRoot": "Assets/Art/GeneratedPBR",
+  "fileSuffix": "_Albedo.png",
+  "minimumAlbedoTextures": 6,
+  "requiredBaselineAlbedos": [
+    "PBR_GrassWorn_Albedo.png",
+    "PBR_DrySoil_Albedo.png",
+    "PBR_DanchiConcrete_Albedo.png",
+    "PBR_WashedConcrete_Albedo.png",
+    "PBR_WarmPaving_Albedo.png",
+    "PBR_Bark_Albedo.png"
+  ],
+  "analysis": {
+    "colorSpace": "Decode source sRGB bytes to linear relative luminance before statistics.",
+    "gridSize": 8,
+    "directionalRamp": "Fit a least-squares luminance plane over an 8x8 block-mean grid. Normalize the estimated opposite-side luminance difference (2 * gradient magnitude) by mean linear luminance.",
+    "centerEdgeContrast": "Compare broad centre blocks (normalized radius <= 0.55) against outer blocks (radius >= 0.90), normalized by mean linear luminance.",
+    "tileSeam": "Compute linear-luminance RMSE between left/right and top/bottom source edges, normalized by mean luminance.",
+    "maximumNormalizedDirectionalRamp": 0.38,
+    "maximumNormalizedCenterEdgeContrast": 0.30,
+    "maximumNormalizedTileSeamRmse": 0.12
+  },
+  "physicalIntent": {
+    "baseColor": "Contains material pigmentation, aggregate/soil/vegetation color variation and other illumination-independent surface information only.",
+    "specularAndFresnel": "Angular highlights must arise from material BRDF/Fresnel response and scene lighting, never from a bright lobe painted into albedo.",
+    "weathering": "Directional dirt, splash, runoff, rust or UV change must remain in the separate cause-based contextual weathering system. This baseline check must not be weakened to accommodate unexplained directional shading.",
+    "tileability": "Baseline generated textures must not create a broad brightness seam whose repetition is obvious under grazing light."
+  },
+  "failClosedRules": [
+    "Missing GeneratedPBR baseline directory after final scene preparation is FAIL.",
+    "Fewer than six generated *_Albedo.png sources is FAIL.",
+    "Missing any required baseline albedo is FAIL.",
+    "Base albedo imported non-sRGB is FAIL.",
+    "Unable to decode source pixels is FAIL.",
+    "Directional ramp, centre-edge contrast or tile seam above its hard source threshold is FAIL."
+  ],
+  "limitations": [
+    "This source statistic cannot prove final angular response or prove the absence of a locally painted highlight that does not produce the tested broad patterns.",
+    "Authored replacement art is not automatically cleared by this generated-baseline check; it must be inspected in the actual benchmark framing.",
+    "Passing this contract does not clear the critical baked-highlight defect. Sealed native 3840x2160 frontal/oblique/grazing evidence and 100% crops remain authoritative.",
+    "No source metric may award Visual Fidelity points."
+  ],
+  "visualFidelityPointsAwarded": 0,
+  "runtimeRenderVerification": "PENDING_UNITY_RUNTIME"
+}

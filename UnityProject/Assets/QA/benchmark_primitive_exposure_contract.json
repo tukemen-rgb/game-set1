@@ -1,0 +1,44 @@
+{
+  "schemaVersion": "1.0",
+  "purpose": "Fail closed before authoritative native-4K evidence if an actively rendered Unity stock solid primitive is large enough in the exact benchmark framing to present a credible visible primitive-placeholder risk.",
+  "criticalDefectRiskReduced": "visible_primitive_placeholder_geometry",
+  "scope": {
+    "scene": "Assets/Scenes/QualityBlock1990s.unity",
+    "root": "QualityBlock1990s",
+    "authoritativeViewSource": "QualityBlock4KCapture.TryGetBenchmarkViewProjection",
+    "requiredViews": ["hero", "oblique", "grazing"],
+    "nativeResolution": [3840, 2160],
+    "rendererPolicy": "Inspect active MeshFilter + Renderer pairs under the quality-block root. Authored replacement art is naturally included when active; inactive generated fallbacks are ignored.",
+    "solidBuiltInMeshes": ["Cube", "Cylinder", "Sphere", "Capsule"],
+    "planarCarrierPolicy": "Unity Plane and Quad are not automatically classified as placeholder solids because physically justified decal, foliage, fabric or other thin-surface carriers may legitimately be planar. Their rendered appearance remains subject to native-4K visual review and other construction/material gates."
+  },
+  "projection": {
+    "basis": "Project world-space Renderer.bounds corners through the exact deterministic benchmark camera pose/FOV supplied by QualityBlock4KCapture.",
+    "nearPlaneGuardMetres": 0.05,
+    "frameClipping": "Projected bounds are intersected with the 3840x2160 frame; fully off-screen or fully behind-camera objects do not count as benchmark exposure.",
+    "crossingCameraPlanePolicy": "A stock solid primitive with bounds spanning the benchmark camera plane is treated as visibly significant and fails closed."
+  },
+  "hardThresholds": {
+    "minimumVisibleWidthPixels": 48,
+    "minimumVisibleHeightPixels": 18,
+    "minimumVisibleAreaPixels": 1200,
+    "largeAreaAutomaticFailurePixels": 4096,
+    "logic": "FAIL a stock solid primitive when (visible width >= 48 AND visible height >= 18 AND visible area >= 1200) OR visible area >= 4096 OR its bounds span the camera plane. These thresholds are source-side risk screening, not a substitute for pixel review."
+  },
+  "failureHandling": {
+    "correctiveAction": "Reconstruct the actual manufactured/installed assembly and replace the visible stock solid mesh with dimensioned physical geometry or an authored replacement. Do not evade the gate by renaming the object, shrinking a required component, hiding it only for QA, or weakening thresholds.",
+    "runtimeReport": "Assets/QA/benchmark_primitive_exposure_runtime_report.json",
+    "runtimeReportStatusOnPass": "SOURCE_PREFLIGHT_PASS_NATIVE_4K_REVIEW_REQUIRED",
+    "visualFidelityPointsAwarded": 0,
+    "criticalDefectClearedBySourcePass": false
+  },
+  "renderVerification": {
+    "status": "PENDING_NATIVE_4K_PIXEL_REVIEW",
+    "requiredEvidence": [
+      "hero_3840x2160.png plus 100% crops",
+      "oblique_3840x2160.png plus 100% crops",
+      "grazing_3840x2160.png plus 100% crops"
+    ],
+    "rule": "A source-side PASS only establishes that no large active Unity stock solid primitive survives in the benchmark projection. It cannot clear the critical defect or award Geometry points until actual rendered evidence is inspected."
+  }
+}

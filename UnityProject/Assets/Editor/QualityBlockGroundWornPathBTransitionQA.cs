@@ -8,29 +8,16 @@ using UnityEngine;
 
 /// <summary>
 /// Reconstructs WornPathB as a physically legible compacted-soil branch through the park verge.
-///
-/// The source benchmark uses a 2 x 6 m Unity Cube whose top sits about 45 mm above the turf. It is
-/// separated from the ParkPath by roughly 0.53 m of grass while the ParkPathEast precast curb remains
-/// continuous, so the object can read as an isolated rectangular soil slab in the oblique foreground.
-///
-/// This correction preserves the coarse source BoxCollider for gameplay fallback but disables its
-/// Renderer. It opens exactly two whole 588 mm precast curb modules, then creates a curved/tapered,
-/// collider-free compacted-soil ribbon that begins 3 mm below the paved path, crosses the deliberate
-/// 1.212 m curb opening, retains a roughly 40 mm compacted wearing course through the verge, feathers
-/// its shoulders down to turf grade, and tapers back into the grass. Four authored LOD meshes retain
-/// the same construction silhouette. UV0 is expressed in world metres and the copied PBR material is
-/// retiled in metres rather than restarting a normalized primitive UV domain.
-///
-/// This class provides implementation/readiness evidence only. It never awards Visual Fidelity points;
-/// actual 3840x2160 full frames, 100% crops and temporal evidence remain mandatory for scoring.
+/// The rectangular source Renderer is suppressed but its coarse BoxCollider is preserved. Two whole
+/// ParkPathEast curb modules form a deliberate opening; a curved/tapered metric-UV soil ribbon then
+/// feathers to turf grade through LOD0/1/2/3. This source-side QA never awards Visual Fidelity points.
 /// </summary>
 public static class QualityBlockGroundWornPathBTransitionQA
 {
     private const string ScenePath = "Assets/Scenes/QualityBlock1990s.unity";
     private const string ContractPath = "Assets/QA/ground_worn_path_b_transition_contract.json";
     private const string LookdevPath = "Assets/QA/ground_worn_path_b_transition_lookdev.svg";
-    private const string SourcePathName = "WornPathB";
-    private const string ParkPathName = "ParkPath";
+    private const string SourceName = "WornPathB";
     private const string StateName = "GroundWornPathBTransitionState";
     private const string LodRootName = "HD_WornPathB_Transition_LOD";
     private const string CurbPrefix = "HD_Curb_ParkPathEast_";
@@ -38,21 +25,16 @@ public static class QualityBlockGroundWornPathBTransitionQA
     private const string MeshRoot = GeneratedRoot + "/Meshes";
     private const string MaterialRoot = GeneratedRoot + "/Materials";
     private const string MaterialPath = MaterialRoot + "/PBR_WornPathB_Transition.mat";
-
-    private const int OpeningFirstIndex = 26;
-    private const int OpeningLastIndex = 27;
-    private const int PreviousCurbIndex = 25;
-    private const int NextCurbIndex = 28;
+    private const int OpeningFirst = 26;
+    private const int OpeningLast = 27;
     private const int CurbCount = 36;
+    private const float MacroTileM = 6.4f;
+    private const float DetailTileM = 0.30f;
+    private const float PosTol = 0.018f;
 
-    private const float MacroTileMeters = 6.4f;
-    private const float DetailTileMeters = 0.30f;
-    private const float PositionTolerance = 0.018f;
-
-    private static readonly int[] LongitudinalSegments = { 48, 28, 16, 8 };
-    private static readonly int[] LateralStationCounts = { 7, 7, 5, 5 };
-    private static readonly float[] LodHeights = { 0.58f, 0.32f, 0.16f, 0.055f };
-
+    private static readonly int[] LongSegments = { 48, 28, 16, 8 };
+    private static readonly int[] CrossCounts = { 7, 7, 5, 5 };
+    private static readonly float[] LodScreen = { 0.58f, 0.32f, 0.16f, 0.055f };
     private static readonly Vector3 P0 = new Vector3(11.30f, 0f, 5.40f);
     private static readonly Vector3 P1 = new Vector3(12.15f, 0f, 5.40f);
     private static readonly Vector3 P2 = new Vector3(12.55f, 0f, 8.30f);
@@ -62,99 +44,76 @@ public static class QualityBlockGroundWornPathBTransitionQA
     public static void ApplyAndPersist()
     {
         ValidateContractConfigOnly();
-        RequireQualityScene();
+        RequireScene();
         ApplyToOpenScene();
         ValidateOpenScene();
         EditorSceneManager.MarkSceneDirty(EditorSceneManager.GetActiveScene());
         EditorSceneManager.SaveOpenScenes();
         AssetDatabase.SaveAssets();
         AssetDatabase.Refresh();
-        Debug.Log(
-            "WornPathB park-verge transition persisted: source primitive hidden, two-module curb opening, " +
-            "metric-UV compacted-soil ribbon and four construction-preserving LODs. Visual Fidelity remains UNSCORED.");
+        Debug.Log("WornPathB transition persisted. Visual Fidelity remains UNSCORED pending native 4K evidence.");
     }
 
     public static void ApplyToOpenScene()
     {
         ValidateContractConfigOnly();
-        RequireQualityScene();
-        TransitionContract contract = LoadContract();
-
-        Renderer sourcePath = RequireRenderer(SourcePathName);
-        Collider sourceCollider = sourcePath.GetComponent<Collider>();
+        RequireScene();
+        Contract c = LoadContract();
+        Renderer source = RequireRenderer(SourceName);
+        Collider sourceCollider = source.GetComponent<Collider>();
         if (sourceCollider == null || !sourceCollider.enabled)
-            throw new InvalidOperationException("WornPathB gameplay fallback collider is missing or disabled.");
-        if (sourcePath.sharedMaterial == null)
-            throw new InvalidOperationException("WornPathB source PBR material is missing before visual replacement.");
+            throw new InvalidOperationException("WornPathB fallback collider is missing/disabled.");
+        if (source.sharedMaterial == null)
+            throw new InvalidOperationException("WornPathB source PBR material is missing.");
 
-        // Preserve the coarse collision substrate, but never allow the rectangular primitive into pixels.
-        sourcePath.enabled = false;
-        EditorUtility.SetDirty(sourcePath);
-
+        source.enabled = false;
+        EditorUtility.SetDirty(source);
         ApplyCurbOpening();
 
-        GameObject previous = FindSceneObject(StateName);
-        if (previous != null)
-            UnityEngine.Object.DestroyImmediate(previous);
-
+        GameObject old = FindSceneObject(StateName);
+        if (old != null) UnityEngine.Object.DestroyImmediate(old);
         GameObject ground = FindSceneObject("Ground");
-        if (ground == null)
-            throw new InvalidOperationException("Ground root missing for WornPathB transition state.");
-        RequireIdentityWorldTransform(ground.transform, "Ground");
+        if (ground == null) throw new InvalidOperationException("Ground root missing.");
+        RequireIdentityWorld(ground.transform, "Ground");
 
         var state = new GameObject(StateName);
         state.transform.SetParent(ground.transform, false);
-
         Directory.CreateDirectory(MeshRoot);
         Directory.CreateDirectory(MaterialRoot);
-        Material material = EnsureMaterial(sourcePath.sharedMaterial, contract);
+        Material material = EnsureMaterial(source.sharedMaterial, c);
 
         var lodRoot = new GameObject(LodRootName);
         lodRoot.transform.SetParent(state.transform, false);
-        var lodGroup = lodRoot.AddComponent<LODGroup>();
-        lodGroup.fadeMode = LODFadeMode.CrossFade;
-        lodGroup.animateCrossFading = true;
-
+        var group = lodRoot.AddComponent<LODGroup>();
+        group.fadeMode = LODFadeMode.CrossFade;
+        group.animateCrossFading = true;
         var lods = new LOD[4];
         for (int i = 0; i < 4; i++)
         {
-            string childName = $"HD_WornPathB_Transition_LOD{i}";
-            var child = new GameObject(childName);
+            var child = new GameObject($"HD_WornPathB_Transition_LOD{i}");
             child.transform.SetParent(lodRoot.transform, false);
-
-            Mesh mesh = EnsureMesh(i, LongitudinalSegments[i], LateralStationCounts[i], contract);
-            var filter = child.AddComponent<MeshFilter>();
-            filter.sharedMesh = mesh;
-            var renderer = child.AddComponent<MeshRenderer>();
-            renderer.sharedMaterial = material;
-            renderer.receiveShadows = true;
-
-            var weathering = child.AddComponent<QualityBlockWeatheringSurface>();
-            weathering.Configure(
+            Mesh mesh = EnsureMesh(i, LongSegments[i], CrossCounts[i], c);
+            var mf = child.AddComponent<MeshFilter>();
+            mf.sharedMesh = mesh;
+            var mr = child.AddComponent<MeshRenderer>();
+            mr.sharedMaterial = material;
+            mr.receiveShadows = true;
+            var weather = child.AddComponent<QualityBlockWeatheringSurface>();
+            weather.Configure(
                 NewTownSurfaceExposure.SunExposed | NewTownSurfaceExposure.RainExposed |
                 NewTownSurfaceExposure.GroundContact | NewTownSurfaceExposure.UpwardFacing,
                 NewTownStainSource.FootTraffic | NewTownStainSource.UVExposure,
                 1f, 0.95f, 0.18f, 0.72f);
-
-            lods[i] = new LOD(LodHeights[i], new Renderer[] { renderer })
-            {
-                fadeTransitionWidth = 0.12f
-            };
+            lods[i] = new LOD(LodScreen[i], new Renderer[] { mr }) { fadeTransitionWidth = 0.12f };
         }
-        lodGroup.SetLODs(lods);
-        lodGroup.RecalculateBounds();
+        group.SetLODs(lods);
+        group.RecalculateBounds();
 
         var manifest = state.AddComponent<QualityBlockGroundWornPathBTransitionManifest>();
-        manifest.Configure(
-            OpeningFirstIndex,
-            OpeningLastIndex,
-            contract.dimensions.curbOpeningWidthM,
-            contract.dimensions.parkPavingTopYM - contract.dimensions.pathMouthTopYM,
-            contract.dimensions.compactedCoreTopYM - contract.dimensions.grassTopYM,
-            contract.dimensions.shoulderJoinTopYM - contract.dimensions.grassTopYM,
-            true,
-            true,
-            true);
+        manifest.Configure(OpeningFirst, OpeningLast, c.dimensions.curbOpeningWidthM,
+            c.dimensions.parkPavingTopYM - c.dimensions.pathMouthTopYM,
+            c.dimensions.compactedCoreTopYM - c.dimensions.grassTopYM,
+            c.dimensions.shoulderJoinTopYM - c.dimensions.grassTopYM, true, true, true);
         EditorUtility.SetDirty(manifest);
         EditorSceneManager.MarkSceneDirty(EditorSceneManager.GetActiveScene());
     }
@@ -163,637 +122,352 @@ public static class QualityBlockGroundWornPathBTransitionQA
     public static void ValidateOpenScene()
     {
         ValidateContractConfigOnly();
-        RequireQualityScene();
-        TransitionContract contract = LoadContract();
+        RequireScene();
+        Contract c = LoadContract();
+        Renderer source = RequireRenderer(SourceName);
+        Renderer park = RequireRenderer("ParkPath");
+        Bounds sb = source.bounds;
+        AssertNear(sb.min.x, c.sourceAudit.sourceMinXM, PosTol, "source min X");
+        AssertNear(sb.max.x, c.sourceAudit.sourceMaxXM, PosTol, "source max X");
+        AssertNear(sb.min.z, c.sourceAudit.sourceMinZM, PosTol, "source min Z");
+        AssertNear(sb.max.z, c.sourceAudit.sourceMaxZM, PosTol, "source max Z");
+        AssertNear(sb.max.y, c.sourceAudit.sourceTopYM, PosTol, "source top Y");
+        AssertNear(park.bounds.max.x, c.dimensions.parkPathEastEdgeXM, PosTol, "ParkPath east edge");
+        AssertNear(park.bounds.max.y, c.dimensions.parkPavingTopYM, PosTol, "ParkPath top");
+        if (source.enabled) throw new InvalidOperationException("Coarse WornPathB Renderer must be disabled.");
+        if (source.GetComponent<Collider>() == null || !source.GetComponent<Collider>().enabled)
+            throw new InvalidOperationException("WornPathB fallback collider must remain enabled.");
 
-        Renderer sourcePath = RequireRenderer(SourcePathName);
-        Renderer parkPath = RequireRenderer(ParkPathName);
-        Bounds sourceBounds = sourcePath.bounds;
-        Bounds parkBounds = parkPath.bounds;
-
-        AssertNear(sourceBounds.min.x, contract.sourceAudit.sourceMinXM, PositionTolerance, "source min X");
-        AssertNear(sourceBounds.max.x, contract.sourceAudit.sourceMaxXM, PositionTolerance, "source max X");
-        AssertNear(sourceBounds.min.z, contract.sourceAudit.sourceMinZM, PositionTolerance, "source min Z");
-        AssertNear(sourceBounds.max.z, contract.sourceAudit.sourceMaxZM, PositionTolerance, "source max Z");
-        AssertNear(sourceBounds.max.y, contract.sourceAudit.sourceTopYM, PositionTolerance, "source top Y");
-        AssertNear(parkBounds.max.x, contract.dimensions.parkPathEastEdgeXM, PositionTolerance, "ParkPath east edge");
-        AssertNear(parkBounds.max.y, contract.dimensions.parkPavingTopYM, PositionTolerance, "ParkPath paving top");
-
-        if (sourcePath.enabled)
-            throw new InvalidOperationException("Coarse WornPathB primitive Renderer must remain disabled for benchmark evidence.");
-        Collider sourceCollider = sourcePath.GetComponent<Collider>();
-        if (sourceCollider == null || !sourceCollider.enabled)
-            throw new InvalidOperationException("WornPathB gameplay fallback collider must remain enabled.");
-
-        ValidateCurbOpening(contract);
-
+        ValidateCurbOpening(c);
         GameObject state = FindSceneObject(StateName);
-        if (state == null)
-            throw new InvalidOperationException("WornPathB transition state is missing.");
-        if (state.transform.parent == null || state.transform.parent.name != "Ground")
-            throw new InvalidOperationException("WornPathB transition state must inherit the Ground metadata domain.");
+        if (state == null || state.transform.parent == null || state.transform.parent.name != "Ground")
+            throw new InvalidOperationException("WornPathB correction must exist under the Ground metadata scope.");
         if (state.GetComponentsInChildren<Collider>(true).Length != 0)
             throw new InvalidOperationException("WornPathB visual correction must remain collider-free.");
 
         GameObject lodRoot = FindSceneObject(LodRootName);
-        if (lodRoot == null || !lodRoot.transform.IsChildOf(state.transform))
-            throw new InvalidOperationException("WornPathB transition LOD root is missing or outside its state scope.");
-        LODGroup group = lodRoot.GetComponent<LODGroup>();
-        if (group == null)
-            throw new InvalidOperationException("WornPathB transition LODGroup is missing.");
+        LODGroup group = lodRoot == null ? null : lodRoot.GetComponent<LODGroup>();
+        if (group == null || !lodRoot.transform.IsChildOf(state.transform))
+            throw new InvalidOperationException("WornPathB LOD root/group is missing or outside the correction state.");
         LOD[] lods = group.GetLODs();
-        if (lods.Length != 4)
-            throw new InvalidOperationException($"WornPathB transition requires LOD0/1/2/3, got {lods.Length} levels.");
-        if (group.fadeMode != LODFadeMode.CrossFade || !group.animateCrossFading)
-            throw new InvalidOperationException("WornPathB transition LODs must use animated cross-fade.");
+        if (lods.Length != 4 || group.fadeMode != LODFadeMode.CrossFade || !group.animateCrossFading)
+            throw new InvalidOperationException("WornPathB must retain four animated cross-faded LOD levels.");
 
-        int previousVertexCount = int.MaxValue;
-        Bounds? referenceBounds = null;
-        Material referenceMaterial = null;
-        for (int i = 0; i < 4; i++)
+        int priorVertices = int.MaxValue;
+        Bounds? lod0Bounds = null;
+        Material common = null;
+        for (int i = 0; i < lods.Length; i++)
         {
             if (lods[i].renderers == null || lods[i].renderers.Length != 1 || lods[i].renderers[0] == null)
-                throw new InvalidOperationException($"WornPathB LOD{i} must contain exactly one renderer.");
-            Renderer renderer = lods[i].renderers[0];
-            MeshFilter filter = renderer.GetComponent<MeshFilter>();
-            if (filter == null || filter.sharedMesh == null)
-                throw new InvalidOperationException($"WornPathB LOD{i} mesh is missing.");
-            if (!filter.sharedMesh.name.StartsWith("GM_HD_Interface_WornPathB_", StringComparison.Ordinal))
-                throw new InvalidOperationException($"WornPathB LOD{i} reverted to non-authored/primitive mesh {filter.sharedMesh.name}.");
-            if (filter.sharedMesh.vertexCount >= previousVertexCount)
-                throw new InvalidOperationException("WornPathB LOD vertex counts must decrease strictly from LOD0 through LOD3.");
-            previousVertexCount = filter.sharedMesh.vertexCount;
+                throw new InvalidOperationException($"WornPathB LOD{i} must contain exactly one Renderer.");
+            Renderer r = lods[i].renderers[0];
+            MeshFilter mf = r.GetComponent<MeshFilter>();
+            if (mf == null || mf.sharedMesh == null ||
+                !mf.sharedMesh.name.StartsWith("GM_HD_Interface_WornPathB_", StringComparison.Ordinal))
+                throw new InvalidOperationException($"WornPathB LOD{i} reverted to missing/non-authored geometry.");
+            if (mf.sharedMesh.vertexCount >= priorVertices)
+                throw new InvalidOperationException("WornPathB LOD vertex counts must strictly decrease.");
+            priorVertices = mf.sharedMesh.vertexCount;
+            ValidateUpwardSurface(mf.sharedMesh, i);
 
-            Material material = renderer.sharedMaterial;
-            if (material == null || material.name != "PBR_WornPathB_Transition")
+            if (lod0Bounds == null) lod0Bounds = r.bounds;
+            else if ((r.bounds.center - lod0Bounds.Value.center).magnitude > c.hardLimits.maxLodBoundsCenterDriftM ||
+                     (r.bounds.size - lod0Bounds.Value.size).magnitude > c.hardLimits.maxLodBoundsSizeDriftM)
+                throw new InvalidOperationException($"WornPathB LOD{i} silhouette bounds drift beyond hard limit.");
+
+            if (r.sharedMaterial == null || r.sharedMaterial.name != "PBR_WornPathB_Transition")
                 throw new InvalidOperationException($"WornPathB LOD{i} material binding is invalid.");
-            if (referenceMaterial == null) referenceMaterial = material;
-            else if (material != referenceMaterial)
-                throw new InvalidOperationException("All WornPathB LODs must share the same physical material instance.");
-
-            if (referenceBounds == null) referenceBounds = renderer.bounds;
-            else
-            {
-                Bounds b = renderer.bounds;
-                if ((b.center - referenceBounds.Value.center).magnitude > contract.hardLimits.maxLodBoundsCenterDriftM ||
-                    (b.size - referenceBounds.Value.size).magnitude > contract.hardLimits.maxLodBoundsSizeDriftM)
-                    throw new InvalidOperationException($"WornPathB LOD{i} silhouette bounds drift beyond hard limit.");
-            }
-
-            if (renderer.GetComponent<QualityBlockWeatheringSurface>() == null)
-                throw new InvalidOperationException($"WornPathB LOD{i} is missing cause-based weathering metadata.");
+            if (common == null) common = r.sharedMaterial;
+            else if (common != r.sharedMaterial) throw new InvalidOperationException("WornPathB LOD materials diverged.");
+            if (r.GetComponent<QualityBlockWeatheringSurface>() == null)
+                throw new InvalidOperationException($"WornPathB LOD{i} lacks cause-based weathering metadata.");
         }
+        ValidateMaterial(common, c);
 
-        ValidateMaterial(referenceMaterial, contract);
+        var m = state.GetComponent<QualityBlockGroundWornPathBTransitionManifest>();
+        if (m == null || !m.SourceRendererDisabled || !m.SourceColliderPreserved || !m.VisualCorrectionColliderFree)
+            throw new InvalidOperationException("WornPathB responsibility-separation manifest is invalid.");
+        if (m.OpeningFirstIndex != OpeningFirst || m.OpeningLastIndex != OpeningLast)
+            throw new InvalidOperationException("WornPathB curb-opening manifest indices drifted.");
+        AssertNear(m.CurbOpeningWidthM, c.dimensions.curbOpeningWidthM, 0.002f, "manifest opening width");
+        AssertNear(m.MouthBelowPavingM, c.dimensions.parkPavingTopYM - c.dimensions.pathMouthTopYM,
+            0.001f, "manifest mouth step");
 
-        QualityBlockGroundWornPathBTransitionManifest manifest =
-            state.GetComponent<QualityBlockGroundWornPathBTransitionManifest>();
-        if (manifest == null || !manifest.SourceRendererDisabled || !manifest.SourceColliderPreserved ||
-            !manifest.VisualCorrectionColliderFree)
-            throw new InvalidOperationException("WornPathB transition manifest does not prove source/visual responsibility separation.");
-        if (manifest.OpeningFirstIndex != OpeningFirstIndex || manifest.OpeningLastIndex != OpeningLastIndex)
-            throw new InvalidOperationException("WornPathB curb-opening manifest index drift.");
-        AssertNear(manifest.CurbOpeningWidthM, contract.dimensions.curbOpeningWidthM, 0.002f, "manifest curb opening width");
-        AssertNear(manifest.MouthBelowPavingM,
-            contract.dimensions.parkPavingTopYM - contract.dimensions.pathMouthTopYM, 0.001f,
-            "manifest path mouth below paving");
-
-        Debug.Log(
-            "WornPathB transition validation passed structurally: rectangular source renderer suppressed with collider preserved; " +
-            "1.212 m two-module curb opening; curved/tapered compacted-soil ribbon; metre UVs; four cross-faded LODs; " +
-            "dry dielectric material and cause-based foot-traffic/UV metadata. Pixel realism remains render-unverified and UNSCORED.");
+        Debug.Log("WornPathB structural QA passed, including upward triangle normals on all LODs. Pixel realism remains UNSCORED.");
     }
 
     [MenuItem("NewTown/QA/Validate WornPathB Transition Contract Only")]
     public static void ValidateContractConfigOnly()
     {
-        if (!File.Exists(ContractPath))
-            throw new InvalidOperationException($"WornPathB transition contract missing: {ContractPath}");
-        if (!File.Exists(LookdevPath))
-            throw new InvalidOperationException($"WornPathB transition lookdev missing: {LookdevPath}");
-
-        TransitionContract contract = LoadContract();
-        if (contract.runtimeRenderVerified)
-            throw new InvalidOperationException("WornPathB source-side contract cannot claim runtime render verification.");
-        if (contract.visualFidelityPointsAwarded != 0)
-            throw new InvalidOperationException("WornPathB source-side QA cannot award Visual Fidelity points.");
-        RequireText(contract.visualFidelityStatus, "visualFidelityStatus");
-        RequireText(contract.targetPeriod, "targetPeriod");
-        RequireText(contract.targetRegion, "targetRegion");
-
-        if (contract.sourceAudit == null || contract.assembly == null || contract.dimensions == null ||
-            contract.material == null || contract.weathering == null || contract.lodPolicy == null ||
-            contract.hardLimits == null)
-            throw new InvalidOperationException("WornPathB contract is missing required source/construction/material/LOD sections.");
-
-        RequireText(contract.sourceAudit.visualRisk, "sourceAudit.visualRisk");
-        if (contract.sourceAudit.legacyGrassGapToParkCurbM < 0.45f)
-            throw new InvalidOperationException("WornPathB contract no longer demonstrates the isolated source-path gap being corrected.");
-        if (contract.sourceAudit.sourceWidthM < 1.9f || contract.sourceAudit.sourceLengthM < 5.9f)
-            throw new InvalidOperationException("WornPathB source audit dimensions drifted.");
-
-        RequireText(contract.assembly.manufacture, "assembly.manufacture");
-        RequireText(contract.assembly.mounting, "assembly.mounting");
-        RequireText(contract.assembly.interfacesGapsSeals, "assembly.interfacesGapsSeals");
-        RequireText(contract.assembly.orientationExposure, "assembly.orientationExposure");
-        RequireText(contract.assembly.aging, "assembly.aging");
-        RequireText(contract.assembly.geometryVsMaterial, "assembly.geometryVsMaterial");
-        if (contract.assembly.components == null || contract.assembly.components.Length < 5)
-            throw new InvalidOperationException("WornPathB assembly must enumerate at least five physical/source components.");
-
-        AssertNear(contract.dimensions.mouthCenterXM, P0.x, 0.001f, "contract mouth center X");
-        AssertNear(contract.dimensions.mouthCenterZM, P0.z, 0.001f, "contract mouth center Z");
-        AssertNear(contract.dimensions.terminalCenterXM, P3.x, 0.001f, "contract terminal center X");
-        AssertNear(contract.dimensions.terminalCenterZM, P3.z, 0.001f, "contract terminal center Z");
-        if (contract.dimensions.pathMouthTopYM >= contract.dimensions.parkPavingTopYM ||
-            contract.dimensions.parkPavingTopYM - contract.dimensions.pathMouthTopYM > 0.006f)
-            throw new InvalidOperationException("WornPathB mouth must sit 1-6 mm below the ParkPath paving top.");
-        if (contract.dimensions.curbOpeningFirstIndex != OpeningFirstIndex ||
-            contract.dimensions.curbOpeningLastIndex != OpeningLastIndex)
-            throw new InvalidOperationException("WornPathB curb-opening indices drifted.");
-        AssertNear(contract.dimensions.curbOpeningWidthM, 1.212f, 0.003f, "curb opening width");
-        if (contract.dimensions.compactedCoreThicknessM < 0.030f || contract.dimensions.compactedCoreThicknessM > 0.060f)
-            throw new InvalidOperationException("WornPathB compacted wearing-course thickness must remain 30-60 mm.");
-        if (contract.dimensions.shoulderJoinTopYM - contract.dimensions.grassTopYM > 0.006f)
-            throw new InvalidOperationException("WornPathB feathered shoulder must return to turf grade within 6 mm.");
-
-        RequireText(contract.material.family, "material.family");
-        RequireText(contract.material.finish, "material.finish");
-        RequireText(contract.material.microstructure, "material.microstructure");
-        RequireText(contract.material.uvAging, "material.uvAging");
-        RequireText(contract.material.angularFresnelResponse, "material.angularFresnelResponse");
-        if (contract.material.metallic > contract.hardLimits.maxMetallic)
-            throw new InvalidOperationException("WornPathB compacted soil must remain dielectric/non-metallic.");
-        if (contract.material.roughnessMin < 0.85f || contract.material.roughnessMax > 1.0f ||
-            contract.material.roughnessMin > contract.material.roughnessMax)
-            throw new InvalidOperationException("WornPathB soil roughness contract is implausible.");
-        AssertNear(contract.material.macroTileMeters, MacroTileMeters, 0.001f, "macro physical tile");
-        AssertNear(contract.material.detailTileMeters, DetailTileMeters, 0.001f, "detail physical tile");
-        if (contract.material.wetness != 0f)
-            throw new InvalidOperationException("Dry midsummer benchmark WornPathB wetness must remain zero.");
-
-        RequireText(contract.weathering.causes, "weathering.causes");
-        RequireText(contract.weathering.forbidden, "weathering.forbidden");
-        RequireText(contract.lodPolicy.lod0, "lodPolicy.lod0");
-        RequireText(contract.lodPolicy.lod1, "lodPolicy.lod1");
-        RequireText(contract.lodPolicy.lod2, "lodPolicy.lod2");
-        RequireText(contract.lodPolicy.lod3, "lodPolicy.lod3");
-        RequireText(contract.lodPolicy.transitionPolicy, "lodPolicy.transitionPolicy");
-        if (contract.evidencePlan == null || contract.evidencePlan.Length < 4)
-            throw new InvalidOperationException("WornPathB contract requires still/crop/temporal evidence plans.");
-        if (contract.criticalFailPrevention == null || contract.criticalFailPrevention.Length < 7)
-            throw new InvalidOperationException("WornPathB contract requires explicit critical-fail prevention rules.");
+        if (!File.Exists(ContractPath) || !File.Exists(LookdevPath))
+            throw new InvalidOperationException("WornPathB transition contract/lookdev is missing.");
+        Contract c = LoadContract();
+        if (c.runtimeRenderVerified || c.visualFidelityPointsAwarded != 0)
+            throw new InvalidOperationException("Source-side WornPathB QA cannot claim render verification or visual points.");
+        Need(c.visualFidelityStatus, "visualFidelityStatus"); Need(c.targetPeriod, "targetPeriod"); Need(c.targetRegion, "targetRegion");
+        if (c.sourceAudit == null || c.assembly == null || c.dimensions == null || c.material == null ||
+            c.weathering == null || c.lodPolicy == null || c.hardLimits == null)
+            throw new InvalidOperationException("WornPathB contract is missing mandatory construction/material sections.");
+        Need(c.sourceAudit.visualRisk, "sourceAudit.visualRisk");
+        if (c.sourceAudit.legacyGrassGapToParkCurbM < 0.45f || c.sourceAudit.sourceWidthM < 1.9f || c.sourceAudit.sourceLengthM < 5.9f)
+            throw new InvalidOperationException("WornPathB source audit no longer proves the rectangular/disconnected source risk.");
+        Need(c.assembly.manufacture, "assembly.manufacture"); Need(c.assembly.mounting, "assembly.mounting");
+        Need(c.assembly.interfacesGapsSeals, "assembly.interfacesGapsSeals"); Need(c.assembly.orientationExposure, "assembly.orientationExposure");
+        Need(c.assembly.aging, "assembly.aging"); Need(c.assembly.geometryVsMaterial, "assembly.geometryVsMaterial");
+        if (c.assembly.components == null || c.assembly.components.Length < 5)
+            throw new InvalidOperationException("WornPathB contract must enumerate physical/source components.");
+        AssertNear(c.dimensions.mouthCenterXM, P0.x, 0.001f, "mouth center X");
+        AssertNear(c.dimensions.mouthCenterZM, P0.z, 0.001f, "mouth center Z");
+        AssertNear(c.dimensions.terminalCenterXM, P3.x, 0.001f, "terminal center X");
+        AssertNear(c.dimensions.terminalCenterZM, P3.z, 0.001f, "terminal center Z");
+        if (c.dimensions.curbOpeningFirstIndex != OpeningFirst || c.dimensions.curbOpeningLastIndex != OpeningLast)
+            throw new InvalidOperationException("WornPathB curb-opening index policy drifted.");
+        AssertNear(c.dimensions.curbOpeningWidthM, 1.212f, 0.003f, "contract curb opening");
+        float mouthStep = c.dimensions.parkPavingTopYM - c.dimensions.pathMouthTopYM;
+        if (mouthStep < 0.001f || mouthStep > 0.006f)
+            throw new InvalidOperationException("WornPathB mouth must remain 1-6 mm below paving.");
+        if (c.dimensions.compactedCoreThicknessM < 0.030f || c.dimensions.compactedCoreThicknessM > 0.060f ||
+            c.dimensions.shoulderJoinTopYM - c.dimensions.grassTopYM > 0.006f)
+            throw new InvalidOperationException("WornPathB wearing-course/shoulder dimensions are outside hard construction bounds.");
+        Need(c.material.family, "material.family"); Need(c.material.finish, "material.finish");
+        Need(c.material.microstructure, "material.microstructure"); Need(c.material.uvAging, "material.uvAging");
+        Need(c.material.angularFresnelResponse, "material.angularFresnelResponse");
+        if (c.material.metallic > c.hardLimits.maxMetallic || c.material.roughnessMin < 0.85f ||
+            c.material.roughnessMax > 1f || c.material.roughnessMin > c.material.roughnessMax || c.material.wetness != 0f)
+            throw new InvalidOperationException("WornPathB dry-soil PBR contract is physically implausible.");
+        AssertNear(c.material.macroTileMeters, MacroTileM, 0.001f, "macro tile");
+        AssertNear(c.material.detailTileMeters, DetailTileM, 0.001f, "detail tile");
+        Need(c.weathering.causes, "weathering.causes"); Need(c.weathering.forbidden, "weathering.forbidden");
+        Need(c.lodPolicy.lod0, "lod0"); Need(c.lodPolicy.lod1, "lod1"); Need(c.lodPolicy.lod2, "lod2");
+        Need(c.lodPolicy.lod3, "lod3"); Need(c.lodPolicy.transitionPolicy, "LOD transitionPolicy");
+        if (c.evidencePlan == null || c.evidencePlan.Length < 4 || c.criticalFailPrevention == null || c.criticalFailPrevention.Length < 7)
+            throw new InvalidOperationException("WornPathB contract lacks required rendered-evidence/critical-fail plans.");
     }
 
     private static void ApplyCurbOpening()
     {
         for (int i = 0; i < CurbCount; i++)
         {
-            GameObject go = FindSceneObject(CurbPrefix + i.ToString("00"));
-            if (go == null)
-                throw new InvalidOperationException($"Expected ParkPathEast curb module missing: {CurbPrefix}{i:00}");
-            MeshRenderer renderer = go.GetComponent<MeshRenderer>();
-            if (renderer == null)
-                throw new InvalidOperationException($"ParkPathEast curb module has no MeshRenderer: {go.name}");
-            renderer.enabled = i < OpeningFirstIndex || i > OpeningLastIndex;
-            EditorUtility.SetDirty(renderer);
+            MeshRenderer mr = RequireRenderer(CurbPrefix + i.ToString("00")) as MeshRenderer;
+            if (mr == null) throw new InvalidOperationException($"ParkPathEast curb {i} is not a MeshRenderer.");
+            mr.enabled = i < OpeningFirst || i > OpeningLast;
+            EditorUtility.SetDirty(mr);
         }
     }
 
-    private static void ValidateCurbOpening(TransitionContract contract)
+    private static void ValidateCurbOpening(Contract c)
     {
         for (int i = 0; i < CurbCount; i++)
         {
-            GameObject go = FindSceneObject(CurbPrefix + i.ToString("00"));
-            if (go == null)
-                throw new InvalidOperationException($"Expected ParkPathEast curb module missing: {CurbPrefix}{i:00}");
-            MeshRenderer renderer = go.GetComponent<MeshRenderer>();
-            MeshFilter filter = go.GetComponent<MeshFilter>();
-            if (renderer == null || filter == null || filter.sharedMesh == null)
-                throw new InvalidOperationException($"ParkPathEast curb module is structurally incomplete: {go.name}");
-            bool shouldRender = i < OpeningFirstIndex || i > OpeningLastIndex;
-            if (renderer.enabled != shouldRender)
-                throw new InvalidOperationException($"ParkPathEast curb module visibility drift at index {i}.");
-            if (shouldRender && !filter.sharedMesh.name.StartsWith("GM_HD_", StringComparison.Ordinal))
-                throw new InvalidOperationException($"Visible ParkPathEast curb module {i} reverted to primitive mesh {filter.sharedMesh.name}.");
+            Renderer r = RequireRenderer(CurbPrefix + i.ToString("00"));
+            bool visible = i < OpeningFirst || i > OpeningLast;
+            if (r.enabled != visible) throw new InvalidOperationException($"ParkPathEast curb visibility drift at {i}.");
+            MeshFilter mf = r.GetComponent<MeshFilter>();
+            if (mf == null || mf.sharedMesh == null || (visible && !mf.sharedMesh.name.StartsWith("GM_HD_", StringComparison.Ordinal)))
+                throw new InvalidOperationException($"ParkPathEast curb {i} missing authored mesh.");
         }
-
-        Renderer first = RequireRenderer(CurbPrefix + OpeningFirstIndex.ToString("00"));
-        Renderer second = RequireRenderer(CurbPrefix + OpeningLastIndex.ToString("00"));
-        Renderer previous = RequireRenderer(CurbPrefix + PreviousCurbIndex.ToString("00"));
-        Renderer next = RequireRenderer(CurbPrefix + NextCurbIndex.ToString("00"));
-        AssertNear(first.bounds.center.z, contract.dimensions.firstOpeningModuleCenterZM, PositionTolerance, "first opening module center Z");
-        AssertNear(second.bounds.center.z, contract.dimensions.lastOpeningModuleCenterZM, PositionTolerance, "last opening module center Z");
-
-        float openMin = previous.bounds.max.z;
-        float openMax = next.bounds.min.z;
-        float opening = openMax - openMin;
-        AssertNear(openMin, contract.dimensions.curbOpeningMinZM, PositionTolerance, "curb opening min Z");
-        AssertNear(openMax, contract.dimensions.curbOpeningMaxZM, PositionTolerance, "curb opening max Z");
-        AssertNear(opening, contract.dimensions.curbOpeningWidthM, 0.024f, "curb opening measured width");
+        Renderer first = RequireRenderer(CurbPrefix + "26");
+        Renderer last = RequireRenderer(CurbPrefix + "27");
+        Renderer before = RequireRenderer(CurbPrefix + "25");
+        Renderer after = RequireRenderer(CurbPrefix + "28");
+        AssertNear(first.bounds.center.z, c.dimensions.firstOpeningModuleCenterZM, PosTol, "opening module 26 center");
+        AssertNear(last.bounds.center.z, c.dimensions.lastOpeningModuleCenterZM, PosTol, "opening module 27 center");
+        AssertNear(before.bounds.max.z, c.dimensions.curbOpeningMinZM, PosTol, "opening min Z");
+        AssertNear(after.bounds.min.z, c.dimensions.curbOpeningMaxZM, PosTol, "opening max Z");
+        AssertNear(after.bounds.min.z - before.bounds.max.z, c.dimensions.curbOpeningWidthM, 0.024f, "measured curb opening");
     }
 
-    private static Mesh EnsureMesh(int lod, int longitudinalSegments, int lateralCount, TransitionContract contract)
+    private static Mesh EnsureMesh(int lod, int along, int crossCount, Contract c)
     {
         string path = $"{MeshRoot}/GM_HD_Interface_WornPathB_LOD{lod}.asset";
         Mesh mesh = AssetDatabase.LoadAssetAtPath<Mesh>(path);
         if (mesh == null)
         {
             mesh = new Mesh();
-            mesh.name = $"GM_HD_Interface_WornPathB_LOD{lod}";
             AssetDatabase.CreateAsset(mesh, path);
         }
-        else
-        {
-            mesh.Clear();
-            mesh.name = $"GM_HD_Interface_WornPathB_LOD{lod}";
-        }
+        else mesh.Clear();
+        mesh.name = $"GM_HD_Interface_WornPathB_LOD{lod}";
 
-        float[] stations = lateralCount == 7
-            ? new[] { -1f, -0.78f, -0.52f, 0f, 0.52f, 0.78f, 1f }
-            : new[] { -1f, -0.62f, 0f, 0.62f, 1f };
-        var vertices = new List<Vector3>((longitudinalSegments + 1) * stations.Length);
-        var uv = new List<Vector2>(vertices.Capacity);
-        var triangles = new List<int>(longitudinalSegments * (stations.Length - 1) * 6);
-
-        for (int z = 0; z <= longitudinalSegments; z++)
+        float[] stations = crossCount == 7 ?
+            new[] { -1f, -0.78f, -0.52f, 0f, 0.52f, 0.78f, 1f } :
+            new[] { -1f, -0.62f, 0f, 0.62f, 1f };
+        var v = new List<Vector3>((along + 1) * stations.Length);
+        var uv = new List<Vector2>(v.Capacity);
+        var tri = new List<int>(along * (stations.Length - 1) * 6);
+        for (int iz = 0; iz <= along; iz++)
         {
-            float t = z / (float)longitudinalSegments;
+            float t = iz / (float)along;
             Vector3 center = Bezier(t);
-            Vector3 tangent = BezierTangent(t);
-            tangent.y = 0f;
-            if (tangent.sqrMagnitude < 0.000001f)
-                throw new InvalidOperationException("WornPathB spline produced a degenerate tangent.");
+            Vector3 tangent = BezierTangent(t); tangent.y = 0f;
+            if (tangent.sqrMagnitude < 0.000001f) throw new InvalidOperationException("Degenerate WornPathB spline tangent.");
             tangent.Normalize();
             Vector3 lateral = new Vector3(-tangent.z, 0f, tangent.x);
-            float width = WidthAt(t, contract);
-            float centerTop = CenterTopAt(t, contract);
-            float outerTop = OuterTopAt(t, contract);
-
-            for (int x = 0; x < stations.Length; x++)
+            float width = WidthAt(t, c);
+            float centerY = CenterTopAt(t, c);
+            float outerY = OuterTopAt(t, c);
+            for (int ix = 0; ix < stations.Length; ix++)
             {
-                float s = stations[x];
-                float a = Mathf.Abs(s);
-                float y = centerTop;
-                if (a > 0.52f)
-                {
-                    float edgeBlend = Mathf.SmoothStep(0f, 1f, Mathf.InverseLerp(0.52f, 1f, a));
-                    y = Mathf.Lerp(centerTop, outerTop, edgeBlend);
-                }
+                float s = stations[ix], abs = Mathf.Abs(s), y = centerY;
+                if (abs > 0.52f)
+                    y = Mathf.Lerp(centerY, outerY, Mathf.SmoothStep(0f, 1f, Mathf.InverseLerp(0.52f, 1f, abs)));
                 else
-                {
-                    float tread = 1f - Mathf.Clamp01(a / 0.52f);
-                    y -= contract.dimensions.centerWearDepressionM * tread * Mathf.Sin(Mathf.PI * Mathf.Clamp01(t * 1.15f));
-                }
-
-                // Millimetre-scale long-wave settlement follows the walking direction. It is geometry,
-                // not a painted highlight, and fades at the entry/terminal interfaces.
-                float settleEnvelope = Mathf.Sin(Mathf.PI * t);
-                y += 0.0012f * Mathf.Sin(t * Mathf.PI * 5.0f + s * 0.7f) * settleEnvelope * (1f - 0.35f * a);
-
-                Vector3 p = center + lateral * (0.5f * width * s);
-                p.y = y;
-                vertices.Add(p);
-                uv.Add(new Vector2(p.x, p.z));
+                    y -= c.dimensions.centerWearDepressionM * (1f - Mathf.Clamp01(abs / 0.52f)) *
+                         Mathf.Sin(Mathf.PI * Mathf.Clamp01(t * 1.15f));
+                y += 0.0012f * Mathf.Sin(t * Mathf.PI * 5f + s * 0.7f) * Mathf.Sin(Mathf.PI * t) * (1f - 0.35f * abs);
+                Vector3 p = center + lateral * (0.5f * width * s); p.y = y;
+                v.Add(p); uv.Add(new Vector2(p.x, p.z));
             }
         }
-
         int row = stations.Length;
-        for (int z = 0; z < longitudinalSegments; z++)
+        for (int iz = 0; iz < along; iz++)
         {
-            int a0 = z * row;
-            int b0 = (z + 1) * row;
-            for (int x = 0; x < row - 1; x++)
+            int a0 = iz * row, n0 = (iz + 1) * row;
+            for (int ix = 0; ix < row - 1; ix++)
             {
-                int a = a0 + x;
-                int b = a0 + x + 1;
-                int c = b0 + x;
-                int d = b0 + x + 1;
-                // Winding selected for upward-facing normals in Unity's left-handed scene convention.
-                triangles.Add(a);
-                triangles.Add(c);
-                triangles.Add(b);
-                triangles.Add(b);
-                triangles.Add(c);
-                triangles.Add(d);
+                int a = a0 + ix, b = a + 1, c0 = n0 + ix, d = c0 + 1;
+                // Cross(lateral, forward) points +Y, so these triangles generate upward-facing ground normals.
+                tri.Add(a); tri.Add(b); tri.Add(c0);
+                tri.Add(b); tri.Add(d); tri.Add(c0);
             }
         }
-
-        mesh.SetVertices(vertices);
-        mesh.SetUVs(0, uv);
-        mesh.SetTriangles(triangles, 0, true);
-        mesh.RecalculateNormals();
-        mesh.RecalculateTangents();
-        mesh.RecalculateBounds();
+        mesh.SetVertices(v); mesh.SetUVs(0, uv); mesh.SetTriangles(tri, 0, true);
+        mesh.RecalculateNormals(); mesh.RecalculateTangents(); mesh.RecalculateBounds();
+        ValidateUpwardSurface(mesh, lod);
         EditorUtility.SetDirty(mesh);
         return mesh;
     }
 
-    private static Material EnsureMaterial(Material source, TransitionContract contract)
+    private static void ValidateUpwardSurface(Mesh mesh, int lod)
     {
-        Material material = AssetDatabase.LoadAssetAtPath<Material>(MaterialPath);
-        if (material == null)
-        {
-            material = new Material(source) { name = "PBR_WornPathB_Transition" };
-            AssetDatabase.CreateAsset(material, MaterialPath);
-        }
-        else
-        {
-            material.CopyPropertiesFromMaterial(source);
-            material.shader = source.shader;
-            material.name = "PBR_WornPathB_Transition";
-        }
-
-        if (material.HasProperty("_Metallic")) material.SetFloat("_Metallic", 0f);
-        if (material.HasProperty("_Glossiness")) material.SetFloat("_Glossiness", 0.06f);
-        if (material.HasProperty("_BumpScale")) material.SetFloat("_BumpScale", contract.material.normalScale);
-        if (material.HasProperty("_DetailNormalMapScale")) material.SetFloat("_DetailNormalMapScale", 1f);
-        if (material.HasProperty("_EmissionColor")) material.SetColor("_EmissionColor", Color.black);
-        material.DisableKeyword("_EMISSION");
-
-        SetMetricTextureTransform(material, "_MainTex", MacroTileMeters);
-        SetMetricTextureTransform(material, "_BumpMap", MacroTileMeters);
-        SetMetricTextureTransform(material, "_MetallicGlossMap", MacroTileMeters);
-        SetMetricTextureTransform(material, "_DetailAlbedoMap", DetailTileMeters);
-        SetMetricTextureTransform(material, "_DetailNormalMap", DetailTileMeters);
-
-        EditorUtility.SetDirty(material);
-        return material;
+        Vector3[] normals = mesh.normals;
+        if (normals == null || normals.Length != mesh.vertexCount)
+            throw new InvalidOperationException($"WornPathB LOD{lod} normals are missing.");
+        float minY = 1f, meanY = 0f;
+        for (int i = 0; i < normals.Length; i++) { minY = Mathf.Min(minY, normals[i].y); meanY += normals[i].y; }
+        meanY /= Mathf.Max(1, normals.Length);
+        if (minY < 0.55f || meanY < 0.80f)
+            throw new InvalidOperationException($"WornPathB LOD{lod} has inverted/over-steep surface normals: minY={minY:F3}, meanY={meanY:F3}.");
     }
 
-    private static void ValidateMaterial(Material material, TransitionContract contract)
+    private static Material EnsureMaterial(Material source, Contract c)
     {
-        if (material == null)
-            throw new InvalidOperationException("WornPathB transition material is missing.");
-        if (material.shader == null || material.shader.name != "Standard")
-            throw new InvalidOperationException("WornPathB transition must use the Standard PBR shader in this benchmark.");
-        if (material.HasProperty("_Metallic") && material.GetFloat("_Metallic") > contract.hardLimits.maxMetallic)
-            throw new InvalidOperationException("WornPathB transition has materially impossible metallic response.");
-        if (material.IsKeywordEnabled("_EMISSION"))
-            throw new InvalidOperationException("WornPathB dry soil may not use emissive/baked-light output.");
-        if (material.GetTexture("_MainTex") == null || material.GetTexture("_BumpMap") == null ||
-            material.GetTexture("_MetallicGlossMap") == null || material.GetTexture("_DetailAlbedoMap") == null ||
-            material.GetTexture("_DetailNormalMap") == null)
-            throw new InvalidOperationException("WornPathB transition material is missing required macro/detail PBR textures.");
-
-        AssertTextureScale(material, "_MainTex", 1f / MacroTileMeters, contract.hardLimits.maxUvScaleError);
-        AssertTextureScale(material, "_BumpMap", 1f / MacroTileMeters, contract.hardLimits.maxUvScaleError);
-        AssertTextureScale(material, "_MetallicGlossMap", 1f / MacroTileMeters, contract.hardLimits.maxUvScaleError);
-        AssertTextureScale(material, "_DetailAlbedoMap", 1f / DetailTileMeters, contract.hardLimits.maxUvScaleError);
-        AssertTextureScale(material, "_DetailNormalMap", 1f / DetailTileMeters, contract.hardLimits.maxUvScaleError);
-        if (material.HasProperty("_BumpScale"))
-            AssertNear(material.GetFloat("_BumpScale"), contract.material.normalScale, 0.02f, "soil normal scale");
+        Material m = AssetDatabase.LoadAssetAtPath<Material>(MaterialPath);
+        if (m == null) { m = new Material(source); AssetDatabase.CreateAsset(m, MaterialPath); }
+        else { m.CopyPropertiesFromMaterial(source); m.shader = source.shader; }
+        m.name = "PBR_WornPathB_Transition";
+        if (m.HasProperty("_Metallic")) m.SetFloat("_Metallic", 0f);
+        if (m.HasProperty("_Glossiness")) m.SetFloat("_Glossiness", 0.06f);
+        if (m.HasProperty("_BumpScale")) m.SetFloat("_BumpScale", c.material.normalScale);
+        if (m.HasProperty("_DetailNormalMapScale")) m.SetFloat("_DetailNormalMapScale", 1f);
+        if (m.HasProperty("_EmissionColor")) m.SetColor("_EmissionColor", Color.black);
+        m.DisableKeyword("_EMISSION");
+        Metric(m, "_MainTex", MacroTileM); Metric(m, "_BumpMap", MacroTileM); Metric(m, "_MetallicGlossMap", MacroTileM);
+        Metric(m, "_DetailAlbedoMap", DetailTileM); Metric(m, "_DetailNormalMap", DetailTileM);
+        EditorUtility.SetDirty(m); return m;
     }
 
-    private static void SetMetricTextureTransform(Material material, string property, float tileMeters)
+    private static void ValidateMaterial(Material m, Contract c)
     {
-        if (!material.HasProperty(property)) return;
-        float scale = 1f / tileMeters;
-        material.SetTextureScale(property, new Vector2(scale, scale));
-        material.SetTextureOffset(property, Vector2.zero);
+        if (m == null || m.shader == null || m.shader.name != "Standard") throw new InvalidOperationException("WornPathB PBR material/shader invalid.");
+        if (m.HasProperty("_Metallic") && m.GetFloat("_Metallic") > c.hardLimits.maxMetallic) throw new InvalidOperationException("Metallic soil is forbidden.");
+        if (m.IsKeywordEnabled("_EMISSION")) throw new InvalidOperationException("Emissive/baked-light soil is forbidden.");
+        string[] textures = { "_MainTex", "_BumpMap", "_MetallicGlossMap", "_DetailAlbedoMap", "_DetailNormalMap" };
+        if (textures.Any(x => m.GetTexture(x) == null)) throw new InvalidOperationException("WornPathB macro/detail PBR texture set incomplete.");
+        Scale(m, "_MainTex", 1f / MacroTileM, c.hardLimits.maxUvScaleError); Scale(m, "_BumpMap", 1f / MacroTileM, c.hardLimits.maxUvScaleError);
+        Scale(m, "_MetallicGlossMap", 1f / MacroTileM, c.hardLimits.maxUvScaleError); Scale(m, "_DetailAlbedoMap", 1f / DetailTileM, c.hardLimits.maxUvScaleError);
+        Scale(m, "_DetailNormalMap", 1f / DetailTileM, c.hardLimits.maxUvScaleError);
     }
 
-    private static void AssertTextureScale(Material material, string property, float expected, float tolerance)
+    private static void Metric(Material m, string prop, float tileM)
     {
-        Vector2 scale = material.GetTextureScale(property);
-        if (Mathf.Abs(scale.x - expected) > tolerance || Mathf.Abs(scale.y - expected) > tolerance)
-            throw new InvalidOperationException(
-                $"WornPathB {property} metric scale drift: {scale}; expected ({expected:F5},{expected:F5}).");
+        if (!m.HasProperty(prop)) return;
+        float s = 1f / tileM; m.SetTextureScale(prop, new Vector2(s, s)); m.SetTextureOffset(prop, Vector2.zero);
     }
-
-    private static float WidthAt(float t, TransitionContract contract)
+    private static void Scale(Material m, string prop, float expected, float tol)
     {
-        if (t <= 0.18f)
-            return Mathf.Lerp(contract.dimensions.mouthWidthM, contract.dimensions.midWidthM,
-                Mathf.SmoothStep(0f, 1f, t / 0.18f));
-        if (t <= 0.68f)
-            return contract.dimensions.midWidthM;
-        return Mathf.Lerp(contract.dimensions.midWidthM, contract.dimensions.terminalWidthM,
-            Mathf.SmoothStep(0f, 1f, Mathf.InverseLerp(0.68f, 1f, t)));
+        Vector2 s = m.GetTextureScale(prop);
+        if (Mathf.Abs(s.x - expected) > tol || Mathf.Abs(s.y - expected) > tol)
+            throw new InvalidOperationException($"WornPathB {prop} physical UV scale drift: {s}.");
     }
-
-    private static float CenterTopAt(float t, TransitionContract contract)
+    private static float WidthAt(float t, Contract c)
     {
-        float entry = Mathf.SmoothStep(0f, 1f, Mathf.Clamp01(t / 0.18f));
-        float y = Mathf.Lerp(contract.dimensions.pathMouthTopYM, contract.dimensions.compactedCoreTopYM, entry);
-        float terminal = Mathf.SmoothStep(0f, 1f, Mathf.InverseLerp(0.84f, 1f, t));
-        return Mathf.Lerp(y, contract.dimensions.shoulderJoinTopYM + 0.002f, terminal);
+        if (t <= 0.18f) return Mathf.Lerp(c.dimensions.mouthWidthM, c.dimensions.midWidthM, Mathf.SmoothStep(0f, 1f, t / 0.18f));
+        if (t <= 0.68f) return c.dimensions.midWidthM;
+        return Mathf.Lerp(c.dimensions.midWidthM, c.dimensions.terminalWidthM, Mathf.SmoothStep(0f, 1f, Mathf.InverseLerp(0.68f, 1f, t)));
     }
-
-    private static float OuterTopAt(float t, TransitionContract contract)
+    private static float CenterTopAt(float t, Contract c)
     {
-        float entry = Mathf.SmoothStep(0f, 1f, Mathf.Clamp01(t / 0.18f));
-        return Mathf.Lerp(contract.dimensions.pathMouthTopYM, contract.dimensions.shoulderJoinTopYM, entry);
+        float y = Mathf.Lerp(c.dimensions.pathMouthTopYM, c.dimensions.compactedCoreTopYM, Mathf.SmoothStep(0f, 1f, Mathf.Clamp01(t / 0.18f)));
+        return Mathf.Lerp(y, c.dimensions.shoulderJoinTopYM + 0.002f, Mathf.SmoothStep(0f, 1f, Mathf.InverseLerp(0.84f, 1f, t)));
     }
+    private static float OuterTopAt(float t, Contract c) => Mathf.Lerp(c.dimensions.pathMouthTopYM, c.dimensions.shoulderJoinTopYM, Mathf.SmoothStep(0f, 1f, Mathf.Clamp01(t / 0.18f)));
+    private static Vector3 Bezier(float t) { float u = 1f - t; return u*u*u*P0 + 3f*u*u*t*P1 + 3f*u*t*t*P2 + t*t*t*P3; }
+    private static Vector3 BezierTangent(float t) { float u = 1f - t; return 3f*u*u*(P1-P0) + 6f*u*t*(P2-P1) + 3f*t*t*(P3-P2); }
 
-    private static Vector3 Bezier(float t)
+    private static Contract LoadContract()
     {
-        float u = 1f - t;
-        return u * u * u * P0 + 3f * u * u * t * P1 + 3f * u * t * t * P2 + t * t * t * P3;
+        Contract c = JsonUtility.FromJson<Contract>(File.ReadAllText(ContractPath));
+        if (c == null) throw new InvalidOperationException("WornPathB contract parse failed.");
+        return c;
     }
-
-    private static Vector3 BezierTangent(float t)
-    {
-        float u = 1f - t;
-        return 3f * u * u * (P1 - P0) + 6f * u * t * (P2 - P1) + 3f * t * t * (P3 - P2);
-    }
-
-    private static TransitionContract LoadContract()
-    {
-        TransitionContract contract = JsonUtility.FromJson<TransitionContract>(File.ReadAllText(ContractPath));
-        if (contract == null)
-            throw new InvalidOperationException("WornPathB transition contract could not be parsed.");
-        return contract;
-    }
-
-    private static void RequireQualityScene()
+    private static void RequireScene()
     {
         if (!EditorSceneManager.GetActiveScene().IsValid() || EditorSceneManager.GetActiveScene().path != ScenePath)
             EditorSceneManager.OpenScene(ScenePath, OpenSceneMode.Single);
     }
-
-    private static GameObject FindSceneObject(string name)
-    {
-        return Resources.FindObjectsOfTypeAll<GameObject>()
-            .FirstOrDefault(x => x.scene.IsValid() && x.name == name);
-    }
-
+    private static GameObject FindSceneObject(string name) => Resources.FindObjectsOfTypeAll<GameObject>().FirstOrDefault(x => x.scene.IsValid() && x.name == name);
     private static Renderer RequireRenderer(string name)
     {
-        GameObject go = FindSceneObject(name);
-        if (go == null)
-            throw new InvalidOperationException($"Required scene object missing: {name}");
-        Renderer renderer = go.GetComponent<Renderer>();
-        if (renderer == null)
-            throw new InvalidOperationException($"Required Renderer missing: {name}");
-        return renderer;
+        GameObject go = FindSceneObject(name); Renderer r = go == null ? null : go.GetComponent<Renderer>();
+        if (r == null) throw new InvalidOperationException($"Required Renderer missing: {name}"); return r;
     }
-
-    private static void RequireIdentityWorldTransform(Transform transform, string label)
+    private static void RequireIdentityWorld(Transform t, string label)
     {
-        if (transform.position.sqrMagnitude > 0.000001f || Quaternion.Angle(transform.rotation, Quaternion.identity) > 0.01f ||
-            (transform.lossyScale - Vector3.one).magnitude > 0.0001f)
-            throw new InvalidOperationException($"{label} must retain identity world transform for metric world-UV interface geometry.");
+        if (t.position.sqrMagnitude > 0.000001f || Quaternion.Angle(t.rotation, Quaternion.identity) > 0.01f || (t.lossyScale - Vector3.one).magnitude > 0.0001f)
+            throw new InvalidOperationException($"{label} must retain identity world transform for metric interface geometry.");
     }
-
-    private static void AssertNear(float actual, float expected, float tolerance, string label)
+    private static void AssertNear(float a, float e, float tol, string label)
     {
-        if (Mathf.Abs(actual - expected) > tolerance)
-            throw new InvalidOperationException($"{label} drift: {actual:F4} m/code; expected {expected:F4} ± {tolerance:F4}.");
+        if (Mathf.Abs(a-e) > tol) throw new InvalidOperationException($"{label} drift: {a:F4}; expected {e:F4} ± {tol:F4}.");
     }
+    private static void Need(string s, string label) { if (string.IsNullOrWhiteSpace(s)) throw new InvalidOperationException($"WornPathB contract missing {label}."); }
 
-    private static void RequireText(string value, string label)
+    [Serializable] private sealed class Contract
     {
-        if (string.IsNullOrWhiteSpace(value))
-            throw new InvalidOperationException($"WornPathB contract missing {label}.");
+        public string schemaVersion, visualFidelityStatus, targetPeriod, targetRegion; public bool runtimeRenderVerified; public int visualFidelityPointsAwarded;
+        public SourceAudit sourceAudit; public Assembly assembly; public Dimensions dimensions; public MaterialSpec material; public Weathering weathering; public LodPolicy lodPolicy; public HardLimits hardLimits;
+        public string[] evidencePlan, criticalFailPrevention;
     }
-
-    [Serializable] private sealed class TransitionContract
+    [Serializable] private sealed class SourceAudit { public float sourceWidthM, sourceLengthM, sourceMinXM, sourceMaxXM, sourceMinZM, sourceMaxZM, sourceTopYM, legacyGrassGapToParkCurbM; public string visualRisk; }
+    [Serializable] private sealed class Assembly { public string[] components; public string manufacture, mounting, interfacesGapsSeals, orientationExposure, aging, geometryVsMaterial; }
+    [Serializable] private sealed class Dimensions
     {
-        public string schemaVersion;
-        public string visualFidelityStatus;
-        public string targetPeriod;
-        public string targetRegion;
-        public bool runtimeRenderVerified;
-        public int visualFidelityPointsAwarded;
-        public SourceAudit sourceAudit;
-        public AssemblySpec assembly;
-        public DimensionSpec dimensions;
-        public MaterialSpec material;
-        public WeatheringSpec weathering;
-        public LodPolicy lodPolicy;
-        public HardLimits hardLimits;
-        public string[] evidencePlan;
-        public string[] criticalFailPrevention;
+        public float grassTopYM, parkPavingTopYM, parkPathEastEdgeXM; public int curbOpeningFirstIndex, curbOpeningLastIndex;
+        public float firstOpeningModuleCenterZM, lastOpeningModuleCenterZM, curbOpeningMinZM, curbOpeningMaxZM, curbOpeningWidthM;
+        public float mouthCenterXM, mouthCenterZM, pathMouthTopYM, mouthWidthM, midWidthM, terminalCenterXM, terminalCenterZM, terminalWidthM;
+        public float compactedCoreTopYM, compactedCoreThicknessM, shoulderJoinTopYM, centerWearDepressionM;
     }
-
-    [Serializable] private sealed class SourceAudit
-    {
-        public float sourceWidthM;
-        public float sourceLengthM;
-        public float sourceMinXM;
-        public float sourceMaxXM;
-        public float sourceMinZM;
-        public float sourceMaxZM;
-        public float sourceTopYM;
-        public float legacyGrassGapToParkCurbM;
-        public string visualRisk;
-    }
-
-    [Serializable] private sealed class AssemblySpec
-    {
-        public string[] components;
-        public string manufacture;
-        public string mounting;
-        public string interfacesGapsSeals;
-        public string orientationExposure;
-        public string aging;
-        public string geometryVsMaterial;
-    }
-
-    [Serializable] private sealed class DimensionSpec
-    {
-        public float grassTopYM;
-        public float parkPavingTopYM;
-        public float parkPathEastEdgeXM;
-        public int curbOpeningFirstIndex;
-        public int curbOpeningLastIndex;
-        public float firstOpeningModuleCenterZM;
-        public float lastOpeningModuleCenterZM;
-        public float curbOpeningMinZM;
-        public float curbOpeningMaxZM;
-        public float curbOpeningWidthM;
-        public float mouthCenterXM;
-        public float mouthCenterZM;
-        public float pathMouthTopYM;
-        public float mouthWidthM;
-        public float midWidthM;
-        public float terminalCenterXM;
-        public float terminalCenterZM;
-        public float terminalWidthM;
-        public float compactedCoreTopYM;
-        public float compactedCoreThicknessM;
-        public float shoulderJoinTopYM;
-        public float centerWearDepressionM;
-    }
-
     [Serializable] private sealed class MaterialSpec
     {
-        public string family;
-        public string finish;
-        public float albedoMin;
-        public float albedoMax;
-        public float roughnessMin;
-        public float roughnessMax;
-        public float metallic;
-        public float specularF0;
-        public float normalScale;
-        public string microstructure;
-        public float wetness;
-        public string uvAging;
-        public string angularFresnelResponse;
-        public float macroTileMeters;
-        public float detailTileMeters;
+        public string family, finish, microstructure, uvAging, angularFresnelResponse; public float albedoMin, albedoMax, roughnessMin, roughnessMax, metallic, specularF0, normalScale, wetness, macroTileMeters, detailTileMeters;
     }
-
-    [Serializable] private sealed class WeatheringSpec
-    {
-        public string causes;
-        public string forbidden;
-    }
-
-    [Serializable] private sealed class LodPolicy
-    {
-        public string lod0;
-        public string lod1;
-        public string lod2;
-        public string lod3;
-        public string transitionPolicy;
-    }
-
-    [Serializable] private sealed class HardLimits
-    {
-        public float maxMetallic;
-        public float maxUvScaleError;
-        public float maxLodBoundsCenterDriftM;
-        public float maxLodBoundsSizeDriftM;
-    }
+    [Serializable] private sealed class Weathering { public string causes, forbidden; }
+    [Serializable] private sealed class LodPolicy { public string lod0, lod1, lod2, lod3, transitionPolicy; }
+    [Serializable] private sealed class HardLimits { public float maxMetallic, maxUvScaleError, maxLodBoundsCenterDriftM, maxLodBoundsSizeDriftM; }
 }
 
 public sealed class QualityBlockGroundWornPathBTransitionManifest : MonoBehaviour
 {
-    [SerializeField] private int openingFirstIndex;
-    [SerializeField] private int openingLastIndex;
-    [SerializeField] private float curbOpeningWidthM;
-    [SerializeField] private float mouthBelowPavingM;
-    [SerializeField] private float compactedCoreAboveGrassM;
-    [SerializeField] private float shoulderJoinAboveGrassM;
-    [SerializeField] private bool sourceRendererDisabled;
-    [SerializeField] private bool sourceColliderPreserved;
-    [SerializeField] private bool visualCorrectionColliderFree;
-
-    public int OpeningFirstIndex => openingFirstIndex;
-    public int OpeningLastIndex => openingLastIndex;
-    public float CurbOpeningWidthM => curbOpeningWidthM;
-    public float MouthBelowPavingM => mouthBelowPavingM;
-    public float CompactedCoreAboveGrassM => compactedCoreAboveGrassM;
-    public float ShoulderJoinAboveGrassM => shoulderJoinAboveGrassM;
-    public bool SourceRendererDisabled => sourceRendererDisabled;
-    public bool SourceColliderPreserved => sourceColliderPreserved;
-    public bool VisualCorrectionColliderFree => visualCorrectionColliderFree;
-
-    public void Configure(int firstIndex, int lastIndex, float openingWidth, float mouthBelowPaving,
-        float coreAboveGrass, float shoulderAboveGrass, bool rendererDisabled, bool colliderPreserved,
-        bool correctionColliderFree)
+    [SerializeField] private int openingFirstIndex, openingLastIndex;
+    [SerializeField] private float curbOpeningWidthM, mouthBelowPavingM, compactedCoreAboveGrassM, shoulderJoinAboveGrassM;
+    [SerializeField] private bool sourceRendererDisabled, sourceColliderPreserved, visualCorrectionColliderFree;
+    public int OpeningFirstIndex => openingFirstIndex; public int OpeningLastIndex => openingLastIndex;
+    public float CurbOpeningWidthM => curbOpeningWidthM; public float MouthBelowPavingM => mouthBelowPavingM;
+    public bool SourceRendererDisabled => sourceRendererDisabled; public bool SourceColliderPreserved => sourceColliderPreserved; public bool VisualCorrectionColliderFree => visualCorrectionColliderFree;
+    public void Configure(int first, int last, float opening, float mouthStep, float coreAbove, float shoulderAbove, bool rendererOff, bool colliderKept, bool noVisualCollider)
     {
-        openingFirstIndex = firstIndex;
-        openingLastIndex = lastIndex;
-        curbOpeningWidthM = openingWidth;
-        mouthBelowPavingM = mouthBelowPaving;
-        compactedCoreAboveGrassM = coreAboveGrass;
-        shoulderJoinAboveGrassM = shoulderAboveGrass;
-        sourceRendererDisabled = rendererDisabled;
-        sourceColliderPreserved = colliderPreserved;
-        visualCorrectionColliderFree = correctionColliderFree;
+        openingFirstIndex=first; openingLastIndex=last; curbOpeningWidthM=opening; mouthBelowPavingM=mouthStep; compactedCoreAboveGrassM=coreAbove; shoulderJoinAboveGrassM=shoulderAbove;
+        sourceRendererDisabled=rendererOff; sourceColliderPreserved=colliderKept; visualCorrectionColliderFree=noVisualCollider;
     }
 }

@@ -7,12 +7,10 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 
 /// <summary>
-/// Makes the park/street-furniture construction pass part of the persisted benchmark scene whenever
-/// the existing high-detail ground chain is present. The gate checks machine-readable manufacture/
-/// material metadata, rebuilds the assembly, applies physical-profile refinement, reconstructs the
-/// notice-board weatherproof display case and slide manufactured access/head/runout support path before
-/// explicit LOD renderer rebinding, applies physical-scale microdetail, normalizes printed-notice UVs,
-/// corrects the bench load path, then runs structural/material QA.
+/// Persists the manufactured park/street-furniture state into the benchmark scene. Construction passes
+/// are ordered so new renderers are rebound to LOD sets, shared microdetail is applied, and the final
+/// stainless chute is then replaced with its topology-aware watertight sheet solid so the generic planar
+/// UV rewrite cannot destroy the chute's authored path topology.
 /// </summary>
 [InitializeOnLoad]
 public static class QualityBlockParkFurnitureSaveGate
@@ -22,6 +20,8 @@ public static class QualityBlockParkFurnitureSaveGate
     private const string MicrodetailContractPath = "Assets/QA/park_furniture_microdetail_contract.json";
     private const string SlideInterfaceContractPath = "Assets/QA/slide_access_installation_contract.json";
     private const string SlideLookdevPath = "Assets/QA/slide_access_installation_lookdev.svg";
+    private const string SlideChuteContractPath = "Assets/QA/slide_chute_fabrication_contract.json";
+    private const string SlideChuteLookdevPath = "Assets/QA/slide_chute_fabrication_lookdev.svg";
     private const string BenchInterfaceContractPath = "Assets/QA/bench_seat_construction_interface_contract.json";
     private const string BenchLookdevPath = "Assets/QA/bench_seat_construction_lookdev.svg";
     private const string NoticeBoardContractPath = "Assets/QA/notice_board_display_case_contract.json";
@@ -49,31 +49,36 @@ public static class QualityBlockParkFurnitureSaveGate
             QualityBlockParkFurnitureUpgrade.BuildAndApply();
             QualityBlockParkFurniturePhysicalRefinement.ApplyAndValidate();
 
-            // Build benchmark-visible subassemblies before LOD rebind so their new renderers are captured
-            // by the corresponding LOD0/1/2/3 renderer sets instead of becoming all-distance renderers.
+            // Benchmark-visible subassemblies exist before rebind so their renderers join the matching LOD.
             QualityBlockNoticeBoardDisplayCaseQA.ApplyToOpenScene();
             QualityBlockSlideAccessInstallationQA.ApplyToOpenScene();
             QualityBlockParkFurnitureLodRebind.RebindAndValidate();
 
-            // The shared furniture microdetail pass rewrites generated meshes to metre-space planar UVs.
-            // Printed notices deliberately use one full unique sheet texture each, so normalize their
-            // per-material tiling immediately afterward instead of allowing metre UVs to crop/repeat print.
+            // Apply shared material microdetail first. The physical-refinement chute still has its legacy
+            // authored-mesh prefix here and is therefore protected from the generic metre-planar rewrite.
+            // Replace it afterwards with the final watertight U-section sheet solid; the existing renderer
+            // remains in the LOD set, while the final mesh keeps longitudinal fabrication UV continuity.
             QualityBlockParkFurnitureMicrodetailUpgrade.BuildAndApply();
+            QualityBlockSlideChuteFabricationQA.ApplyToOpenScene();
             QualityBlockNoticeBoardPrintedUvQA.ApplyAndValidate();
             QualityBlockBenchSeatConstructionInterfaceQA.ApplyToOpenScene();
+
             QualityBlockParkFurnitureUpgrade.ValidateOpenScene();
             QualityBlockParkFurniturePhysicalRefinement.ValidateOpenScene();
             QualityBlockParkFurnitureLodRebind.ValidateOpenScene();
             QualityBlockNoticeBoardDisplayCaseQA.ValidateOpenScene();
             QualityBlockNoticeBoardPrintedUvQA.ValidateOpenScene();
             QualityBlockSlideAccessInstallationQA.ValidateOpenScene();
+            QualityBlockSlideChuteFabricationQA.ValidateOpenScene();
             QualityBlockParkFurnitureMicrodetailUpgrade.Validate();
             QualityBlockBenchSeatConstructionInterfaceQA.ValidateOpenScene();
         }
         catch (Exception ex)
         {
             throw new InvalidOperationException(
-                "Benchmark save blocked: park/street-furniture manufacture, material, physical-profile, notice-board display-case/printed-UV, slide access/support, LOD, microdetail or bench load-path contract failed.", ex);
+                "Benchmark save blocked: park/street-furniture manufacture, material, physical-profile, " +
+                "notice-board display-case/printed-UV, slide access/support, watertight chute fabrication, " +
+                "LOD, microdetail or bench load-path contract failed.", ex);
         }
         finally
         {
@@ -84,25 +89,18 @@ public static class QualityBlockParkFurnitureSaveGate
     [MenuItem("NewTown/QA/Validate Park + Street Furniture Contract")]
     public static void ValidateContract()
     {
-        if (!File.Exists(ContractPath))
-            throw new InvalidOperationException($"Missing required construction/material metadata: {ContractPath}");
-        if (!File.Exists(MicrodetailContractPath))
-            throw new InvalidOperationException($"Missing required park-furniture microdetail metadata: {MicrodetailContractPath}");
-        if (!File.Exists(SlideInterfaceContractPath))
-            throw new InvalidOperationException($"Missing required slide access/support metadata: {SlideInterfaceContractPath}");
-        if (!File.Exists(SlideLookdevPath))
-            throw new InvalidOperationException($"Missing required slide access/support lookdev illustration: {SlideLookdevPath}");
-        if (!File.Exists(BenchInterfaceContractPath))
-            throw new InvalidOperationException($"Missing required bench construction-interface metadata: {BenchInterfaceContractPath}");
-        if (!File.Exists(BenchLookdevPath))
-            throw new InvalidOperationException($"Missing required bench construction lookdev illustration: {BenchLookdevPath}");
-        if (!File.Exists(NoticeBoardContractPath))
-            throw new InvalidOperationException($"Missing required notice-board display-case metadata: {NoticeBoardContractPath}");
-        if (!File.Exists(NoticeBoardLookdevPath))
-            throw new InvalidOperationException($"Missing required notice-board display-case lookdev illustration: {NoticeBoardLookdevPath}");
+        RequireFile(ContractPath, "construction/material metadata");
+        RequireFile(MicrodetailContractPath, "park-furniture microdetail metadata");
+        RequireFile(SlideInterfaceContractPath, "slide access/support metadata");
+        RequireFile(SlideLookdevPath, "slide access/support lookdev illustration");
+        RequireFile(SlideChuteContractPath, "slide chute fabrication metadata");
+        RequireFile(SlideChuteLookdevPath, "slide chute fabrication lookdev illustration");
+        RequireFile(BenchInterfaceContractPath, "bench construction-interface metadata");
+        RequireFile(BenchLookdevPath, "bench construction lookdev illustration");
+        RequireFile(NoticeBoardContractPath, "notice-board display-case metadata");
+        RequireFile(NoticeBoardLookdevPath, "notice-board display-case lookdev illustration");
 
-        string json = File.ReadAllText(ContractPath);
-        string[] requiredTokens =
+        RequireTokens(ContractPath, "Furniture metadata contract", new[]
         {
             "\"slide\"", "\"bench\"", "\"park_lamp\"", "\"notice_board\"",
             "\"albedo_linear_rgb\"", "\"roughness\"", "\"metallic\"",
@@ -110,85 +108,75 @@ public static class QualityBlockParkFurnitureSaveGate
             "\"angularResponse\"", "\"levels\": 4", "\"generatedColliderCount\": 0",
             "\"modeled_chute_thickness_mm\": 2.0", "\"municipal_minimum_chute_thickness_mm\": 1.5",
             "\"visualFidelityPointsAwarded\": 0", "PENDING_UNITY_RUNTIME"
-        };
-        foreach (string token in requiredTokens)
-            if (!json.Contains(token, StringComparison.Ordinal))
-                throw new InvalidOperationException($"Furniture metadata contract missing required token: {token}");
+        });
 
-        string microJson = File.ReadAllText(MicrodetailContractPath);
-        string[] microTokens =
+        RequireTokens(MicrodetailContractPath, "Furniture microdetail metadata contract", new[]
         {
             "\"textureResolution\": 1024", "\"stainless_chute\"", "\"bench_timber\"",
             "\"precast_concrete\"", "\"normalAmplitudeMm\"", "\"physicalTileMeters\"",
             "\"bareMetalMetallicMin\": 0.95", "\"visualFidelityPointsAwarded\": 0",
             "PENDING_UNITY_RUNTIME"
-        };
-        foreach (string token in microTokens)
-            if (!microJson.Contains(token, StringComparison.Ordinal))
-                throw new InvalidOperationException($"Furniture microdetail metadata contract missing required token: {token}");
+        });
 
-        string slideJson = File.ReadAllText(SlideInterfaceContractPath);
-        string[] slideTokens =
+        RequireTokens(SlideInterfaceContractPath, "Slide access/support metadata", new[]
         {
             "\"id\": \"slide_access_installation_interface\"",
-            "\"treadCount\": 10",
-            "\"treadDepth\": 0.18",
-            "\"treadThickness\": 0.0032",
-            "\"treadRise\": 0.19",
-            "\"treadBracketWidth\": 0.06",
-            "\"minimumAccessAngleDegrees\": 50.0",
-            "\"maximumAccessAngleDegrees\": 75.0",
-            "\"maximumStepRiseMetres\": 0.22",
-            "\"minimumTreadDepthMetres\": 0.17",
+            "\"treadCount\": 10", "\"treadDepth\": 0.18", "\"treadThickness\": 0.0032",
+            "\"treadRise\": 0.19", "\"treadBracketWidth\": 0.06",
+            "\"minimumAccessAngleDegrees\": 50.0", "\"maximumAccessAngleDegrees\": 75.0",
+            "\"maximumStepRiseMetres\": 0.22", "\"minimumTreadDepthMetres\": 0.17",
             "\"minimumStringerToTreadLateralClearanceMetres\": 0.015",
             "\"maximumBracketStringerAxisMissMetres\": 0.004",
-            "\"requiredLodCount\": 4",
-            "\"generatedColliderCount\": 0",
-            "\"visualFidelityPointsAwarded\": 0",
-            "PENDING_UNITY_RUNTIME"
-        };
-        foreach (string token in slideTokens)
-            if (!slideJson.Contains(token, StringComparison.Ordinal))
-                throw new InvalidOperationException($"Slide access/support metadata missing required token: {token}");
+            "\"requiredLodCount\": 4", "\"generatedColliderCount\": 0",
+            "\"visualFidelityPointsAwarded\": 0", "PENDING_UNITY_RUNTIME"
+        });
 
-        string benchJson = File.ReadAllText(BenchInterfaceContractPath);
-        string[] benchTokens =
+        RequireTokens(SlideChuteContractPath, "Slide chute fabrication metadata", new[]
         {
-            "\"id\": \"bench_seat_construction_interface\"",
-            "\"slatCount\": 5",
-            "\"steelBearerCenterY\": 0.5165",
-            "\"highDetailSupportCenterY\": 0.214",
-            "\"proxySupportCenterY\": 0.2275",
-            "\"boltHeadCenterY\": 0.583",
-            "\"outerSlatCenterAbsZ\": 0.235",
-            "\"boltEmbedTarget\": 0.002",
-            "\"contactToleranceMetres\": 0.0025",
-            "\"visualFidelityPointsAwarded\": 0",
-            "PENDING_UNITY_RUNTIME"
-        };
-        foreach (string token in benchTokens)
-            if (!benchJson.Contains(token, StringComparison.Ordinal))
-                throw new InvalidOperationException($"Bench construction-interface metadata missing required token: {token}");
+            "\"id\": \"slide_chute_fabricated_sheet_solid\"",
+            "\"chuteWidth\": 0.92", "\"sheetThickness\": 0.002", "\"sideWallHeight\": 0.14",
+            "\"minimumAllowedCurveRadius\": 0.75", "\"lodSegments\": [96, 48, 24, 12]",
+            "\"maximumBoundaryEdgeCount\": 0", "\"maximumNonManifoldEdgeCount\": 0",
+            "\"requiredMaterialName\": \"PBR_SlideStainless\"",
+            "\"visualFidelityPointsAwarded\": 0", "PENDING_UNITY_RUNTIME"
+        });
 
-        string noticeJson = File.ReadAllText(NoticeBoardContractPath);
-        string[] noticeTokens =
+        RequireTokens(BenchInterfaceContractPath, "Bench construction-interface metadata", new[]
+        {
+            "\"id\": \"bench_seat_construction_interface\"", "\"slatCount\": 5",
+            "\"steelBearerCenterY\": 0.5165", "\"highDetailSupportCenterY\": 0.214",
+            "\"proxySupportCenterY\": 0.2275", "\"boltHeadCenterY\": 0.583",
+            "\"outerSlatCenterAbsZ\": 0.235", "\"boltEmbedTarget\": 0.002",
+            "\"contactToleranceMetres\": 0.0025", "\"visualFidelityPointsAwarded\": 0",
+            "PENDING_UNITY_RUNTIME"
+        });
+
+        RequireTokens(NoticeBoardContractPath, "Notice-board display-case metadata", new[]
         {
             "\"id\": \"notice_board_display_case_installation\"",
-            "\"clearCoverThickness\": 0.003",
-            "\"requiredHingeCount\": 3",
-            "\"requiredNoticeCount\": 5",
-            "\"minimumDistinctNoticeMaterialCount\": 3",
-            "\"requiredLodCount\": 4",
-            "\"generatedColliderCount\": 0",
-            "\"visualFidelityPointsAwarded\": 0",
-            "PENDING_UNITY_RUNTIME"
-        };
-        foreach (string token in noticeTokens)
-            if (!noticeJson.Contains(token, StringComparison.Ordinal))
-                throw new InvalidOperationException($"Notice-board display-case metadata missing required token: {token}");
+            "\"clearCoverThickness\": 0.003", "\"requiredHingeCount\": 3",
+            "\"requiredNoticeCount\": 5", "\"minimumDistinctNoticeMaterialCount\": 3",
+            "\"requiredLodCount\": 4", "\"generatedColliderCount\": 0",
+            "\"visualFidelityPointsAwarded\": 0", "PENDING_UNITY_RUNTIME"
+        });
 
         QualityBlockSlideAccessInstallationQA.ValidateContractConfigOnly();
+        QualityBlockSlideChuteFabricationQA.ValidateContractConfigOnly();
         QualityBlockBenchSeatConstructionInterfaceQA.ValidateContractConfigOnly();
         QualityBlockNoticeBoardDisplayCaseQA.ValidateContractConfigOnly();
+    }
+
+    private static void RequireFile(string path, string description)
+    {
+        if (!File.Exists(path))
+            throw new InvalidOperationException($"Missing required {description}: {path}");
+    }
+
+    private static void RequireTokens(string path, string label, string[] requiredTokens)
+    {
+        string json = File.ReadAllText(path);
+        foreach (string token in requiredTokens)
+            if (!json.Contains(token, StringComparison.Ordinal))
+                throw new InvalidOperationException($"{label} missing required token: {token}");
     }
 }

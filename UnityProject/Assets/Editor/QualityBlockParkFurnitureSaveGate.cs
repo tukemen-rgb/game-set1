@@ -9,9 +9,9 @@ using UnityEngine.SceneManagement;
 /// <summary>
 /// Makes the park/street-furniture construction pass part of the persisted benchmark scene whenever
 /// the existing high-detail ground chain is present. The gate checks machine-readable manufacture/
-/// material metadata, rebuilds the assembly, applies physical-profile refinement, rebinds explicit
-/// LOD renderer sets, applies physical-scale microdetail, corrects the bench's manufactured load-path
-/// interfaces, then runs structural/material QA.
+/// material metadata, rebuilds the assembly, applies physical-profile refinement, reconstructs the
+/// slide's manufactured stair/head/runout support path before explicit LOD renderer rebinding, applies
+/// physical-scale microdetail, corrects the bench load path, then runs structural/material QA.
 /// </summary>
 [InitializeOnLoad]
 public static class QualityBlockParkFurnitureSaveGate
@@ -19,6 +19,8 @@ public static class QualityBlockParkFurnitureSaveGate
     private const string ScenePath = "Assets/Scenes/QualityBlock1990s.unity";
     private const string ContractPath = "Assets/QA/park_street_furniture_contract.json";
     private const string MicrodetailContractPath = "Assets/QA/park_furniture_microdetail_contract.json";
+    private const string SlideInterfaceContractPath = "Assets/QA/slide_access_installation_contract.json";
+    private const string SlideLookdevPath = "Assets/QA/slide_access_installation_lookdev.svg";
     private const string BenchInterfaceContractPath = "Assets/QA/bench_seat_construction_interface_contract.json";
     private const string BenchLookdevPath = "Assets/QA/bench_seat_construction_lookdev.svg";
     private static bool applying;
@@ -43,19 +45,25 @@ public static class QualityBlockParkFurnitureSaveGate
             ValidateContract();
             QualityBlockParkFurnitureUpgrade.BuildAndApply();
             QualityBlockParkFurniturePhysicalRefinement.ApplyAndValidate();
+
+            // Build the missing access/load-path before LOD rebind so every new renderer is captured by
+            // the corresponding LOD0/1/2/3 renderer set instead of becoming an all-distance renderer.
+            QualityBlockSlideAccessInstallationQA.ApplyToOpenScene();
             QualityBlockParkFurnitureLodRebind.RebindAndValidate();
+
             QualityBlockParkFurnitureMicrodetailUpgrade.BuildAndApply();
             QualityBlockBenchSeatConstructionInterfaceQA.ApplyToOpenScene();
             QualityBlockParkFurnitureUpgrade.ValidateOpenScene();
             QualityBlockParkFurniturePhysicalRefinement.ValidateOpenScene();
             QualityBlockParkFurnitureLodRebind.ValidateOpenScene();
+            QualityBlockSlideAccessInstallationQA.ValidateOpenScene();
             QualityBlockParkFurnitureMicrodetailUpgrade.Validate();
             QualityBlockBenchSeatConstructionInterfaceQA.ValidateOpenScene();
         }
         catch (Exception ex)
         {
             throw new InvalidOperationException(
-                "Benchmark save blocked: park/street-furniture manufacture, material, physical-profile, LOD, microdetail or bench load-path contract failed.", ex);
+                "Benchmark save blocked: park/street-furniture manufacture, material, physical-profile, slide access/support, LOD, microdetail or bench load-path contract failed.", ex);
         }
         finally
         {
@@ -70,6 +78,10 @@ public static class QualityBlockParkFurnitureSaveGate
             throw new InvalidOperationException($"Missing required construction/material metadata: {ContractPath}");
         if (!File.Exists(MicrodetailContractPath))
             throw new InvalidOperationException($"Missing required park-furniture microdetail metadata: {MicrodetailContractPath}");
+        if (!File.Exists(SlideInterfaceContractPath))
+            throw new InvalidOperationException($"Missing required slide access/support metadata: {SlideInterfaceContractPath}");
+        if (!File.Exists(SlideLookdevPath))
+            throw new InvalidOperationException($"Missing required slide access/support lookdev illustration: {SlideLookdevPath}");
         if (!File.Exists(BenchInterfaceContractPath))
             throw new InvalidOperationException($"Missing required bench construction-interface metadata: {BenchInterfaceContractPath}");
         if (!File.Exists(BenchLookdevPath))
@@ -101,6 +113,27 @@ public static class QualityBlockParkFurnitureSaveGate
             if (!microJson.Contains(token, StringComparison.Ordinal))
                 throw new InvalidOperationException($"Furniture microdetail metadata contract missing required token: {token}");
 
+        string slideJson = File.ReadAllText(SlideInterfaceContractPath);
+        string[] slideTokens =
+        {
+            "\"id\": \"slide_access_installation_interface\"",
+            "\"treadCount\": 10",
+            "\"treadDepth\": 0.18",
+            "\"treadThickness\": 0.0032",
+            "\"treadRise\": 0.19",
+            "\"minimumAccessAngleDegrees\": 50.0",
+            "\"maximumAccessAngleDegrees\": 75.0",
+            "\"maximumStepRiseMetres\": 0.22",
+            "\"minimumTreadDepthMetres\": 0.17",
+            "\"requiredLodCount\": 4",
+            "\"generatedColliderCount\": 0",
+            "\"visualFidelityPointsAwarded\": 0",
+            "PENDING_UNITY_RUNTIME"
+        };
+        foreach (string token in slideTokens)
+            if (!slideJson.Contains(token, StringComparison.Ordinal))
+                throw new InvalidOperationException($"Slide access/support metadata missing required token: {token}");
+
         string benchJson = File.ReadAllText(BenchInterfaceContractPath);
         string[] benchTokens =
         {
@@ -120,6 +153,7 @@ public static class QualityBlockParkFurnitureSaveGate
             if (!benchJson.Contains(token, StringComparison.Ordinal))
                 throw new InvalidOperationException($"Bench construction-interface metadata missing required token: {token}");
 
+        QualityBlockSlideAccessInstallationQA.ValidateContractConfigOnly();
         QualityBlockBenchSeatConstructionInterfaceQA.ValidateContractConfigOnly();
     }
 }

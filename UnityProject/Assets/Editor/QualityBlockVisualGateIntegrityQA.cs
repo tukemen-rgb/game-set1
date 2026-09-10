@@ -67,11 +67,12 @@ public static class QualityBlockVisualGateIntegrityQA
         ValidateCanonicalGate(gate, "visual_fidelity_gate.json");
         ValidateCanonicalIntegrityContract(integrity);
         ValidateCrossFileAgreement(gate, integrity);
+        QualityBlockReviewedVisualEvidenceIntegrityQA.ValidateContractConfigOnly();
 
         Debug.Log(
             "Visual Fidelity Gate integrity valid: exact 92/100 threshold, immutable per-category weights/minima, " +
-            "exact 12 critical defects, native 3840x2160 hero/oblique/grazing evidence, and 100% crops are preserved. " +
-            "This is source-side gate integrity only and awards 0 Visual Fidelity points.");
+            "exact 12 critical defects, native 3840x2160 hero/oblique/grazing evidence, 100% crops, and reviewed-evidence " +
+            "schema hardening are preserved. This is source-side gate integrity only and awards 0 Visual Fidelity points.");
     }
 
     // The legacy unbound evaluator already has a validator in QualityBlockRenderEvidenceProvenanceQA
@@ -81,7 +82,18 @@ public static class QualityBlockVisualGateIntegrityQA
     [MenuItem("NewTown/QA/Evaluate Evidence-Bound 4K Visual Fidelity Gate", true)]
     private static bool ValidateEvidenceBoundVisualGateMenu()
     {
-        return ValidateForMenu("Evaluate Evidence-Bound 4K Visual Fidelity Gate");
+        try
+        {
+            ValidateContract();
+            QualityBlockReviewedVisualEvidenceIntegrityQA.ValidateReviewedEvidence();
+            return true;
+        }
+        catch (Exception ex)
+        {
+            Debug.LogError(
+                $"Evaluate Evidence-Bound 4K Visual Fidelity Gate disabled because gate/review integrity failed: {ex.Message}");
+            return false;
+        }
     }
 
     [MenuItem("NewTown/QA/Prepare Complete Native 4K Review Packet", true)]

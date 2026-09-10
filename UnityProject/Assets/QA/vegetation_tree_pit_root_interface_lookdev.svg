@@ -4,9 +4,9 @@
     <text x="70" y="70" font-size="34" font-weight="700">Vegetation root-zone installation lookdev — source geometry only</text>
     <text x="70" y="108" font-size="20">No visual-fidelity points are implied. Native Unity 3840×2160 oblique/grazing evidence remains required.</text>
 
-    <text x="90" y="175" font-size="27" font-weight="700">PLAN — 2.30 m maintained root-zone opening</text>
-    <circle cx="420" cy="475" r="230" fill="#b79b72" stroke="#6f5a42" stroke-width="3"/>
-    <circle cx="420" cy="475" r="245" fill="none" stroke="#7c7c76" stroke-width="28" stroke-dasharray="116 12"/>
+    <text x="90" y="175" font-size="27" font-weight="700">PLAN — 2.32 m maintained root-zone opening</text>
+    <circle cx="420" cy="475" r="232" fill="#b79b72" stroke="#6f5a42" stroke-width="3"/>
+    <circle cx="420" cy="475" r="247" fill="none" stroke="#7c7c76" stroke-width="28" stroke-dasharray="118 12"/>
     <circle cx="420" cy="475" r="48" fill="#725441" stroke="#4d392d" stroke-width="3"/>
     <g stroke="#725441" stroke-width="22" stroke-linecap="round" opacity="0.9">
       <line x1="420" y1="475" x2="618" y2="410"/>
@@ -17,9 +17,9 @@
       <line x1="420" y1="475" x2="430" y2="270"/>
       <line x1="420" y1="475" x2="585" y2="325"/>
     </g>
-    <circle cx="420" cy="475" r="211" fill="none" stroke="#a43f32" stroke-width="2" stroke-dasharray="8 8"/>
-    <line x1="420" y1="475" x2="650" y2="475" stroke="#202020" stroke-width="2"/>
-    <text x="450" y="460" font-size="19">opening radius 1.15 m</text>
+    <circle cx="420" cy="475" r="213" fill="none" stroke="#a43f32" stroke-width="2" stroke-dasharray="8 8"/>
+    <line x1="420" y1="475" x2="652" y2="475" stroke="#202020" stroke-width="2"/>
+    <text x="450" y="460" font-size="19">opening radius 1.16 m</text>
     <text x="490" y="720" font-size="18">12 precast modules; 150 × 80 mm section; 12 mm dry joint</text>
     <text x="120" y="745" font-size="18">red dashed envelope: conservative root-flare bound + required soil clearance</text>
 

@@ -27,12 +27,14 @@ public sealed class QualityBlockFilmicTonemap : MonoBehaviour
     private Material material;
 
     // Runtime-only capture telemetry. These counters are reset by the authoritative native-4K
-    // review packet immediately before Camera.Render() is invoked for hero/oblique/grazing.
+    // review packet immediately before a guarded still or temporal sequence begins.
     private int renderInvocationCount;
     private int tonemapAppliedInvocationCount;
     private int native4KInvocationCount;
     private int native4KTonemapAppliedCount;
     private int fallbackInvocationCount;
+    private int hdrSourceInvocationCount;
+    private int ldrDestinationInvocationCount;
     private RenderTextureFormat lastSourceFormat = RenderTextureFormat.Default;
     private RenderTextureFormat lastDestinationFormat = RenderTextureFormat.Default;
     private int lastSourceWidth;
@@ -54,6 +56,8 @@ public sealed class QualityBlockFilmicTonemap : MonoBehaviour
     public int Native4KInvocationCount => native4KInvocationCount;
     public int Native4KTonemapAppliedCount => native4KTonemapAppliedCount;
     public int FallbackInvocationCount => fallbackInvocationCount;
+    public int HdrSourceInvocationCount => hdrSourceInvocationCount;
+    public int LdrDestinationInvocationCount => ldrDestinationInvocationCount;
     public RenderTextureFormat LastSourceFormat => lastSourceFormat;
     public RenderTextureFormat LastDestinationFormat => lastDestinationFormat;
     public int LastSourceWidth => lastSourceWidth;
@@ -75,8 +79,7 @@ public sealed class QualityBlockFilmicTonemap : MonoBehaviour
     }
 
     /// <summary>
-    /// Clears runtime-only evidence counters. This must be called immediately before the three
-    /// authoritative native-4K still renders. It does not alter any visual parameter or scene state.
+    /// Clears runtime-only evidence counters. This does not alter any visual parameter or scene state.
     /// </summary>
     public void ResetRuntimeTelemetry()
     {
@@ -85,6 +88,8 @@ public sealed class QualityBlockFilmicTonemap : MonoBehaviour
         native4KInvocationCount = 0;
         native4KTonemapAppliedCount = 0;
         fallbackInvocationCount = 0;
+        hdrSourceInvocationCount = 0;
+        ldrDestinationInvocationCount = 0;
         lastSourceFormat = RenderTextureFormat.Default;
         lastDestinationFormat = RenderTextureFormat.Default;
         lastSourceWidth = 0;
@@ -126,6 +131,8 @@ public sealed class QualityBlockFilmicTonemap : MonoBehaviour
             lastSourceWidth = source.width;
             lastSourceHeight = source.height;
             lastSourceSrgb = source.sRGB;
+            if (IsHdrFormat(source.format))
+                hdrSourceInvocationCount++;
         }
 
         lastDestinationWasNull = destination == null;
@@ -135,6 +142,8 @@ public sealed class QualityBlockFilmicTonemap : MonoBehaviour
             lastDestinationWidth = destination.width;
             lastDestinationHeight = destination.height;
             lastDestinationSrgb = destination.sRGB;
+            if (!IsHdrFormat(destination.format))
+                ldrDestinationInvocationCount++;
         }
         else
         {
@@ -169,6 +178,14 @@ public sealed class QualityBlockFilmicTonemap : MonoBehaviour
         tonemapAppliedInvocationCount++;
         if (native4K)
             native4KTonemapAppliedCount++;
+    }
+
+    private static bool IsHdrFormat(RenderTextureFormat format)
+    {
+        return format == RenderTextureFormat.ARGBHalf ||
+               format == RenderTextureFormat.ARGBFloat ||
+               format == RenderTextureFormat.RGB111110Float ||
+               format == RenderTextureFormat.DefaultHDR;
     }
 
     private void RebuildMaterial()

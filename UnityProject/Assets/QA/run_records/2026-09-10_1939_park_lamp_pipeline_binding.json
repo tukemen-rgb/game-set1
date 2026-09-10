@@ -1,0 +1,82 @@
+{
+  "schemaVersion": "1.0",
+  "runId": "2026-09-10_1939_park_lamp_pipeline_binding",
+  "branch": "gpt/unity-migration",
+  "startHead": "e3b8e547e8158c2fe071c262783ab0a363886ebf",
+  "scope": "Bind the already-authored physical park-lamp installation into the authoritative benchmark save/capture path so source-side lamp construction cannot exist in the repository while the actual prepared scene silently retains the older stacked-cylinder lamp.",
+  "constraints": {
+    "preserveGodot": true,
+    "baseMergePerformed": false,
+    "excludedThemes": [
+      "earthquake",
+      "disaster",
+      "reconstruction"
+    ],
+    "visualFidelityPassClaimed": false
+  },
+  "preflight": {
+    "unityWorkflowRunsOnBranch": 0,
+    "startHeadCommitStatusContexts": 0,
+    "native4KCaptureDirectoryPresentInRepositoryTree": false,
+    "runnerAvailable": false,
+    "action": "No runtime evidence existed, so source/data integration work was permitted."
+  },
+  "finding": {
+    "severity": "HIGH_PIPELINE_INTEGRATION_RISK",
+    "description": "QualityBlockParkLampInstallationQA and its machine-readable construction/material contract existed, but QualityBlockParkFurnitureSaveGate did not call ApplyToOpenScene or ValidateOpenScene, and QualityBlockNative4KReviewPacket did not validate the installed lamp. The normal park rebuild therefore recreated PoleLower/PoleUpper/GroundMoistureBand/Neck/Cap before LOD rebind while the dedicated continuous tapered pole/service-cover/head assembly could remain orphaned from authoritative evidence preparation.",
+    "criticalDefectExposure": [
+      "visible primitive-placeholder-like stacked lamp geometry",
+      "floating/interpenetrating hero geometry at head/service interfaces",
+      "materially impossible or stale lamp material state",
+      "visible LOD pop from unbound generated lamp renderers",
+      "missing required construction/material metadata enforcement in the actual prepared scene"
+    ]
+  },
+  "changes": [
+    {
+      "commit": "bb53f53adc51e31988daba03e707315cdea0305d",
+      "file": "UnityProject/Assets/Editor/QualityBlockParkFurnitureSaveGate.cs",
+      "change": "Require the dedicated lamp contract/lookdev, call ParkLampInstallationQA after PhysicalDiffuser creation and before LOD rebind, run shared microdetail, then fail closed on final lamp validation."
+    },
+    {
+      "commit": "11361e3246379036c03efa78f0ce04137d454b97",
+      "file": "UnityProject/Assets/Editor/QualityBlockNative4KReviewPacket.cs",
+      "change": "Require lamp contract configuration and revalidate the installed lamp before reflection capture, immediately before Camera.Render, and again before bound temporal evidence."
+    }
+  ],
+  "authoritativeOrder": [
+    "QualityBlockParkFurnitureUpgrade.BuildAndApply",
+    "QualityBlockParkFurniturePhysicalRefinement.ApplyAndValidate",
+    "QualityBlockParkLampInstallationQA.ApplyToOpenScene",
+    "QualityBlockParkFurnitureLodRebind.RebindAndValidate",
+    "QualityBlockParkFurnitureMicrodetailUpgrade.BuildAndApply",
+    "QualityBlockParkLampInstallationQA.ValidateOpenScene",
+    "reflection probe synchronization",
+    "QualityBlockParkLampInstallationQA.ValidateOpenScene immediately before Camera.Render",
+    "sealed native 3840x2160 still capture",
+    "QualityBlockParkLampInstallationQA.ValidateOpenScene before temporal capture"
+  ],
+  "sourceVerification": {
+    "parkLampDependency": "PhysicalDiffuser is created by QualityBlockParkFurniturePhysicalRefinement before the lamp installation pass; QualityBlockParkLampInstallationQA intentionally preserves PhysicalDiffuser while replacing the other lamp construction parts.",
+    "lodBinding": "Lamp installation now precedes QualityBlockParkFurnitureLodRebind, so PhysicalPole, service gasket/cover, pole-top boot, adapter, retainers, cap and LOD0 fasteners are eligible for authoritative LOD membership validation.",
+    "materialBinding": "Final lamp validation runs after park microdetail, which is required because exposed service fasteners must reach the authoritative metallic state while concrete, paint, EPDM and diffuser remain dielectric.",
+    "nativePacketReceipt": "Installed-lamp validation is repeated pre-probe, pre-still and pre-temporal so later evidence phases cannot silently regress to the legacy assembly.",
+    "compileVerification": "PENDING_UNITY_RUNTIME",
+    "renderVerification": "PENDING_NATIVE_4K_PIXEL_REVIEW"
+  },
+  "scores": {
+    "implementationReadiness": 93,
+    "visualFidelity": "UNSCORED",
+    "visualFidelityPointsAwardedThisRun": 0,
+    "criticalDefectClearedFromPixels": false
+  },
+  "expectedVisualScoreImpact": {
+    "automaticCredit": 0,
+    "geometryConstruction": "Potentially prevents a major deduction by ensuring the continuous tapered pole and physical service/head interfaces are actually present in benchmark evidence.",
+    "materialPbr": "Potentially prevents stale material-state deductions by validating dielectric concrete/paint/EPDM/diffuser and metallic service fasteners after the authoritative microdetail pass.",
+    "weathering": "Potentially preserves cause-based flush grade moisture instead of the protruding legacy moisture ring.",
+    "temporalLod": "Potentially prevents unbound-renderer or legacy-assembly LOD discontinuity by applying the lamp before LOD rebind and revalidating before temporal evidence.",
+    "rule": "No category points are awarded until actual 3840x2160 frames, 100% crops and temporal evidence are inspected."
+  },
+  "nextBlocker": "No Unity runner, successful Unity 6000.3.0f1 compile, native 3840x2160 hero/oblique/grazing frames, 100% lamp crops or sealed temporal evidence are available. When runtime evidence appears, stop speculative expansion and inspect the actual lamp pixels first for pole continuity, grade contact, service-cover bearing, head insertion, Fresnel/material separation and LOD stability."
+}

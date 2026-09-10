@@ -37,6 +37,7 @@ public static class QualityBlockNative4KReviewPacket
         QualityBlockFutonBalconyDrapeQA.ValidateContractConfigOnly();
         QualityBlockParkFurnitureSaveGate.ValidateContract();
         QualityBlockSlideAccessInstallationQA.ValidateContractConfigOnly();
+        QualityBlockSlideChuteFabricationQA.ValidateContractConfigOnly();
         QualityBlockBenchSeatConstructionInterfaceQA.ValidateContractConfigOnly();
         QualityBlockTextureSamplingUpgrade.ValidateContractConfigOnly();
         QualityBlockPhysicalTexelDensityQA.ValidateContractConfigOnly();
@@ -47,14 +48,13 @@ public static class QualityBlockNative4KReviewPacket
         QualityBlockReflectionProbeCaptureSyncQA.ValidateContractConfigOnly();
         QualityBlock4KCapture.ValidateCaptureContract();
 
-        // Build/save/reopen the highest-quality generated scene first. Subsequent installation passes
-        // are deterministic corrections against that persisted state before reflection capture begins.
+        // Build/save/reopen the highest-quality generated scene first. The park save gate now leaves the
+        // final PhysicalChute as a watertight fabricated thin-sheet solid after shared microdetail has run.
         QualityBlock4KCapture.PrepareSceneForSynchronizedCapture();
         QualityBlockSceneMaterialPhysicalityUpgrade.ApplyAndValidate();
 
-        // The tree builder intentionally remains replaceable by authored slots. For generated fallbacks,
-        // correct the source-observable segmented radius jumps and normalized bark-UV restarts only after
-        // the benchmark rebuild/PBR generation has finished, then persist exactly that state for probes.
+        // Generated fallback trees: correct segmented radius jumps and normalized bark-UV restarts only
+        // after the benchmark/PBR rebuild, then persist exactly that state for reflection capture.
         QualityBlockTreeWoodyContinuityQA.ApplyAndPersist();
         QualityBlockTreeDetailUpgrade.ValidateOpenScene();
         QualityBlockTreeWoodyContinuityQA.ValidateOpenScene();
@@ -66,23 +66,20 @@ public static class QualityBlockNative4KReviewPacket
         QualityBlockFacadeApertureConstructionQA.ValidateOpenScene();
         QualityBlockFacadeAperturePhysicalUvQA.ValidateOpenScene();
 
-        // Projecting stair tower: replace the opaque render cuboid with a 0.22 m RC shell around five
-        // rough openings, then make shell returns butt-jointed instead of coplanar overlaps.
+        // Projecting stair tower: true rough openings and non-coplanar shell butt joints.
         QualityBlockStairTowerApertureInstallationQA.ApplyAndPersist();
         QualityBlockStairTowerShellJointQA.ApplyAndPersist();
         QualityBlockStairTowerApertureInstallationQA.ValidateOpenScene();
         QualityBlockStairTowerShellJointQA.ValidateOpenScene();
 
-        // Establish the slab/base-plate/anchor relationship while the original seven Rail_* renderer
-        // datums still exist. Then replace those benchmark-visible stock Cube rails with a period-plausible
-        // 1.10 m vertical-lattice assembly. Its final-state QA takes over the same fascia/base/anchor checks.
+        // Establish slab/base-plate/anchor relationships, then replace the source rail placeholders.
         QualityBlockBalconyConstructionInterfaceQA.ApplyAndPersist();
         QualityBlockBalconyConstructionInterfaceQA.ValidateOpenScene();
         QualityBlockBalconyGuardrailInstallationQA.ApplyAndPersist();
         QualityBlockBalconyGuardrailInstallationQA.ValidateOpenScene();
 
-        // Remaining building construction interfaces. Futon drapes deliberately run after guardrail
-        // reconstruction so the final 1.10 m top rail is their physical installation datum.
+        // Remaining building construction interfaces. Futon drapes run after guardrail reconstruction so
+        // the actual final top rail is their physical installation datum.
         QualityBlockAcOutdoorUnitInstallationQA.ApplyAndPersist();
         QualityBlockAcOutdoorUnitInstallationQA.ValidateOpenScene();
         QualityBlockRainwaterDownpipeInstallationQA.ApplyAndPersist();
@@ -90,11 +87,13 @@ public static class QualityBlockNative4KReviewPacket
         QualityBlockFutonBalconyDrapeQA.ApplyAndPersist();
         QualityBlockFutonBalconyDrapeQA.ValidateOpenScene();
 
-        // Park/street furniture, vegetation continuity and texture/material/primitive preflight.
+        // Park/street furniture and scene-wide source preflight. The chute fabrication validator must run
+        // after microdetail and LOD rebind because that is the exact mesh/material state sent to probes.
         QualityBlockParkFurnitureUpgrade.ValidateOpenScene();
         QualityBlockParkFurniturePhysicalRefinement.ValidateOpenScene();
         QualityBlockParkFurnitureLodRebind.ValidateOpenScene();
         QualityBlockSlideAccessInstallationQA.ValidateOpenScene();
+        QualityBlockSlideChuteFabricationQA.ValidateOpenScene();
         QualityBlockParkFurnitureMicrodetailUpgrade.Validate();
         QualityBlockBenchSeatConstructionInterfaceQA.ValidateOpenScene();
         QualityBlockTreeWoodyContinuityQA.ValidateOpenScene();
@@ -109,15 +108,13 @@ public static class QualityBlockNative4KReviewPacket
 
         Debug.Log(
             "Native-4K review packet entered reflection synchronization after final material binding, corrected continuous tree taper/metric bark UVs, " +
-            "true facade/stair apertures, corrected balcony slab/base interfaces, 30 reconstructed four-LOD vertical-lattice guardrails, " +
-            "AC/rainwater interfaces and two rail-bound textile drapes. Visual Fidelity remains UNSCORED.");
+            "true facade/stair apertures, corrected balcony slab/base interfaces, four-LOD guardrails, AC/rainwater/futon interfaces, " +
+            "and a watertight 2 mm fabricated stainless slide chute. Visual Fidelity remains UNSCORED.");
     }
 
     private static void FinishAfterReflectionSynchronization()
     {
         // Immediately before Camera.Render, re-prove synchronized probes and final construction state.
-        // Do not call the legacy-post-dependent balcony-interface validator here: generated guardrail QA
-        // rechecks its fascia/base/anchor invariants after intentionally disabling the old Rail_* renderers.
         QualityBlockReflectionProbeCaptureSyncQA.ValidateRuntimeReceipt();
         QualityBlockReflectionProbeAwaiter.ValidateLatestWaitProof();
         QualityBlockFacadeApertureConstructionQA.ValidateOpenScene();
@@ -132,6 +129,7 @@ public static class QualityBlockNative4KReviewPacket
         QualityBlockParkFurniturePhysicalRefinement.ValidateOpenScene();
         QualityBlockParkFurnitureLodRebind.ValidateOpenScene();
         QualityBlockSlideAccessInstallationQA.ValidateOpenScene();
+        QualityBlockSlideChuteFabricationQA.ValidateOpenScene();
         QualityBlockBenchSeatConstructionInterfaceQA.ValidateOpenScene();
         QualityBlockTreeWoodyContinuityQA.ValidateOpenScene();
         QualityBlockFoliagePhysicalityQA.ValidateOpenScene();
@@ -161,6 +159,7 @@ public static class QualityBlockNative4KReviewPacket
         QualityBlockParkFurniturePhysicalRefinement.ValidateOpenScene();
         QualityBlockParkFurnitureLodRebind.ValidateOpenScene();
         QualityBlockSlideAccessInstallationQA.ValidateOpenScene();
+        QualityBlockSlideChuteFabricationQA.ValidateOpenScene();
         QualityBlockParkFurnitureMicrodetailUpgrade.Validate();
         QualityBlockBenchSeatConstructionInterfaceQA.ValidateOpenScene();
         QualityBlockTreeWoodyContinuityQA.ValidateOpenScene();
@@ -182,8 +181,8 @@ public static class QualityBlockNative4KReviewPacket
 
         Debug.Log(
             "Complete native-4K review packet prepared: sealed hero/oblique/grazing 3840x2160 stills and 100% crops plus bound temporal evidence. " +
-            "Generated fallback trees retain continuous woody taper, metric non-restarting bark UVs and corrected meshes through retained LOD proxies; " +
-            "legacy stock balcony RailTop_*/Rail_* renderers are excluded from evidence and replaced by 30 dense four-LOD guardrails; the two closed-volume futon drapes resolve that final rail datum before still and temporal capture. " +
+            "Generated fallback trees retain continuous woody taper and metric bark; legacy balcony rails are excluded from evidence; " +
+            "the two futon drapes resolve the final rail datum; and every slide LOD retains the watertight fabricated stainless chute. " +
             "Visual Fidelity remains UNSCORED until the actual pixels are manually reviewed against the locked 100-point gate.");
     }
 }

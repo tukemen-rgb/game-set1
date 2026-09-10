@@ -39,19 +39,20 @@
       "twenty welded tread-support brackets, one at each tread/stringer side interface",
       "ten horizontal checker-plate-equivalent stair treads",
       "two coated-steel access handrails and platform transition rails",
+      "existing platform guard posts/top rail where retained by the source LOD, or dimension-matched generated transition guard at the coarsest LOD",
       "existing coated-steel platform and support frame",
       "coated-steel chute-head bearing crossmember tied back to the platform frame",
       "existing continuous 2 mm SUS304 chute shell and raised side sheets",
       "coated-steel runout bearing crossmember with two short support posts and foot plates",
       "LOD0-only exposed fastener heads at the chute-head bearing interface"
     ],
-    "mounting": "The access stair climbs from grade on local -Z to the rear edge of the existing platform. Horizontal treads do not slice through inclined round stringers: the stringers sit laterally outside the 780 mm tread width, and each tread seats on a pair of small welded support brackets whose outer ends intentionally overlap the stringer tube envelope. Stringers terminate into foot plates at grade and continue to the platform underside. Access handrails follow the stair pitch and bridge into the existing platform guard posts. The chute head bears on a transverse frame member linked to the existing support legs; the low runout bears on a transverse member with two short ground-supported posts.",
-    "interfacesAndSeals": "No decorative sealant or painted contact shadow is permitted. Steel-to-steel weld/bracket joints may use millimetric intentional overlap. Positive daylight gaps between tread and bracket, bracket and stringer, stringer and foot plate, chute and either bearing member, or top tread and platform access are source-side failures. The tread plate itself must retain positive lateral clearance from the inclined round stringer so a horizontal plate never unrealistically cuts through the pipe.",
-    "orientation": "Local +Z is the descending chute direction. Access stairs rise toward local +Z from the rear at local -Z. Treads remain horizontal; stringers and handrails follow approximately 50.9 degrees above horizontal.",
+    "mounting": "The access stair climbs from grade on local -Z to the rear edge of the existing platform. Horizontal treads do not slice through inclined round stringers: the stringers sit laterally outside the 780 mm tread width, and each tread seats on a pair of small welded support brackets whose outer ends intentionally overlap the stringer tube envelope. Stringers terminate into foot plates at grade and continue to the platform underside. Access handrails follow the stair pitch and bridge into the platform guard. Because the original coarse LOD omits that guard, the access pass restores dimension-matched transition posts/top rail in LOD3 so the stair cannot terminate into empty space or create a topology-scale temporal pop. The chute head bears on a transverse frame member linked to the existing support legs; the low runout bears on a transverse member with two short ground-supported posts.",
+    "interfacesAndSeals": "No decorative sealant or painted contact shadow is permitted. Steel-to-steel weld/bracket joints may use millimetric intentional overlap. Positive daylight gaps between tread and bracket, bracket and stringer, stringer and foot plate, access handrail bridge and platform guard, chute and either bearing member, or top tread and platform access are source-side failures. The tread plate itself must retain positive lateral clearance from the inclined round stringer so a horizontal plate never unrealistically cuts through the pipe.",
+    "orientation": "Local +Z is the descending chute direction. Access stairs rise toward local +Z from the rear at local -Z. Treads remain horizontal; stringers and handrails follow approximately 50.9 degrees above horizontal. Platform transition posts remain vertical and the top guard remains horizontal.",
     "exposure": "Tread tops, handrails and platform receive strong midsummer UV/rain and hand/foot contact. Brackets, stringer undersides and chute-head hardware are partially sheltered. Ground plates and runout supports receive splash and persistent near-grade contamination.",
     "aging": "Paint chalking follows UV exposure; handrails receive local polish; tread noses receive directional foot abrasion; near-grade plates receive splash darkening and restrained ferrous oxidation at real steel sources only. SUS304 travel abrasion follows the chute direction and is not represented as random rust.",
-    "geometryVsMaterialDetail": "Tread count/depth/thickness, side stringers, welded tread brackets, rails, foot plates, bearing crossmembers, posts and visible fastener heads are geometry. Checker-plate relief below silhouette scale, weld bead microrelief, paint orange-peel/chalking, fine abrasion, local polish, micro-rust and water residue are material/weathering detail.",
-    "lodPolicy": "LOD0/1/2/3 all retain the ten-step stair silhouette, side stringers, tread-support brackets, access rails, head bearing and runout support to prevent topology-scale popping. Only LOD0 retains small chute-head fastener heads. All new renderers must be rebound into the corresponding existing HD_Slide LOD renderer set with animated cross-fade."
+    "geometryVsMaterialDetail": "Tread count/depth/thickness, side stringers, welded tread brackets, rails, platform transition guard, foot plates, bearing crossmembers, posts and visible fastener heads are geometry. Checker-plate relief below silhouette scale, weld bead microrelief, paint orange-peel/chalking, fine abrasion, local polish, micro-rust and water residue are material/weathering detail.",
+    "lodPolicy": "LOD0/1/2/3 all retain the ten-step stair silhouette, side stringers, tread-support brackets, access rails, platform transition guard continuity, head bearing and runout support to prevent topology-scale popping. LOD0-2 may join the original platform guard; LOD3 restores equivalent guard geometry because the source LOD omits it. Only LOD0 retains small chute-head fastener heads. All new renderers must be rebound into the corresponding existing HD_Slide LOD renderer set with animated cross-fade."
   },
   "dimensionsMetres": {
     "treadCount": 10,
@@ -80,6 +81,12 @@
     "handrailVerticalOffset": 0.72,
     "handrailBridgeTargetAbsX": 0.72,
     "handrailBridgeTargetZ": -0.12,
+    "platformGuardPostCenterAbsX": 0.72,
+    "platformGuardPostCenterY": 2.54,
+    "platformGuardPostHeight": 1.08,
+    "platformGuardCenterZ": -0.12,
+    "platformGuardTopCenterY": 3.03,
+    "platformGuardTopLength": 1.42,
     "deckTopY": 2.0575,
     "deckRearEdgeZ": -0.82,
     "headBearerDiameter": 0.0486,
@@ -149,6 +156,7 @@
     "minimumFirstTreadRiseMetres": 0.15,
     "minimumStringerToTreadLateralClearanceMetres": 0.015,
     "maximumBracketStringerAxisMissMetres": 0.004,
+    "maximumRailJoinGapMetres": 0.004,
     "maximumChuteBearingGapMetres": 0.004,
     "requiredLodCount": 4,
     "generatedColliderCount": 0,
@@ -162,6 +170,7 @@
       "tread floating above its welded support bracket",
       "support bracket floating away from the side stringer",
       "stringer floating above its grade foot plate",
+      "access handrail terminating into empty space at the coarse LOD",
       "top tread separated from platform by an unstepable gap",
       "unsupported/floating chute head",
       "unsupported/floating runout end",
@@ -189,10 +198,10 @@
     "visualFidelityPointsAwarded": 0,
     "requiredEvidence": [
       "native 3840x2160 benchmark frame where HD_Slide access path is visible",
-      "100% oblique crop proving ten horizontal treads seat on paired brackets, the brackets join side stringers, and the stair reaches the platform without a daylight gap",
+      "100% oblique crop proving ten horizontal treads seat on paired brackets, the brackets join side stringers, and the stair reaches the platform/guard without a daylight gap",
       "100% crop proving chute-head and runout bearing members actually touch the stainless shell without z-fighting or floating hardware",
       "grazing-light crop separating coated-steel dielectric response, exposed fastener metal and SUS304 response without baked highlights",
-      "temporal pass through all four HD_Slide LOD transitions proving no stair/chute support pop or aliasing shimmer"
+      "temporal pass through all four HD_Slide LOD transitions proving no stair/platform-guard/chute-support pop or aliasing shimmer"
     ],
     "scoringPolicy": "No Geometry, Material, Lighting, Period or Temporal Visual Fidelity points may be awarded from this contract, source math or runtime transform report. Only sealed native rendered evidence can receive Visual Fidelity credit or clear a critical defect."
   }

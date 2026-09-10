@@ -16,8 +16,6 @@ public static class QualityBlockNative4KReviewPacket
         if (QualityBlockReflectionProbeAwaiter.IsRunning)
             throw new InvalidOperationException("The native-4K review packet is already waiting for reflection-probe completion.");
 
-        // Owner-locked gate geometry and non-scoring evidence contracts. No category/minimum or critical
-        // defect may be relaxed to make a candidate pass.
         QualityBlockVisualGateIntegrityQA.ValidateContract();
         QualityBlockVisualFidelityGate.ValidateGateConfig();
         QualityBlockShadowStabilityUpgrade.ValidateOpenScene();
@@ -35,6 +33,7 @@ public static class QualityBlockNative4KReviewPacket
         QualityBlockBalconyConstructionInterfaceQA.ValidateContractConfigOnly();
         QualityBlockAcOutdoorUnitInstallationQA.ValidateContractConfigOnly();
         QualityBlockRainwaterDownpipeInstallationQA.ValidateContractConfigOnly();
+        QualityBlockFutonBalconyDrapeQA.ValidateContractConfigOnly();
         QualityBlockParkFurnitureSaveGate.ValidateContract();
         QualityBlockSlideAccessInstallationQA.ValidateContractConfigOnly();
         QualityBlockBenchSeatConstructionInterfaceQA.ValidateContractConfigOnly();
@@ -46,34 +45,34 @@ public static class QualityBlockNative4KReviewPacket
         QualityBlockReflectionProbeCaptureSyncQA.ValidateContractConfigOnly();
         QualityBlock4KCapture.ValidateCaptureContract();
 
-        // Build/save/reopen the highest-quality generated scene first. Subsequent installation passes are
-        // deterministic corrections against that persisted state, before reflection capture begins.
+        // Build/save/reopen the highest-quality generated scene first. Subsequent installation passes
+        // are deterministic corrections against that persisted state before reflection capture begins.
         QualityBlock4KCapture.PrepareSceneForSynchronizedCapture();
         QualityBlockSceneMaterialPhysicalityUpgrade.ApplyAndValidate();
 
-        // Main apartment facade: real openings + physical metric UV field.
+        // Main apartment facade: true openings + physical metric UV field.
         QualityBlockFacadeApertureConstructionQA.ApplyAndPersist();
         QualityBlockFacadeAperturePhysicalUvQA.ApplyAndPersist();
         QualityBlockFacadeApertureConstructionQA.ValidateOpenScene();
         QualityBlockFacadeAperturePhysicalUvQA.ValidateOpenScene();
 
-        // Projecting stair tower: the legacy opaque cuboid must not remain behind transparent stair
-        // glazing. Rebuild a 0.22 m-deep RC front shell around five true rough openings, seat the existing
-        // manufactured sash/optical stack in those openings, retain the gameplay collider only, keep the
-        // macro opening silhouette identical through four cross-faded LODs, then convert the shell returns
-        // to butt joints so side/back/roof/base pieces do not share coplanar exterior faces.
+        // Projecting stair tower: replace the opaque render cuboid with a 0.22 m RC shell around five
+        // rough openings, then make shell returns butt-jointed instead of coplanar overlaps.
         QualityBlockStairTowerApertureInstallationQA.ApplyAndPersist();
         QualityBlockStairTowerShellJointQA.ApplyAndPersist();
         QualityBlockStairTowerApertureInstallationQA.ValidateOpenScene();
         QualityBlockStairTowerShellJointQA.ValidateOpenScene();
 
-        // Remaining building construction interfaces.
+        // Remaining building construction interfaces. Futon drapes deliberately run after balcony
+        // correction because the final rendered RailTop and slab bounds are their installation datums.
         QualityBlockBalconyConstructionInterfaceQA.ApplyAndPersist();
         QualityBlockBalconyConstructionInterfaceQA.ValidateOpenScene();
         QualityBlockAcOutdoorUnitInstallationQA.ApplyAndPersist();
         QualityBlockAcOutdoorUnitInstallationQA.ValidateOpenScene();
         QualityBlockRainwaterDownpipeInstallationQA.ApplyAndPersist();
         QualityBlockRainwaterDownpipeInstallationQA.ValidateOpenScene();
+        QualityBlockFutonBalconyDrapeQA.ApplyAndPersist();
+        QualityBlockFutonBalconyDrapeQA.ValidateOpenScene();
 
         // Park/street furniture, then texture/material/primitive preflight.
         QualityBlockParkFurnitureUpgrade.ValidateOpenScene();
@@ -84,22 +83,21 @@ public static class QualityBlockNative4KReviewPacket
         QualityBlockBenchSeatConstructionInterfaceQA.ValidateOpenScene();
         QualityBlockPhysicalTexelDensityQA.ValidateOpenScene();
         QualityBlockAlbedoLightingNeutralityQA.ValidateGeneratedBaseAlbedos();
+        QualityBlockSceneMetadataCoverageQA.ValidateOpenScene();
         QualityBlockBenchmarkPrimitiveExposureQA.ValidateOpenScene();
 
-        // Realtime probes are rendered only after final persisted geometry/material state exists. The
-        // awaiter yields across Editor updates and proves both RenderIDs complete before Camera.Render.
+        // Realtime probes are rendered only after final persisted geometry/material state exists.
         QualityBlockReflectionProbeAwaiter.Begin(FinishAfterReflectionSynchronization);
 
         Debug.Log(
-            "Native-4K review packet entered reflection synchronization after final material binding, apartment and stair-tower true-aperture reconstruction with non-coplanar shell joints, " +
-            "physical facade UV anti-repeat QA, balcony/AC/rainwater installation correction, park load-path QA, physical texel-density, albedo-neutrality and exact-framing primitive preflight. " +
-            "Visual Fidelity remains UNSCORED.");
+            "Native-4K review packet entered reflection synchronization after final material binding, apartment/stair true-aperture reconstruction, " +
+            "balcony/AC/rainwater interfaces and two physical balcony futon rail-wrap drapes. Visual Fidelity remains UNSCORED.");
     }
 
     private static void FinishAfterReflectionSynchronization()
     {
-        // Immediately before Camera.Render, prove the synchronized probes and every construction state
-        // that could change silhouette, contact, reflection or light transport.
+        // Immediately before Camera.Render, re-prove synchronized probes and construction state that
+        // can alter silhouette, contact, reflection or light transport.
         QualityBlockReflectionProbeCaptureSyncQA.ValidateRuntimeReceipt();
         QualityBlockReflectionProbeAwaiter.ValidateLatestWaitProof();
         QualityBlockFacadeApertureConstructionQA.ValidateOpenScene();
@@ -109,11 +107,13 @@ public static class QualityBlockNative4KReviewPacket
         QualityBlockBalconyConstructionInterfaceQA.ValidateOpenScene();
         QualityBlockAcOutdoorUnitInstallationQA.ValidateOpenScene();
         QualityBlockRainwaterDownpipeInstallationQA.ValidateOpenScene();
+        QualityBlockFutonBalconyDrapeQA.ValidateOpenScene();
         QualityBlockParkFurnitureUpgrade.ValidateOpenScene();
         QualityBlockParkFurniturePhysicalRefinement.ValidateOpenScene();
         QualityBlockParkFurnitureLodRebind.ValidateOpenScene();
         QualityBlockSlideAccessInstallationQA.ValidateOpenScene();
         QualityBlockBenchSeatConstructionInterfaceQA.ValidateOpenScene();
+        QualityBlockSceneMetadataCoverageQA.ValidateOpenScene();
         QualityBlockBenchmarkPrimitiveExposureQA.ValidateOpenScene();
 
         QualityBlock4KCapture.CapturePreparedSceneAfterProbeSync();
@@ -134,6 +134,7 @@ public static class QualityBlockNative4KReviewPacket
         QualityBlockBalconyConstructionInterfaceQA.ValidateOpenScene();
         QualityBlockAcOutdoorUnitInstallationQA.ValidateOpenScene();
         QualityBlockRainwaterDownpipeInstallationQA.ValidateOpenScene();
+        QualityBlockFutonBalconyDrapeQA.ValidateOpenScene();
         QualityBlockParkFurnitureUpgrade.ValidateOpenScene();
         QualityBlockParkFurniturePhysicalRefinement.ValidateOpenScene();
         QualityBlockParkFurnitureLodRebind.ValidateOpenScene();
@@ -152,15 +153,13 @@ public static class QualityBlockNative4KReviewPacket
         QualityBlockPreparedTemporalCapture.CaptureAndSealPreparedScene();
         QualityBlockPreparedTemporalCapture.ValidateLatestPreparedBinding();
 
-        // Objective diagnostics only; they do not award points or clear critical defects.
         QualityBlockRenderedImageDiagnostics.AnalyzeExistingCapture();
         QualityBlockTemporalDiagnostics.AnalyzeLatestEvidence();
         AssetDatabase.Refresh();
 
         Debug.Log(
             "Complete native-4K review packet prepared: sealed hero/oblique/grazing 3840x2160 stills and 100% crops plus bound temporal evidence. " +
-            "The generated MainBlock and projecting StairTower opaque render masses are replaced only at render level by true-opening RC shells while original gameplay colliders remain; " +
-            "stair shell returns use butt joints rather than overlapping coplanar faces, apartment and stair glazing are recessed into physical wall depth, metric UVs prevent repeated concrete restarts, and construction/material/LOD/primitive invariants are revalidated before and after still capture. " +
+            "Legacy flat balcony Futon_* renderers are excluded from evidence and replaced by two closed-volume, non-identical, four-LOD textile drapes whose rail contact and slab clearance are revalidated before still and temporal capture. " +
             "Visual Fidelity remains UNSCORED until the actual pixels are manually reviewed against the locked 100-point gate.");
     }
 }

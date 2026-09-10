@@ -1,5 +1,5 @@
 {
-  "generatedUtc": "2026-09-10T23:48:00Z",
+  "generatedUtc": "2026-09-10T23:50:00Z",
   "readinessScore": 93,
   "possibleScore": 100,
   "visualFidelityStatus": "UNSCORED_UNTIL_REAL_4K_RENDER",
@@ -85,7 +85,7 @@
       "id": "multi_angle_capture_manifest",
       "weight": 5,
       "passed": true,
-      "evidence": "Capture/evidence contracts require hero, oblique and grazing stills plus exact 100% crops and temporal evidence; scoring additionally requires current SHA-256-bound repetition and light-leak triage while direct human review remains authoritative.",
+      "evidence": "Capture/evidence contracts require hero, oblique and grazing stills plus exact 100% crops and temporal evidence; major-light-leak clearance now requires direct review of the same five canonical crops used by current SHA-256-bound light-leak triage.",
       "assetPaths": ["Assets/QA/4k_capture_manifest.json", "Assets/QA/visual_evidence_observability_contract.json", "Assets/QA/reviewed_visual_evidence_integrity_contract.json", "Assets/QA/scene_repetition_contract.json"]
     },
     {
@@ -99,21 +99,22 @@
   "blockers": ["unity_compile_verification"],
   "latestRun": {
     "startHead": "084f0563430616b4b59d09f00ddb0853280bc65a",
-    "substantiveWorkHead": "fab31263951bc357c4bf2b040729156f68bc8974",
+    "substantiveWorkHead": "643b32a0ed01118bcb8190fbd1b08e9cd2607d02",
     "substantiveCommits": [
       "0c92f495285c7e20fbf2396d7b3199de73153f6e",
       "730139712d4895ff408793f59073ff5594527dbb",
       "690a626c82277517d8c055de62b313d09a3a92a5",
       "cd88b08f122ed8e6fdcb3f78688452f60f9ad65b",
       "b8fc5b7934e521bb7bee405655042e341159a1e4",
-      "fab31263951bc357c4bf2b040729156f68bc8974"
+      "fab31263951bc357c4bf2b040729156f68bc8974",
+      "643b32a0ed01118bcb8190fbd1b08e9cd2607d02"
     ],
-    "verification": "GitHub/source review only; no Unity runtime or native capture was available. This run identified that major_light_leak was a hard automatic-fail defect with required human crop references but no current pixel-domain triage precondition comparable to obvious_repetition. Added warning-only bright-on-dark diagnostics over five canonical 100% crops. A sampled pixel qualifies only when it is bright, strongly exceeds a dark surrounding annulus, and most annulus samples remain dark; candidates are then clustered into 32 px blocks to de-emphasize isolated sparkle. The runtime report binds the current 4K manifest SHA-256 and each crop SHA-256 and cannot award points, clear the defect or assert it automatically. Native4KReviewPacket now validates the contract before preparation and generates the report after sealed still/temporal evidence. Reviewed-evidence integrity schema 1.2 requires a current light-leak report before the core Visual Fidelity evaluator can score. During editing, an accidental source typo was introduced in an intermediate reviewed-evidence-validator commit and corrected immediately in b8fc5b7; the final source was re-fetched around the affected region and is syntactically restored there. No Unity compile/runtime assertions are made.",
+    "verification": "GitHub/source review only; no Unity runtime or native capture was available. This run identified that major_light_leak was a hard automatic-fail defect with human crop references but no current pixel-domain triage precondition comparable to obvious_repetition. Added warning-only bright-on-dark diagnostics over five canonical 100% crops. A sampled pixel qualifies only when it is bright, strongly exceeds a dark surrounding annulus, and most annulus samples remain dark; candidates are clustered into 32 px blocks to de-emphasize isolated sparkle. The runtime report binds the current 4K manifest SHA-256 and each crop SHA-256 and cannot award points, clear the defect or assert it automatically. Native4KReviewPacket now validates the contract before preparation and generates the report after sealed still/temporal evidence. Reviewed-evidence integrity schema 1.2 requires a current light-leak report before the core Visual Fidelity evaluator can score. The observability contract also requires direct human major_light_leak review of all five diagnostic crops, including ground contact, service interfaces and grazing material response. During editing, an accidental source typo was introduced in an intermediate reviewed-evidence-validator commit and corrected immediately in b8fc5b7; the final affected region was re-fetched and verified source-restored. No Unity compile/runtime assertions are made.",
     "expectedVisualScoreImpact": [
-      "Critical major light leak: improves the probability that spatially persistent bright seams/holes in final post-tonemap pixels are surfaced before scoring; it does not automatically fail or clear the defect.",
+      "Critical major light leak: improves the probability that spatially persistent bright seams/holes in final post-tonemap pixels are surfaced before scoring, while requiring the reviewer to inspect all five leak-sensitive crops; the metric itself cannot fail or clear the defect.",
       "Lighting/shadows/reflections: prioritizes inspection of anomalous bright-on-dark discontinuities that source-only sun/shadow coherence cannot prove absent.",
-      "Geometry & construction: helps direct actual-pixel review toward possible shell/aperture/interface closure defects rather than treating source geometry QA as sufficient.",
-      "Cinematic image: uses the final display-transformed pixels, so exposure/tonemap-induced false positives remain visible to the reviewer instead of being hidden by source assumptions.",
+      "Geometry & construction: expands direct leak review from facade/construction-depth only to ground-contact and balcony/service interfaces where closure errors can appear.",
+      "Material/PBR and Cinematic image: adds grazing material evidence while keeping exposure/specular false positives visible to human review rather than treating the heuristic as truth.",
       "Automatic Visual Fidelity impact: 0 points. No actual render exists."
     ],
     "visualFidelityPointsAwarded": 0,

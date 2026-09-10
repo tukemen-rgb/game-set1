@@ -76,6 +76,12 @@ public static class QualityBlockReviewedVisualEvidenceIntegrityQA
         ValidateCategoryEntries(evidence.categories);
         ValidateCriticalDefectEntries(evidence.criticalDefects);
 
+        // Static hierarchy signatures cannot clear the render-only obvious-repetition defect. Require
+        // pixel-domain diagnostics generated from the current SHA-256-bound native 4K manifest/crop bytes
+        // before scoring. The diagnostic is intentionally warning-only: its result cannot clear or assert
+        // the critical defect, so the reviewer must still record direct observations from the exact crops.
+        QualityBlockRenderedRepetitionDiagnostics.ValidateLatestReportForScoring();
+
         // Temporal/LOD/aliasing review is not scoreable from PNG existence alone. Require the
         // authoritative prepared sequence to prove one MainCamera pre-cull lighting fingerprint per
         // temporal frame and one filmic native-4K HDR->LDR invocation per frame with zero fallback.
@@ -86,8 +92,8 @@ public static class QualityBlockReviewedVisualEvidenceIntegrityQA
         Debug.Log(
             "Reviewed Visual Fidelity evidence integrity valid: exact hero/oblique/grazing entries, exact nine categories, " +
             "exact twelve critical-defect reviews, no duplicates/unknown IDs, complete evidence/corrective-action text, " +
-            "and a sealed per-frame temporal lighting + filmic HDR->LDR runtime receipt. " +
-            "This QA awards 0 Visual Fidelity points; provenance and the numeric gate still decide scoring eligibility/PASS.");
+            "a current SHA-256-bound native-4K repetition triage report, and a sealed per-frame temporal lighting + filmic HDR->LDR runtime receipt. " +
+            "Repetition triage remains warning-only; this QA awards 0 Visual Fidelity points and human pixel review/provenance/numeric gate still decide scoring eligibility/PASS.");
     }
 
     public static void ValidateContractConfigOnly()
@@ -98,9 +104,9 @@ public static class QualityBlockReviewedVisualEvidenceIntegrityQA
         IntegrityContract contract = JsonUtility.FromJson<IntegrityContract>(File.ReadAllText(ContractPath));
         if (contract == null)
             throw new InvalidOperationException("Reviewed-evidence integrity contract could not be parsed.");
-        if (!string.Equals(contract.schemaVersion, "1.0", StringComparison.Ordinal))
+        if (!string.Equals(contract.schemaVersion, "1.1", StringComparison.Ordinal))
             throw new InvalidOperationException(
-                $"Unexpected reviewed-evidence integrity schemaVersion '{contract.schemaVersion}'. Expected 1.0.");
+                $"Unexpected reviewed-evidence integrity schemaVersion '{contract.schemaVersion}'. Expected 1.1.");
         if (contract.runtimeRenderVerified)
             throw new InvalidOperationException(
                 "Reviewed-evidence integrity contract may not claim runtime render verification.");
@@ -127,7 +133,9 @@ public static class QualityBlockReviewedVisualEvidenceIntegrityQA
             !rules.requireCriticalDefectEvidenceText ||
             !rules.requireAtLeastOneObservedReferencePerCategory ||
             !rules.requireAtLeastOneObservedReferencePerCriticalDefect ||
-            !rules.requireRenderVerifiedTrueForReviewedEvidence)
+            !rules.requireRenderVerifiedTrueForReviewedEvidence ||
+            !rules.requireCurrentRenderedRepetitionDiagnostics ||
+            !rules.renderedRepetitionDiagnosticsCannotClearCriticalDefect)
             throw new InvalidOperationException(
                 "Reviewed-evidence integrity rules were weakened or are incomplete.");
     }
@@ -306,5 +314,7 @@ public static class QualityBlockReviewedVisualEvidenceIntegrityQA
         public bool requireAtLeastOneObservedReferencePerCategory;
         public bool requireAtLeastOneObservedReferencePerCriticalDefect;
         public bool requireRenderVerifiedTrueForReviewedEvidence;
+        public bool requireCurrentRenderedRepetitionDiagnostics;
+        public bool renderedRepetitionDiagnosticsCannotClearCriticalDefect;
     }
 }

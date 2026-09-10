@@ -164,7 +164,7 @@ public static class QualityBlockSolarShadowCaptureCoherenceQA
     private static Light RequireSummerSun()
     {
         GameObject sunGo = Resources.FindObjectsOfTypeAll<GameObject>()
-            .FirstOrDefault(x => x.gameObject.scene.IsValid() && x.name == "SummerSun");
+            .FirstOrDefault(x => x.scene.IsValid() && x.name == "SummerSun");
         Light sun = sunGo != null ? sunGo.GetComponent<Light>() : null;
         if (sun == null || sun.type != LightType.Directional)
             throw new InvalidOperationException("SummerSun directional light is missing.");

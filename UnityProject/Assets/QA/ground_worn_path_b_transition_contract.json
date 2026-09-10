@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "1.0",
+  "schemaVersion": "1.1",
   "visualFidelityStatus": "UNSCORED_IMPLEMENTATION_ONLY",
   "targetPeriod": "circa 2000",
   "targetRegion": "ordinary Japanese new-town residential park, Kanto-climate reference",
@@ -28,9 +28,9 @@
     ],
     "manufacture": "Model the visible branch as a thin compacted granular wearing course placed and repeatedly trafficked over verge subgrade. The mouth is a deliberate whole-module break in the 600 mm-pitch precast curb run. The compacted core retains roughly 40 mm of visible build-up while shoulders feather to turf grade; no vertical soil slab wall is modeled.",
     "mounting": "The route starts at the ParkPath east paving edge, passes through the two-module curb opening, bears directly on the verge/subgrade, then curves northeast and narrows into turf. Existing source collision is preserved separately and never used as visible construction.",
-    "interfacesGapsSeals": "Park paving top is 0.060 m. The compacted-soil mouth is 0.057 m, giving a 3 mm drainage/abrasion step without coplanar z-fighting. Curb modules 26 and 27 are omitted as complete units; neighboring modules terminate with their real end faces and leave approximately 1.212 m clear. Outside the entry transition the route shoulder returns to 0.003 m, within 3 mm of turf top, rather than floating above grass.",
+    "interfacesGapsSeals": "Park paving top is 0.060 m. The compacted-soil mouth is 0.057 m, giving a 3 mm drainage/abrasion step without coplanar z-fighting. Curb modules 26 and 27 are omitted as complete units; neighboring modules terminate with their real end faces and leave approximately 1.212 m clear. The route holds its 1.05 m mouth width while clearing the curb/high-curvature entry, then expands only after t=0.22. Outside the entry transition the route shoulder returns to 0.003 m, within 3 mm of turf top, rather than floating above grass.",
     "orientationExposure": "Upward-facing exterior ground receives strong midsummer sun, rain, foot traffic and drying. The open curb mouth receives concentrated passage; shoulders receive less compaction and more turf encroachment. Benchmark state is dry.",
-    "aging": "Centerline/frequent-footfall compaction and small long-wave settlement are strongest away from the terminal taper; shoulders retain looser fines and turf encroachment. UV drying is broad. No arbitrary dark dirt patches, disaster damage, impact narrative or painted contact shadow is allowed.",
+    "aging": "Centerline/frequent-footfall compaction and small long-wave settlement are strongest away from the terminal taper; shoulders retain looser fines and turf encroachment. UV drying is broad. No arbitrary dark dirt patches, catastrophe narrative or painted contact shadow is allowed.",
     "geometryVsMaterial": "Route curvature, changing width, 40 mm class wearing-course build-up, feathered shoulders, curb opening, centerline depression and terminal taper are geometry. Fine gravel, grains, millimetre-scale roughness, restrained color variation, dry roughness and Fresnel response are material/microtexture. Directional sunlight, AO and specular highlights may not be baked into albedo."
   },
   "dimensions": {
@@ -62,10 +62,11 @@
     "centerWearDepressionM": 0.0025,
     "splineControlPointsXZ": [
       "P0 11.30,5.40",
-      "P1 12.15,5.40",
+      "P1 12.45,5.40",
       "P2 12.55,8.30",
       "P3 13.25,10.35"
-    ]
+    ],
+    "widthEvolution": "1.05 m fixed through normalized t=0.22 while clearing the curb/turn; smooth expansion to 1.35 m over t=0.22-0.55; 1.35 m through t=0.68; smooth taper to 0.18 m at the terminal."
   },
   "material": {
     "family": "dry compacted pedestrian soil/fines with small gravel",
@@ -87,11 +88,11 @@
   },
   "weathering": {
     "causes": "FootTraffic + UVExposure metadata only for the visible branch. Geometry center depression is limited to 2.5 mm plus restrained <=1.2 mm long-wave settlement; the route terminal returns to grade as use intensity diminishes.",
-    "forbidden": "No random catastrophe damage, reconstruction cue, crater, painted shadow/AO, baked specular streak, unexplained puddle, wet sheen, rust on soil, or arbitrary repeating stain decal."
+    "forbidden": "No random story-driven damage, crater, painted shadow/AO, baked specular streak, unexplained puddle, wet sheen, rust on soil, or arbitrary repeating stain decal."
   },
   "lodPolicy": {
-    "lod0": "48 longitudinal segments x 7 cross-route stations; preserves mouth fit, spline curvature, shoulder feather, center depression and terminal taper.",
-    "lod1": "28 longitudinal segments x 7 stations; preserves identical physical interfaces and cross-section while reducing along-route tessellation.",
+    "lod0": "48 longitudinal segments x 7 cross-route stations; preserves the fixed-width curb-clearance phase, mouth fit, spline curvature, shoulder feather, center depression and terminal taper.",
+    "lod1": "28 longitudinal segments x 7 stations; preserves identical physical interfaces, fixed-width entry and cross-section while reducing along-route tessellation.",
     "lod2": "16 longitudinal segments x 5 stations; retains full route silhouette, mouth/terminal positions and outer shoulder grade; only intermediate shoulder sampling is reduced.",
     "lod3": "8 longitudinal segments x 5 stations; retains the same route endpoints, curb-opening relationship and outer silhouette; it never reverts to the legacy Cube.",
     "transitionPolicy": "Four Unity LOD levels use animated CrossFade. LOD bounds must stay within 35 mm center drift and 55 mm size-vector drift relative to LOD0. Visible pop/shimmer can only be cleared from real temporal evidence."
@@ -102,9 +103,23 @@
     "maxLodBoundsCenterDriftM": 0.035,
     "maxLodBoundsSizeDriftM": 0.055
   },
+  "sourceMathAudit": {
+    "status": "SOURCE_MATH_ONLY_NOT_UNITY_RUNTIME_OR_RENDER_EVIDENCE",
+    "mouthZMinM": 4.875,
+    "mouthZMaxM": 5.925,
+    "curbOpeningMinZM": 4.794,
+    "curbOpeningMaxZM": 6.006,
+    "minimumMouthClearanceToOpeningEndM": 0.081,
+    "lodVertexCounts": [343, 203, 85, 45],
+    "minimumTriangleNormalYByLod": [0.78795, 0.80034, 0.85094, 0.85920],
+    "meanTriangleNormalYByLod": [0.99065, 0.99069, 0.99097, 0.99071],
+    "maximumLodBoundsCenterDriftM": 0.001421,
+    "maximumLodBoundsSizeDriftM": 0.002842,
+    "selfAuditCorrection": "Initial spline P1=12.15 combined with entry width expansion produced 11 inverted/folded source-math triangles. The implementation was rejected, P1 moved to 12.45 and width held at 1.05 m through t=0.22 before expansion. Corrected source math has no downward-facing triangles in the audited LOD meshes; Unity mesh/runtime verification remains pending."
+  },
   "evidencePlan": [
     "hero full frame: reject if the former 2 x 6 m rectangular soil slab silhouette or a disconnected soil rectangle is visible",
-    "oblique/vegetation_grounding 100% crop: inspect two-module curb opening, ParkPath-to-soil mouth height, shoulder-to-turf feathering, route curvature and absence of floating/interpenetrating geometry",
+    "oblique/vegetation_grounding 100% crop: inspect two-module curb opening, ParkPath-to-soil mouth height, shoulder-to-turf feathering, route curvature and absence of floating/interpenetrating/folded geometry",
     "grazing/tree_shadow_contact 100% crop where route is visible: inspect dry rough dielectric response, granular normal breakup, curb end faces and absence of baked highlights",
     "temporal oblique/LOD walk: reject visible route silhouette pop, legacy Cube reappearance, macro/detail texture swimming, high-frequency shimmer or curb-module pop"
   ],
@@ -112,14 +127,15 @@
     "Disable the source WornPathB primitive Renderer while retaining its collider as temporary gameplay fallback.",
     "Never model the visual route as a constant-width rectangular Cube or expose a vertical soil slab side in benchmark framing.",
     "Suppress exactly complete ParkPathEast curb modules 26 and 27; do not cut a module with overlapping soil geometry.",
+    "Keep the mouth width fixed through the high-curvature curb-clearance interval and source-audit every LOD for upward surface normals so the ribbon cannot fold over itself.",
     "Require dry dielectric metallic <=0.01, no emission and no baked directional highlight/AO in the soil material.",
     "Use metre UVs with common physical macro/detail scale across all four LOD meshes to prevent obvious texture restarts.",
-    "Require cause-based FootTraffic/UV weathering metadata on every rendered LOD, with no disaster/reconstruction content.",
+    "Require cause-based FootTraffic/UV weathering metadata on every rendered LOD, with no story-driven damage content.",
     "Require LOD0/1/2/3 authored meshes and animated cross-fade; no LOD may fall back to the primitive source.",
     "Do not claim the route visually grounded or PASS until actual sealed 3840x2160 and temporal pixels demonstrate it."
   ],
   "expectedVisualScoreImpactPendingRender": {
-    "GeometryConstruction": "Potentially removes a foreground rectangular-placeholder / disconnected-interface deduction and improves curb/path construction causality.",
+    "GeometryConstruction": "Potentially removes a foreground rectangular-placeholder/disconnected-interface deduction and improves curb/path construction causality.",
     "MaterialPBR": "Metric dry-soil PBR binding avoids primitive UV scale and impossible metallic response.",
     "TextureMicrodetail": "World-metre UV0 plus existing two-frequency ground textures reduces visible scale reset/repetition risk.",
     "WeatheringContext": "Foot-traffic geometry and taper provide a causal use pattern rather than arbitrary rectangular dirt placement.",

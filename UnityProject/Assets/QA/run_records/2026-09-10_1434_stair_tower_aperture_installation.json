@@ -1,0 +1,87 @@
+{
+  "schemaVersion": "1.0.0",
+  "runLocalDateTime": "2026-09-10T14:34:11+07:00",
+  "branch": "gpt/unity-migration",
+  "startHead": "3ca52167ab91dcdd64bc7c7babc61f1a112034c7",
+  "substantiveHead": "b6405619c016e1daea60f3caff374aa5868bf5ce",
+  "objective": "Increase the locked 100-point gate's geometry/light-transport readiness by replacing the projecting stair tower's opaque fallback render mass with five physically open RC window apertures, while preserving gameplay collision and refusing visual credit without real Unity pixels.",
+  "discovery": {
+    "sourceDefect": "The generated StairTower is a single opaque 3.2 x 13.8 x 2.0 m cube spanning z=-7.35..-5.35. Facade optics disables the five opaque StairWindow renderers and creates transparent FO_StairGlass planes, while Danchi detail adds aluminum frame parts, but neither pass removes the opaque StairTower renderer or creates rough openings. The previous stair glass was centered around z=-5.284, in front of the tower front plane, so the stack read as glazing applied to a solid mass rather than a recessed installed window.",
+    "criticalDefectLinks": [
+      "floating/interpenetrating hero geometry",
+      "major light leak / invalid occlusion risk",
+      "visible primitive-placeholder geometry risk",
+      "obvious repeated module/texture restart risk",
+      "missing required construction/material metadata risk"
+    ],
+    "constructionReference": "YKK AP current RC sash installation references were used only for installation principle, not period-product identification: a distinct sash frame is fixed to an RC rough opening through anchors and perimeter sealing, and the cited RC non-welded method publishes a typical three-side frame-to-structure clearance of 25-35 mm. The generated fallback locks 30 mm per side around its existing 1.46 x 1.48 m stair frame."
+  },
+  "implementation": {
+    "towerEnvelopeM": [3.2, 13.8, 2.0],
+    "frontFacadePlaneZ": -5.35,
+    "frontShellDepthM": 0.22,
+    "roughOpeningM": [1.52, 1.54],
+    "frameOuterM": [1.46, 1.48],
+    "perimeterClearanceEachSideM": 0.03,
+    "nearLodVisibleSealWidthM": 0.014,
+    "frameAssemblyShiftZFromPreviousGeneratedPlacementM": -0.07,
+    "glassPlaneZ": -5.37,
+    "stairwellBackingPlaneZ": -5.52,
+    "physicalUvMacroTileM": 2.4,
+    "physicalUvDetailTileM": 0.22,
+    "lodPolicy": "LOD0/1 retain four-sided seal geometry for every opening; LOD2/3 retain the identical macro RC rough-opening silhouette and optical depth while omitting the sub-pixel seals; animated cross-fade required.",
+    "materialPolicy": "painted RC dielectric + aged anodized aluminum + EPDM/sealant + clear dielectric glass + matte non-emissive stairwell backing, with per-material albedo/roughness/metallic-F0/normal/microstructure/wetness/UV-aging/Fresnel metadata in the contract",
+    "gameplayPolicy": "disable only StairTower Renderer; preserve its original Collider",
+    "antiPrimitivePolicy": "all reconstructed RC shell pieces use persisted custom dimension-baked meshes, not Unity Cube/Cylinder/Sphere/Capsule renderer meshes",
+    "antiRepeatPolicy": "RC UV0 is generated from absolute Danchi-local metric coordinates; the 2.4 m macro field therefore continues across separately constructed shell pieces instead of restarting 0..1 per opening/module"
+  },
+  "selfAuditCorrection": {
+    "issueFound": "The first shell topology made side/back/roof/base boxes occupy positive overlapping corner volumes and, critically, side walls and the full-depth front piers shared coplanar exterior strips at z=-5.35. That could create z-fighting in oblique/grazing evidence even though the rough openings themselves were valid.",
+    "fix": "Added QualityBlockStairTowerShellJointQA. Side walls now end at the front-shell back plane, back wall fits between side returns, roof/base fit between side returns and between back/front shells, and corrected pieces use freshly persisted metric-UV custom meshes. The QA rejects positive-volume outer-shell joint overlap and verifies butt-plane continuity before reflection/capture and again before/after still evidence.",
+    "gatePolicy": "No tolerance or Visual Fidelity minimum was relaxed to absorb the defect."
+  },
+  "commits": [
+    {"sha": "8438e35619ed26575779cd2acee8be34af98f10e", "summary": "add stair-tower true-aperture reconstruction and source/runtime QA"},
+    {"sha": "25cf0e17cb7d689bf456540e297daa3b85da8cfa", "summary": "add machine-readable manufacture/installation/material/LOD contract"},
+    {"sha": "8c8b9a28d143858ad6fb32e4da8fc304a8b2bdc6", "summary": "add front-elevation and horizontal-section lookdev illustration"},
+    {"sha": "f90b4827dfd91ec57a98588228ae9cfe1582fb44", "summary": "insert stair-tower apply/validate checks into the synchronized native-4K packet"},
+    {"sha": "5d2085df7ee588eaffdb683c5f303ec373557266", "summary": "add shell-joint correction/QA after self-audit found coplanar overlap risk"},
+    {"sha": "b6405619c016e1daea60f3caff374aa5868bf5ce", "summary": "require shell butt-joint apply/validation before probe render, before Camera.Render, and before temporal evidence"}
+  ],
+  "verification": {
+    "repositoryCompare": "start..substantiveHead is ahead 6, behind 0; merge base remains the run start head",
+    "changedPaths": [
+      "UnityProject/Assets/Editor/QualityBlockNative4KReviewPacket.cs",
+      "UnityProject/Assets/Editor/QualityBlockStairTowerApertureInstallationQA.cs",
+      "UnityProject/Assets/Editor/QualityBlockStairTowerShellJointQA.cs",
+      "UnityProject/Assets/QA/stair_tower_aperture_installation_contract.json",
+      "UnityProject/Assets/QA/stair_tower_aperture_lookdev.svg"
+    ],
+    "godotTouched": false,
+    "baseMerged": false,
+    "excludedThemesAdded": false,
+    "commitStatusContextsAtSubstantiveHead": 0,
+    "workflowRunsAtSubstantiveHead": 0,
+    "captures4KPathPresent": false,
+    "unityCompileExecuted": false,
+    "unityRuntimeExecuted": false,
+    "actualRenderReviewed": false,
+    "sourceVerificationNotes": "Existing build/detail/optics/aperture sources were inspected to establish the opaque StairTower/opening defect. New geometry math was source-audited, including a second pass that identified and corrected coplanar shell joints. Unity compilation, renderer bounds, LOD switching and pixel output remain pending because no Unity runner/status/artifact exists."
+  },
+  "scores": {
+    "implementationReadiness": 93,
+    "implementationReadinessMax": 100,
+    "visualFidelityStatus": "UNSCORED",
+    "visualFidelityPointsAwardedThisRun": 0,
+    "visualFidelityPassClaimed": false,
+    "reason": "The change materially improves source readiness but cannot earn visual points until actual 3840x2160 hero/oblique/grazing renders, 100% crops and temporal evidence exist."
+  },
+  "expectedVisualScoreImpactAfterRealEvidenceOnly": {
+    "geometryAndConstruction": "Potentially removes a major stair-tower deduction/critical-fail source by replacing a solid render mass with real opening depth and seated interfaces; likely one of the highest remaining building-geometry opportunities because the stair tower sits near the benchmark facade.",
+    "materialsPbr": "Potential improvement from explicit RC/aluminum/EPDM/glass separation and locked angular response; no credit until grazing render confirms it.",
+    "lightingShadowsReflections": "Potential improvement because glass/reveal occlusion and reflection now have physical wall depth instead of an opaque block behind them; no credit until coherent sun/probe behavior is visible.",
+    "textureMicrodetail": "Potential improvement from Danchi-local metric UV continuity across shell pieces; obvious repetition remains an actual-pixel check.",
+    "temporalLod": "Potential risk reduction because rough-opening silhouette is invariant across all four LODs and only near-subpixel seals simplify; visible pop/shimmer remains unscored."
+  },
+  "nextBlocker": "Unity 6000.3.0f1 runner/runtime remains unavailable. On first real runner/screenshot evidence, stop speculative expansion and run the complete synchronized packet. Inspect hero/facade_center and oblique/construction_depth first for stair-tower opening depth, frame seating, four-side seal, concrete continuity and light leaks; inspect grazing/material_grazing for RC/aluminum/glass Fresnel separation; inspect temporal evidence for seal/shell LOD pop and metric-UV shimmer. Fix actual pixel defects before any further source expansion."
+}

@@ -1,0 +1,113 @@
+{
+  "schemaVersion": "1.0.0",
+  "runDate": "2026-09-10",
+  "scope": "WornPathA-to-DanchiPlaza physical termination, metric soil replacement, curb continuation suppression, fail-closed QA, native-4K evidence binding",
+  "branch": "gpt/unity-migration",
+  "startHead": "7858102ea09024f96bc4e2e9774f977a99de432a",
+  "substantiveHeadBeforeRunRecord": "a4d2d9a6e40e1fe3edfe82ce8d6da67c0dfc520f",
+  "commits": [
+    {"sha":"7c5a478013bff628be7193b33ad71bea53d92a77","message":"qa: define worn-path plaza termination contract"},
+    {"sha":"0b7634f3817628d7a7c0c0fbe54cda8491b571a3","message":"docs: add worn-path termination lookdev"},
+    {"sha":"3824f4472ab4dd5426cbf3e986ab625966dcd517","message":"qa: enforce worn-path plaza curb termination"},
+    {"sha":"71f6c243a368f04a488238f21ac0e6affa6deb46","message":"qa: bind path termination to native 4K packet"},
+    {"sha":"f13e28f8bb97f2f6461f3bf67c28ac35ef421f9c","message":"qa: close worn-path surface overlap at plaza mouth"},
+    {"sha":"ffd942330f8ec892717c6c2c3357c3ff28f296a2","message":"geometry: replace overlapping worn-path box with authored mouth"},
+    {"sha":"ac1a085d71791dbbc70590f05d93f9bc6b030704","message":"qa: generalize path continuation datum naming"},
+    {"sha":"5eb18b0c51e7c154e2e3e7397ac6ddf2652a8109","message":"fix: keep path continuation key aligned with validator"},
+    {"sha":"a4d2d9a6e40e1fe3edfe82ce8d6da67c0dfc520f","message":"docs: align path-mouth lookdev with authored replacement"}
+  ],
+  "constraintAudit": {
+    "godotChanged": false,
+    "baseMerged": false,
+    "mergeBaseAtSubstantiveHead": "7858102ea09024f96bc4e2e9774f977a99de432a",
+    "forbiddenEarthquakeDisasterReconstructionThemeAdded": false,
+    "changedPaths": [
+      "UnityProject/Assets/Editor/QualityBlockGroundPathPlazaTerminationQA.cs",
+      "UnityProject/Assets/Editor/QualityBlockNative4KReviewPacket.cs",
+      "UnityProject/Assets/QA/ground_path_plaza_termination_contract.json",
+      "UnityProject/Assets/QA/ground_path_plaza_termination_lookdev.svg"
+    ]
+  },
+  "sourceAudit": {
+    "danchiPlazaBoundsM": {"minX":-20.0,"maxX":4.0,"minZ":-5.5,"maxZ":7.5,"topY":0.050},
+    "legacyWornPathABoundsM": {"minX":0.3,"maxX":4.7,"minZ":-10.05,"maxZ":-1.55,"topY":0.045},
+    "legacyVisibleEastSoilStripWidthM": 0.700,
+    "curbModulePitchM": 0.600,
+    "curbModuleVisibleLengthM": 0.588,
+    "lastRetainedModuleIndex": 6,
+    "lastRetainedModuleMaxZM": -5.856,
+    "openMouthSetbackM": 0.356,
+    "firstSuppressedModuleIndex": 7,
+    "firstSuppressedModuleMaxZM": -5.256,
+    "legacyContinuationBeyondPlazaEdgeM": 0.244,
+    "nominalPathToCurbInnerGapM": 0.005,
+    "finding": "A curb-only correction was insufficient because the coarse WornPathA Cube itself would still leave an approximately 0.70 m visible strip east of the plaza while overlapping the higher paving elsewhere. The final design therefore preserves the source collider but disables its renderer and supplies a separate authored visible soil surface that ends at the plaza boundary."
+  },
+  "implementation": {
+    "sourcePathColliderPreserved": true,
+    "sourcePathRendererSuppressed": true,
+    "visibleReplacement": "HD_WornPathA_TerminatedSurface",
+    "generatedMeshAsset": "Assets/Art/GeneratedGroundInterfaces/Meshes/GM_HD_Interface_WornPathA_TerminatedSurface.asset",
+    "generatedMaterialAsset": "Assets/Art/GeneratedGroundInterfaces/Materials/MAT_WornPathA_TerminatedSurface.mat",
+    "visiblePathLongitudinalSegments": 18,
+    "visiblePathExpectedVertexCount": 57,
+    "visiblePathUv0": "world-metre UV",
+    "soilMacroTileM": 6.4,
+    "soilDetailTileM": 0.30,
+    "soilMetallic": 0.0,
+    "soilSpecularF0": 0.04,
+    "pathMouthTopYM": 0.049,
+    "pavingTopYM": 0.050,
+    "retainedCurbModulesPerSide": 7,
+    "suppressedLegacyCurbModulesPerSide": 7,
+    "weathering": "cause-based foot traffic, UV exposure and ground splash metadata; no painted shadow/highlight"
+  },
+  "qaEnforcement": [
+    "source WornPathA renderer must be disabled while its gameplay collider remains enabled",
+    "visible replacement must use an authored GM_HD_ mesh and contain no collider",
+    "visible path max Z may not continue beyond the plaza south edge",
+    "mouth top must finish approximately 1 mm below paving to avoid coplanar z-fighting",
+    "UV0 span must correspond to world-metre geometry and macro/detail texture transforms must match physical tile sizes",
+    "retained curb modules must use authored meshes, dielectric PBR_WashedConcrete, physical normal/roughness maps and weathering metadata",
+    "legacy curb modules 07-13 on both sides must remain renderer-disabled",
+    "first suppressed module must still match the documented source continuation datum so coordinate drift fails closed",
+    "all checks are repeated before reflection capture, immediately before Camera.Render and before temporal capture"
+  ],
+  "verification": {
+    "sourceMathReviewed": true,
+    "contractAndLookdevCreated": true,
+    "selfAuditPerformed": true,
+    "unity6000_3_0f1CompileExecuted": false,
+    "unityRuntimeAvailable": false,
+    "native3840x2160StillsCaptured": false,
+    "oneHundredPercentCropsCaptured": false,
+    "temporalEvidenceCaptured": false,
+    "commitStatusContextsAtSubstantiveHead": 0,
+    "workflowRunsAtSubstantiveHead": 0,
+    "renderVerificationPending": true
+  },
+  "selfAudit": [
+    "Initial curb-only proposal was rejected inside the same run after source-bounds analysis proved the approximately 0.70 m east WornPathA strip would survive beside the plaza.",
+    "Final implementation splits gameplay collision from render geometry: the coarse source Cube remains collision-only and the visible path becomes an authored surface with physical-scale UVs and a deliberate plaza mouth.",
+    "A semantic JSON-key rename was reverted because the C# parser still referenced the original serialized field name; schema/parser agreement was prioritized over cosmetic naming."
+  ],
+  "implementationReadinessScore": 93,
+  "implementationReadinessMax": 100,
+  "visualFidelity": {
+    "status": "UNSCORED",
+    "pointsAwardedThisRun": 0,
+    "passClaimed": false,
+    "criticalDefectClearedFromPixels": false,
+    "reason": "No real Unity render, 100% crop or temporal evidence exists for this head. Source-side geometry/material/QA changes cannot earn visual points."
+  },
+  "expectedVisualScoreImpact": {
+    "awardedAutomatically": 0,
+    "geometryAndConstruction": "Potentially removes a primitive-overlap/path-termination deduction and a curb-continuation construction contradiction if actual pixels confirm the replacement.",
+    "materialPbr": "Potentially improves physical soil/concrete separation by forcing dielectric PBR and physical normal/roughness bindings; unverified in pixels.",
+    "textureMicrodetailTexel": "Potentially reduces normalized-UV stretch/repetition via metre UV plus 6.4 m macro and 0.30 m detail scales; temporal stability unverified.",
+    "weatheringContextCausality": "Adds foot-traffic/UV/ground-splash metadata tied to the real path exposure instead of random decorative staining.",
+    "periodAccuracyAuthenticity": "Potentially makes the plaza connection read as ordinary residential path infrastructure rather than a generated overlap; exact historic-product dimensions are not claimed.",
+    "temporalLodAliasing": "No geometry-changing LOD is introduced for this small correction until temporal evidence justifies one."
+  },
+  "nextBlocker": "Unity 6000.3.0f1 compile/runtime and the Complete Native 4K Review Packet. When a Runner or captures become available, stop speculative expansion and inspect hero/oblique/grazing full frames plus 100% ground-contact crops for path-mouth silhouette, final curb end faces, contact/light leaks, dielectric response, texture repetition/shimmer and any reappearance of the source Cube or suppressed curb modules before assigning Visual Fidelity points."
+}

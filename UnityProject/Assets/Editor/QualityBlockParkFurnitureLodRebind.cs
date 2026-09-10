@@ -5,11 +5,12 @@ using UnityEditor;
 using UnityEngine;
 
 /// <summary>
-/// Rebinds LOD renderer sets after physical-refinement and notice-board display-case meshes replace/add
-/// first-pass renderers. LODGroup stores explicit Renderer references, so adding a refined mesh after
-/// SetLODs would otherwise leave it outside the LOD system and create an all-distance renderer / visible
-/// transition defect. Formal validation also re-runs notice-board construction and printed-UV QA so the
-/// completed prepared scene proves cover/paper/hardware geometry and print mapping survived.
+/// Rebinds LOD renderer sets after physical-refinement and benchmark-visible manufactured subassemblies
+/// replace/add first-pass renderers. LODGroup stores explicit Renderer references, so adding a refined
+/// mesh after SetLODs would otherwise leave it outside the LOD system and create an all-distance renderer /
+/// visible transition defect. The lamp installation pass deliberately runs here, after PhysicalDiffuser
+/// exists and immediately before rebind, so its continuous pole, curved service cover and retained head
+/// become proper LOD members instead of free renderers.
 /// </summary>
 public static class QualityBlockParkFurnitureLodRebind
 {
@@ -20,26 +21,31 @@ public static class QualityBlockParkFurnitureLodRebind
 
     private static readonly HashSet<string> LampExcluded = new HashSet<string>(StringComparer.Ordinal)
     {
-        "Diffuser"
+        "PoleLower", "PoleUpper", "GroundMoistureBand", "Neck", "Cap", "Diffuser", "DiffuserCrown"
     };
 
     [MenuItem("NewTown/Quality/Rebind Park Furniture Refined LOD Renderers")]
     public static void RebindAndValidate()
     {
+        // Physical refinement has already created PhysicalDiffuser. Reconstruct the remaining lamp
+        // manufacture/install interfaces now, before explicit LOD renderer membership is rebuilt.
+        QualityBlockParkLampInstallationQA.ApplyToOpenScene();
+
         Rebind("HD_Slide", SlideExcluded);
         Rebind("HD_Lamp", LampExcluded);
         Rebind("HD_Bench", null);
         Rebind("HD_NoticeBoard", null);
 
-        // Rebind happens before the shared microdetail pass converts generated meshes to metre-space UVs.
-        // Validate only renderer membership/construction here; printed-UV QA is intentionally deferred
-        // until after microdetail normalization in the save chain.
+        // Rebind happens before the shared microdetail pass converts generated meshes to metre-space UVs
+        // and before bare exposed steel is normalized to its final metallic value. Validate renderer
+        // membership/construction here; full lamp physical-material QA is intentionally deferred until
+        // the completed prepared scene after microdetail.
         ValidateAssembly("HD_Slide", "PhysicalChute", SlideExcluded);
         ValidateAssembly("HD_Lamp", "PhysicalDiffuser", LampExcluded);
         ValidateAssembly("HD_Bench", null, null);
         ValidateAssembly("HD_NoticeBoard", null, null);
         QualityBlockNoticeBoardDisplayCaseQA.ValidateOpenScene();
-        Debug.Log("Park/street furniture LOD renderer sets rebound after physical/detail refinement.");
+        Debug.Log("Park/street furniture LOD renderer sets rebound after physical/detail refinement, including reconstructed park-lamp installation renderers.");
     }
 
     [MenuItem("NewTown/QA/Validate Park Furniture Refined LOD Binding")]
@@ -49,6 +55,7 @@ public static class QualityBlockParkFurnitureLodRebind
         ValidateAssembly("HD_Lamp", "PhysicalDiffuser", LampExcluded);
         ValidateAssembly("HD_Bench", null, null);
         ValidateAssembly("HD_NoticeBoard", null, null);
+        QualityBlockParkLampInstallationQA.ValidateOpenScene();
         QualityBlockNoticeBoardDisplayCaseQA.ValidateOpenScene();
         QualityBlockNoticeBoardPrintedUvQA.ValidateOpenScene();
     }
@@ -100,7 +107,7 @@ public static class QualityBlockParkFurnitureLodRebind
             if (requiredRefinedRendererName != null && !rs.Any(r => r != null && r.gameObject.name == requiredRefinedRendererName))
                 throw new InvalidOperationException($"{rootName} LOD{i} is not bound to {requiredRefinedRendererName}.");
             if (excluded != null && rs.Any(r => r != null && excluded.Contains(r.gameObject.name)))
-                throw new InvalidOperationException($"{rootName} LOD{i} still binds oversized first-pass renderer(s). ");
+                throw new InvalidOperationException($"{rootName} LOD{i} still binds replaced first-pass renderer(s).");
             if (rs.Any(r => r == null))
                 throw new InvalidOperationException($"{rootName} LOD{i} has missing renderer references.");
         }

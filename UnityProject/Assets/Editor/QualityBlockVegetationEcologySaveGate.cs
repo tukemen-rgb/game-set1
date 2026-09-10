@@ -8,8 +8,9 @@ using UnityEngine.SceneManagement;
 /// <summary>
 /// Persists the vegetation-ecology invariant through the benchmark rebuild/capture chain. Once the
 /// detailed tree masters and ground infrastructure exist, every subsequent quality-scene save must
-/// include maintained tree pits/understory and pass their structural QA. This keeps 4K evidence from
-/// silently reverting to trunks intersecting undifferentiated paving or a vegetation layer without LODs.
+/// include maintained tree pits/understory, the mature-root clearance refinement, local support-grade
+/// curb placement and grounded plant origins. This keeps 4K evidence from silently reverting to roots
+/// intersecting paving/curbs or boundary modules/understory floating above their support surfaces.
 /// </summary>
 [InitializeOnLoad]
 public static class QualityBlockVegetationEcologySaveGate
@@ -39,13 +40,16 @@ public static class QualityBlockVegetationEcologySaveGate
         try
         {
             QualityBlockVegetationEcologyContractQA.Validate();
+            QualityBlockVegetationRootZoneInterfaceQA.ValidateContractConfigOnly();
             QualityBlockVegetationEcologyUpgrade.ApplyToOpenScene();
             QualityBlockVegetationEcologyUpgrade.ValidateOpenScene();
+            QualityBlockVegetationRootZoneInterfaceQA.ApplyToOpenScene();
+            QualityBlockVegetationRootZoneInterfaceQA.ValidateOpenScene();
         }
         catch (Exception ex)
         {
             throw new InvalidOperationException(
-                "Benchmark save blocked: vegetation ecology contract/detail failed its required structural QA.", ex);
+                "Benchmark save blocked: vegetation ecology/root-zone construction failed its required structural QA.", ex);
         }
         finally
         {

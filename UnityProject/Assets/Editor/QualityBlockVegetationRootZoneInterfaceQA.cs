@@ -10,8 +10,8 @@ using UnityEngine.SceneManagement;
 /// Repairs and fail-closes the construction interface between generated mature root flares,
 /// maintained plaza tree pits, the lawn datum and low understory. The original ecology pass used
 /// a decorative-scale 0.74-0.86 m pit radius while the generated root-flare centerline can approach
-/// 0.94 m; that can place roots through curb/paving. Boundary rings also need to follow the actual
-/// support grade instead of hovering at one plaza-derived world height.
+/// 0.94 m. Boundary rings also need to follow their actual local support grade rather than hover at
+/// one plaza-derived world height.
 ///
 /// This pass is intentionally downstream of QualityBlockVegetationEcologyUpgrade. It preserves the
 /// coarse gameplay ground/trunk colliders, changes only visual construction, and remains visually
@@ -31,7 +31,7 @@ public static class QualityBlockVegetationRootZoneInterfaceQA
     private const int EdgingModules = 12;
     private const int ExpectedBoundaryRings = 3;
 
-    private const float OpeningRadius = 1.15f;
+    private const float OpeningRadius = 1.16f;
     private const float CurbRadialWidth = 0.15f;
     private const float CurbHeight = 0.08f;
     private const float CurbPavingEmbed = 0.008f;
@@ -42,8 +42,12 @@ public static class QualityBlockVegetationRootZoneInterfaceQA
     private const float PavedPlantRootOffset = 0.001f;
     private const float GrassPlantRootOffset = 0.004f;
     private const float RootTipRadiusRatio = 0.58f;
+    private const float RootNormalizedTipEnvelope = 0.64f;
+    private const float ConservativeRootOuterRadius = 1.0648f;
     private const float MinimumRootClearance = 0.09f;
 
+    // Module starts are deliberately not globally phase-locked. Real precast setting-out does not
+    // synchronize every circular joint to one world axis, and global phasing would create repetition.
     private static readonly float[] RingPhaseDegrees = { 0f, 11f, 22f, 3f, 0f, 0f };
 
     [MenuItem("NewTown/Vegetation/Apply Root-Zone Construction Interface")]
@@ -81,21 +85,25 @@ public static class QualityBlockVegetationRootZoneInterfaceQA
             contract.understoryGrounding == null || contract.qa == null)
             throw new InvalidOperationException("Vegetation root-zone contract is missing required construction sections.");
 
-        if (contract.sceneDatum.treeAnchorCount != TreeCount || contract.sceneDatum.maintainedPitCount != MaintainedPitCount ||
-            contract.sceneDatum.interiorPavedRingCount != 1 || contract.sceneDatum.pavingBoundaryRingCount != ExpectedBoundaryRings ||
-            contract.sceneDatum.grassOnlyTreeCount != 2 || !contract.sceneDatum.noGameplayColliderChanges)
+        SceneDatum datum = contract.sceneDatum;
+        if (datum.treeAnchorCount != TreeCount || datum.maintainedPitCount != MaintainedPitCount ||
+            datum.interiorPavedRingCount != 1 || datum.pavingBoundaryRingCount != ExpectedBoundaryRings ||
+            datum.grassOnlyTreeCount != 2 || !datum.noGameplayColliderChanges)
             throw new InvalidOperationException("Vegetation root-zone scene datum/count contract drifted from the benchmark.");
 
-        if (contract.rootFlareEnvelope.generatedRootFlaresPerTree != 7 ||
-            !Near(contract.rootFlareEnvelope.tipRadiusRatio, RootTipRadiusRatio, 0.0001f) ||
-            !Near(contract.rootFlareEnvelope.conservativeMaximumOuterRadiusMeters, 1.0531f, 0.0002f) ||
-            !Near(contract.rootFlareEnvelope.minimumVisibleSoilClearanceToEdgingMeters, MinimumRootClearance, 0.0001f) ||
-            !Near(contract.rootFlareEnvelope.requiredOpeningRadiusMeters, OpeningRadius, 0.0001f))
+        RootFlareEnvelope root = contract.rootFlareEnvelope;
+        if (root.generatedRootFlaresPerTree != 7 ||
+            !Near(root.tipRadiusRatio, RootTipRadiusRatio, 0.0001f) ||
+            !Near(root.normalizedTipRadialEnvelopeIncludingIrregularity, RootNormalizedTipEnvelope, 0.0001f) ||
+            !Near(root.conservativeMaximumOuterRadiusMeters, ConservativeRootOuterRadius, 0.0002f) ||
+            !Near(root.minimumVisibleSoilClearanceToEdgingMeters, MinimumRootClearance, 0.0001f) ||
+            !Near(root.requiredOpeningRadiusMeters, OpeningRadius, 0.0001f))
             throw new InvalidOperationException("Vegetation root-flare envelope/opening-radius contract drift detected.");
-        if (OpeningRadius - contract.rootFlareEnvelope.conservativeMaximumOuterRadiusMeters < MinimumRootClearance)
+        if (OpeningRadius - ConservativeRootOuterRadius < MinimumRootClearance)
             throw new InvalidOperationException("Contracted pit opening does not clear the conservative generated root-flare envelope.");
 
         PitAssemblySpec pit = contract.pitAssembly;
+        float expectedCenterline = OpeningRadius + CurbRadialWidth * 0.5f;
         if (!Near(pit.openingRadiusMeters, OpeningRadius, 0.0001f) ||
             !Near(pit.openingDiameterMeters, OpeningRadius * 2f, 0.0001f) ||
             pit.curbModuleCount != EdgingModules ||
@@ -104,10 +112,10 @@ public static class QualityBlockVegetationRootZoneInterfaceQA
             !Near(pit.curbPavingEmbedMeters, CurbPavingEmbed, 0.0001f) ||
             !Near(pit.curbGrassEmbedMeters, CurbGrassEmbed, 0.0001f) ||
             !Near(pit.curbJointGapMeters, CurbJointGap, 0.0001f) ||
+            !Near(pit.curbCenterlineRadiusMeters, expectedCenterline, 0.0001f) ||
             !Near(pit.soilTopVisualBiasAbovePavingMeters, SoilRenderSeparation, 0.0001f) ||
             !Near(pit.soilVisualBottomEmbedBelowGrassMeters, SoilGrassEmbed, 0.0001f))
             throw new InvalidOperationException("Vegetation root-zone pit fabrication dimensions drifted from the runtime refinement.");
-
         RequireText(pit.manufacture, "pit manufacture");
         RequireText(pit.mounting, "pit mounting");
         RequireText(pit.interfacesGapsSeals, "pit interfaces/gaps/seals");
@@ -141,10 +149,11 @@ public static class QualityBlockVegetationRootZoneInterfaceQA
                 throw new InvalidOperationException($"Implausible normal scale in root-zone material {material.id}: {material.normalScaleTarget}.");
         }
 
-        if (!contract.qa.requireLookdevIllustration || !contract.qa.requireExactOpeningRadius ||
-            !contract.qa.requireRootFlareClearance || !contract.qa.requireLocalSupportGradeForEveryCurbModule ||
-            !contract.qa.requireNoSoilUndersideGapAtGrassBoundary || !contract.qa.requireUnderstorySurfaceGrounding ||
-            !contract.qa.requireNoGeneratedColliders || !contract.qa.requireFourPits || !contract.qa.requireThreeBoundaryRings)
+        QaSpec qa = contract.qa;
+        if (!qa.requireLookdevIllustration || !qa.requireExactOpeningRadius || !qa.requireRootFlareClearance ||
+            !qa.requireExactRuntimeRootVertexEnvelope || !qa.requireLocalSupportGradeForEveryCurbModule ||
+            !qa.requireNoSoilUndersideGapAtGrassBoundary || !qa.requireUnderstorySurfaceGrounding ||
+            !qa.requireNoGeneratedColliders || !qa.requireFourPits || !qa.requireThreeBoundaryRings)
             throw new InvalidOperationException("Vegetation root-zone QA contract is missing a hard physical interface invariant.");
     }
 
@@ -245,8 +254,9 @@ public static class QualityBlockVegetationRootZoneInterfaceQA
             if (pit == null)
                 throw new InvalidOperationException($"Paved tree {i} is missing its maintained root-zone pit.");
 
-            MeshRenderer soil = pit.Find("SoilDisk")?.GetComponent<MeshRenderer>();
-            MeshFilter soilFilter = pit.Find("SoilDisk")?.GetComponent<MeshFilter>();
+            Transform soilObject = pit.Find("SoilDisk");
+            MeshRenderer soil = soilObject != null ? soilObject.GetComponent<MeshRenderer>() : null;
+            MeshFilter soilFilter = soilObject != null ? soilObject.GetComponent<MeshFilter>() : null;
             if (soil == null || soilFilter == null || soilFilter.sharedMesh == null)
                 throw new InvalidOperationException($"Tree {i} root-zone soil mesh is missing.");
             if (!soilFilter.sharedMesh.name.StartsWith("GM_HD_", StringComparison.Ordinal))
@@ -254,10 +264,9 @@ public static class QualityBlockVegetationRootZoneInterfaceQA
             AssertNear(soil.bounds.extents.x, OpeningRadius, 0.012f, $"tree {i} soil opening X radius");
             AssertNear(soil.bounds.extents.z, OpeningRadius, 0.012f, $"tree {i} soil opening Z radius");
             AssertNear(soil.bounds.max.y, expectedSoilTop, 0.003f, $"tree {i} soil top/render-separation datum");
-            if (soil.bounds.min.y > grassTop + 0.001f)
-                throw new InvalidOperationException(
-                    $"Tree {i} root-zone soil underside is unsupported above lawn datum: minY={soil.bounds.min.y:F4}, grassTop={grassTop:F4}.");
-            if (soil.sharedMaterial == null || (soil.sharedMaterial.HasProperty("_Metallic") && soil.sharedMaterial.GetFloat("_Metallic") > 0.02f))
+            AssertNear(soil.bounds.min.y, expectedSoilBottom, 0.003f, $"tree {i} soil lower support datum");
+            if (soil.sharedMaterial == null ||
+                (soil.sharedMaterial.HasProperty("_Metallic") && soil.sharedMaterial.GetFloat("_Metallic") > 0.02f))
                 throw new InvalidOperationException($"Tree {i} root-zone soil material is missing or materially impossible/metallic.");
 
             MeshRenderer[] edges = pit.GetComponentsInChildren<MeshRenderer>(true)
@@ -276,9 +285,8 @@ public static class QualityBlockVegetationRootZoneInterfaceQA
                     throw new InvalidOperationException($"Tree {i} curb {edge.name} uses missing/non-authored geometry.");
                 AssertNear(filter.sharedMesh.bounds.size.z, expectedModuleLength, 0.004f,
                     $"tree {i} curb {edge.name} visible chord length");
-
-                float radial = HorizontalDistance(patch.position, edge.transform.position);
-                AssertNear(radial, expectedCurbCenterRadius, 0.004f, $"tree {i} curb {edge.name} center radius");
+                AssertNear(HorizontalDistance(patch.position, edge.transform.position), expectedCurbCenterRadius, 0.004f,
+                    $"tree {i} curb {edge.name} center radius");
 
                 bool onPaving = ContainsXZ(plaza.bounds, edge.transform.position);
                 float supportTop = onPaving ? plazaTop : grassTop;
@@ -288,7 +296,8 @@ public static class QualityBlockVegetationRootZoneInterfaceQA
                     $"tree {i} curb {edge.name} local-support center height");
                 if (onPaving) pavingSupported++; else grassSupported++;
 
-                if (edge.sharedMaterial == null || (edge.sharedMaterial.HasProperty("_Metallic") && edge.sharedMaterial.GetFloat("_Metallic") > 0.02f))
+                if (edge.sharedMaterial == null ||
+                    (edge.sharedMaterial.HasProperty("_Metallic") && edge.sharedMaterial.GetFloat("_Metallic") > 0.02f))
                     throw new InvalidOperationException($"Tree {i} curb {edge.name} material is missing or materially impossible/metallic.");
             }
 
@@ -315,7 +324,7 @@ public static class QualityBlockVegetationRootZoneInterfaceQA
             throw new InvalidOperationException($"Root-zone visual construction must remain collider-separated; found {generatedColliders.Length} colliders.");
 
         Debug.Log(
-            "Vegetation root-zone interface QA passed structurally: four 2.30 m root-zone openings, minimum generated root clearance, " +
+            "Vegetation root-zone interface QA passed structurally: four 2.32 m root-zone openings, exact transformed-mesh root clearance, " +
             "three grade-following plaza/lawn boundary rings, one interior paved ring, supported soil volume and grounded understory. " +
             "Actual 4K intersection/contact appearance remains UNSCORED until native rendered evidence is reviewed.");
     }
@@ -324,13 +333,15 @@ public static class QualityBlockVegetationRootZoneInterfaceQA
         float plazaTop, float grassTop, float soilTop, float soilBottom)
     {
         Transform soilTransform = pit.Find("SoilDisk");
-        MeshFilter soilFilter = soilTransform?.GetComponent<MeshFilter>();
+        MeshFilter soilFilter = soilTransform != null ? soilTransform.GetComponent<MeshFilter>() : null;
         if (soilTransform == null || soilFilter == null)
             throw new InvalidOperationException($"Tree {treeIndex} soil disk missing before root-zone refinement.");
 
         float soilThickness = soilTop - soilBottom;
+        // GetBeveledCylinder intentionally mirrors Unity primitive convention: Y input is HALF the
+        // final height. Passing soilThickness directly would silently double the soil volume.
         soilFilter.sharedMesh = QualityBlockDetailMeshLibrary.GetBeveledCylinder(
-            new Vector3(OpeningRadius * 2f, soilThickness, OpeningRadius * 2f), false);
+            new Vector3(OpeningRadius * 2f, soilThickness * 0.5f, OpeningRadius * 2f), false);
         Vector3 soilWorld = soilTransform.position;
         soilWorld.y = (soilTop + soilBottom) * 0.5f;
         soilTransform.position = soilWorld;
@@ -354,7 +365,10 @@ public static class QualityBlockVegetationRootZoneInterfaceQA
             Vector3 radial = new(Mathf.Cos(angle), 0f, Mathf.Sin(angle));
             Vector3 tangent = new(-radial.z, 0f, radial.x);
             MeshRenderer edge = edges[m];
-            edge.GetComponent<MeshFilter>().sharedMesh = edgeMesh;
+            MeshFilter edgeFilter = edge.GetComponent<MeshFilter>();
+            if (edgeFilter == null)
+                throw new InvalidOperationException($"Tree {treeIndex} curb {edge.name} lost its MeshFilter before refinement.");
+            edgeFilter.sharedMesh = edgeMesh;
             edge.transform.localPosition = radial * centerRadius;
             edge.transform.localRotation = Quaternion.LookRotation(tangent, Vector3.up);
 
@@ -420,7 +434,7 @@ public static class QualityBlockVegetationRootZoneInterfaceQA
             throw new InvalidOperationException($"Tree {treeIndex} generated fallback root missing during root-clearance QA.");
 
         Transform master = slot.FallbackRoot.transform.Find($"HD_TreeMaster_{treeIndex}");
-        Transform rootAssembly = master?.Find("RootFlareAssembly");
+        Transform rootAssembly = master != null ? master.Find("RootFlareAssembly") : null;
         if (rootAssembly == null)
             throw new InvalidOperationException($"Tree {treeIndex} generated root-flare assembly missing.");
 
@@ -434,17 +448,24 @@ public static class QualityBlockVegetationRootZoneInterfaceQA
         float maximumOuterRadius = 0f;
         foreach (MeshRenderer flare in flares)
         {
-            Vector3 scale = flare.transform.lossyScale;
-            Vector3 endpoint = flare.transform.position + flare.transform.up * Mathf.Abs(scale.y);
-            float tipRadius = Mathf.Max(Mathf.Abs(scale.x), Mathf.Abs(scale.z)) * RootTipRadiusRatio;
-            float outerRadius = HorizontalDistance(anchor, endpoint) + tipRadius;
-            maximumOuterRadius = Mathf.Max(maximumOuterRadius, outerRadius);
+            MeshFilter filter = flare.GetComponent<MeshFilter>();
+            if (filter == null || filter.sharedMesh == null)
+                throw new InvalidOperationException($"Tree {treeIndex} root flare {flare.name} has no source mesh.");
+
+            // Measure the exact transformed authored vertices. The root mesh contains radial
+            // irregularity and a lateral centerline offset, so multiplying the nominal 0.58 tip
+            // ratio by start radius is not sufficiently conservative for a hard intersection gate.
+            foreach (Vector3 localVertex in filter.sharedMesh.vertices)
+            {
+                Vector3 worldVertex = flare.transform.TransformPoint(localVertex);
+                maximumOuterRadius = Mathf.Max(maximumOuterRadius, HorizontalDistance(anchor, worldVertex));
+            }
         }
 
         float clearance = OpeningRadius - maximumOuterRadius;
         if (clearance < MinimumRootClearance - 0.004f)
             throw new InvalidOperationException(
-                $"Tree {treeIndex} generated root flare approaches/intersects the pit edge: outerRadius={maximumOuterRadius:F4} m, " +
+                $"Tree {treeIndex} generated root flare approaches/intersects the pit edge: exactVertexOuterRadius={maximumOuterRadius:F4} m, " +
                 $"opening={OpeningRadius:F4} m, clearance={clearance:F4} m, required>={MinimumRootClearance:F4} m.");
     }
 
@@ -537,6 +558,7 @@ public static class QualityBlockVegetationRootZoneInterfaceQA
     {
         public int generatedRootFlaresPerTree;
         public float tipRadiusRatio;
+        public float normalizedTipRadialEnvelopeIncludingIrregularity;
         public float conservativeMaximumOuterRadiusMeters;
         public float minimumVisibleSoilClearanceToEdgingMeters;
         public float requiredOpeningRadiusMeters;
@@ -555,6 +577,7 @@ public static class QualityBlockVegetationRootZoneInterfaceQA
         public float curbPavingEmbedMeters;
         public float curbGrassEmbedMeters;
         public float curbJointGapMeters;
+        public float curbCenterlineRadiusMeters;
         public string manufacture;
         public string mounting;
         public string interfacesGapsSeals;
@@ -593,6 +616,7 @@ public static class QualityBlockVegetationRootZoneInterfaceQA
         public bool requireLookdevIllustration;
         public bool requireExactOpeningRadius;
         public bool requireRootFlareClearance;
+        public bool requireExactRuntimeRootVertexEnvelope;
         public bool requireLocalSupportGradeForEveryCurbModule;
         public bool requireNoSoilUndersideGapAtGrassBoundary;
         public bool requireUnderstorySurfaceGrounding;

@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "1.0",
+  "schemaVersion": "1.1",
   "status": "IMPLEMENTATION_ONLY_RENDER_VERIFICATION_PENDING",
   "purpose": "Prevent correctly modeled benchmark details from being outside, clipped by, or too small in the native 4K evidence that will be scored. This contract cannot award Visual Fidelity points.",
   "nativeFrame": {
@@ -30,7 +30,8 @@
         "width": 1280,
         "height": 720,
         "minimumContainmentMarginPx": 16,
-        "resamplingAllowed": false
+        "resamplingAllowed": false,
+        "canonicalCaptureRecord": true
       }
     },
     {
@@ -49,7 +50,8 @@
         "width": 1280,
         "height": 720,
         "minimumContainmentMarginPx": 16,
-        "resamplingAllowed": false
+        "resamplingAllowed": false,
+        "canonicalCaptureRecord": true
       }
     }
   ],
@@ -68,9 +70,22 @@
     ],
     "prohibition": "Do not enlarge antenna rods/elements beyond physical dimensions merely to satisfy pixel thresholds. If observability fails, adjust benchmark framing/target while preserving construction dimensions."
   },
+  "captureAndProvenanceIntegration": {
+    "canonicalCaptureOwner": "QualityBlock4KCapture.Views",
+    "canonicalCropRecords": [
+      "hero/rooftop_period_hardware",
+      "oblique/rooftop_reception_oblique"
+    ],
+    "captureContractLocksCropRectangles": true,
+    "sealedBy": "QualityBlockRenderEvidenceProvenanceQA",
+    "rule": "The dedicated rooftop crops must be emitted as ordinary runtime 4k_capture_manifest cropRecords before capture sealing. Therefore their files, dimensions, canonical paths, full-frame pixel identity and SHA-256 receipt binding are governed by the same provenance path as every other scoreable 100% crop.",
+    "separateObservabilityManifest": "Assets/QA/rooftop_observability_evidence.json",
+    "separateManifestRole": "Projection/observability receipt only; it does not replace the canonical sealed capture manifest/receipt."
+  },
   "automaticCropExtraction": {
     "enabled": true,
-    "trigger": "Import of Assets/QA/Captures4K/hero_3840x2160.png or oblique_3840x2160.png after native Unity capture",
+    "compatibilityRole": "The observability extractor re-derives the same exact crop texels from the native full frames before the authoritative packet is sealed and writes its own observability receipt. The canonical QualityBlock4KCapture cropRecords are now the provenance authority.",
+    "trigger": "Import of Assets/QA/Captures4K/hero_3840x2160.png or oblique_3840x2160.png after native Unity capture, plus explicit invocation in the complete native-4K packet before sealing",
     "sourcePixelHandling": "Decode source PNG to Color32, copy crop texels 1:1 by array row, encode crop PNG.",
     "filtering": "none",
     "sharpening": "none",
@@ -83,13 +98,14 @@
     "The projected rooftop assembly is below the minimum observable pixel footprint in hero or oblique evidence.",
     "A required 100% crop does not contain the full projected assembly plus inspection margin.",
     "A roof evidence crop is resized, filtered, sharpened or otherwise resampled.",
+    "A dedicated roof crop exists outside the canonical capture manifest/receipt and is cited for scoring without sealed provenance.",
     "Period Accuracy or any Visual Fidelity category is awarded from projection math/source code without an actual Unity render.",
     "Physical antenna dimensions are inflated solely to game the observability threshold."
   ],
   "expectedVisualScoreImpactWhenRenderedAndVerified": {
-    "periodAccuracySceneAuthenticity": "Makes the era-specific rooftop infrastructure inspectable rather than nominally present but visually irrelevant.",
-    "geometryConstructionFidelity": "Ensures ballast, mast, boom, elements and coax load/service path can be judged in actual pixels.",
-    "materialPbrPhysicalPlausibility": "Creates a dedicated oblique crop where galvanized angular response, dielectric feed boxes and roof contact can be inspected.",
+    "periodAccuracySceneAuthenticity": "Makes the era-specific rooftop infrastructure inspectable from two sealed camera angles rather than nominally present but visually irrelevant.",
+    "geometryConstructionFidelity": "Ensures ballast, mast, boom, elements and coax load/service path can be judged in actual sealed pixels.",
+    "materialPbrPhysicalPlausibility": "Creates a dedicated sealed oblique crop where galvanized angular response, dielectric feed boxes and roof contact can be inspected.",
     "temporalLodAliasingStability": "Thin VHF/UHF elements have sufficient pixel footprint for later shimmer/LOD-pop review; source projection itself does not prove stability."
   }
 }

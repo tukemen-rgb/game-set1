@@ -36,7 +36,7 @@ public static class QualityBlockGroundWornPathBTransitionQA
     private static readonly int[] CrossCounts = { 7, 7, 5, 5 };
     private static readonly float[] LodScreen = { 0.58f, 0.32f, 0.16f, 0.055f };
     private static readonly Vector3 P0 = new Vector3(11.30f, 0f, 5.40f);
-    private static readonly Vector3 P1 = new Vector3(12.15f, 0f, 5.40f);
+    private static readonly Vector3 P1 = new Vector3(12.45f, 0f, 5.40f);
     private static readonly Vector3 P2 = new Vector3(12.55f, 0f, 8.30f);
     private static readonly Vector3 P3 = new Vector3(13.25f, 0f, 10.35f);
 
@@ -326,7 +326,8 @@ public static class QualityBlockGroundWornPathBTransitionQA
             for (int ix = 0; ix < row - 1; ix++)
             {
                 int a = a0 + ix, b = a + 1, c0 = n0 + ix, d = c0 + 1;
-                // Cross(lateral, forward) points +Y, so these triangles generate upward-facing ground normals.
+                // Cross(lateral, forward) points +Y. The entry stays at fixed width until t=.22,
+                // preventing the outer rail from reversing longitudinally while the spline turns.
                 tri.Add(a); tri.Add(b); tri.Add(c0);
                 tri.Add(b); tri.Add(d); tri.Add(c0);
             }
@@ -392,9 +393,16 @@ public static class QualityBlockGroundWornPathBTransitionQA
     }
     private static float WidthAt(float t, Contract c)
     {
-        if (t <= 0.18f) return Mathf.Lerp(c.dimensions.mouthWidthM, c.dimensions.midWidthM, Mathf.SmoothStep(0f, 1f, t / 0.18f));
+        // Keep the mouth width constant while the route clears the curb and starts its turn. Expanding
+        // the ribbon during this high-curvature interval can make an outer vertex rail reverse direction
+        // and create folded/inverted triangles even when triangle winding itself is nominally correct.
+        if (t <= 0.22f) return c.dimensions.mouthWidthM;
+        if (t <= 0.55f)
+            return Mathf.Lerp(c.dimensions.mouthWidthM, c.dimensions.midWidthM,
+                Mathf.SmoothStep(0f, 1f, Mathf.InverseLerp(0.22f, 0.55f, t)));
         if (t <= 0.68f) return c.dimensions.midWidthM;
-        return Mathf.Lerp(c.dimensions.midWidthM, c.dimensions.terminalWidthM, Mathf.SmoothStep(0f, 1f, Mathf.InverseLerp(0.68f, 1f, t)));
+        return Mathf.Lerp(c.dimensions.midWidthM, c.dimensions.terminalWidthM,
+            Mathf.SmoothStep(0f, 1f, Mathf.InverseLerp(0.68f, 1f, t)));
     }
     private static float CenterTopAt(float t, Contract c)
     {

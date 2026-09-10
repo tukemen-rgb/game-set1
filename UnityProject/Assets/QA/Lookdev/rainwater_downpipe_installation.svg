@@ -1,0 +1,66 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="1000" viewBox="0 0 1600 1000">
+  <rect width="1600" height="1000" fill="#f4f1e8"/>
+  <style>
+    .t{font-family:Arial,sans-serif;fill:#202020}.h{font-weight:700;font-size:34px}.m{font-size:22px}.s{font-size:18px}.wall{fill:#c9c5bb;stroke:#5a5750;stroke-width:3}.pvc{fill:#555850;stroke:#222;stroke-width:3}.metal{fill:#7f827c;stroke:#252525;stroke-width:2}.dim{stroke:#353535;stroke-width:2;fill:none;marker-start:url(#a);marker-end:url(#a)}.guide{stroke:#777;stroke-width:1.5;stroke-dasharray:8 6}.wet{stroke:#65746e;stroke-width:6;opacity:.35}.note{fill:#fffdf8;stroke:#777;stroke-width:1.5}
+  </style>
+  <defs><marker id="a" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto"><path d="M8,0 L0,4 L8,8 Z" fill="#353535"/></marker></defs>
+  <text x="60" y="60" class="t h">Danchi rainwater downpipe — construction / lookdev section</text>
+  <text x="60" y="95" class="t m">Circa-2000 visual target; generic Japanese PVC-U leader principles, not an exact product claim</text>
+
+  <rect x="220" y="150" width="250" height="700" class="wall"/>
+  <text x="250" y="185" class="t m">coated RC facade</text>
+  <line x1="470" y1="140" x2="470" y2="860" class="guide"/>
+  <text x="390" y="885" class="t s">facade plane z=-7.30 m</text>
+
+  <rect x="630" y="200" width="74" height="570" rx="34" class="pvc"/>
+  <text x="725" y="245" class="t m">75 mm OD PVC-U macro pipe</text>
+  <text x="725" y="275" class="t s">rough dielectric; metallic≈0; smoothness target 0.18</text>
+
+  <g>
+    <rect x="624" y="330" width="86" height="28" rx="10" class="pvc"/>
+    <rect x="624" y="455" width="86" height="28" rx="10" class="pvc"/>
+    <rect x="624" y="580" width="86" height="28" rx="10" class="pvc"/>
+    <rect x="624" y="705" width="86" height="28" rx="10" class="pvc"/>
+    <text x="725" y="352" class="t s">socket/coupler sleeves; dark grime only under causal water/dust traps</text>
+  </g>
+
+  <g>
+    <rect x="615" y="390" width="104" height="24" rx="10" class="metal"/>
+    <rect x="492" y="391" width="123" height="22" class="metal"/>
+    <rect x="470" y="372" width="22" height="60" class="metal"/>
+    <circle cx="479" cy="387" r="6" fill="#454545"/><circle cx="479" cy="417" r="6" fill="#454545"/>
+    <text x="725" y="404" class="t s">galvanized band → stand-off arm → wall plate → two fastener heads</text>
+  </g>
+
+  <line x1="470" y1="520" x2="630" y2="520" class="dim"/>
+  <text x="495" y="510" class="t s">pipe centre 120 mm proud of wall</text>
+  <line x1="470" y1="550" x2="630" y2="550" class="guide"/>
+  <text x="488" y="575" class="t s">rear pipe surface ≈82.5 mm clear of wall</text>
+
+  <path d="M667 200 L625 160 L540 160" class="pvc" fill="none" stroke-width="74" stroke-linecap="round"/>
+  <circle cx="520" cy="160" r="48" class="pvc"/>
+  <text x="725" y="170" class="t s">roof-line offset returns into wall/scupper collar; no open gap</text>
+
+  <rect x="610" y="760" width="114" height="95" rx="22" class="pvc"/>
+  <line x1="667" y1="760" x2="667" y2="805" class="wet"/>
+  <rect x="550" y="850" width="500" height="35" fill="#b5ab93" stroke="#6b6253" stroke-width="2"/>
+  <text x="725" y="805" class="t s">ground receiver socket: pipe inserts ≈20 mm</text>
+  <text x="725" y="836" class="t s">lower 0.5 m: splash/damp/grime increase; no arbitrary damage mask</text>
+
+  <rect x="1070" y="160" width="470" height="700" class="note"/>
+  <text x="1100" y="205" class="t m">LOD / render policy</text>
+  <text x="1100" y="245" class="t s">LOD0: body + couplers + bands + arms + plates + fasteners + top offset + receiver</text>
+  <text x="1100" y="285" class="t s">LOD1: macro body + major accessory proxies; sub-pixel fasteners may disappear</text>
+  <text x="1100" y="325" class="t s">LOD2: macro body silhouette remains; small wall hardware removed</text>
+  <text x="1100" y="365" class="t s">LOD3: macro body only; no coarse late silhouette replacement</text>
+  <text x="1100" y="420" class="t m">Material response</text>
+  <text x="1100" y="458" class="t s">PVC-U: rough dielectric, F0≈0.04; grazing highlight must arise from Fresnel/lighting</text>
+  <text x="1100" y="498" class="t s">Galvanized hardware: metallic 0.75–1.0, broad rough-metal response</text>
+  <text x="1100" y="538" class="t s">No baked white glints, no painted joint shadows, no fake seam normals at silhouette scale</text>
+  <text x="1100" y="593" class="t m">Cause-based aging</text>
+  <text x="1100" y="631" class="t s">outward PVC: UV chalking / slight desaturation</text>
+  <text x="1100" y="671" class="t s">socket lower lips + wall-side recess: retained grime</text>
+  <text x="1100" y="711" class="t s">metal anchors: localized oxidation residue only at actual ferrous source</text>
+  <text x="1100" y="751" class="t s">ground receiver: splash/damp concentration</text>
+  <text x="1100" y="810" class="t s">Visual Fidelity remains UNSCORED until native 3840×2160 evidence + 100% crops exist.</text>
+</svg>

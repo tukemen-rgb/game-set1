@@ -1,0 +1,138 @@
+{
+  "schemaVersion": "1.0",
+  "runId": "2026-09-11_0137_worn_path_b_transition",
+  "branch": "gpt/unity-migration",
+  "startHead": "e5cc27c92671067f06b9e025b7a46c03fcb6bc7b",
+  "substantiveWorkHead": "15259337658b5b4539b8846fde712257e46954d7",
+  "recordedThroughHead": "2f073f2469599cdf2872e5d8b771498826fcdd5e",
+  "baseMergePerformed": false,
+  "godotModified": false,
+  "excludedContentIntroduced": false,
+  "implementationReadiness": {
+    "score": 93,
+    "possible": 100,
+    "changeThisRun": 0,
+    "reason": "The remaining seven points are reserved for actual Unity 6000.3.0f1 compile/runtime verification. Source implementation alone cannot earn them."
+  },
+  "visualFidelity": {
+    "status": "UNSCORED",
+    "pointsAwardedThisRun": 0,
+    "passClaimed": false,
+    "reason": "No actual Unity native 3840x2160 render or temporal evidence was available."
+  },
+  "priorityDecision": {
+    "target": "WornPathB park-verge interface",
+    "why": "The base scene leaves WornPathB as a foreground 2 x 6 m rectangular soil Cube, raised above grass and disconnected from a continuous ParkPathEast curb by roughly 0.53 m. This can create a high-cost primitive-placeholder/construction-causality deduction in hero/oblique framing.",
+    "categories": [
+      "Geometry & construction fidelity",
+      "Material/PBR physical plausibility",
+      "Texture/microdetail/texel fidelity",
+      "Weathering/context causality",
+      "Temporal/LOD/aliasing stability"
+    ]
+  },
+  "manufactureInstallationReasoning": {
+    "components": [
+      "coarse WornPathB BoxCollider retained as temporary gameplay substrate with source Renderer disabled",
+      "dry compacted granular soil/fines wearing course",
+      "feathered soil shoulders returning to turf grade",
+      "two complete omitted precast ParkPathEast curb modules forming access opening",
+      "existing ParkPath mineral paving mouth datum",
+      "existing turf/subgrade terminal datum"
+    ],
+    "dimensions": {
+      "sourceWidthM": 2.0,
+      "sourceLengthM": 6.0,
+      "sourceTopYM": 0.045,
+      "parkPavingTopYM": 0.060,
+      "pathMouthTopYM": 0.057,
+      "compactedCoreTopYM": 0.043,
+      "shoulderJoinTopYM": 0.003,
+      "curbOpeningWidthM": 1.212,
+      "mouthWidthM": 1.05,
+      "maximumWidthM": 1.35,
+      "terminalWidthM": 0.18
+    },
+    "mountingAndInterfaces": "The path begins exactly at the ParkPath east edge, sits 3 mm below paving, passes through whole-module curb opening 26/27, bears on verge subgrade, then curves and tapers northeast. Shoulders feather within roughly 3 mm of turf grade instead of exposing a vertical soil-slab side.",
+    "orientationExposure": "Upward exterior ground; midsummer sun/rain/drying plus concentrated pedestrian traffic at the access opening.",
+    "aging": "Cause-based footfall compaction and small long-wave settlement, reduced use toward the terminal, UV drying and turf encroachment at shoulders. No arbitrary story-driven damage.",
+    "geometryVsMaterial": "Curve, width evolution, wearing-course level, curb opening, shoulder feather, center depression and terminal taper are geometry. Grains/fines, roughness, restrained albedo variation and angular dielectric response remain material/microdetail."
+  },
+  "materialContract": {
+    "family": "dry compacted pedestrian soil/fines with small gravel",
+    "albedoRange": [0.16, 0.46],
+    "roughnessRange": [0.90, 0.98],
+    "metallic": 0.0,
+    "specularF0": 0.04,
+    "normalScale": 0.95,
+    "wetness": 0.0,
+    "macroTileMeters": 6.4,
+    "detailTileMeters": 0.30,
+    "uvPolicy": "UV0 stores world X/Z metres; material tiling is reciprocal physical tile size; emission and baked directional highlights are forbidden."
+  },
+  "lodImplementation": {
+    "lod0": "48 longitudinal segments x 7 lateral stations",
+    "lod1": "28 x 7",
+    "lod2": "16 x 5",
+    "lod3": "8 x 5",
+    "transition": "animated Unity CrossFade",
+    "sourcePrimitiveFallbackAllowedInLod": false
+  },
+  "selfAudit": {
+    "initialRejectedImplementation": "The first spline used P1=(12.15,5.40) and expanded route width immediately. Source-math review found 11 inverted/folded triangles at the high-curvature mouth, including triangle-normal Y near -1. That version was rejected rather than hidden by material/culling changes.",
+    "correction": "P1 moved to (12.45,5.40); mouth width remains fixed at 1.05 m through normalized t=0.22, expands only over t=0.22-0.55, holds to t=0.68, then tapers. Triangle winding was corrected to upward ground orientation and all LOD meshes now run an explicit upward-normal QA after RecalculateNormals.",
+    "sourceMathResults": {
+      "lodVertexCounts": [343, 203, 85, 45],
+      "minimumTriangleNormalY": [0.7879502, 0.8003448, 0.8509446, 0.8592048],
+      "meanTriangleNormalY": [0.9906470, 0.9906940, 0.9909713, 0.9907054],
+      "maxLodBoundsCenterDriftM": 0.001421,
+      "maxLodBoundsSizeDriftM": 0.002842,
+      "mouthZRangeM": [4.875, 5.925],
+      "curbOpeningZRangeM": [4.794, 6.006],
+      "minimumOpeningEndClearanceM": 0.081,
+      "status": "SOURCE_MATH_ONLY_NOT_UNITY_RUNTIME_OR_RENDER_EVIDENCE"
+    }
+  },
+  "pipelineIntegration": [
+    "Validate WornPathB contract before review packet execution.",
+    "Apply/persist after the complete ground rebuild and WornPathA correction.",
+    "Revalidate before scene-wide material/metadata/primitive preflight and before reflection synchronization.",
+    "Revalidate immediately before native Camera.Render after reflection completion.",
+    "Revalidate again after still sealing and before temporal capture."
+  ],
+  "substantiveCommits": [
+    {"sha":"c108bd2a18b18145966b0ad299041cb28e026c3f","purpose":"initial WornPathB transition implementation"},
+    {"sha":"89a713983ce2c02a7bdb7148e2489f763c1a6396","purpose":"machine-readable construction/material contract"},
+    {"sha":"28c688128a272783857d16856c2a920fa7dd37d2","purpose":"construction lookdev illustration"},
+    {"sha":"8479d72b51d7ebe6070007c202774c06af095929","purpose":"bind transition into native 4K review packet"},
+    {"sha":"3d86d1e126e0c6fac9c7283188f549cdbfa6b38a","purpose":"correct and enforce upward surface winding"},
+    {"sha":"264d8a206ce06f1d456e101e0d744d494a322ef9","purpose":"prevent high-curvature mouth ribbon foldover"},
+    {"sha":"15259337658b5b4539b8846fde712257e46954d7","purpose":"align contract with corrected foldover-safe source math"}
+  ],
+  "bookkeepingCommitsBeforeRecord": [
+    {"sha":"2f073f2469599cdf2872e5d8b771498826fcdd5e","purpose":"refresh Implementation Readiness without awarding visual points"}
+  ],
+  "verification": {
+    "gitCompare": "startHead to substantiveWorkHead = ahead 7, behind 0; merge-base remained startHead",
+    "changedPaths": [
+      "UnityProject/Assets/Editor/QualityBlockGroundWornPathBTransitionQA.cs",
+      "UnityProject/Assets/Editor/QualityBlockNative4KReviewPacket.cs",
+      "UnityProject/Assets/QA/ground_worn_path_b_transition_contract.json",
+      "UnityProject/Assets/QA/ground_worn_path_b_transition_lookdev.svg"
+    ],
+    "unityCompile": "PENDING",
+    "unityRuntime": "PENDING",
+    "native4K": "PENDING",
+    "temporalEvidence": "PENDING",
+    "renderCriticalDefectsCleared": false
+  },
+  "expectedVisualScoreImpactPendingRender": [
+    "Geometry/construction: likely removes a conspicuous rectangular-soil-placeholder/disconnected-curb risk.",
+    "Material/PBR: dry dielectric soil values and no emission avoid impossible metallic/wet behavior.",
+    "Texture: world-metre UV plus two-frequency ground textures reduces source-scale reset/repetition risk; rendered repetition remains unverified.",
+    "Weathering/context: foot traffic is expressed through compacted center, shoulders and taper rather than arbitrary rectangle placement.",
+    "Temporal/LOD: all four authored LODs keep the same route interface and do not revert to the Cube; visible pop/shimmer remains render-only."
+  ],
+  "nextBlocker": "Actual Unity 6000.3.0f1 Runner/editor compile and native review packet execution. On first Runner/screenshot availability, stop speculative expansion, run the complete packet, then inspect oblique/vegetation_grounding at 100% plus hero/grazing and temporal frames for curb-end contact, soil/paving step, shoulder grounding, foldover/backface loss, texture repetition/shimmer and LOD pop. Correct the actual largest deduction or any critical defect before assigning Visual Fidelity points.",
+  "recordingNote": "This run-record commit cannot contain its own final commit SHA without self-reference; recordedThroughHead is the repository state immediately before this record was added."
+}

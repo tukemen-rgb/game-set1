@@ -1,0 +1,127 @@
+{
+  "schemaVersion": "1.0",
+  "generatedUtc": "2026-09-10T20:36:00Z",
+  "runtimeRenderVerified": false,
+  "visualFidelityStatus": "UNSCORED_UNTIL_REAL_4K_RENDER",
+  "intent": "Prevent mature generated root flares, maintained tree-pit edging and low understory from intersecting or floating at the plaza-to-lawn interface while preserving existing gameplay collision.",
+  "authority": {
+    "sourceTreeGeometry": "Assets/Editor/QualityBlockTreeDetailUpgrade.cs",
+    "sourceEcologyAssembly": "Assets/Editor/QualityBlockVegetationEcologyUpgrade.cs",
+    "runtimeRefinement": "Assets/Editor/QualityBlockVegetationRootZoneInterfaceQA.cs",
+    "lookdevIllustration": "Assets/QA/vegetation_tree_pit_root_interface_lookdev.svg"
+  },
+  "sceneDatum": {
+    "danchiPlazaNominalTopMeters": 0.05,
+    "grassNominalTopMeters": 0.0,
+    "treeAnchorCount": 6,
+    "maintainedPitCount": 4,
+    "interiorPavedRingCount": 1,
+    "pavingBoundaryRingCount": 3,
+    "grassOnlyTreeCount": 2,
+    "noGameplayColliderChanges": true
+  },
+  "rootFlareEnvelope": {
+    "generatedRootFlaresPerTree": 7,
+    "centerlineLengthMeters": [0.72, 0.94],
+    "startRadiusMeters": [0.16, 0.195],
+    "tipRadiusRatio": 0.58,
+    "conservativeMaximumOuterRadiusMeters": 1.0531,
+    "minimumVisibleSoilClearanceToEdgingMeters": 0.09,
+    "requiredOpeningRadiusMeters": 1.15,
+    "reasoning": "The opening is sized from the generated root-flare geometry, not from a decorative decal radius. 0.94 m maximum centerline plus 0.195 x 0.58 m maximum tip radius gives a 1.0531 m conservative radial envelope; the 1.15 m opening leaves at least 96.9 mm against that bound before the inner curb face."
+  },
+  "pitAssembly": {
+    "openingRadiusMeters": 1.15,
+    "openingDiameterMeters": 2.30,
+    "soilTopVisualBiasAbovePavingMeters": 0.0015,
+    "soilVisualBottomEmbedBelowGrassMeters": 0.006,
+    "curbModuleCount": 12,
+    "curbRadialWidthMeters": 0.15,
+    "curbHeightMeters": 0.08,
+    "curbPavingEmbedMeters": 0.008,
+    "curbGrassEmbedMeters": 0.006,
+    "curbJointGapMeters": 0.012,
+    "curbCenterlineRadiusMeters": 1.225,
+    "manufacture": "Small precast concrete edging modules are set tangentially around an exposed root-zone soil opening. Module visible length is the local 12-sided chord minus a 12 mm dry joint. The root-zone soil is a continuous visual volume extending below the lower lawn datum so no underside can become visible at boundary joints.",
+    "mounting": "Each curb module follows the actual supporting surface under its center: 8 mm embed where it bears on plaza paving and 6 mm embed where a boundary ring crosses lawn. This intentionally produces a grade step matching the approximately 50 mm plaza-to-lawn datum instead of leaving modules suspended over grass.",
+    "interfacesGapsSeals": "root flare -> exposed soil -> inner curb face -> 12 mm curb joint -> local pavement or lawn support. The intended construction soil surface is flush/slightly recessed; the generated fallback uses only a 1.5 mm positive render-separation bias over the retained coarse paving collision slab, which must not read as a visible raised lip in native 4K crops.",
+    "orientationExposure": "Horizontal root zone, upward rain/sun exposure, ordinary pedestrian and maintenance exposure; boundary modules follow local support grade rather than a single artificial world height.",
+    "aging": "Cause-based compaction near trunk and circulation-facing soil, fine aggregate exposure on curb, and ordinary runoff/dust only. No random damage narrative.",
+    "geometryVsMaterial": "Opening radius, soil volume, curb height, embed, module joints, support-grade steps and root clearance are geometry. Fine soil grains, pores, subtle aggregate, ordinary UV aging and roughness variation remain material detail.",
+    "lodPolicy": "Root flares remain through tree LOD0/1/2/3. Tree-pit substrate and curb remain static construction geometry. Understory remains a separate four-level animated-crossfade LODGroup."
+  },
+  "understoryGrounding": {
+    "pavedPitPlantRootAboveSoilMeters": 0.001,
+    "grassPlantRootAboveGroundMeters": 0.004,
+    "reasoning": "The stem mesh has finite radius, so these small positive origin offsets allow the stem cross-section to penetrate the supporting surface while preventing obvious z-fighting. Plants may not originate tens of millimetres above the root-zone soil."
+  },
+  "materials": [
+    {
+      "id": "root_zone_soil",
+      "sourceAsset": "Assets/Art/GeneratedPBR/PBR_DrySoil.mat",
+      "albedoSrgbTargetRange": [0.16, 0.36],
+      "roughnessRange": [0.90, 0.98],
+      "metallicRange": [0.0, 0.0],
+      "dielectricF0Approx": 0.04,
+      "normalScaleTarget": 1.0,
+      "microstructure": "approximately 1-8 mm mineral grains/aggregate with broader compaction variation",
+      "wetness": "disabled for the dry benchmark; a future wet state must follow catchment/contact logic and lower roughness only where water can physically persist",
+      "uvAging": "mild ordinary desaturation only; no painted sun/shadow information",
+      "angularFresnel": "weak dielectric grazing reflection; never metallic and never a baked highlight"
+    },
+    {
+      "id": "precast_pit_curb",
+      "sourceAsset": "Assets/Art/GeneratedPBR/PBR_WashedConcrete.mat",
+      "albedoSrgbTargetRange": [0.36, 0.66],
+      "roughnessRange": [0.84, 0.94],
+      "metallicRange": [0.0, 0.0],
+      "dielectricF0Approx": 0.04,
+      "normalScaleTarget": 1.0,
+      "microstructure": "fine exposed aggregate/pores below the physical chamfer scale",
+      "wetness": "dry benchmark; future wetting must be source/runoff dependent",
+      "uvAging": "small exposure-driven lightening permitted without stylized bleaching",
+      "angularFresnel": "broad subdued dielectric edge response generated by real light and the physical chamfer"
+    },
+    {
+      "id": "root_bark_interface",
+      "sourceAsset": "Assets/Art/GeneratedPBR/PBR_Bark.mat",
+      "albedoSrgbTargetRange": [0.10, 0.34],
+      "roughnessRange": [0.76, 0.94],
+      "metallicRange": [0.0, 0.0],
+      "dielectricF0Approx": 0.04,
+      "normalScaleTarget": 1.0,
+      "microstructure": "bark fissures below root-flare silhouette scale",
+      "wetness": "disabled in the dry benchmark",
+      "uvAging": "orientation/exposure variation only",
+      "angularFresnel": "dielectric grazing response; root volume and contact are never faked with a painted dark halo"
+    }
+  ],
+  "qa": {
+    "requireLookdevIllustration": true,
+    "requireExactOpeningRadius": true,
+    "requireRootFlareClearance": true,
+    "requireLocalSupportGradeForEveryCurbModule": true,
+    "requireNoSoilUndersideGapAtGrassBoundary": true,
+    "requireUnderstorySurfaceGrounding": true,
+    "requireNoGeneratedColliders": true,
+    "requireFourPits": true,
+    "requireThreeBoundaryRings": true,
+    "renderInspectionTargets": [
+      "oblique/vegetation_grounding",
+      "grazing/tree_shadow_contact",
+      "hero/ground_contact"
+    ],
+    "automaticFail": [
+      "root flare visibly intersects pit curb or uninterrupted paving",
+      "tree-pit curb module visibly floats above its local support surface",
+      "root-zone soil volume shows a visible unsupported underside",
+      "understory stems visibly float above soil or grass",
+      "pit soil reads as a raised brown decal/slab because the 1.5 mm render-separation bias becomes visible",
+      "metallic soil, concrete or bark",
+      "visible LOD pop or severe foliage shimmer",
+      "disaster theme",
+      "claiming visual quality without an actual Unity render"
+    ]
+  },
+  "verification": "Source/contract geometry only. Unity 6000.3.0f1 compile/runtime plus native 3840x2160 oblique/grazing crops are required before any Visual Fidelity points or critical-defect clearance are awarded."
+}

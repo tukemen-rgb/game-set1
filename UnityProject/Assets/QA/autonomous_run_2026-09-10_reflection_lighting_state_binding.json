@@ -1,0 +1,128 @@
+{
+  "schemaVersion": "1.0",
+  "runDateUtc": "2026-09-10",
+  "branch": "gpt/unity-migration",
+  "startHead": "776dbc19dd6d1b50443f1a4fd74b27b8f848fe7f",
+  "substantiveWorkHead": "f591c857b7ddf36d2f338f2e88efb95f9619897e",
+  "readinessBookkeepingHead": "dfca303fbd94308b1e1cc42f39995be26cec1a6e",
+  "scope": "reflection_probe_to_still_physical_lighting_state_coherence",
+  "constraintsPreserved": {
+    "godotPreserved": true,
+    "baseMerged": false,
+    "earthquakeDisasterReconstructionThemesAdded": false,
+    "visualFidelityScoredWithoutRender": false
+  },
+  "problemFound": {
+    "summary": "The existing MainCamera pre-cull solar guard protected the direct-light/shadow state of the still, and the reflection awaiter proved RenderID completion, but the two mechanisms did not cryptographically bind the asynchronous realtime cubemap illumination to the still illumination. A persistently changed sun, procedural sky, ambient SH or global shadow/LOD state during the probe-render interval could therefore create a completed but lighting-incoherent cubemap.",
+    "visualGateRisk": [
+      "lighting_shadows_reflections",
+      "material_pbr_physical_plausibility",
+      "cinematic_image_quality_composition_color_exposure",
+      "temporal_lod_aliasing_stability"
+    ],
+    "criticalDefectRisk": [
+      "inconsistent_sun_shadow_direction",
+      "major_light_leak_or_reflection_mismatch",
+      "claiming_render_quality_without_actual_render"
+    ]
+  },
+  "implementation": {
+    "lightingFingerprint": {
+      "algorithm": "SHA-256",
+      "implementation": "QualityBlockReflectionLightingStateFingerprint.BuildCurrentSha256",
+      "hashedState": [
+        "active-scene identity and Unity version",
+        "exact sole SummerSun rotation/forward vector, intensity, color temperature/color, shadow mode/resolution/strength/bias/normal bias/near plane and culling mask",
+        "procedural-sky asset path/GUID/shader plus sun disk, sun size, convergence, atmosphere, sky tint, ground color and exposure properties",
+        "RenderSettings ambient mode/intensity, default reflection mode/resolution/intensity/bounces/custom-reflection presence, fog mode/color/start/end",
+        "all 27 RenderSettings.ambientProbe SphericalHarmonicsL2 coefficients",
+        "QualitySettings realtime reflection probes, shadow projection/quality/resolution/distance/cascades/splits/near-plane, MSAA, LOD bias, maximum LOD and anisotropic filtering"
+      ]
+    },
+    "probeWaitPolicy": {
+      "requestFingerprintRequired": true,
+      "oneFingerprintCheckPerObservedEditorPollRequired": true,
+      "completionFingerprintRequired": true,
+      "requestCompletionEqualityRequired": true,
+      "immediatePreStillRecheckRequired": true,
+      "completionStillEqualityRequired": true,
+      "probeCompletionStillRequires": [
+        "later EditorApplication.update observation",
+        "non-negative RenderID",
+        "IsFinishedRendering(RenderID)=true",
+        "created 512x512 Cube realtimeTexture",
+        "fresh async proof SHA-256-bound to current reflection completion receipt"
+      ],
+      "waitProofSchema": "1.1"
+    },
+    "native4kPacket": "The complete native-4K packet now validates the solar/shadow contract before reflection synchronization and again before still/temporal evidence. The async wait proof itself recomputes the physical-lighting hash immediately before still acceptance."
+  },
+  "selfAudit": [
+    {
+      "finding": "Initial implementation compared only request and completion hashes.",
+      "correction": "Strengthened the awaiter to recompute the complete lighting fingerprint on every observed EditorApplication.update while probe RenderIDs are in flight; the wait proof requires lightingFingerprintPollCount == editorPollCount."
+    },
+    {
+      "finding": "Initial fingerprint omitted per-light shadow resolution and global maximumLODLevel/anisotropicFiltering even though the contract described complete shadow/LOD coherence.",
+      "correction": "Added sun.shadowResolution, sun.cullingMask, QualitySettings.maximumLODLevel and QualitySettings.anisotropicFiltering before recording the run."
+    },
+    {
+      "finding": "A mutation that begins and fully reverts entirely between observable Editor callbacks cannot be proven absent by source-only polling.",
+      "correction": "Recorded this as a runtime-verification limitation instead of claiming absolute render coherence; actual Unity execution remains mandatory."
+    }
+  ],
+  "substantiveCommits": [
+    "fc52625ddc8e103c52c805e5aaf1a29b4c756c04",
+    "ff7fbe2b5dff4908113640b68231f01ad4b11478",
+    "202271e3f59dc2db02a1d8fc9b0366428898ef96",
+    "089dc3a0b38fe41200176b18ed12634b5d87cbc6",
+    "40deb66f5fdbd617a1f052c2963a3c8ecfb33ba4",
+    "7f54084cdb6dcac5e88b3198b2d663afc9fdf846",
+    "911680f9c960d259e6a299a14d6d01522db1b20c",
+    "c885c10b3503277a931a49fefbb1f0ef5a37ac23",
+    "f591c857b7ddf36d2f338f2e88efb95f9619897e"
+  ],
+  "filesChangedBeforeBookkeeping": [
+    "UnityProject/Assets/Editor/QualityBlockReflectionLightingStateFingerprint.cs",
+    "UnityProject/Assets/Editor/QualityBlockReflectionProbeAwaiter.cs",
+    "UnityProject/Assets/Editor/QualityBlockReflectionProbeCaptureSyncQA.cs",
+    "UnityProject/Assets/Editor/QualityBlockNative4KReviewPacket.cs",
+    "UnityProject/Assets/QA/reflection_probe_capture_sync_contract.json"
+  ],
+  "verification": {
+    "githubStaticInspection": true,
+    "branchComparedToStart": {
+      "aheadByAtSubstantiveHead": 9,
+      "behindByAtSubstantiveHead": 0,
+      "mergeBaseAtSubstantiveHead": "776dbc19dd6d1b50443f1a4fd74b27b8f848fe7f"
+    },
+    "commitStatusContextsAtStart": 0,
+    "workflowRunsAtStart": 0,
+    "unity6000_3_0f1CompileVerified": false,
+    "unityRuntimeVerified": false,
+    "native3840x2160FramesPresent": false,
+    "hundredPercentCropsReviewed": false,
+    "temporalEvidenceReviewed": false,
+    "reflectionLightingHashObservedInUnity": false,
+    "verificationLimit": "Source/static verification cannot prove Unity API compilation, ambient-SH stabilization timing, actual probe-camera illumination, native still pixels, Fresnel/reflection direction, shadow contact or temporal stability."
+  },
+  "scores": {
+    "implementationReadiness": 93,
+    "implementationReadinessPossible": 100,
+    "visualFidelityStatus": "UNSCORED",
+    "visualFidelityPointsAwardedThisRun": 0,
+    "visualFidelityPassClaimed": false,
+    "criticalDefectClearedFromPixels": false
+  },
+  "expectedVisualScoreImpactAfterRealRender": {
+    "lightingShadowsReflections": "Potentially reduces stale/incoherent local-reflection deductions by ensuring the cubemap and still share one observed physical lighting state; no source-only points.",
+    "materialPbr": "Makes glass/metal angular response review correspond to the same sky/sun/ambient state as the frame; no source-only points.",
+    "cinematicImage": "Prevents local specular energy from silently belonging to an earlier environment state; no source-only points.",
+    "temporalLodAliasing": "Includes MSAA/LOD/aniso state in the coherence hash, but actual shimmer/pop remains pixel evidence only."
+  },
+  "nextBlocker": {
+    "id": "unity_compile_and_native_render",
+    "actionWhenAvailable": "Immediately stop speculative expansion and run NewTown/QA/Prepare Complete Native 4K Review Packet in Unity 6000.3.0f1. If the first per-poll hash changes because RenderSettings.ambientProbe is still converging after DynamicGI.UpdateEnvironment, add an explicit environment-stability wait before RenderProbe rather than relaxing the hash. Once hashes remain invariant, inspect hero/oblique/grazing 3840x2160 frames and 100% crops for reflection direction, direct-vs-specular light coherence, glass/metal Fresnel, contact shadows and light leaks; then inspect temporal evidence for cascade/LOD/specular shimmer. Fix any critical pixel defect before scoring."
+  },
+  "recordingNote": "This file and the implementation_readiness bookkeeping update are not included in substantiveCommits to avoid self-referential commit hashes."
+}

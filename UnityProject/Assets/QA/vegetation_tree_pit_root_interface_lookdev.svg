@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="1000" viewBox="0 0 1600 1000">
+  <rect width="1600" height="1000" fill="#f5f3ed"/>
+  <g font-family="Arial, Helvetica, sans-serif" fill="#202020">
+    <text x="70" y="70" font-size="34" font-weight="700">Vegetation root-zone installation lookdev — source geometry only</text>
+    <text x="70" y="108" font-size="20">No visual-fidelity points are implied. Native Unity 3840×2160 oblique/grazing evidence remains required.</text>
+
+    <text x="90" y="175" font-size="27" font-weight="700">PLAN — 2.30 m maintained root-zone opening</text>
+    <circle cx="420" cy="475" r="230" fill="#b79b72" stroke="#6f5a42" stroke-width="3"/>
+    <circle cx="420" cy="475" r="245" fill="none" stroke="#7c7c76" stroke-width="28" stroke-dasharray="116 12"/>
+    <circle cx="420" cy="475" r="48" fill="#725441" stroke="#4d392d" stroke-width="3"/>
+    <g stroke="#725441" stroke-width="22" stroke-linecap="round" opacity="0.9">
+      <line x1="420" y1="475" x2="618" y2="410"/>
+      <line x1="420" y1="475" x2="560" y2="630"/>
+      <line x1="420" y1="475" x2="362" y2="675"/>
+      <line x1="420" y1="475" x2="220" y2="545"/>
+      <line x1="420" y1="475" x2="242" y2="355"/>
+      <line x1="420" y1="475" x2="430" y2="270"/>
+      <line x1="420" y1="475" x2="585" y2="325"/>
+    </g>
+    <circle cx="420" cy="475" r="211" fill="none" stroke="#a43f32" stroke-width="2" stroke-dasharray="8 8"/>
+    <line x1="420" y1="475" x2="650" y2="475" stroke="#202020" stroke-width="2"/>
+    <text x="450" y="460" font-size="19">opening radius 1.15 m</text>
+    <text x="490" y="720" font-size="18">12 precast modules; 150 × 80 mm section; 12 mm dry joint</text>
+    <text x="120" y="745" font-size="18">red dashed envelope: conservative root-flare bound + required soil clearance</text>
+
+    <text x="860" y="175" font-size="27" font-weight="700">SECTION — plaza / lawn boundary</text>
+    <rect x="835" y="520" width="360" height="95" fill="#9d9b94" stroke="#555" stroke-width="2"/>
+    <rect x="1195" y="570" width="310" height="45" fill="#829069" stroke="#555" stroke-width="2"/>
+    <path d="M905 515 L1435 515 L1435 615 L905 615 Z" fill="#b79b72" stroke="#6f5a42" stroke-width="2" opacity="0.95"/>
+    <rect x="935" y="442" width="55" height="80" fill="#8b8982" stroke="#4e4e4b" stroke-width="2"/>
+    <rect x="1370" y="496" width="55" height="80" fill="#8b8982" stroke="#4e4e4b" stroke-width="2"/>
+    <path d="M1120 505 C1160 455, 1205 430, 1265 420" fill="none" stroke="#725441" stroke-width="34" stroke-linecap="round"/>
+    <line x1="805" y1="520" x2="1525" y2="520" stroke="#292929" stroke-width="1" stroke-dasharray="7 7"/>
+    <text x="845" y="645" font-size="19">plaza nominal top +0.050 m</text>
+    <text x="1215" y="645" font-size="19">lawn nominal top +0.000 m</text>
+    <text x="1005" y="505" font-size="18">soil top: intended flush; fallback render-separation +1.5 mm</text>
+    <text x="876" y="420" font-size="18">paving-side curb: 8 mm embed</text>
+    <text x="1280" y="470" font-size="18">lawn-side curb: 6 mm embed</text>
+    <text x="1010" y="700" font-size="18">soil visual volume extends below lawn datum to prevent a visible underside at boundary joints</text>
+
+    <text x="90" y="840" font-size="25" font-weight="700">4K review questions</text>
+    <text x="90" y="880" font-size="19">1. Do root flares stay inside exposed soil with no curb/paving penetration?  2. Does every curb module bear on its local paving/lawn grade?</text>
+    <text x="90" y="912" font-size="19">3. Are understory stem bases physically grounded?  4. Is the 1.5 mm fallback separation invisible rather than reading as a raised brown slab?</text>
+    <text x="90" y="944" font-size="19">5. At grazing light, do real chamfers/joints create highlights and shadows without baked lighting, shimmer, or obvious repeated patterning?</text>
+  </g>
+</svg>

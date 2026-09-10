@@ -8,8 +8,9 @@ using UnityEngine;
 /// <summary>
 /// Reconstructs and verifies the missing manufactured access/load-path of HD_Slide.
 /// The prior generated assembly had an approximately two-metre platform and a physical chute but no
-/// climbable stair section. This pass adds a ten-tread coated-steel stair, inclined stringers, access
-/// rails, grade plates, a chute-head bearing tied to the existing frame and a supported runout.
+/// climbable stair section. This pass adds a ten-tread coated-steel stair, laterally separated inclined
+/// stringers with welded tread brackets, access rails, grade plates, a chute-head bearing tied to the
+/// existing frame, and a ground-supported runout.
 ///
 /// Source/runtime transform QA only. Passing this check awards zero Visual Fidelity points and cannot
 /// clear floating/interpenetration, primitive, material or LOD critical defects without native 4K evidence.
@@ -57,7 +58,7 @@ public static class QualityBlockSlideAccessInstallationQA
             generated.SetParent(tier, false);
 
             BuildAccessStair(generated, tier, contract, painted, exposed, lod);
-            BuildChuteSupports(generated, tier, contract, painted, exposed, lod);
+            BuildChuteSupports(generated, tier, contract, painted);
             generatedRenderers += generated.GetComponentsInChildren<Renderer>(true).Length;
         }
 
@@ -73,7 +74,8 @@ public static class QualityBlockSlideAccessInstallationQA
         Debug.Log(
             $"Slide access/support reconstruction applied: generatedRenderers={generatedRenderers}, " +
             $"accessAngle={summary.accessAngleDegrees:0.###} deg, " +
-            $"maxTreadStringerError={summary.maxTreadStringerContactErrorMetres * 1000f:0.###} mm. " +
+            $"minTread/StringerClearance={summary.minStringerTreadLateralClearanceMetres * 1000f:0.###} mm, " +
+            $"maxTread/BracketError={summary.maxTreadBracketContactErrorMetres * 1000f:0.###} mm. " +
             "LOD renderer rebinding must run next; native 4K review is still required before visual credit.");
     }
 
@@ -82,15 +84,14 @@ public static class QualityBlockSlideAccessInstallationQA
     {
         SlideContract contract = LoadAndValidateContract();
         ValidationSummary summary = ValidateOpenSceneInternal(contract, requireLodBinding: true);
-        int renderers = RequireSlide().GetComponentsInChildren<Renderer>(true)
-            .Count(r => r.transform.parent != null &&
-                        r.transform.parent.name == GeneratedRootName ||
-                        r.transform.IsChildOf(FindGeneratedAncestor(r.transform)));
+        int renderers = CountGeneratedRenderers(RequireSlide(), contract.qaRules.requiredLodCount);
         WriteRuntimeReport(summary, renderers, true);
 
         Debug.Log(
             $"Slide access/support QA passed: angle={summary.accessAngleDegrees:0.###} deg, " +
-            $"maxTreadStringerError={summary.maxTreadStringerContactErrorMetres * 1000f:0.###} mm, " +
+            $"minTread/StringerClearance={summary.minStringerTreadLateralClearanceMetres * 1000f:0.###} mm, " +
+            $"maxTread/BracketError={summary.maxTreadBracketContactErrorMetres * 1000f:0.###} mm, " +
+            $"maxBracket/StringerMiss={summary.maxBracketStringerAxisMissMetres * 1000f:0.###} mm, " +
             $"headBearingGap={summary.maxHeadBearingGapMetres * 1000f:0.###} mm, " +
             $"runoutBearingGap={summary.maxRunoutBearingGapMetres * 1000f:0.###} mm. " +
             "Rendered contact shadows, material response and temporal stability remain unverified.");
@@ -129,6 +130,22 @@ public static class QualityBlockSlideAccessInstallationQA
                 $"AccessTread_{i:00}", parent,
                 new Vector3(0f, y, z),
                 new Vector3(d.treadWidth, d.treadThickness, d.treadDepth), painted);
+
+            float treadBottom = y - d.treadThickness * 0.5f;
+            for (int side = -1; side <= 1; side += 2)
+            {
+                // The tread plate stops before the round stringer. A small welded bracket bridges the
+                // lateral clearance and overlaps the stringer envelope instead of making the horizontal
+                // plate slice through an inclined tube.
+                CreateBox(
+                    $"AccessTreadBracket_{SideName(side)}_{i:00}", parent,
+                    new Vector3(
+                        side * d.treadBracketCenterAbsX,
+                        treadBottom - d.treadBracketHeight * 0.5f,
+                        z),
+                    new Vector3(d.treadBracketWidth, d.treadBracketHeight, d.treadBracketDepth),
+                    painted);
+            }
         }
 
         float lastY = d.firstTreadCenterY + (d.treadCount - 1) * d.treadRise;
@@ -170,9 +187,7 @@ public static class QualityBlockSlideAccessInstallationQA
         Transform parent,
         Transform tier,
         SlideContract contract,
-        Material painted,
-        Material exposed,
-        int lod)
+        Material painted)
     {
         DimensionsMetres d = contract.dimensionsMetres;
 
@@ -222,7 +237,10 @@ public static class QualityBlockSlideAccessInstallationQA
     {
         Transform slide = RequireSlide();
         var errors = new List<string>();
-        var summary = new ValidationSummary();
+        var summary = new ValidationSummary
+        {
+            minStringerTreadLateralClearanceMetres = float.PositiveInfinity
+        };
         DimensionsMetres d = contract.dimensionsMetres;
         QaRules q = contract.qaRules;
 
@@ -270,7 +288,15 @@ public static class QualityBlockSlideAccessInstallationQA
             Transform rightStringer = RequireDirectChild(generated, "AccessStringer_R");
             AxisSegment leftAxis = PipeAxis(leftStringer);
             AxisSegment rightAxis = PipeAxis(rightStringer);
-            float stringerRadius = d.stringerDiameter * 0.5f;
+
+            float lateralClearance =
+                d.stringerCenterAbsX - d.stringerDiameter * 0.5f - d.treadWidth * 0.5f;
+            summary.minStringerTreadLateralClearanceMetres = Mathf.Min(
+                summary.minStringerTreadLateralClearanceMetres, lateralClearance);
+            if (lateralClearance < q.minimumStringerToTreadLateralClearanceMetres)
+                errors.Add(
+                    $"LOD{lod}: tread/stringer lateral clearance {lateralClearance * 1000f:0.###} mm is below " +
+                    $"{q.minimumStringerToTreadLateralClearanceMetres * 1000f:0.###} mm; the horizontal tread risks cutting into the inclined pipe.");
 
             for (int i = 0; i < d.treadCount; i++)
             {
@@ -287,14 +313,36 @@ public static class QualityBlockSlideAccessInstallationQA
                         errors.Add($"LOD{lod} tread {i}: rise {rise:0.####} m exceeds the locked step-rise limit.");
                 }
 
-                Vector3 leftContact = new Vector3(-d.stringerCenterAbsX, tb.min.y, tread.localPosition.z);
-                Vector3 rightContact = new Vector3(d.stringerCenterAbsX, tb.min.y, tread.localPosition.z);
-                float leftError = Mathf.Abs(DistanceToSegment(leftContact, leftAxis.a, leftAxis.b) - stringerRadius);
-                float rightError = Mathf.Abs(DistanceToSegment(rightContact, rightAxis.a, rightAxis.b) - stringerRadius);
-                summary.maxTreadStringerContactErrorMetres = Mathf.Max(
-                    summary.maxTreadStringerContactErrorMetres, Mathf.Max(leftError, rightError));
-                if (leftError > q.contactToleranceMetres || rightError > q.contactToleranceMetres)
-                    errors.Add($"LOD{lod} tread {i}: tread/stringer contact error is {Mathf.Max(leftError, rightError) * 1000f:0.###} mm.");
+                for (int side = -1; side <= 1; side += 2)
+                {
+                    Transform bracket = RequireDirectChild(
+                        generated, $"AccessTreadBracket_{SideName(side)}_{i:00}");
+                    Bounds bb = LocalAxisAlignedBounds(bracket);
+                    float treadBracketError = Mathf.Abs(bb.max.y - tb.min.y);
+                    summary.maxTreadBracketContactErrorMetres = Mathf.Max(
+                        summary.maxTreadBracketContactErrorMetres, treadBracketError);
+                    if (treadBracketError > q.contactToleranceMetres)
+                        errors.Add(
+                            $"LOD{lod} tread {i} {SideName(side)}: tread/bracket vertical contact error is " +
+                            $"{treadBracketError * 1000f:0.###} mm.");
+
+                    AxisSegment axis = side < 0 ? leftAxis : rightAxis;
+                    Vector3 stringerAxisAtTread = PointOnSegmentAtZ(axis, tread.localPosition.z);
+                    float bracketAxisMiss = DistanceOutsideBounds(stringerAxisAtTread, bb);
+                    summary.maxBracketStringerAxisMissMetres = Mathf.Max(
+                        summary.maxBracketStringerAxisMissMetres, bracketAxisMiss);
+                    if (bracketAxisMiss > q.maximumBracketStringerAxisMissMetres)
+                        errors.Add(
+                            $"LOD{lod} tread {i} {SideName(side)}: welded bracket misses the stringer axis envelope by " +
+                            $"{bracketAxisMiss * 1000f:0.###} mm.");
+
+                    float treadSide = side < 0 ? tb.min.x : tb.max.x;
+                    float bracketInner = side < 0 ? bb.max.x : bb.min.x;
+                    if (Mathf.Abs(treadSide - bracketInner) > q.contactToleranceMetres)
+                        errors.Add(
+                            $"LOD{lod} tread {i} {SideName(side)}: bracket does not begin at the tread edge; " +
+                            $"edge error={Mathf.Abs(treadSide - bracketInner) * 1000f:0.###} mm.");
+                }
             }
 
             Vector3 stairDelta = lastTread.localPosition - firstTread.localPosition;
@@ -319,7 +367,9 @@ public static class QualityBlockSlideAccessInstallationQA
             Transform chute = RequireDirectChild(tier, "PhysicalChute");
             MeshFilter chuteFilter = chute.GetComponent<MeshFilter>();
             if (chuteFilter == null || chuteFilter.sharedMesh == null)
+            {
                 errors.Add($"LOD{lod}: PhysicalChute mesh missing.");
+            }
             else
             {
                 float headSkinBottom = ExtremeRingMinY(chuteFilter.sharedMesh, useMinZ: true);
@@ -364,6 +414,9 @@ public static class QualityBlockSlideAccessInstallationQA
             ValidateMaterialClass(generated, errors, lod);
         }
 
+        if (float.IsPositiveInfinity(summary.minStringerTreadLateralClearanceMetres))
+            summary.minStringerTreadLateralClearanceMetres = 0f;
+
         if (errors.Count > 0)
             throw new InvalidOperationException(
                 "Slide access/support installation QA FAILED:\n - " + string.Join("\n - ", errors));
@@ -405,14 +458,6 @@ public static class QualityBlockSlideAccessInstallationQA
         if (float.IsPositiveInfinity(minY))
             throw new InvalidOperationException("Could not sample PhysicalChute end ring.");
         return minY;
-    }
-
-    private static Transform FindGeneratedAncestor(Transform transform)
-    {
-        Transform cursor = transform;
-        while (cursor != null && cursor.name != GeneratedRootName)
-            cursor = cursor.parent;
-        return cursor;
     }
 
     private static void CreateBox(string name, Transform parent, Vector3 localPosition, Vector3 size, Material material)
@@ -487,13 +532,24 @@ public static class QualityBlockSlideAccessInstallationQA
         return Vector3.Lerp(segment.a, segment.b, t);
     }
 
-    private static float DistanceToSegment(Vector3 point, Vector3 a, Vector3 b)
+    private static Vector3 PointOnSegmentAtZ(AxisSegment segment, float targetZ)
     {
-        Vector3 ab = b - a;
-        float denom = Vector3.Dot(ab, ab);
-        if (denom <= 1e-8f) return Vector3.Distance(point, a);
-        float t = Mathf.Clamp01(Vector3.Dot(point - a, ab) / denom);
-        return Vector3.Distance(point, a + ab * t);
+        float dz = segment.b.z - segment.a.z;
+        if (Mathf.Abs(dz) < 0.00001f)
+            return (segment.a + segment.b) * 0.5f;
+        float t = Mathf.Clamp01((targetZ - segment.a.z) / dz);
+        return Vector3.Lerp(segment.a, segment.b, t);
+    }
+
+    private static float DistanceOutsideBounds(Vector3 point, Bounds bounds)
+    {
+        float dx = point.x < bounds.min.x ? bounds.min.x - point.x :
+                   point.x > bounds.max.x ? point.x - bounds.max.x : 0f;
+        float dy = point.y < bounds.min.y ? bounds.min.y - point.y :
+                   point.y > bounds.max.y ? point.y - bounds.max.y : 0f;
+        float dz = point.z < bounds.min.z ? bounds.min.z - point.z :
+                   point.z > bounds.max.z ? point.z - bounds.max.z : 0f;
+        return Mathf.Sqrt(dx * dx + dy * dy + dz * dz);
     }
 
     private static Bounds LocalAxisAlignedBounds(Transform child)
@@ -551,6 +607,18 @@ public static class QualityBlockSlideAccessInstallationQA
         if (child != null) UnityEngine.Object.DestroyImmediate(child.gameObject);
     }
 
+    private static int CountGeneratedRenderers(Transform slide, int lodCount)
+    {
+        int count = 0;
+        for (int lod = 0; lod < lodCount; lod++)
+        {
+            Transform tier = RequireDirectChild(slide, $"LOD{lod}");
+            Transform generated = RequireDirectChild(tier, GeneratedRootName);
+            count += generated.GetComponentsInChildren<Renderer>(true).Length;
+        }
+        return count;
+    }
+
     private static string SideName(int side) => side < 0 ? "L" : "R";
     private static Vector3 Abs(Vector3 v) => new Vector3(Mathf.Abs(v.x), Mathf.Abs(v.y), Mathf.Abs(v.z));
     private static bool IsBuiltInPrimitive(string meshName) =>
@@ -582,7 +650,11 @@ public static class QualityBlockSlideAccessInstallationQA
     private static List<string> ValidateContract(SlideContract contract)
     {
         var errors = new List<string>();
-        if (contract == null) { errors.Add("contract is null."); return errors; }
+        if (contract == null)
+        {
+            errors.Add("contract is null.");
+            return errors;
+        }
         if (contract.schemaVersion != "1.0") errors.Add($"schemaVersion must remain 1.0, got {contract.schemaVersion}.");
         if (contract.id != "slide_access_installation_interface") errors.Add("contract id drifted.");
         if (contract.dimensionsMetres == null) errors.Add("dimensionsMetres missing.");
@@ -600,13 +672,34 @@ public static class QualityBlockSlideAccessInstallationQA
         float angle = Mathf.Atan2(d.treadRise, Mathf.Abs(d.treadRun)) * Mathf.Rad2Deg;
         if (angle < 50f || angle > 75f)
             errors.Add($"contract stair angle {angle:0.###} deg is outside 50-75 deg.");
-        if (d.stringerDiameter <= 0f || d.handrailDiameter <= 0f || d.headBearerDiameter <= 0f || d.runoutBearerDiameter <= 0f)
+        if (d.stringerDiameter <= 0f || d.handrailDiameter <= 0f ||
+            d.headBearerDiameter <= 0f || d.runoutBearerDiameter <= 0f)
             errors.Add("structural tube diameters must be positive.");
+        if (d.treadBracketWidth <= 0f || d.treadBracketHeight <= 0f || d.treadBracketDepth <= 0f)
+            errors.Add("tread support bracket dimensions must be positive.");
+
+        float lateralClearance =
+            d.stringerCenterAbsX - d.stringerDiameter * 0.5f - d.treadWidth * 0.5f;
+        if (lateralClearance < q.minimumStringerToTreadLateralClearanceMetres)
+            errors.Add(
+                $"contract tread/stringer lateral clearance {lateralClearance * 1000f:0.###} mm is below its own " +
+                $"{q.minimumStringerToTreadLateralClearanceMetres * 1000f:0.###} mm floor.");
+
+        float bracketMinX = d.treadBracketCenterAbsX - d.treadBracketWidth * 0.5f;
+        float bracketMaxX = d.treadBracketCenterAbsX + d.treadBracketWidth * 0.5f;
+        if (bracketMinX > d.treadWidth * 0.5f + q.contactToleranceMetres)
+            errors.Add("support bracket does not reach the tread edge.");
+        if (bracketMaxX < d.stringerCenterAbsX - q.maximumBracketStringerAxisMissMetres)
+            errors.Add("support bracket does not reach the stringer axis envelope.");
+
         if (q.requiredLodCount != 4 || q.generatedColliderCount != 0 || !q.newRenderersMustBeLodBound)
             errors.Add("LOD/collider/binding fail-closed policy drifted.");
         if (q.minimumTreadDepthMetres < 0.17f || q.maximumStepRiseMetres > 0.22f ||
             q.minimumAccessAngleDegrees < 50f || q.maximumAccessAngleDegrees > 75f)
             errors.Add("QA safety/construction limits were relaxed beyond the locked reference.");
+        if (q.minimumStringerToTreadLateralClearanceMetres < 0.015f ||
+            q.maximumBracketStringerAxisMissMetres > 0.004f)
+            errors.Add("tread/stringer separation or bracket/stringer join QA was relaxed beyond the locked interface limits.");
         if (contract.renderVerification.status != "PENDING_UNITY_RUNTIME" ||
             contract.renderVerification.visualFidelityPointsAwarded != 0)
             errors.Add("source contract must remain PENDING_UNITY_RUNTIME with zero visual points.");
@@ -622,7 +715,9 @@ public static class QualityBlockSlideAccessInstallationQA
             generatedRendererCount = generatedRenderers,
             lodBindingVerified = lodBindingVerified,
             accessAngleDegrees = summary.accessAngleDegrees,
-            maxTreadStringerContactErrorMetres = summary.maxTreadStringerContactErrorMetres,
+            minStringerTreadLateralClearanceMetres = summary.minStringerTreadLateralClearanceMetres,
+            maxTreadBracketContactErrorMetres = summary.maxTreadBracketContactErrorMetres,
+            maxBracketStringerAxisMissMetres = summary.maxBracketStringerAxisMissMetres,
             maxFootPlateContactErrorMetres = summary.maxFootPlateContactErrorMetres,
             maxTopStepRiseMetres = summary.maxTopStepRiseMetres,
             maxTopHorizontalGapMetres = summary.maxTopHorizontalGapMetres,
@@ -663,6 +758,10 @@ public static class QualityBlockSlideAccessInstallationQA
         public float stringerLowerZ;
         public float stringerUpperY;
         public float stringerUpperZ;
+        public float treadBracketCenterAbsX;
+        public float treadBracketWidth;
+        public float treadBracketHeight;
+        public float treadBracketDepth;
         public float accessFootPlateWidth;
         public float accessFootPlateThickness;
         public float accessFootPlateDepth;
@@ -705,6 +804,8 @@ public static class QualityBlockSlideAccessInstallationQA
         public float maximumTopTreadVerticalRiseMetres;
         public float maximumFirstTreadRiseMetres;
         public float minimumFirstTreadRiseMetres;
+        public float minimumStringerToTreadLateralClearanceMetres;
+        public float maximumBracketStringerAxisMissMetres;
         public float maximumChuteBearingGapMetres;
         public int requiredLodCount;
         public int generatedColliderCount;
@@ -727,7 +828,9 @@ public static class QualityBlockSlideAccessInstallationQA
     private sealed class ValidationSummary
     {
         public float accessAngleDegrees;
-        public float maxTreadStringerContactErrorMetres;
+        public float minStringerTreadLateralClearanceMetres;
+        public float maxTreadBracketContactErrorMetres;
+        public float maxBracketStringerAxisMissMetres;
         public float maxFootPlateContactErrorMetres;
         public float maxTopStepRiseMetres;
         public float maxTopHorizontalGapMetres;
@@ -744,7 +847,9 @@ public static class QualityBlockSlideAccessInstallationQA
         public int generatedRendererCount;
         public bool lodBindingVerified;
         public float accessAngleDegrees;
-        public float maxTreadStringerContactErrorMetres;
+        public float minStringerTreadLateralClearanceMetres;
+        public float maxTreadBracketContactErrorMetres;
+        public float maxBracketStringerAxisMissMetres;
         public float maxFootPlateContactErrorMetres;
         public float maxTopStepRiseMetres;
         public float maxTopHorizontalGapMetres;

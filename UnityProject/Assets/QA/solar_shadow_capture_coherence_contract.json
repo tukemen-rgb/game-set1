@@ -1,0 +1,105 @@
+{
+  "schemaVersion": "1.0",
+  "status": "PENDING_REAL_UNITY_4K_RENDER",
+  "purpose": "Lock the deterministic midsummer Japanese solar sample and all shadow-map settings through generated-scene rebuilds and immediately before MainCamera rendering. This contract prevents a previously validated shadow state from being silently reset by a later solar/environment pass. It awards no Visual Fidelity points without actual rendered evidence.",
+  "visualFidelityCategoryImpact": [
+    "lighting_shadows_reflections",
+    "cinematic_image_quality_composition_color_exposure",
+    "temporal_lod_aliasing_stability"
+  ],
+  "solarDatum": {
+    "latitudeDegrees": 35.6,
+    "dayOfYear": 213,
+    "localApparentSolarTimeHours": 14.0,
+    "weatherState": "dry_midsummer_afternoon",
+    "expectedElevationDegrees": 58.10658,
+    "expectedAzimuthDegrees": 244.22672,
+    "expectedHorizontalShadowPerMetre": 0.622286,
+    "worldAxes": "+X east, +Z north, +Y up",
+    "expectedShadowHorizontalDirection": "northeast, opposite the southwest sun azimuth",
+    "interpretation": "At this deterministic sample, a 1.0 m vertical feature should cast approximately 0.622 m of horizontal geometric shadow before penumbra/contact effects. This is a source-math invariant, not rendered evidence."
+  },
+  "shadowState": {
+    "quality": "All",
+    "resolution": "VeryHigh",
+    "projection": "StableFit",
+    "cascades": 4,
+    "cascadeSplit": [0.10, 0.25, 0.50],
+    "shadowDistanceMetres": 72.0,
+    "globalNearPlaneOffset": 2.0,
+    "lightShadowMode": "Soft",
+    "lightShadowResolution": "VeryHigh",
+    "lightStrength": 0.92,
+    "lightBias": 0.025,
+    "lightNormalBias": 0.38,
+    "lightNearPlane": 0.10,
+    "requestedMsaa": 8,
+    "minimumConfiguredMsaa": 4,
+    "lodBias": 2.0,
+    "maximumLodLevel": 0,
+    "anisotropicFiltering": "ForceEnable",
+    "mainCameraRenderingPath": "Forward",
+    "mainCameraHdr": true,
+    "mainCameraMsaa": true,
+    "dynamicResolutionAllowed": false
+  },
+  "rebuildCoupling": {
+    "sourceOfTruth": "QualityBlockSolarShadowRuntimeContract",
+    "solarApplicationEntryPoint": "QualityBlockEnvironmentContext.ApplyToDirectionalLight",
+    "reason": "QualityBlockWeatheringUpgrade and QualityBlockEnvironmentLightingUpgrade both reapply SummerSun during a fresh generated-scene build. Therefore applying only direction/intensity is insufficient; the complete stable shadow state must be reapplied at the same entry point.",
+    "previousFailureMode": "A pre-rebuild shadow QA could validate lightBias=0.025 and lightNormalBias=0.38, after which the environment context reapplied older 0.04/0.28 values before the native-4K render path.",
+    "requiredBehavior": "Every solar reapplication restores the complete shadow/camera/LOD stability state before the scene can be captured."
+  },
+  "failClosed": {
+    "requiredActiveDirectionalLightCount": 1,
+    "requiredDirectionalLightName": "SummerSun",
+    "renderSettingsSunMustReferenceSummerSun": true,
+    "mainCameraPreCullGuardRequired": true,
+    "cameraRenderMustInvokeGuard": true,
+    "guardCallback": "Camera.onPreCull",
+    "guardScope": "benchmark MainCamera only",
+    "guardChecks": [
+      "exactly_one_active_directional_light",
+      "solar_context_identity",
+      "sun_transform_matches_solar_ray",
+      "sun_intensity_and_color_temperature_match_solar_sample",
+      "per_light_shadow_settings",
+      "global_shadow_projection_cascades_distance_and_near_plane",
+      "minimum_msaa_and_lod_quality",
+      "forward_hdr_msaa_camera_without_dynamic_resolution"
+    ],
+    "actualRenderRequiredForVisualPoints": true,
+    "forbidden": [
+      "selecting_the_strongest_directional_light_and_ignoring_a_second_contradictory_key",
+      "validating_shadow_settings_only_before_a_scene_rebuild",
+      "hardcoding_a_manifest_coherence_claim_without_runtime_validation",
+      "awarding_visual_points_from_source_math_or_configuration_only"
+    ]
+  },
+  "renderEvidencePlan": {
+    "hero": "Inspect building and ground shadows together. Shadow bearing must be consistent with a southwest sun and must not reverse between unrelated objects.",
+    "oblique": "Inspect contact separation at balcony, park furniture and path/curb interfaces. Reject peter-panning or acne large enough to read at native 4K.",
+    "grazing": "Inspect long thin-geometry and foliage shadows for stable penumbra direction, coherent highlight direction and absence of contradictory second-key cues.",
+    "temporal": "Inspect camera movement for cascade swimming, shadow shimmer, abrupt LOD-shadow changes or aliasing. Source settings alone cannot clear these defects.",
+    "requiredNativeResolution": [3840, 2160],
+    "requiredInspection": "full frames plus 100% crops"
+  },
+  "criticalFailMappings": [
+    "inconsistent_sun_shadow_direction",
+    "severe_aliasing_or_shimmering",
+    "visible_lod_pop",
+    "major_light_leak",
+    "claiming_render_quality_without_actual_render"
+  ],
+  "verification": {
+    "compileVerified": false,
+    "native4kRenderVerified": false,
+    "preCullGuardObservedInUnity": false,
+    "actualShadowDirectionVerifiedFromPixels": false,
+    "shadowAcnePeterPanningVerified": false,
+    "cascadeStabilityVerified": false,
+    "visualFidelityPointsAwarded": 0,
+    "visualFidelityStatus": "UNSCORED_REVIEW_REQUIRED",
+    "note": "Implementation/readiness metadata only. The calculated solar angles and shadow ratio validate source math, not image quality."
+  }
+}

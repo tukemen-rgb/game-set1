@@ -1,0 +1,115 @@
+{
+  "schemaVersion": "1.0",
+  "runId": "2026-09-11_0536_rendered_repetition_evidence",
+  "branch": "gpt/unity-migration",
+  "startHead": "11d51ac63e1736be061c50fa4551db40dbde19e2",
+  "objective": "Close the gap between static clone/UV checks and the render-only critical defect for immediately obvious repeated texture/module patterns. Add objective native-4K pixel-domain triage without allowing a metric to award points, clear the critical defect, or substitute for human review.",
+  "constraints": {
+    "preserveGodot": true,
+    "baseMergePerformed": false,
+    "forbiddenThemesExcluded": ["earthquake", "disaster", "reconstruction"],
+    "visualPassThreshold": 92,
+    "actualRenderRequiredForVisualScore": true
+  },
+  "environment": {
+    "unityRuntimeAvailable": false,
+    "unityVersionTarget": "6000.3.0f1",
+    "githubWorkflowRunsObserved": 0,
+    "native4KCaptureDirectoryObserved": false,
+    "renderVerification": "PENDING_UNITY_RUNTIME"
+  },
+  "problemFinding": {
+    "existingStaticCoverage": [
+      "QualityBlockSceneRepetitionQA already checks exact and coarse perceptual near-clones for generated tree masters and ecology patches.",
+      "Ground world-phase and apartment occupancy variation are already delegated to source-side repetition checks.",
+      "The static repetition contract explicitly states that source checks cannot clear the render-only repetition critical defect."
+    ],
+    "evidenceGap": "The native-4K packet had objective histogram/clipping diagnostics and temporal diagnostics, but no pixel-domain periodicity triage for the actual post-tonemap still crops. A repeated texture/module rhythm could therefore be left entirely to unaided manual discovery even though it is an automatic critical FAIL when immediately obvious.",
+    "priorityRationale": "A single obvious repeated texture/module pattern invalidates the entire Visual Fidelity candidate regardless of total numeric score, so improving discovery of this defect has higher expected gate value than adding another speculative asset while Unity rendering is unavailable."
+  },
+  "implementation": {
+    "contract": "Assets/QA/rendered_repetition_diagnostics_contract.json",
+    "analyzer": "Assets/Editor/QualityBlockRenderedRepetitionDiagnostics.cs",
+    "reportPathWhenRuntimeExists": "Assets/QA/rendered_repetition_diagnostics.json",
+    "requiredCropRefs": [
+      "hero/facade_center",
+      "hero/ground_contact",
+      "oblique/vegetation_grounding",
+      "grazing/material_grazing",
+      "grazing/tree_shadow_contact"
+    ],
+    "measurement": {
+      "input": "exact post-tonemap 100% PNG crop pixels from the canonical 3840x2160 capture manifest",
+      "sampleStridePx": 4,
+      "gradientThresholdCode": 12,
+      "minimumQualifiedComparisonsPerShift": 1800,
+      "translationSweepPx": {"minimum": 32, "maximum": 512, "step": 8},
+      "localNeighborhoodRadiusSteps": 3,
+      "localProminenceWarning": 0.12,
+      "signal": "mean absolute display-luma difference on texture-qualified sample pairs",
+      "decision": "warning-only local periodicity prominence; never an automatic PASS/FAIL or point award"
+    },
+    "provenanceBinding": [
+      "report stores current 4k_capture_manifest.json SHA-256",
+      "each analyzed crop stores its own SHA-256 and exact dimensions/path",
+      "ValidateLatestReportForScoring recomputes manifest/crop hashes and fails closed on stale bytes",
+      "the core Visual Fidelity evaluator already calls ReviewedVisualEvidenceIntegrityQA, so the new report precondition cannot be bypassed through the direct core entry point"
+    ],
+    "packetIntegration": [
+      "Native4KReviewPacket validates the diagnostics contract before scene/capture work.",
+      "After actual still and temporal evidence are captured/sealed, Native4KReviewPacket runs rendered repetition diagnostics automatically.",
+      "ReviewedVisualEvidenceIntegrityQA requires a current diagnostics report before scoring and still requires explicit human critical-defect evidence.",
+      "Scene repetition contract schema 1.2 records the static-to-render evidence chain and explicitly forbids metric-based clearance."
+    ]
+  },
+  "selfAudit": {
+    "acceptedLimitations": [
+      "Perspective foreshortening can smear a true periodic signal.",
+      "Legitimate manufactured facade/curb/component repetition can create a strong numerical signal without being a visual defect.",
+      "The current detector is display-luma based and can miss chroma-dominant repetition.",
+      "Thresholds have not been calibrated on this project because no native Unity pixels exist yet."
+    ],
+    "safetyAgainstFalseAuthority": [
+      "visualFidelityPointsAwarded is fixed at 0.",
+      "criticalDefectAutomaticallyCleared is fixed false and validated false before scoring.",
+      "zero warnings cannot clear obvious_repetition.",
+      "warnings do not automatically assert a defect; they only prioritize direct 100% pixel inspection.",
+      "authentic manufactured dimensions are not randomized to game the metric."
+    ],
+    "sourceReview": "Manual source review found no deliberate Godot changes and no base merge. New C# uses editor/runtime APIs already present in the project (Texture2D.LoadImage, JsonUtility, SHA256, LINQ, AssetDatabase). Unity compilation remains unverified and is not claimed."
+  },
+  "commitsBeforeRunRecord": [
+    {"sha":"685f454b0c20694495b48b4e86e574da0c8e0375","summary":"Add rendered repetition diagnostics contract"},
+    {"sha":"5110c29605f61e7fdea5a31f4a165f37eb8c0fce","summary":"Add native 4K repetition diagnostics"},
+    {"sha":"90427c079d1e4864e9a1dabbdb627695affbbde5","summary":"Bind repetition diagnostics into 4K review packet"},
+    {"sha":"a4e9255b6b970e1ac6fbd0c6cf30a8c7bf50b1ad","summary":"Require current rendered repetition diagnostics before scoring"},
+    {"sha":"c41320a753847d8e31e6b265ea8bf3b2a8ad99a7","summary":"Bind reviewed scoring to rendered repetition triage"},
+    {"sha":"4c289302a678565e9e1817cf4b62191a41564cba","summary":"Add runtime pixel repetition evidence contract"},
+    {"sha":"d66763c662f43680ce0fcb12db2fa7509b1b2983","summary":"Enforce rendered repetition contract linkage"},
+    {"sha":"089b351b2e2c53cc209e68185a343862eee3a493","summary":"Record rendered repetition evidence readiness"}
+  ],
+  "verification": {
+    "sourceContractAlignment": "PASS_BY_SOURCE_REVIEW",
+    "coreGateLinkage": "PASS_BY_SOURCE_REVIEW",
+    "native4KPacketLinkage": "PASS_BY_SOURCE_REVIEW",
+    "unityCompile": "PENDING_UNITY_RUNTIME",
+    "actual3840x2160Render": "MISSING",
+    "actual100PercentCropAnalysis": "MISSING",
+    "visualFidelityStatus": "UNSCORED",
+    "visualFidelityPointsAwarded": 0
+  },
+  "implementationReadiness": {
+    "score": 93,
+    "possible": 100,
+    "unchangedReason": "The run strengthens evidence discovery/integrity but does not provide the missing Unity 6000.3.0f1 compile/runtime verification worth the remaining 7 readiness points."
+  },
+  "expectedVisualScoreImpact": [
+    "Critical obvious repetition: higher detection probability for final-pixel texture/module rhythms before a reviewer signs off; no automatic clearance or penalty.",
+    "Texture/microdetail 10: diagnostics cover ground and grazing material crops where texture tiling can become immediately obvious.",
+    "Vegetation/natural complexity 8: diagnostics cover vegetation grounding and tree-shadow/contact crops in addition to hierarchy signatures.",
+    "Weathering/context 10 and period/scene authenticity 7: facade crop warnings can surface repeated residue/occupancy rhythms, while legitimate standardized housing rhythm remains a construction-aware human judgment.",
+    "Automatic Visual Fidelity score impact: 0. No rendered pixels exist."
+  ],
+  "nextBlocker": "Unity 6000.3.0f1 compile/runtime. On first Runner/screenshot availability, stop speculative expansion and execute Prepare Complete Native 4K Review Packet. Verify this analyzer compiles, produces all five SHA-256-bound crop diagnostics, and inspect every required crop at 100% regardless of warning count. Use candidate period warnings to locate repeated texture/module structure, then decide obvious_repetition only from the real pixels and construction context. Calibrate warning thresholds only after seeing the real frames and never by weakening the human critical-defect requirement.",
+  "recordingNote": "This JSON is committed as the final bookkeeping record for the run; its own commit SHA is represented by Git history rather than recursively embedded in itself."
+}

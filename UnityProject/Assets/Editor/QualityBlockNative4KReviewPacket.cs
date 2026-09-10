@@ -39,6 +39,7 @@ public static class QualityBlockNative4KReviewPacket
         QualityBlockFacadeAperturePhysicalUvQA.ValidateContractConfigOnly();
         QualityBlockBalconyConstructionInterfaceQA.ValidateContractConfigOnly();
         QualityBlockAcOutdoorUnitInstallationQA.ValidateContractConfigOnly();
+        QualityBlockRainwaterDownpipeInstallationQA.ValidateContractConfigOnly();
         QualityBlockTextureSamplingUpgrade.ValidateContractConfigOnly();
         QualityBlockPhysicalTexelDensityQA.ValidateContractConfigOnly();
         QualityBlockAlbedoLightingNeutralityQA.ValidateContractConfigOnly();
@@ -54,11 +55,14 @@ public static class QualityBlockNative4KReviewPacket
         // world-aligned physical UVs before any reflection/capture work. This prevents both opaque-wall
         // occlusion behind glass and the equally unacceptable workaround of restarting the same concrete
         // texture patch on every repeated wall module. Generated balcony and outdoor-AC construction
-        // interfaces are then corrected against the actual persisted slab top. Low physical texel density
-        // is corrected at texture/UV/tiling level. Broad illumination patterns found in generated base
-        // albedo are corrected in the source/PBR split; they are never hidden by sharpening, grading,
-        // painted highlights or by weakening the native 4K gate. Any visibly significant active Unity
-        // stock solid in the exact hero/oblique/grazing framing fails here and must be reconstructed.
+        // interfaces are then corrected against the actual persisted slab top. The full-height rainwater
+        // leader is also reconstructed as a manufactured PVC-U drainage assembly with explicit socket
+        // joints, wall bands/standoffs/anchors, roof-line offset and a ground receiver instead of a floating
+        // cylinder with detached hardware. Low physical texel density is corrected at texture/UV/tiling
+        // level. Broad illumination patterns found in generated base albedo are corrected in the source/PBR
+        // split; they are never hidden by sharpening, grading, painted highlights or by weakening the native
+        // 4K gate. Any visibly significant active Unity stock solid in the exact hero/oblique/grazing framing
+        // fails here and must be reconstructed.
         QualityBlock4KCapture.PrepareSceneForSynchronizedCapture();
         QualityBlockFacadeApertureConstructionQA.ApplyAndPersist();
         QualityBlockFacadeAperturePhysicalUvQA.ApplyAndPersist();
@@ -68,6 +72,8 @@ public static class QualityBlockNative4KReviewPacket
         QualityBlockBalconyConstructionInterfaceQA.ValidateOpenScene();
         QualityBlockAcOutdoorUnitInstallationQA.ApplyAndPersist();
         QualityBlockAcOutdoorUnitInstallationQA.ValidateOpenScene();
+        QualityBlockRainwaterDownpipeInstallationQA.ApplyAndPersist();
+        QualityBlockRainwaterDownpipeInstallationQA.ValidateOpenScene();
         QualityBlockPhysicalTexelDensityQA.ValidateOpenScene();
         QualityBlockAlbedoLightingNeutralityQA.ValidateGeneratedBaseAlbedos();
         QualityBlockBenchmarkPrimitiveExposureQA.ValidateOpenScene();
@@ -78,7 +84,7 @@ public static class QualityBlockNative4KReviewPacket
         QualityBlockReflectionProbeAwaiter.Begin(FinishAfterReflectionSynchronization);
 
         Debug.Log(
-            "Native-4K review packet entered reflection synchronization after the final prepared scene passed real apartment facade-aperture reconstruction, world-aligned physical facade UV anti-repeat QA, balcony rail/slab and outdoor-AC support/service-line construction correction+QA, physical texel-density, generated base-albedo lighting-neutrality, and exact-framing stock-solid primitive exposure source preflight. " +
+            "Native-4K review packet entered reflection synchronization after the final prepared scene passed real apartment facade-aperture reconstruction, world-aligned physical facade UV anti-repeat QA, balcony rail/slab and outdoor-AC support/service-line correction, physically installed rainwater downpipe reconstruction, physical texel-density, generated base-albedo lighting-neutrality, and exact-framing stock-solid primitive exposure source preflight. " +
             "Still and temporal capture are deferred until later Editor updates prove both realtime probe RenderIDs complete. Visual Fidelity remains UNSCORED.");
     }
 
@@ -97,6 +103,7 @@ public static class QualityBlockNative4KReviewPacket
         QualityBlockFacadeAperturePhysicalUvQA.ValidateOpenScene();
         QualityBlockBalconyConstructionInterfaceQA.ValidateOpenScene();
         QualityBlockAcOutdoorUnitInstallationQA.ValidateOpenScene();
+        QualityBlockRainwaterDownpipeInstallationQA.ValidateOpenScene();
         QualityBlockBenchmarkPrimitiveExposureQA.ValidateOpenScene();
         QualityBlock4KCapture.CapturePreparedSceneAfterProbeSync();
 
@@ -114,6 +121,7 @@ public static class QualityBlockNative4KReviewPacket
         QualityBlockFacadeAperturePhysicalUvQA.ValidateOpenScene();
         QualityBlockBalconyConstructionInterfaceQA.ValidateOpenScene();
         QualityBlockAcOutdoorUnitInstallationQA.ValidateOpenScene();
+        QualityBlockRainwaterDownpipeInstallationQA.ValidateOpenScene();
         QualityBlockBenchmarkPrimitiveExposureQA.ValidateOpenScene();
         QualityBlockSceneMaterialPhysicalityUpgrade.ValidateOpenScene();
         QualityBlockSceneMetadataCoverageQA.ValidateOpenScene();
@@ -141,6 +149,7 @@ public static class QualityBlockNative4KReviewPacket
             "aperture-shell concrete re-UVed from absolute Danchi-local metres at a 2.4 m macro scale with distinct repeated-cell phase and 0.22 m detail-normal scale so module repetition is not hidden by arbitrary texture restarts, " +
             "generated balcony slab fascia/material and rail base-plate/bolt/lower-rail/bracket interfaces corrected from the persisted slab-top plane, " +
             "generated outdoor AC units reconstructed as slab -> plate -> foot -> supported chassis stacks with moved casing detail, continuous paired refrigerant lines and a drain outlet above the slab, all revalidated before/after still capture, " +
+            "the camera-right rainwater leader rebuilt as a 75 mm-class rough dielectric PVC-U macro body with manufactured joint sleeves, eight wall restraint stations, roof-line offset/collar and inserted ground receiver, with small hardware participating in the existing four-level Danchi LOD policy while the macro pipe silhouette stays continuously rendered, " +
             "final persisted generated textured geometry proven above the conservative physical texel-density floor, generated baseline albedos checked for broad baked-lighting patterns, and exact benchmark projections checked for visibly significant active Unity stock solid primitive risk before reflection/capture work, " +
             "reflection cubemaps proven complete on later Editor updates before capture with a SHA-256-bound wait proof, retained structural geometry and actual material physicality validated, " +
             "all three native stills proven at runtime by the capture method itself to execute the filmic HDR-source to LDR-destination display transform with no fallback blit, " +

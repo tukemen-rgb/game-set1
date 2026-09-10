@@ -8,8 +8,9 @@ using UnityEngine.SceneManagement;
 /// <summary>
 /// Makes cause-based facade weathering a persisted benchmark invariant. The quality build chain
 /// saves the benchmark several times; once the detailed danchi exists, every subsequent save must
-/// contain the non-primitive weathering pass and pass its structural QA. This also covers the native
-/// 4K capture preparation path without relying on a human to remember an extra menu command.
+/// contain the non-primitive causal weathering pass AND the optically feathered dry-dielectric
+/// refinement. This prevents a later parent rebuild from silently restoring uniform-alpha Standard
+/// materials before native 4K evidence is captured.
 /// </summary>
 [InitializeOnLoad]
 public static class QualityBlockFacadeWeatheringSaveGate
@@ -36,13 +37,17 @@ public static class QualityBlockFacadeWeatheringSaveGate
         applying = true;
         try
         {
+            QualityBlockFacadeWeatheringOpticalRefinementQA.ValidateContractConfigOnly();
             QualityBlockFacadeWeatheringDetailUpgrade.ApplyToOpenScene();
+            QualityBlockFacadeWeatheringOpticalRefinementQA.ApplyToOpenScene();
             QualityBlockFacadeWeatheringDetailUpgrade.ValidateOpenScene();
+            QualityBlockFacadeWeatheringOpticalRefinementQA.ValidateOpenScene();
         }
         catch (Exception ex)
         {
             throw new InvalidOperationException(
-                "Benchmark save blocked: cause-based facade weathering failed its required structural QA.", ex);
+                "Benchmark save blocked: facade weathering failed causal-geometry and/or optical-refinement QA. " +
+                "Hard-edged Standard-alpha residue is not a valid persisted benchmark state.", ex);
         }
         finally
         {

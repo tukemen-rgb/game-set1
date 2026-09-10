@@ -82,6 +82,11 @@ public static class QualityBlockReviewedVisualEvidenceIntegrityQA
         // the critical defect, so the reviewer must still record direct observations from the exact crops.
         QualityBlockRenderedRepetitionDiagnostics.ValidateLatestReportForScoring();
 
+        // Construction/shadow QA likewise cannot prove that a major bright leak is absent in the final
+        // post-tonemap pixels. Require the current SHA-256-bound bright-on-dark triage report before the
+        // reviewer can reach the numeric gate. It remains warning-only and cannot clear/assert the defect.
+        QualityBlockRenderedLightLeakDiagnostics.ValidateLatestReportForScoring();
+
         // Temporal/LOD/aliasing review is not scoreable from PNG existence alone. Require the
         // authoritative prepared sequence to prove one MainCamera pre-cull lighting fingerprint per
         // temporal frame and one filmic native-4K HDR->LDR invocation per frame with zero fallback.
@@ -92,8 +97,8 @@ public static class QualityBlockReviewedVisualEvidenceIntegrityQA
         Debug.Log(
             "Reviewed Visual Fidelity evidence integrity valid: exact hero/oblique/grazing entries, exact nine categories, " +
             "exact twelve critical-defect reviews, no duplicates/unknown IDs, complete evidence/corrective-action text, " +
-            "a current SHA-256-bound native-4K repetition triage report, and a sealed per-frame temporal lighting + filmic HDR->LDR runtime receipt. " +
-            "Repetition triage remains warning-only; this QA awards 0 Visual Fidelity points and human pixel review/provenance/numeric gate still decide scoring eligibility/PASS.");
+            "current SHA-256-bound native-4K repetition and light-leak triage reports, and a sealed per-frame temporal lighting + filmic HDR->LDR runtime receipt. " +
+            "Pixel diagnostics remain warning-only; this QA awards 0 Visual Fidelity points and human pixel review/provenance/numeric gate still decide scoring eligibility/PASS.");
     }
 
     public static void ValidateContractConfigOnly()
@@ -104,9 +109,9 @@ public static class QualityBlockReviewedVisualEvidenceIntegrityQA
         IntegrityContract contract = JsonUtility.FromJson<IntegrityContract>(File.ReadAllText(ContractPath));
         if (contract == null)
             throw new InvalidOperationException("Reviewed-evidence integrity contract could not be parsed.");
-        if (!string.Equals(contract.schemaVersion, "1.1", StringComparison.Ordinal))
+        if (!string.Equals(contract.schemaVersion, "1.2", StringComparison.Ordinal))
             throw new InvalidOperationException(
-                $"Unexpected reviewed-evidence integrity schemaVersion '{contract.schemaVersion}'. Expected 1.1.");
+                $"Unexpected reviewed-evidence integrity schemaVersion '{contract.schemaVersion}'. Expected 1.2.");
         if (contract.runtimeRenderVerified)
             throw new InvalidOperationException(
                 "Reviewed-evidence integrity contract may not claim runtime render verification.");
@@ -135,7 +140,9 @@ public static class QualityBlockReviewedVisualEvidenceIntegrityQA
             !rules.requireAtLeastOneObservedReferencePerCriticalDefect ||
             !rules.requireRenderVerifiedTrueForReviewedEvidence ||
             !rules.requireCurrentRenderedRepetitionDiagnostics ||
-            !rules.renderedRepetitionDiagnosticsCannotClearCriticalDefect)
+            !rules.renderedRepetitionDiagnosticsCannotClearCriticalDefect ||
+            !rules.requireCurrentRenderedLightLeakDiagnostics ||
+            !rules.renderedLightLeakDiagnosticsCannotDecideCriticalDefect)
             throw new InvalidOperationException(
                 "Reviewed-evidence integrity rules were weakened or are incomplete.");
     }
@@ -154,8 +161,7 @@ public static class QualityBlockReviewedVisualEvidenceIntegrityQA
             if (capture.width != 3840 || capture.height != 2160)
                 throw new InvalidOperationException(
                     $"Reviewed capture '{capture.viewId}' is not native 3840x2160: {capture.width}x{capture.height}.");
-            if (string.IsNullOrWhiteSpace(capture.assetPath))
-                throw new InvalidOperationException($"Reviewed capture '{capture.viewId}' is missing assetPath.");
+            if (string.IsNullOrWhiteSpace(capture.assetPath))n                throw new InvalidOperationException($"Reviewed capture '{capture.viewId}' is missing assetPath.");
             if (capture.cropPaths == null || capture.cropPaths.Length == 0 ||
                 capture.cropPaths.Any(string.IsNullOrWhiteSpace))
                 throw new InvalidOperationException(
@@ -316,5 +322,7 @@ public static class QualityBlockReviewedVisualEvidenceIntegrityQA
         public bool requireRenderVerifiedTrueForReviewedEvidence;
         public bool requireCurrentRenderedRepetitionDiagnostics;
         public bool renderedRepetitionDiagnosticsCannotClearCriticalDefect;
+        public bool requireCurrentRenderedLightLeakDiagnostics;
+        public bool renderedLightLeakDiagnosticsCannotDecideCriticalDefect;
     }
 }

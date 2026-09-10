@@ -9,9 +9,11 @@ using UnityEngine.Rendering;
 
 /// <summary>
 /// Replaces the two benchmark-facing Futon_* Cube renderers with closed-volume textile drapes that
-/// physically wrap the balcony top rail. The legacy object/collider remains as a gameplay anchor but
-/// its primitive renderer is disabled. This is source-side critical-defect risk reduction only:
-/// native 3840x2160 evidence is still mandatory before any Visual Fidelity point or defect clearance.
+/// physically wrap the final rendered balcony top rail. The legacy object/collider remains as a
+/// gameplay anchor but its primitive renderer is disabled. The drape resolves the reconstructed
+/// guardrail datum when present and compensates its hanging length when the rail height changes.
+/// Source-side construction QA only: native 3840x2160 evidence remains mandatory before any Visual
+/// Fidelity point or critical-defect clearance.
 /// </summary>
 public static class QualityBlockFutonBalconyDrapeQA
 {
@@ -26,7 +28,8 @@ public static class QualityBlockFutonBalconyDrapeQA
     private const float FabricTileM = 0.14f;
     private const float MinFloorClearanceM = 0.030f;
     private const float MaxFloorClearanceM = 0.090f;
-    private const float RailEnvelopeOffsetM = 0.056f;
+    private const float LegacyRailCenterAboveFloorM = 0.770f;
+    private const float RailEnvelopeOffsetM = 0.051f;
     private const float ContactToleranceM = 0.012f;
 
     private static readonly float[] LodTransitions = { 0.14f, 0.065f, 0.028f, 0.009f };
@@ -60,7 +63,7 @@ public static class QualityBlockFutonBalconyDrapeQA
         EditorSceneManager.SaveOpenScenes();
         AssetDatabase.SaveAssets();
         AssetDatabase.Refresh();
-        Debug.Log("Balcony futon drapes persisted. Visual Fidelity remains UNSCORED pending native 4K evidence.");
+        Debug.Log("Balcony futon drapes persisted against final rail datum. Visual Fidelity remains UNSCORED pending native 4K evidence.");
     }
 
     public static void ApplyToOpenScene()
@@ -104,14 +107,27 @@ public static class QualityBlockFutonBalconyDrapeQA
         if (c == null) errors.Add("contract is null/unparseable");
         else
         {
-            if (c.schemaVersion != "1.0.0") errors.Add("schemaVersion must remain 1.0.0");
+            if (c.schemaVersion != "1.0.1") errors.Add("schemaVersion must remain 1.0.1");
             if (c.scenePath != ScenePath) errors.Add($"scenePath must be {ScenePath}");
             if (c.expectedAssemblies != 2) errors.Add("expectedAssemblies must remain 2");
-            if (Mathf.Abs(c.bodyThicknessM - ThicknessM) > 0.0001f) errors.Add("bodyThicknessM drifted from 0.022 m");
-            if (Mathf.Abs(c.minFloorClearanceM - MinFloorClearanceM) > 0.0001f) errors.Add("minimum floor clearance drifted");
-            if (Mathf.Abs(c.maxFloorClearanceM - MaxFloorClearanceM) > 0.0001f) errors.Add("maximum floor clearance drifted");
-            if (c.lodPolicy == null || c.lodPolicy.levels != 4 || !c.lodPolicy.crossFadeRequired) errors.Add("four cross-faded LODs are mandatory");
-            if (c.visualCreditPolicy == null || c.visualCreditPolicy.autoVisualPoints != 0) errors.Add("source QA may not award Visual Fidelity points");
+            if (c.dimensionsThickness == null) errors.Add("dimensionsThickness block is required");
+            else
+            {
+                if (Mathf.Abs(c.dimensionsThickness.bodyThicknessM - ThicknessM) > 0.0001f)
+                    errors.Add("bodyThicknessM drifted from 0.022 m");
+                if (Mathf.Abs(c.dimensionsThickness.minFloorClearanceM - MinFloorClearanceM) > 0.0001f)
+                    errors.Add("minimum floor clearance drifted");
+                if (Mathf.Abs(c.dimensionsThickness.maxFloorClearanceM - MaxFloorClearanceM) > 0.0001f)
+                    errors.Add("maximum floor clearance drifted");
+                if (Mathf.Abs(c.dimensionsThickness.legacyRailCenterAboveFloorM - LegacyRailCenterAboveFloorM) > 0.0001f)
+                    errors.Add("legacy rail-center datum drifted from 0.770 m");
+                if (Mathf.Abs(c.dimensionsThickness.railEnvelopeCenterlineOffsetM - RailEnvelopeOffsetM) > 0.0001f)
+                    errors.Add("rail envelope offset drifted from 0.051 m");
+            }
+            if (c.lodPolicy == null || c.lodPolicy.levels != 4 || !c.lodPolicy.crossFadeRequired)
+                errors.Add("four cross-faded LODs are mandatory");
+            if (c.visualCreditPolicy == null || c.visualCreditPolicy.autoVisualPoints != 0)
+                errors.Add("source QA may not award Visual Fidelity points");
         }
         if (errors.Count > 0) throw new InvalidOperationException("Balcony futon contract FAILED:\n - " + string.Join("\n - ", errors));
     }
@@ -178,27 +194,27 @@ public static class QualityBlockFutonBalconyDrapeQA
                 }
             }
 
-            Renderer rail = RequireRenderer($"RailTop_{spec.floor}_{spec.bay}");
+            Bounds rail = QualityBlockBalconyGuardrailInstallationQA.ResolveTopRailBounds(spec.floor, spec.bay);
             Renderer floor = RequireRenderer($"BalconyFloor_{spec.floor}_{spec.bay}");
             Bounds cloth = lod0.Value;
-            if (cloth.max.z < rail.bounds.max.z + 0.025f || cloth.min.z > rail.bounds.min.z - 0.005f)
-                throw new InvalidOperationException($"{assembly.name} does not wrap both front/back sides of the top rail.");
-            if (cloth.max.y < rail.bounds.max.y + 0.004f)
-                throw new InvalidOperationException($"{assembly.name} does not crest above the top rail.");
+            if (cloth.max.z < rail.max.z + 0.025f || cloth.min.z > rail.min.z - 0.005f)
+                throw new InvalidOperationException($"{assembly.name} does not wrap both front/back sides of the final top rail.");
+            if (cloth.max.y < rail.max.y + 0.004f)
+                throw new InvalidOperationException($"{assembly.name} does not crest above the final top rail.");
 
             float floorClearance = cloth.min.y - floor.bounds.max.y;
             if (floorClearance < MinFloorClearanceM || floorClearance > MaxFloorClearanceM)
                 throw new InvalidOperationException($"{assembly.name} lower-edge/floor clearance {floorClearance:F4}m outside 0.030-0.090m.");
 
             float inner = RailEnvelopeOffsetM - ThicknessM * 0.5f;
-            if (Mathf.Abs(inner - rail.bounds.extents.y) > ContactToleranceM || Mathf.Abs(inner - rail.bounds.extents.z) > ContactToleranceM)
-                throw new InvalidOperationException($"{assembly.name} rail-contact envelope no longer matches the rendered rail section.");
+            if (Mathf.Abs(inner - rail.extents.y) > ContactToleranceM || Mathf.Abs(inner - rail.extents.z) > ContactToleranceM)
+                throw new InvalidOperationException($"{assembly.name} rail-contact envelope no longer matches the final rendered rail section.");
         }
 
         if (root.GetComponentsInChildren<MeshRenderer>(true).Length != 8)
             throw new InvalidOperationException("Expected exactly two futons x four LOD renderers.");
 
-        Debug.Log("Balcony futon source QA passed: primitive slabs disabled; two distinct closed drapes wrap the rail, clear the slab, keep outward-facing hems, stay dielectric and retain four cross-faded LODs. Native 4K inspection is still mandatory.");
+        Debug.Log("Balcony futon source QA passed: primitive slabs disabled; two distinct closed drapes resolve the final guardrail datum, wrap the rail, clear the slab, keep outward-facing hems, stay dielectric and retain four cross-faded LODs. Native 4K inspection is still mandatory.");
     }
 
     private static void BuildAssembly(Transform parent, Spec spec, Material material)
@@ -206,12 +222,18 @@ public static class QualityBlockFutonBalconyDrapeQA
         GameObject legacy = Find(LegacyName(spec));
         if (legacy == null) throw new InvalidOperationException($"Legacy futon anchor missing: {LegacyName(spec)}");
         DisableLegacyRenderer(spec);
-        Renderer rail = RequireRenderer($"RailTop_{spec.floor}_{spec.bay}");
+        Bounds rail = QualityBlockBalconyGuardrailInstallationQA.ResolveTopRailBounds(spec.floor, spec.bay);
         Renderer floor = RequireRenderer($"BalconyFloor_{spec.floor}_{spec.bay}");
+
+        float railCenterAboveFloor = rail.center.y - floor.bounds.max.y;
+        if (railCenterAboveFloor < LegacyRailCenterAboveFloorM - 0.010f)
+            throw new InvalidOperationException(
+                $"{LegacyName(spec)} final rail center is unexpectedly low ({railCenterAboveFloor:F4} m above floor); do not shorten bedding to hide a construction regression.");
+        float resolvedFrontDrop = spec.frontDrop + Mathf.Max(0f, railCenterAboveFloor - LegacyRailCenterAboveFloorM);
 
         GameObject assembly = new GameObject(AssemblyName(spec));
         assembly.transform.SetParent(parent, false);
-        assembly.transform.position = new Vector3(legacy.transform.position.x, rail.bounds.center.y, rail.bounds.center.z);
+        assembly.transform.position = new Vector3(legacy.transform.position.x, rail.center.y, rail.center.z);
         Renderer[][] sets = new Renderer[4][];
 
         for (int level = 0; level < 4; level++)
@@ -221,7 +243,7 @@ public static class QualityBlockFutonBalconyDrapeQA
             GameObject body = new GameObject("FutonBody");
             body.transform.SetParent(tier.transform, false);
             MeshFilter filter = body.AddComponent<MeshFilter>();
-            filter.sharedMesh = BuildMeshAsset(spec, level);
+            filter.sharedMesh = BuildMeshAsset(spec, level, resolvedFrontDrop);
             MeshRenderer renderer = body.AddComponent<MeshRenderer>();
             renderer.sharedMaterial = material;
             renderer.shadowCastingMode = ShadowCastingMode.On;
@@ -242,14 +264,14 @@ public static class QualityBlockFutonBalconyDrapeQA
         group.RecalculateBounds();
 
         QualityBlockFutonDrapeManifest manifest = assembly.AddComponent<QualityBlockFutonDrapeManifest>();
-        manifest.Configure(spec.floor, spec.bay, WidthM, ThicknessM, spec.frontDrop, spec.backDrop, floor.bounds.max.y, spec.sag);
+        manifest.Configure(spec.floor, spec.bay, WidthM, ThicknessM, resolvedFrontDrop, spec.backDrop, floor.bounds.max.y, spec.sag);
     }
 
-    private static Mesh BuildMeshAsset(Spec spec, int level)
+    private static Mesh BuildMeshAsset(Spec spec, int level, float resolvedFrontDrop)
     {
         string path = $"{MeshRoot}/GM_FutonDrape_F{spec.floor}_B{spec.bay}_LOD{level}.asset";
         if (AssetDatabase.LoadAssetAtPath<Mesh>(path) != null) AssetDatabase.DeleteAsset(path);
-        Mesh mesh = BuildDrapeMesh(spec.frontDrop, spec.backDrop, spec.sag, WidthSegments[level], PathSegments[level]);
+        Mesh mesh = BuildDrapeMesh(resolvedFrontDrop, spec.backDrop, spec.sag, WidthSegments[level], PathSegments[level]);
         mesh.name = $"GM_FutonDrape_F{spec.floor}_B{spec.bay}_LOD{level}";
         AssetDatabase.CreateAsset(mesh, path);
         return mesh;
@@ -311,8 +333,6 @@ public static class QualityBlockFutonBalconyDrapeQA
         int neg = 0, pos = perSide;
         for (int p = 0; p < pathSegments; p++)
         {
-            // Left/right hems must wind outward (-X/+X respectively). A prior draft used the opposite
-            // winding; source vector audit caught that before runtime evidence was claimed.
             AddQuad(tris, neg + p * wc, pos + p * wc, pos + (p + 1) * wc, neg + (p + 1) * wc, false);
             int nr0 = neg + p * wc + widthSegments, nr1 = neg + (p + 1) * wc + widthSegments;
             int pr0 = pos + p * wc + widthSegments, pr1 = pos + (p + 1) * wc + widthSegments;
@@ -335,7 +355,8 @@ public static class QualityBlockFutonBalconyDrapeQA
     {
         Vector3[] vertices = mesh.vertices;
         int[] triangles = mesh.triangles;
-        if (vertices == null || triangles == null || triangles.Length < 3) throw new InvalidOperationException($"{assembly} LOD{lod} mesh is empty.");
+        if (vertices == null || triangles == null || triangles.Length < 3)
+            throw new InvalidOperationException($"{assembly} LOD{lod} mesh is empty.");
         float minX = vertices.Min(v => v.x), maxX = vertices.Max(v => v.x);
         Vector3 leftSum = Vector3.zero, rightSum = Vector3.zero;
         int leftCount = 0, rightCount = 0;
@@ -350,7 +371,8 @@ public static class QualityBlockFutonBalconyDrapeQA
             if (left) { leftSum += n; leftCount++; }
             if (right) { rightSum += n; rightCount++; }
         }
-        if (leftCount == 0 || rightCount == 0) throw new InvalidOperationException($"{assembly} LOD{lod} closed side hems are missing.");
+        if (leftCount == 0 || rightCount == 0)
+            throw new InvalidOperationException($"{assembly} LOD{lod} closed side hems are missing.");
         if ((leftSum / leftCount).x > -0.80f || (rightSum / rightCount).x < 0.80f)
             throw new InvalidOperationException($"{assembly} LOD{lod} side-hem triangle winding faces inward and would disappear under backface culling.");
     }
@@ -424,10 +446,15 @@ public static class QualityBlockFutonBalconyDrapeQA
 
     private static void ValidateCotton(string assembly, int lod, Material m)
     {
-        if (m == null || m.shader == null || m.shader.name != "Standard") throw new InvalidOperationException($"{assembly} LOD{lod} cotton must use Standard PBR.");
-        if (m.GetFloat("_Metallic") > 0.01f) throw new InvalidOperationException($"{assembly} LOD{lod} cotton is impossibly metallic.");
-        float s = m.GetFloat("_Glossiness"); if (s < 0.10f || s > 0.22f) throw new InvalidOperationException($"{assembly} LOD{lod} cotton smoothness outside dry-textile range.");
-        if (!m.IsKeywordEnabled("_NORMALMAP") || m.GetTexture("_BumpMap") == null) throw new InvalidOperationException($"{assembly} LOD{lod} cotton weave normal missing.");
+        if (m == null || m.shader == null || m.shader.name != "Standard")
+            throw new InvalidOperationException($"{assembly} LOD{lod} cotton must use Standard PBR.");
+        if (m.GetFloat("_Metallic") > 0.01f)
+            throw new InvalidOperationException($"{assembly} LOD{lod} cotton is impossibly metallic.");
+        float s = m.GetFloat("_Glossiness");
+        if (s < 0.10f || s > 0.22f)
+            throw new InvalidOperationException($"{assembly} LOD{lod} cotton smoothness outside dry-textile range.");
+        if (!m.IsKeywordEnabled("_NORMALMAP") || m.GetTexture("_BumpMap") == null)
+            throw new InvalidOperationException($"{assembly} LOD{lod} cotton weave normal missing.");
         if (m.IsKeywordEnabled("_EMISSION") || (m.HasProperty("_EmissionColor") && m.GetColor("_EmissionColor").maxColorComponent > 0.001f))
             throw new InvalidOperationException($"{assembly} LOD{lod} daytime futon may not emit light.");
     }
@@ -438,25 +465,46 @@ public static class QualityBlockFutonBalconyDrapeQA
         if (r != null) r.enabled = false;
     }
 
-    private static void DestroyGeneratedRoot() { GameObject old = Find(RootName); if (old != null) UnityEngine.Object.DestroyImmediate(old); }
+    private static void DestroyGeneratedRoot()
+    {
+        GameObject old = Find(RootName); if (old != null) UnityEngine.Object.DestroyImmediate(old);
+    }
+
     private static Renderer RequireRenderer(string name)
     {
         Renderer r = Find(name)?.GetComponent<Renderer>();
         if (r == null || !r.enabled) throw new InvalidOperationException($"Required active construction renderer missing: {name}");
         return r;
     }
+
     private static string LegacyName(Spec s) => $"Futon_{s.floor}_{s.bay}";
     private static string AssemblyName(Spec s) => $"HD_FutonDrape_{s.floor}_{s.bay}";
     private static bool IsPrimitive(string n) => n == "Cube" || n == "Cylinder" || n == "Sphere" || n == "Capsule" || n == "Plane" || n == "Quad";
     private static Vector3 Abs(Vector3 v) => new Vector3(Mathf.Abs(v.x), Mathf.Abs(v.y), Mathf.Abs(v.z));
     private static float MaxComponent(Vector3 v) => Mathf.Max(v.x, Mathf.Max(v.y, v.z));
-    private static void EnsureScene() { if (!EditorSceneManager.GetActiveScene().IsValid() || EditorSceneManager.GetActiveScene().path != ScenePath) EditorSceneManager.OpenScene(ScenePath, OpenSceneMode.Single); }
-    private static GameObject Find(string name) => Resources.FindObjectsOfTypeAll<GameObject>().FirstOrDefault(x => x.scene.IsValid() && x.scene.path == ScenePath && x.name == name);
+    private static void EnsureScene()
+    {
+        if (!EditorSceneManager.GetActiveScene().IsValid() || EditorSceneManager.GetActiveScene().path != ScenePath)
+            EditorSceneManager.OpenScene(ScenePath, OpenSceneMode.Single);
+    }
+    private static GameObject Find(string name) => Resources.FindObjectsOfTypeAll<GameObject>()
+        .FirstOrDefault(x => x.scene.IsValid() && x.scene.path == ScenePath && x.name == name);
 
     [Serializable] private sealed class Contract
     {
-        public string schemaVersion, scenePath; public int expectedAssemblies; public float bodyThicknessM, minFloorClearanceM, maxFloorClearanceM;
-        public LodPolicy lodPolicy; public VisualCreditPolicy visualCreditPolicy;
+        public string schemaVersion, scenePath;
+        public int expectedAssemblies;
+        public DimensionsThickness dimensionsThickness;
+        public LodPolicy lodPolicy;
+        public VisualCreditPolicy visualCreditPolicy;
+    }
+    [Serializable] private sealed class DimensionsThickness
+    {
+        public float bodyThicknessM;
+        public float legacyRailCenterAboveFloorM;
+        public float railEnvelopeCenterlineOffsetM;
+        public float minFloorClearanceM;
+        public float maxFloorClearanceM;
     }
     [Serializable] private sealed class LodPolicy { public int levels; public bool crossFadeRequired; }
     [Serializable] private sealed class VisualCreditPolicy { public int autoVisualPoints; }

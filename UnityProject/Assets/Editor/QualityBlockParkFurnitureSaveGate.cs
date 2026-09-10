@@ -11,8 +11,8 @@ using UnityEngine.SceneManagement;
 /// the existing high-detail ground chain is present. The gate checks machine-readable manufacture/
 /// material metadata, rebuilds the assembly, applies physical-profile refinement, reconstructs the
 /// notice-board weatherproof display case and slide manufactured access/head/runout support path before
-/// explicit LOD renderer rebinding, applies physical-scale microdetail, corrects the bench load path,
-/// then runs structural/material QA.
+/// explicit LOD renderer rebinding, applies physical-scale microdetail, normalizes printed-notice UVs,
+/// corrects the bench load path, then runs structural/material QA.
 /// </summary>
 [InitializeOnLoad]
 public static class QualityBlockParkFurnitureSaveGate
@@ -55,12 +55,17 @@ public static class QualityBlockParkFurnitureSaveGate
             QualityBlockSlideAccessInstallationQA.ApplyToOpenScene();
             QualityBlockParkFurnitureLodRebind.RebindAndValidate();
 
+            // The shared furniture microdetail pass rewrites generated meshes to metre-space planar UVs.
+            // Printed notices deliberately use one full unique sheet texture each, so normalize their
+            // per-material tiling immediately afterward instead of allowing metre UVs to crop/repeat print.
             QualityBlockParkFurnitureMicrodetailUpgrade.BuildAndApply();
+            QualityBlockNoticeBoardPrintedUvQA.ApplyAndValidate();
             QualityBlockBenchSeatConstructionInterfaceQA.ApplyToOpenScene();
             QualityBlockParkFurnitureUpgrade.ValidateOpenScene();
             QualityBlockParkFurniturePhysicalRefinement.ValidateOpenScene();
             QualityBlockParkFurnitureLodRebind.ValidateOpenScene();
             QualityBlockNoticeBoardDisplayCaseQA.ValidateOpenScene();
+            QualityBlockNoticeBoardPrintedUvQA.ValidateOpenScene();
             QualityBlockSlideAccessInstallationQA.ValidateOpenScene();
             QualityBlockParkFurnitureMicrodetailUpgrade.Validate();
             QualityBlockBenchSeatConstructionInterfaceQA.ValidateOpenScene();
@@ -68,7 +73,7 @@ public static class QualityBlockParkFurnitureSaveGate
         catch (Exception ex)
         {
             throw new InvalidOperationException(
-                "Benchmark save blocked: park/street-furniture manufacture, material, physical-profile, notice-board display-case, slide access/support, LOD, microdetail or bench load-path contract failed.", ex);
+                "Benchmark save blocked: park/street-furniture manufacture, material, physical-profile, notice-board display-case/printed-UV, slide access/support, LOD, microdetail or bench load-path contract failed.", ex);
         }
         finally
         {

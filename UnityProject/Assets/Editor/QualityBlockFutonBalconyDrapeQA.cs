@@ -165,6 +165,7 @@ public static class QualityBlockFutonBalconyDrapeQA
                 if (mesh.vertexCount >= previousVertices)
                     throw new InvalidOperationException($"{assembly.name} LOD vertex count does not progressively decrease at LOD{level}.");
                 previousVertices = mesh.vertexCount;
+                ValidateOutwardHemWinding(assembly.name, level, mesh);
                 ValidateCotton(assembly.name, level, r.sharedMaterial);
 
                 if (level == 0) lod0 = r.bounds;
@@ -197,7 +198,7 @@ public static class QualityBlockFutonBalconyDrapeQA
         if (root.GetComponentsInChildren<MeshRenderer>(true).Length != 8)
             throw new InvalidOperationException("Expected exactly two futons x four LOD renderers.");
 
-        Debug.Log("Balcony futon source QA passed: primitive slabs disabled; two distinct closed drapes wrap the rail, clear the slab, stay dielectric and retain four cross-faded LODs. Native 4K inspection is still mandatory.");
+        Debug.Log("Balcony futon source QA passed: primitive slabs disabled; two distinct closed drapes wrap the rail, clear the slab, keep outward-facing hems, stay dielectric and retain four cross-faded LODs. Native 4K inspection is still mandatory.");
     }
 
     private static void BuildAssembly(Transform parent, Spec spec, Material material)
@@ -310,10 +311,12 @@ public static class QualityBlockFutonBalconyDrapeQA
         int neg = 0, pos = perSide;
         for (int p = 0; p < pathSegments; p++)
         {
-            AddQuad(tris, neg + p * wc, pos + p * wc, pos + (p + 1) * wc, neg + (p + 1) * wc, true);
+            // Left/right hems must wind outward (-X/+X respectively). A prior draft used the opposite
+            // winding; source vector audit caught that before runtime evidence was claimed.
+            AddQuad(tris, neg + p * wc, pos + p * wc, pos + (p + 1) * wc, neg + (p + 1) * wc, false);
             int nr0 = neg + p * wc + widthSegments, nr1 = neg + (p + 1) * wc + widthSegments;
             int pr0 = pos + p * wc + widthSegments, pr1 = pos + (p + 1) * wc + widthSegments;
-            AddQuad(tris, nr0, nr1, pr1, pr0, true);
+            AddQuad(tris, nr0, nr1, pr1, pr0, false);
         }
         for (int x = 0; x < widthSegments; x++)
         {
@@ -326,6 +329,30 @@ public static class QualityBlockFutonBalconyDrapeQA
         mesh.vertices = vertices; mesh.uv = uv; mesh.SetTriangles(tris, 0, true);
         mesh.RecalculateNormals(); mesh.RecalculateTangents(); mesh.RecalculateBounds();
         return mesh;
+    }
+
+    private static void ValidateOutwardHemWinding(string assembly, int lod, Mesh mesh)
+    {
+        Vector3[] vertices = mesh.vertices;
+        int[] triangles = mesh.triangles;
+        if (vertices == null || triangles == null || triangles.Length < 3) throw new InvalidOperationException($"{assembly} LOD{lod} mesh is empty.");
+        float minX = vertices.Min(v => v.x), maxX = vertices.Max(v => v.x);
+        Vector3 leftSum = Vector3.zero, rightSum = Vector3.zero;
+        int leftCount = 0, rightCount = 0;
+        const float epsilon = 0.0001f;
+        for (int i = 0; i < triangles.Length; i += 3)
+        {
+            Vector3 a = vertices[triangles[i]], b = vertices[triangles[i + 1]], c = vertices[triangles[i + 2]];
+            bool left = Mathf.Abs(a.x - minX) < epsilon && Mathf.Abs(b.x - minX) < epsilon && Mathf.Abs(c.x - minX) < epsilon;
+            bool right = Mathf.Abs(a.x - maxX) < epsilon && Mathf.Abs(b.x - maxX) < epsilon && Mathf.Abs(c.x - maxX) < epsilon;
+            if (!left && !right) continue;
+            Vector3 n = Vector3.Cross(b - a, c - a).normalized;
+            if (left) { leftSum += n; leftCount++; }
+            if (right) { rightSum += n; rightCount++; }
+        }
+        if (leftCount == 0 || rightCount == 0) throw new InvalidOperationException($"{assembly} LOD{lod} closed side hems are missing.");
+        if ((leftSum / leftCount).x > -0.80f || (rightSum / rightCount).x < 0.80f)
+            throw new InvalidOperationException($"{assembly} LOD{lod} side-hem triangle winding faces inward and would disappear under backface culling.");
     }
 
     private static Vector2 Catmull(Vector2 p0, Vector2 p1, Vector2 p2, Vector2 p3, float t)

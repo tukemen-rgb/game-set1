@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "1.0.2",
+  "schemaVersion": "1.0.3",
   "scenePath": "Assets/Scenes/QualityBlock1990s.unity",
   "sceneRootName": "QualityBlock1990s",
   "coverageMode": "all_active_renderers_in_benchmark",
@@ -84,16 +84,17 @@
       "id": "vegetation_domain",
       "rootName": "Trees",
       "required": true,
-      "manufacture": "Planted landscape trees are modeled as biological root/trunk/branch/twig/leaf hierarchies with root-zone/soil interfaces and cause-based understory density rather than stacked primitive crowns.",
-      "dimensionsThickness": "Generated mature-tree height and branching/leaf scales vary by deterministic individual; root-zone, trunk, twig, leaf and understory dimensions are constrained by the vegetation ecology contract.",
-      "materialsFinish": "Bark is rough dielectric organic material; thin leaves use two-sided transmission optics; root-zone soil/precast interfaces remain non-metallic with exposure-dependent moisture response.",
-      "mounting": "Trunks emerge from root/soil interfaces; branches attach through hierarchy; leaves attach to twig/branch structure; understory originates from plausible soil/edge zones rather than floating cards.",
-      "interfacesGapsSeals": "Root flare/soil contact and tree-pit/paving interfaces require grounding/contact shadow; vegetation must not visibly interpenetrate hardscape hero geometry.",
-      "orientationExposure": "Canopy receives directional midsummer sun and sky fill; lower/recessed foliage is shaded/humid; foot-traffic pressure reduces understory near pedestrian routes.",
-      "aging": "Ordinary seasonal/maintenance variation only: UV, moisture, shade and pedestrian pressure. No storm damage or reconstruction cues.",
-      "geometryVsMaterial": "Root/trunk/branch/twig/leaf silhouette and grounding are geometry; bark microfissure, leaf venation/transmission and soil grains are material response.",
-      "lodPolicy": "Tree and understory renderers use explicit LOD levels/cross-fade; clone-risk QA rejects identical natural hierarchies; shimmer/LOD pop is judged only from sealed temporal evidence.",
+      "manufacture": "Planted landscape trees are modeled as biological root/trunk/branch/twig/leaf hierarchies with visible root flare, continuous woody taper, root-zone/soil interfaces and cause-based understory density rather than stacked primitive crowns or modular pipe-like trunk sections.",
+      "dimensionsThickness": "Generated mature-tree height and branching/leaf scales vary by deterministic individual; trunk and primary-branch joints must remain center/radius-continuous within 2 mm, while root-zone, twig, leaf and understory dimensions remain constrained by the linked vegetation contracts.",
+      "materialsFinish": "Bark is rough dry dielectric organic material with metre-scaled non-restarting cylindrical mapping; thin leaves use two-sided transmission optics; root-zone soil/precast interfaces remain non-metallic with exposure-dependent moisture response.",
+      "mounting": "Root flare broadens into the finished grade; trunk modules share continuous mating rings; primary branch A/B chains share their mating radius and bark-coordinate progression; leaves attach to twig/branch structure; understory originates from plausible soil/edge zones rather than floating cards.",
+      "interfacesGapsSeals": "Root flare/soil contact and tree-pit/paving interfaces require grounding/contact shadow; trunk and primary branch module joints may not open, reverse-step or restart bark phase; vegetation must not visibly interpenetrate hardscape hero geometry.",
+      "orientationExposure": "Canopy receives directional midsummer sun and sky fill; bark uses dry dielectric Fresnel/roughness response; lower/recessed foliage is shaded/humid; foot-traffic pressure reduces understory near pedestrian routes.",
+      "aging": "Ordinary seasonal/maintenance variation only: UV, moisture, shade and pedestrian pressure. No storm damage, impact narrative or reconstruction cues.",
+      "geometryVsMaterial": "Root flare, trunk/branch taper, branch unions, twig/leaf silhouette and grounding are geometry; bark microfissure, fine fibrous breakup, leaf venation/transmission and soil grains are material response. Geometry seams/contact shadows/highlights may not be painted into albedo.",
+      "lodPolicy": "Tree and understory renderers use explicit LOD levels/cross-fade; retained woody LOD proxies share the corrected metric-UV mesh rather than reverting to legacy normalized modules; clone-risk QA rejects identical natural hierarchies; shimmer/LOD pop is judged only from sealed temporal evidence.",
       "contractPaths": [
+        "Assets/QA/tree_woody_continuity_contract.json",
         "Assets/QA/vegetation_ecology_contract.json",
         "Assets/QA/scene_repetition_contract.json"
       ]
@@ -134,7 +135,8 @@
         "Assets/QA/material_construction_lookdev.json",
         "Assets/QA/ground_construction_lookdev.json",
         "Assets/QA/park_street_furniture_contract.json",
-        "Assets/QA/vegetation_ecology_contract.json"
+        "Assets/QA/vegetation_ecology_contract.json",
+        "Assets/QA/tree_woody_continuity_contract.json"
       ]
     }
   ]

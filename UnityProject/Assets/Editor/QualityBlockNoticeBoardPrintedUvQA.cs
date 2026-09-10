@@ -3,6 +3,7 @@ using System.Linq;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
+using UnityEngine.Rendering;
 
 /// <summary>
 /// Keeps notice-sheet print textures physically mapped after the shared park microdetail pass rewrites
@@ -10,8 +11,8 @@ using UnityEngine;
 /// own material, so inverse physical sheet dimensions plus a 0.5/0.5 center offset map metre-space
 /// coordinates back to one complete printed sheet without texture repetition or stretched pseudo-text.
 /// This post-microdetail normalization also keeps the clear acrylic inside the scene-wide furniture
-/// roughness floor: the case-specific optical contract allows 0.08-0.15 roughness, while the broader
-/// furniture validator requires >=0.12. A final 0.14 roughness satisfies both without weakening either gate.
+/// roughness floor and uses Standard-shader Transparent (premultiplied) semantics so reflections remain
+/// visible instead of being incorrectly faded with the sheet alpha.
 /// </summary>
 public static class QualityBlockNoticeBoardPrintedUvQA
 {
@@ -55,7 +56,7 @@ public static class QualityBlockNoticeBoardPrintedUvQA
         NormalizeAcrylicCompatibility(board);
         AssetDatabase.SaveAssets();
         ValidateOpenScene();
-        Debug.Log($"Notice-board printed metre-UV normalization applied to {normalized} LOD notice renderers; acrylic roughness normalized to 0.14 so case-specific and scene-wide physicality gates agree. Render quality remains unscored.");
+        Debug.Log($"Notice-board printed metre-UV normalization applied to {normalized} LOD notice renderers; acrylic roughness normalized to 0.14 and Standard Transparent premultiplied blending enforced. Render quality remains unscored.");
     }
 
     [MenuItem("NewTown/QA/Validate Notice Board Printed UVs")]
@@ -79,13 +80,7 @@ public static class QualityBlockNoticeBoardPrintedUvQA
             Transform cover = caseRoot.Find("ClearAcrylicCover");
             Renderer coverRenderer = cover != null ? cover.GetComponent<Renderer>() : null;
             Material coverMaterial = coverRenderer != null ? coverRenderer.sharedMaterial : null;
-            if (coverMaterial == null || !coverMaterial.HasProperty("_Glossiness"))
-                throw new InvalidOperationException($"LOD{lod} notice-board acrylic material/smoothness property missing.");
-            float smoothness = coverMaterial.GetFloat("_Glossiness");
-            float roughness = 1f - smoothness;
-            if (Mathf.Abs(smoothness - CompatibleAcrylicSmoothness) > 0.005f || roughness < 0.12f || roughness > 0.15f)
-                throw new InvalidOperationException(
-                    $"Notice-board acrylic roughness is not compatible with both optical and scene-wide furniture gates: smoothness={smoothness:F3}, roughness={roughness:F3}.");
+            ValidateAcrylicCompatibility(coverMaterial, lod);
 
             foreach (Transform notice in notices)
             {
@@ -130,8 +125,37 @@ public static class QualityBlockNoticeBoardPrintedUvQA
             .FirstOrDefault(x => x != null && x.name.Contains("PBR_NoticeClearAcrylic", StringComparison.Ordinal));
         if (material == null || !material.HasProperty("_Glossiness"))
             throw new InvalidOperationException("Notice-board acrylic material missing during post-microdetail compatibility normalization.");
+
         material.SetFloat("_Glossiness", CompatibleAcrylicSmoothness);
+        material.SetFloat("_Mode", 3f);
+        material.SetInt("_SrcBlend", (int)BlendMode.One);
+        material.SetInt("_DstBlend", (int)BlendMode.OneMinusSrcAlpha);
+        material.SetInt("_ZWrite", 0);
+        material.DisableKeyword("_ALPHATEST_ON");
+        material.DisableKeyword("_ALPHABLEND_ON");
+        material.EnableKeyword("_ALPHAPREMULTIPLY_ON");
+        material.renderQueue = (int)RenderQueue.Transparent;
         EditorUtility.SetDirty(material);
+    }
+
+    private static void ValidateAcrylicCompatibility(Material material, int lod)
+    {
+        if (material == null || !material.HasProperty("_Glossiness"))
+            throw new InvalidOperationException($"LOD{lod} notice-board acrylic material/smoothness property missing.");
+        float smoothness = material.GetFloat("_Glossiness");
+        float roughness = 1f - smoothness;
+        if (Mathf.Abs(smoothness - CompatibleAcrylicSmoothness) > 0.005f || roughness < 0.12f || roughness > 0.15f)
+            throw new InvalidOperationException(
+                $"LOD{lod} notice-board acrylic roughness is not compatible with both optical and scene-wide furniture gates: smoothness={smoothness:F3}, roughness={roughness:F3}.");
+        if (!material.HasProperty("_Mode") || Mathf.Abs(material.GetFloat("_Mode") - 3f) > 0.01f)
+            throw new InvalidOperationException($"LOD{lod} notice-board acrylic must use Standard Transparent mode.");
+        if (!material.HasProperty("_SrcBlend") || material.GetInt("_SrcBlend") != (int)BlendMode.One ||
+            !material.HasProperty("_DstBlend") || material.GetInt("_DstBlend") != (int)BlendMode.OneMinusSrcAlpha ||
+            !material.HasProperty("_ZWrite") || material.GetInt("_ZWrite") != 0)
+            throw new InvalidOperationException($"LOD{lod} notice-board acrylic Standard Transparent blend/ZWrite state drifted.");
+        if (material.IsKeywordEnabled("_ALPHABLEND_ON") || !material.IsKeywordEnabled("_ALPHAPREMULTIPLY_ON") ||
+            material.renderQueue != (int)RenderQueue.Transparent)
+            throw new InvalidOperationException($"LOD{lod} notice-board acrylic must preserve reflected highlights through premultiplied Transparent semantics.");
     }
 
     private static bool Approximately(float a, float b, float relativeTolerance)

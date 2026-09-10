@@ -15,7 +15,7 @@
   "requirements": {
     "requireSameLightingFingerprintBeforeEveryMainCameraCull": true,
     "requireOnePreCullLightingCheckPerTemporalFrame": true,
-    "requireFilmicTonmapForEveryTemporalFrame": true,
+    "requireFilmicTonemapForEveryTemporalFrame": true,
     "requireHdrSourceForEveryTemporalSequence": true,
     "requireLdrDestinationForEveryTemporalSequence": true,
     "requireZeroFallbackBlits": true,

@@ -1,0 +1,123 @@
+{
+  "schemaVersion": "1.0.0",
+  "runId": "2026-09-10_futon_balcony_drape",
+  "branch": "gpt/unity-migration",
+  "objective": "Reduce a benchmark-facing automatic-fail risk by replacing two legacy rigid Cube futon renderers with physically reasoned, render-only household bedding drapes that wrap the actual balcony top rail, retain slab clearance, use rough dielectric textile response and preserve LOD0/1/2/3 silhouette stability. No rendered-quality credit is awarded without native Unity pixels.",
+  "startHead": "38a6f2a6b90192e629c315ff07b4c30b5961b7c8",
+  "substantiveHead": "db2923d860db8d9efe8b4154ec84973c2717780f",
+  "commits": [
+    { "sha": "3aa633bb1900c4e930eb343ab4924d7511bb5438", "message": "quality: reconstruct balcony futons as physical drapes" },
+    { "sha": "38e8227ed20c2361908d42a36ac7e44ea8aec589", "message": "fix: close futon drape installation envelope" },
+    { "sha": "71373bab191f6148eec532fb16680373c7850765", "message": "quality: add futon construction and material contract" },
+    { "sha": "08705ff51ac01324927c04e0c7697e2f5d6c95e2", "message": "docs: add futon rail-wrap lookdev section" },
+    { "sha": "6d3570120bfd02db61fe729da9b5bb89e6578845", "message": "quality: scope futon drapes under danchi metadata" },
+    { "sha": "b5f7f4f4929052f5f12b8d285f4ea66ddb547b79", "message": "quality: gate futon drapes in native 4K packet" },
+    { "sha": "db2923d860db8d9efe8b4154ec84973c2717780f", "message": "fix: enforce outward futon hem winding" }
+  ],
+  "changedFiles": [
+    "UnityProject/Assets/Editor/QualityBlockFutonBalconyDrapeQA.cs",
+    "UnityProject/Assets/Editor/QualityBlockNative4KReviewPacket.cs",
+    "UnityProject/Assets/QA/futon_balcony_drape_contract.json",
+    "UnityProject/Assets/QA/futon_balcony_drape_lookdev.svg",
+    "UnityProject/Assets/QA/scene_metadata_coverage_contract.json"
+  ],
+  "sourceFinding": {
+    "criticalRisk": "Futon_2_1 and Futon_3_4 originate as benchmark-facing built-in Cube renderers and were not covered by the structural-surface replacement path inspected in this run. The legacy rigid slab therefore remained eligible to trigger the visible primitive-placeholder critical fail.",
+    "constructionConflict": "Legacy source dimensions place an approximately 0.82 m tall rigid futon slab such that its lower edge reaches roughly 0.10 m into the balcony-slab envelope, which is incompatible with a textile being aired over the rail and risks visible hero interpenetration.",
+    "priorityReason": "A visible primitive or hero interpenetration is an automatic Visual Fidelity FAIL, so removing this risk has higher expected score utility than adding new decorative microdetail."
+  },
+  "manufactureInstallationDecision": {
+    "components": [
+      "closed 22 mm lofted textile body",
+      "two outer textile faces",
+      "closed lateral and lower hems",
+      "cotton/poly-cotton weave normal response"
+    ],
+    "dimensions": {
+      "widthM": 1.15,
+      "bodyThicknessM": 0.022,
+      "variantAFrontBackDropM": [0.700, 0.480],
+      "variantBFrontBackDropM": [0.680, 0.515],
+      "centerSagM": [0.012, 0.009],
+      "requiredFloorClearanceM": [0.030, 0.090],
+      "railEnvelopeCenterlineOffsetM": 0.056,
+      "railContactToleranceM": 0.012
+    },
+    "mounting": "Gravity-balanced drape around the actual RailTop renderer bounds; no invisible rigid bracket was invented.",
+    "geometryVsMaterial": "Centimetre-scale loft, rail wrap, front/back drop, sag and hems are geometry. Thread weave, fine fibre breakup, restrained wash/UV variation and angular textile response are material/microdetail. Illumination is never baked into albedo.",
+    "exposureAging": "Dry midsummer exterior state with ordinary UV/wash/fold variation. No current wet sheen, arbitrary tears or unexplained dirt mask."
+  },
+  "materialDefinition": {
+    "family": "dry aged woven bedding dielectric",
+    "variants": [
+      { "id": "A", "albedoLinearApprox": [0.46, 0.56, 0.66], "roughness": 0.85, "metallic": 0.0, "dielectricF0Approx": 0.04 },
+      { "id": "B", "albedoLinearApprox": [0.53, 0.61, 0.69], "roughness": 0.83, "metallic": 0.0, "dielectricF0Approx": 0.04 }
+    ],
+    "normalScale": 0.34,
+    "microstructure": "Generated 512 px deterministic asymmetric warp/weft plus fibre breakup; mipmapped, trilinear, anisotropy 8, physically tiled at 0.14 m.",
+    "wetness": 0.0,
+    "fresnel": "rough dielectric only; no metallic edge flash, emission or painted highlight"
+  },
+  "lodDefinition": {
+    "crossFadeRequired": true,
+    "lod0": { "widthSegments": 24, "pathSegments": 30 },
+    "lod1": { "widthSegments": 16, "pathSegments": 24 },
+    "lod2": { "widthSegments": 10, "pathSegments": 12 },
+    "lod3": { "widthSegments": 6, "pathSegments": 6 },
+    "invariants": "All levels retain the U-shaped rail wrap, closed thickness and occupancy silhouette; vertex count must decrease monotonically and macro renderer bounds stay within 18 mm size / 10 mm center of LOD0."
+  },
+  "selfAudit": [
+    {
+      "finding": "The first parameter pass left the second drape approximately 115 mm above the balcony floor, outside the declared 30-90 mm construction envelope.",
+      "correction": "Adjusted the second front/back drops to 0.680/0.515 m. Source geometry math now predicts approximately 81 mm lower-edge clearance; the first drape predicts approximately 57 mm.",
+      "policy": "Corrected geometry rather than relaxing the QA threshold."
+    },
+    {
+      "finding": "Static triangle cross-product audit found the first closed side-hem implementation wound its lateral faces inward, risking backface-culling holes at oblique/grazing angles.",
+      "correction": "Reversed the lateral hem winding to outward -X/+X and added fail-closed ValidateOutwardHemWinding checks to every generated LOD mesh.",
+      "policy": "No render-quality claim is made from the source audit alone."
+    }
+  ],
+  "verification": {
+    "gitCompare": "At substantiveHead, branch is 7 commits ahead / 0 behind startHead; merge-base remains startHead.",
+    "changedPathScope": "Only UnityProject/Assets/Editor and UnityProject/Assets/QA files are changed in this substantive range.",
+    "godotPreserved": true,
+    "baseMerged": false,
+    "excludedThemeAdded": false,
+    "contractMachineReadable": true,
+    "lookdevMaintained": true,
+    "native4KPacketIntegration": "The futon contract is validated at packet preflight, reconstructed only after final balcony construction correction, then revalidated before reflection evidence, immediately before native still Camera.Render, and again before temporal capture.",
+    "unityCompile": "PENDING: no Unity 6000.3.0f1 runner evidence is available on this branch.",
+    "nativeRender": "PENDING: no new native 3840x2160 benchmark still/crop was produced in this run.",
+    "temporalEvidence": "PENDING: no runtime LOD transition pixels were produced in this run."
+  },
+  "implementationReadiness": {
+    "score": 93,
+    "outOf": 100,
+    "status": "UNCHANGED",
+    "reason": "Source/data/QA coverage improved, but the held-back runtime/compile/render evidence is still unavailable."
+  },
+  "visualFidelity": {
+    "status": "UNSCORED",
+    "pointsAwardedThisRun": 0,
+    "passClaimed": false,
+    "criticalDefectClearanceClaimed": false,
+    "reason": "No actual Unity benchmark pixels exist for this change."
+  },
+  "expectedVisualScoreImpact": {
+    "geometryConstructionFidelity": "High potential: removes a built-in Cube render path and source-predicted slab interpenetration risk, replacing it with rail-contact textile geometry.",
+    "materialPbrPhysicalPlausibility": "Moderate potential: rough dielectric textile and physical weave normal replace generic rigid surface response.",
+    "periodSceneAuthenticity": "Low-to-moderate potential: ordinary household balcony-airing variation supports lived-in context without a branded or highly specific product claim.",
+    "temporalLodStability": "Moderate potential: four cross-faded custom LODs preserve the macro drape silhouette instead of falling back to a rigid primitive.",
+    "automaticVisualPoints": 0
+  },
+  "nextBlocker": "Unity 6000.3.0f1 runtime/runner capable of executing the complete native-4K review packet and producing sealed still + temporal evidence.",
+  "nextRunnerActions": [
+    "Run Prepare Complete Native 4K Review Packet without speculative expansion first.",
+    "Inspect hero frame and 100% crop for absence of the old rigid rectangular Futon_* Cube silhouette.",
+    "Inspect oblique crop for 22 mm closed loft, rail crest/front/back wrap, visible side/end hems, 30-90 mm slab clearance and zero floating/interpenetrating hero pixels.",
+    "Inspect grazing-light crop for rough dielectric cloth Fresnel/normal response without metallic/plastic flash or baked highlights.",
+    "Inspect temporal evidence across LOD0/1/2/3 for silhouette pop, weave shimmer and aliasing before assigning any Temporal/LOD points.",
+    "If any critical defect is visible, fix the rendered cause directly; do not lower gate thresholds."
+  ]
+}

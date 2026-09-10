@@ -1,0 +1,85 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="900" viewBox="0 0 1400 900">
+  <defs>
+    <linearGradient id="rainFade" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#767b70" stop-opacity="0"/>
+      <stop offset="0.10" stop-color="#767b70" stop-opacity="0.28"/>
+      <stop offset="0.68" stop-color="#767b70" stop-opacity="0.23"/>
+      <stop offset="1" stop-color="#767b70" stop-opacity="0"/>
+    </linearGradient>
+    <linearGradient id="gradeFade" x1="0" y1="1" x2="0" y2="0">
+      <stop offset="0" stop-color="#6a5031" stop-opacity="0.34"/>
+      <stop offset="0.55" stop-color="#6a5031" stop-opacity="0.22"/>
+      <stop offset="1" stop-color="#6a5031" stop-opacity="0"/>
+    </linearGradient>
+    <radialGradient id="acFade">
+      <stop offset="0" stop-color="#9a9d90" stop-opacity="0.26"/>
+      <stop offset="0.56" stop-color="#9a9d90" stop-opacity="0.23"/>
+      <stop offset="1" stop-color="#9a9d90" stop-opacity="0"/>
+    </radialGradient>
+    <style>
+      .title { font: 700 30px sans-serif; fill:#1c1c1c; }
+      .h { font: 700 21px sans-serif; fill:#252525; }
+      .t { font: 16px sans-serif; fill:#333; }
+      .small { font: 14px sans-serif; fill:#444; }
+      .line { stroke:#333; stroke-width:2; fill:none; }
+      .thin { stroke:#666; stroke-width:1.4; fill:none; }
+      .host { fill:#d4d0c6; stroke:#6d6a64; stroke-width:2; }
+      .metal { fill:#9b9d99; stroke:#555; stroke-width:2; }
+      .note { fill:#f5f2e8; stroke:#8a806c; stroke-width:1.5; }
+    </style>
+  </defs>
+
+  <rect width="1400" height="900" fill="#fbfaf6"/>
+  <text x="55" y="60" class="title">Facade weathering optical lookdev — dry midsummer benchmark</text>
+  <text x="55" y="92" class="t">Construction geometry defines causal extent. Shader only feathers deposit optical density; live lighting owns all angular highlights and shadows.</text>
+
+  <g transform="translate(55 145)">
+    <text x="0" y="0" class="h">A. Window / balcony / rail runoff ribbon</text>
+    <rect x="0" y="35" width="360" height="340" class="host"/>
+    <rect x="80" y="70" width="190" height="28" class="metal"/>
+    <text x="88" y="62" class="small">real sill / drip source</text>
+    <path d="M126 98 C121 160 138 220 130 286 C127 318 134 342 137 366 L214 366 C207 335 213 310 207 275 C200 223 216 160 207 98 Z" fill="url(#rainFade)"/>
+    <path d="M126 98 C121 160 138 220 130 286 C127 318 134 342 137 366" class="thin" stroke-dasharray="5 5"/>
+    <path d="M207 98 C216 160 200 223 207 275 C213 310 207 335 214 366" class="thin" stroke-dasharray="5 5"/>
+    <line x1="125" y1="395" x2="215" y2="395" class="line"/>
+    <text x="89" y="420" class="small">UV0.x: 0 → 1, edge feather 0.22 each side</text>
+    <line x1="326" y1="100" x2="326" y2="365" class="line"/>
+    <text x="280" y="389" class="small">UV0.y source 0 → tail 1</text>
+    <text x="390" y="84" class="t">Source end: short 0.08 feather</text>
+    <text x="390" y="126" class="t">Center: low optical density, not opaque paint</text>
+    <text x="390" y="168" class="t">Tail: 0.28–0.30 fade; geometry also tapers</text>
+    <text x="390" y="210" class="t">Roughness: 0.90–0.92</text>
+    <text x="390" y="252" class="t">Metallic: 0.00; dielectric F0: 0.04</text>
+    <text x="390" y="294" class="t">Wetness: 0.00; no varnish/gloss cue</text>
+    <text x="390" y="336" class="t">No baked sun, AO, contact shadow or highlight</text>
+  </g>
+
+  <g transform="translate(760 145)">
+    <text x="0" y="0" class="h">B. Grade splash optical profile</text>
+    <rect x="0" y="35" width="560" height="340" class="host"/>
+    <path d="M0 375 L0 235 C72 217 130 231 196 204 C260 225 319 193 383 211 C450 190 507 221 560 199 L560 375 Z" fill="url(#gradeFade)"/>
+    <line x1="0" y1="375" x2="560" y2="375" class="line"/>
+    <text x="0" y="405" class="small">grade / host interface: strongest deposit</text>
+    <text x="0" y="435" class="small">Irregular upper silhouette remains geometry; opacity independently fades over upper 35%.</text>
+  </g>
+
+  <g transform="translate(55 610)">
+    <text x="0" y="0" class="h">C. AC drain residue — horizontal ellipse</text>
+    <rect x="0" y="35" width="560" height="210" class="host"/>
+    <circle cx="280" cy="110" r="13" fill="#8c8c86" stroke="#444" stroke-width="2"/>
+    <text x="304" y="115" class="small">real drain endpoint</text>
+    <ellipse cx="280" cy="160" rx="115" ry="42" fill="url(#acFade)"/>
+    <ellipse cx="280" cy="160" rx="64" ry="24" class="thin" stroke-dasharray="4 4"/>
+    <text x="0" y="275" class="small">UV center 0.5,0.5; ellipse core radius 0.56, radial fade to perimeter. Dry mineral tide mark, not glossy puddle.</text>
+  </g>
+
+  <g transform="translate(690 610)">
+    <rect x="0" y="0" width="630" height="250" rx="12" class="note"/>
+    <text x="24" y="38" class="h">Formal 4K checks</text>
+    <text x="24" y="72" class="t">• hero/facade_center — no hard ribbon or grade stripe edge</text>
+    <text x="24" y="104" class="t">• oblique/balcony_services — source attachment and tail fading</text>
+    <text x="24" y="136" class="t">• grazing/material_grazing — broad dielectric response, no painted highlight</text>
+    <text x="24" y="168" class="t">• temporal — stable world-space breakup; no residue shimmer/pop</text>
+    <text x="24" y="210" class="t">Design evidence only. Visual Fidelity remains UNSCORED until actual native 3840×2160 renders exist.</text>
+  </g>
+</svg>

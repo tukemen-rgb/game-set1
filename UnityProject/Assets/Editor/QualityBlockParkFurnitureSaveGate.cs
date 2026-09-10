@@ -10,7 +10,8 @@ using UnityEngine.SceneManagement;
 /// Makes the park/street-furniture construction pass part of the persisted benchmark scene whenever
 /// the existing high-detail ground chain is present. The gate checks machine-readable manufacture/
 /// material metadata, rebuilds the assembly, applies physical-profile refinement, rebinds explicit
-/// LOD renderer sets, applies physical-scale microdetail, then runs structural/material QA.
+/// LOD renderer sets, applies physical-scale microdetail, corrects the bench's manufactured load-path
+/// interfaces, then runs structural/material QA.
 /// </summary>
 [InitializeOnLoad]
 public static class QualityBlockParkFurnitureSaveGate
@@ -18,6 +19,8 @@ public static class QualityBlockParkFurnitureSaveGate
     private const string ScenePath = "Assets/Scenes/QualityBlock1990s.unity";
     private const string ContractPath = "Assets/QA/park_street_furniture_contract.json";
     private const string MicrodetailContractPath = "Assets/QA/park_furniture_microdetail_contract.json";
+    private const string BenchInterfaceContractPath = "Assets/QA/bench_seat_construction_interface_contract.json";
+    private const string BenchLookdevPath = "Assets/QA/bench_seat_construction_lookdev.svg";
     private static bool applying;
 
     static QualityBlockParkFurnitureSaveGate()
@@ -42,15 +45,17 @@ public static class QualityBlockParkFurnitureSaveGate
             QualityBlockParkFurniturePhysicalRefinement.ApplyAndValidate();
             QualityBlockParkFurnitureLodRebind.RebindAndValidate();
             QualityBlockParkFurnitureMicrodetailUpgrade.BuildAndApply();
+            QualityBlockBenchSeatConstructionInterfaceQA.ApplyToOpenScene();
             QualityBlockParkFurnitureUpgrade.ValidateOpenScene();
             QualityBlockParkFurniturePhysicalRefinement.ValidateOpenScene();
             QualityBlockParkFurnitureLodRebind.ValidateOpenScene();
             QualityBlockParkFurnitureMicrodetailUpgrade.Validate();
+            QualityBlockBenchSeatConstructionInterfaceQA.ValidateOpenScene();
         }
         catch (Exception ex)
         {
             throw new InvalidOperationException(
-                "Benchmark save blocked: park/street-furniture manufacture, material, physical-profile, LOD or microdetail contract failed.", ex);
+                "Benchmark save blocked: park/street-furniture manufacture, material, physical-profile, LOD, microdetail or bench load-path contract failed.", ex);
         }
         finally
         {
@@ -65,6 +70,10 @@ public static class QualityBlockParkFurnitureSaveGate
             throw new InvalidOperationException($"Missing required construction/material metadata: {ContractPath}");
         if (!File.Exists(MicrodetailContractPath))
             throw new InvalidOperationException($"Missing required park-furniture microdetail metadata: {MicrodetailContractPath}");
+        if (!File.Exists(BenchInterfaceContractPath))
+            throw new InvalidOperationException($"Missing required bench construction-interface metadata: {BenchInterfaceContractPath}");
+        if (!File.Exists(BenchLookdevPath))
+            throw new InvalidOperationException($"Missing required bench construction lookdev illustration: {BenchLookdevPath}");
 
         string json = File.ReadAllText(ContractPath);
         string[] requiredTokens =
@@ -91,5 +100,26 @@ public static class QualityBlockParkFurnitureSaveGate
         foreach (string token in microTokens)
             if (!microJson.Contains(token, StringComparison.Ordinal))
                 throw new InvalidOperationException($"Furniture microdetail metadata contract missing required token: {token}");
+
+        string benchJson = File.ReadAllText(BenchInterfaceContractPath);
+        string[] benchTokens =
+        {
+            "\"id\": \"bench_seat_construction_interface\"",
+            "\"slatCount\": 5",
+            "\"steelBearerCenterY\": 0.5165",
+            "\"highDetailSupportCenterY\": 0.214",
+            "\"proxySupportCenterY\": 0.2275",
+            "\"boltHeadCenterY\": 0.583",
+            "\"outerSlatCenterAbsZ\": 0.235",
+            "\"boltEmbedTarget\": 0.002",
+            "\"contactToleranceMetres\": 0.0025",
+            "\"visualFidelityPointsAwarded\": 0",
+            "PENDING_UNITY_RUNTIME"
+        };
+        foreach (string token in benchTokens)
+            if (!benchJson.Contains(token, StringComparison.Ordinal))
+                throw new InvalidOperationException($"Bench construction-interface metadata missing required token: {token}");
+
+        QualityBlockBenchSeatConstructionInterfaceQA.ValidateContractConfigOnly();
     }
 }

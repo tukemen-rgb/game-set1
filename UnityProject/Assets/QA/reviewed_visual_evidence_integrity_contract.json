@@ -1,6 +1,6 @@
 {
-  "schemaVersion": "1.1",
-  "purpose": "Fail-closed schema integrity for manually reviewed Visual Fidelity evidence. This contract does not award visual points; it prevents ambiguous, duplicated or incomplete review records from reaching the numeric gate and requires current runtime diagnostics for render-only repetition and temporal risks.",
+  "schemaVersion": "1.2",
+  "purpose": "Fail-closed schema integrity for manually reviewed Visual Fidelity evidence. This contract does not award visual points; it prevents ambiguous, duplicated or incomplete review records from reaching the numeric gate and requires current runtime diagnostics for render-only repetition, major-light-leak and temporal risks.",
   "requiredViews": [
     "hero",
     "oblique",
@@ -46,7 +46,9 @@
     "requireAtLeastOneObservedReferencePerCriticalDefect": true,
     "requireRenderVerifiedTrueForReviewedEvidence": true,
     "requireCurrentRenderedRepetitionDiagnostics": true,
-    "renderedRepetitionDiagnosticsCannotClearCriticalDefect": true
+    "renderedRepetitionDiagnosticsCannotClearCriticalDefect": true,
+    "requireCurrentRenderedLightLeakDiagnostics": true,
+    "renderedLightLeakDiagnosticsCannotDecideCriticalDefect": true
   },
   "runtimeDiagnosticPreconditions": {
     "renderedRepetition": {
@@ -58,6 +60,16 @@
       "mayAutomaticallyClearObviousRepetition": false,
       "reason": "Static hierarchy/UV checks cannot establish whether repetition is immediately obvious in the actual post-tonemap native-4K pixels. The current rendered triage report is therefore mandatory, but the final critical-defect decision remains a direct human pixel review."
     },
+    "renderedLightLeak": {
+      "owner": "QualityBlockRenderedLightLeakDiagnostics.ValidateLatestReportForScoring",
+      "reportPath": "Assets/QA/rendered_light_leak_diagnostics.json",
+      "requireCurrentManifestSha256": true,
+      "requireCurrentCropSha256": true,
+      "warningOnly": true,
+      "mayAutomaticallyClearMajorLightLeak": false,
+      "mayAutomaticallyAssertMajorLightLeak": false,
+      "reason": "Source geometry, light and shadow validation cannot prove the absence of a visible post-tonemap bright seam or hole. Current pixel-domain triage is mandatory, while the final major_light_leak decision remains direct human review of exact sealed pixels."
+    },
     "temporalRuntime": {
       "owner": "QualityBlockTemporalRuntimeEvidenceGuard.ValidateLatestReceiptForScoring",
       "requireSealedPerFrameLightingFingerprint": true,
@@ -67,5 +79,5 @@
   },
   "visualScoreAwardedByThisQA": false,
   "runtimeRenderVerified": false,
-  "note": "Implementation Readiness and source-side validation remain separate from Visual Fidelity. Reviewed evidence must still pass render provenance, observability, current SHA-256-bound rendered repetition triage, temporal sealing and the canonical 92/100 gate. Repetition diagnostics never substitute for direct review and never clear obvious_repetition by themselves."
+  "note": "Implementation Readiness and source-side validation remain separate from Visual Fidelity. Reviewed evidence must still pass render provenance, observability, current SHA-256-bound rendered repetition and light-leak triage, temporal sealing and the canonical 92/100 gate. Pixel diagnostics never substitute for direct review and cannot decide their associated critical defects by themselves."
 }

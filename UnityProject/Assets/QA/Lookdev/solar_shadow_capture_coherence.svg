@@ -1,0 +1,51 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="900" viewBox="0 0 1400 900">
+  <rect width="1400" height="900" fill="#f2f0e8"/>
+  <g font-family="Arial, sans-serif" fill="#1c1c1c">
+    <text x="70" y="70" font-size="34" font-weight="700">Midsummer Solar + Shadow Capture Coherence</text>
+    <text x="70" y="110" font-size="18">Implementation lookdev / source-math diagram only — Visual Fidelity remains UNSCORED until real 3840×2160 evidence is reviewed against the 92/100 gate.</text>
+
+    <rect x="70" y="155" width="610" height="610" rx="18" fill="#ffffff" stroke="#4a4a4a" stroke-width="2"/>
+    <text x="100" y="200" font-size="24" font-weight="700">Plan view</text>
+    <line x1="375" y1="690" x2="375" y2="260" stroke="#555" stroke-width="2"/>
+    <line x1="160" y1="475" x2="590" y2="475" stroke="#555" stroke-width="2"/>
+    <text x="385" y="275" font-size="18">+Z north</text>
+    <text x="530" y="465" font-size="18">+X east</text>
+    <circle cx="375" cy="475" r="10" fill="#222"/>
+    <text x="392" y="500" font-size="17">1 m reference post</text>
+
+    <line x1="375" y1="475" x2="225" y2="547" stroke="#d18a00" stroke-width="9" marker-end="url(#arrow)"/>
+    <text x="105" y="590" font-size="18">Direction to SummerSun</text>
+    <text x="105" y="615" font-size="18">azimuth 244.23° (southwest)</text>
+
+    <line x1="375" y1="475" x2="535" y2="552" stroke="#364f73" stroke-width="12" marker-end="url(#arrowBlue)"/>
+    <text x="435" y="590" font-size="18">cast shadow horizontal</text>
+    <text x="435" y="615" font-size="18">northeast, 0.622 m / 1 m height</text>
+
+    <rect x="720" y="155" width="610" height="610" rx="18" fill="#ffffff" stroke="#4a4a4a" stroke-width="2"/>
+    <text x="750" y="200" font-size="24" font-weight="700">Elevation / capture invariant</text>
+    <line x1="800" y1="650" x2="1240" y2="650" stroke="#555" stroke-width="3"/>
+    <line x1="940" y1="650" x2="940" y2="380" stroke="#222" stroke-width="18"/>
+    <text x="955" y="515" font-size="18">1.000 m vertical</text>
+    <line x1="940" y1="380" x2="1210" y2="210" stroke="#d18a00" stroke-width="9" marker-end="url(#arrow)"/>
+    <text x="1010" y="340" font-size="20" font-weight="700">solar elevation 58.11°</text>
+    <line x1="940" y1="650" x2="1180" y2="650" stroke="#364f73" stroke-width="12" marker-end="url(#arrowBlue)"/>
+    <text x="970" y="690" font-size="18">geometric ratio = 0.622 m/m</text>
+
+    <text x="760" y="420" font-size="18">Locked capture state</text>
+    <text x="760" y="450" font-size="17">• exactly one active directional key: SummerSun</text>
+    <text x="760" y="478" font-size="17">• StableFit / 4 cascades / VeryHigh</text>
+    <text x="760" y="506" font-size="17">• bias 0.025 / normal bias 0.38 / near 0.10 m</text>
+    <text x="760" y="534" font-size="17">• 72 m shadow distance / LOD bias 2.0 / requested 8× MSAA</text>
+    <text x="760" y="562" font-size="17">• MainCamera Forward + HDR + MSAA, dynamic resolution off</text>
+    <text x="760" y="590" font-size="17">• pre-cull guard executes before authoritative Camera.Render</text>
+
+    <rect x="70" y="795" width="1260" height="65" rx="12" fill="#e6e1d5"/>
+    <text x="95" y="824" font-size="17" font-weight="700">Pixel review still mandatory:</text>
+    <text x="285" y="824" font-size="17">check hero / oblique / grazing + 100% crops for actual shadow bearing, acne, peter-panning, light leaks, cascade shimmer and contradictory highlights.</text>
+    <text x="95" y="850" font-size="16">Source math and settings may block invalid evidence, but they cannot earn Visual Fidelity points.</text>
+  </g>
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L0,6 L9,3 z" fill="#d18a00"/></marker>
+    <marker id="arrowBlue" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L0,6 L9,3 z" fill="#364f73"/></marker>
+  </defs>
+</svg>

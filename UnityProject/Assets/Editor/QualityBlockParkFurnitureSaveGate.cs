@@ -10,9 +10,9 @@ using UnityEngine.SceneManagement;
 /// Persists the manufactured park/street-furniture state into the benchmark scene. Construction passes
 /// are ordered so new renderers are rebound to LOD sets, shared microdetail is applied, and the final
 /// stainless chute is then replaced with its topology-aware watertight sheet solid so the generic planar
-/// UV rewrite cannot destroy the chute's authored path topology. The physical park-lamp installation is
-/// applied before LOD rebind so its tapered pole, service hardware and retained head cannot be orphaned
-/// from the authoritative benchmark save path.
+/// UV rewrite cannot destroy the chute's authored path topology. Park-lamp installation ownership stays
+/// inside QualityBlockParkFurnitureLodRebind, where PhysicalDiffuser already exists and every generated
+/// lamp renderer can be captured into exactly one authoritative LOD set.
 /// </summary>
 [InitializeOnLoad]
 public static class QualityBlockParkFurnitureSaveGate
@@ -54,10 +54,11 @@ public static class QualityBlockParkFurnitureSaveGate
             QualityBlockParkFurniturePhysicalRefinement.ApplyAndValidate();
 
             // Benchmark-visible subassemblies must exist before rebind so every generated renderer joins
-            // exactly one matching LOD. The lamp pass depends on PhysicalDiffuser from physical refinement.
+            // exactly one matching LOD. QualityBlockParkFurnitureLodRebind is the single owner of the
+            // park-lamp installation pass because it runs after PhysicalDiffuser creation and immediately
+            // before rebuilding the explicit LOD renderer arrays.
             QualityBlockNoticeBoardDisplayCaseQA.ApplyToOpenScene();
             QualityBlockSlideAccessInstallationQA.ApplyToOpenScene();
-            QualityBlockParkLampInstallationQA.ApplyToOpenScene();
             QualityBlockParkFurnitureLodRebind.RebindAndValidate();
 
             // Apply shared material microdetail before final validation. In particular, lamp service

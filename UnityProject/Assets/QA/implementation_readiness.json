@@ -1,5 +1,5 @@
 {
-  "generatedUtc": "2026-09-10T22:36:08Z",
+  "generatedUtc": "2026-09-10T23:48:00Z",
   "readinessScore": 93,
   "possibleScore": 100,
   "visualFidelityStatus": "UNSCORED_UNTIL_REAL_4K_RENDER",
@@ -78,14 +78,14 @@
       "id": "native_4k_capture_pipeline",
       "weight": 8,
       "passed": true,
-      "evidence": "The native 3840x2160 hero/oblique/grazing packet includes pixel-exact crops, reflection/lighting synchronization, HDR-to-LDR telemetry, construction preflight, temporal sealing and now post-tonemap rendered repetition triage bound to exact manifest/crop bytes.",
-      "assetPaths": ["Assets/Editor/QualityBlock4KCapture.cs", "Assets/Editor/QualityBlockNative4KReviewPacket.cs", "Assets/Editor/QualityBlockRenderEvidenceProvenanceQA.cs", "Assets/Editor/QualityBlockRenderedRepetitionDiagnostics.cs", "Assets/QA/rendered_repetition_diagnostics_contract.json"]
+      "evidence": "The native 3840x2160 hero/oblique/grazing packet includes pixel-exact crops, reflection/lighting synchronization, HDR-to-LDR telemetry, construction preflight, temporal sealing and post-tonemap repetition plus major-light-leak triage bound to exact manifest/crop bytes.",
+      "assetPaths": ["Assets/Editor/QualityBlock4KCapture.cs", "Assets/Editor/QualityBlockNative4KReviewPacket.cs", "Assets/Editor/QualityBlockRenderEvidenceProvenanceQA.cs", "Assets/Editor/QualityBlockRenderedRepetitionDiagnostics.cs", "Assets/Editor/QualityBlockRenderedLightLeakDiagnostics.cs", "Assets/QA/rendered_repetition_diagnostics_contract.json", "Assets/QA/rendered_light_leak_diagnostics_contract.json"]
     },
     {
       "id": "multi_angle_capture_manifest",
       "weight": 5,
       "passed": true,
-      "evidence": "Capture/evidence contracts require hero, oblique and grazing stills plus exact 100% crops and temporal evidence; scoring additionally requires a current SHA-256-bound rendered repetition triage report while direct human review remains authoritative.",
+      "evidence": "Capture/evidence contracts require hero, oblique and grazing stills plus exact 100% crops and temporal evidence; scoring additionally requires current SHA-256-bound repetition and light-leak triage while direct human review remains authoritative.",
       "assetPaths": ["Assets/QA/4k_capture_manifest.json", "Assets/QA/visual_evidence_observability_contract.json", "Assets/QA/reviewed_visual_evidence_integrity_contract.json", "Assets/QA/scene_repetition_contract.json"]
     },
     {
@@ -98,27 +98,26 @@
   ],
   "blockers": ["unity_compile_verification"],
   "latestRun": {
-    "startHead": "11d51ac63e1736be061c50fa4551db40dbde19e2",
-    "substantiveWorkHead": "d66763c662f43680ce0fcb12db2fa7509b1b2983",
+    "startHead": "084f0563430616b4b59d09f00ddb0853280bc65a",
+    "substantiveWorkHead": "fab31263951bc357c4bf2b040729156f68bc8974",
     "substantiveCommits": [
-      "685f454b0c20694495b48b4e86e574da0c8e0375",
-      "5110c29605f61e7fdea5a31f4a165f37eb8c0fce",
-      "90427c079d1e4864e9a1dabbdb627695affbbde5",
-      "a4e9255b6b970e1ac6fbd0c6cf30a8c7bf50b1ad",
-      "c41320a753847d8e31e6b265ea8bf3b2a8ad99a7",
-      "4c289302a678565e9e1817cf4b62191a41564cba",
-      "d66763c662f43680ce0fcb12db2fa7509b1b2983"
+      "0c92f495285c7e20fbf2396d7b3199de73153f6e",
+      "730139712d4895ff408793f59073ff5594527dbb",
+      "690a626c82277517d8c055de62b313d09a3a92a5",
+      "cd88b08f122ed8e6fdcb3f78688452f60f9ad65b",
+      "b8fc5b7934e521bb7bee405655042e341159a1e4",
+      "fab31263951bc357c4bf2b040729156f68bc8974"
     ],
-    "verification": "GitHub/source review only; no Unity runtime or native capture was available. Existing static repetition QA already rejects exact/coarse near-clone risks in generated trees/ecology and world-phase/occupancy repetition, but it explicitly could not prove whether repetition is visible in the final image. Existing render diagnostics covered clipping/exposure, not repeated image structure. This run added a warning-only native-4K repetition diagnostic over five canonical 100% crops. It sweeps horizontal/vertical translations from 32-512 px at 8 px steps, samples every 4 px, qualifies textured comparisons with a local display-luma gradient threshold, and flags local mean-absolute-luma-difference troughs by prominence against neighboring shifts. The report binds the current 4K manifest SHA-256 and each analyzed crop SHA-256. Native4KReviewPacket now generates the report after real still/temporal capture, and the reviewed-evidence integrity gate requires a current report before the core Visual Fidelity evaluator can score. The detector remains triage-only and cannot clear obvious_repetition; perspective, legitimate manufactured rhythm and chroma-dominant repetition remain human-review concerns. No Unity compile/runtime assertions are made.",
+    "verification": "GitHub/source review only; no Unity runtime or native capture was available. This run identified that major_light_leak was a hard automatic-fail defect with required human crop references but no current pixel-domain triage precondition comparable to obvious_repetition. Added warning-only bright-on-dark diagnostics over five canonical 100% crops. A sampled pixel qualifies only when it is bright, strongly exceeds a dark surrounding annulus, and most annulus samples remain dark; candidates are then clustered into 32 px blocks to de-emphasize isolated sparkle. The runtime report binds the current 4K manifest SHA-256 and each crop SHA-256 and cannot award points, clear the defect or assert it automatically. Native4KReviewPacket now validates the contract before preparation and generates the report after sealed still/temporal evidence. Reviewed-evidence integrity schema 1.2 requires a current light-leak report before the core Visual Fidelity evaluator can score. During editing, an accidental source typo was introduced in an intermediate reviewed-evidence-validator commit and corrected immediately in b8fc5b7; the final source was re-fetched around the affected region and is syntactically restored there. No Unity compile/runtime assertions are made.",
     "expectedVisualScoreImpact": [
-      "Critical obvious repetition: improves the probability that repeated texture/module rhythms in final pixels are surfaced before scoring; it does not automatically fail or clear the defect.",
-      "Texture/microdetail: adds native-4K periodicity triage on ground/material crops where tiling beats can otherwise evade source UV checks.",
-      "Vegetation/natural complexity: adds pixel-domain repetition triage on vegetation_grounding/tree_shadow_contact in addition to static hierarchy fingerprints.",
-      "Weathering/context and facade authenticity: hero/facade_center periodicity warnings can prioritize review of repeated residue or occupancy/module rhythms while preserving legitimate manufactured repetition as a human judgment.",
+      "Critical major light leak: improves the probability that spatially persistent bright seams/holes in final post-tonemap pixels are surfaced before scoring; it does not automatically fail or clear the defect.",
+      "Lighting/shadows/reflections: prioritizes inspection of anomalous bright-on-dark discontinuities that source-only sun/shadow coherence cannot prove absent.",
+      "Geometry & construction: helps direct actual-pixel review toward possible shell/aperture/interface closure defects rather than treating source geometry QA as sufficient.",
+      "Cinematic image: uses the final display-transformed pixels, so exposure/tonemap-induced false positives remain visible to the reviewer instead of being hidden by source assumptions.",
       "Automatic Visual Fidelity impact: 0 points. No actual render exists."
     ],
     "visualFidelityPointsAwarded": 0,
-    "nextBlocker": "Unity 6000.3.0f1 compile/runtime. At first Runner availability stop speculative expansion and run Prepare Complete Native 4K Review Packet. Confirm the new diagnostics compile, produce a SHA-256-bound report for all five canonical crops, and do not interpret zero warnings as clearance. Review hero/facade_center, hero/ground_contact, oblique/vegetation_grounding, grazing/material_grazing and grazing/tree_shadow_contact at 100%; use warnings to find candidate periods, then judge obvious repetition directly. If the detector is noisy, calibrate diagnostic thresholds from the real pixels without weakening human critical-defect review.",
+    "nextBlocker": "Unity 6000.3.0f1 compile/runtime. At first Runner availability stop speculative expansion and run Prepare Complete Native 4K Review Packet. Confirm the new diagnostics compile and produce a SHA-256-bound report for hero/facade_center, hero/ground_contact, oblique/construction_depth, oblique/balcony_services and grazing/material_grazing. Inspect every warning cluster at 100% for real shell gaps, light leaks, depth artifacts, transparent sorting or legitimate sun/specular edges; zero warnings must not be treated as clearance.",
     "recordingNote": "Readiness remains 93/100 because this run improves render-evidence triage/integrity but does not provide the missing 7-point Unity compile/runtime verification."
   },
   "note": "Implementation Readiness measures source/pipeline coverage only. Visual Fidelity is unscored and cannot pass until real 3840x2160 Unity render evidence is captured and reviewed."

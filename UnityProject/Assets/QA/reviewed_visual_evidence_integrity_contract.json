@@ -1,6 +1,6 @@
 {
-  "schemaVersion": "1.0",
-  "purpose": "Fail-closed schema integrity for manually reviewed Visual Fidelity evidence. This contract does not award visual points; it prevents ambiguous, duplicated or incomplete review records from reaching the numeric gate.",
+  "schemaVersion": "1.1",
+  "purpose": "Fail-closed schema integrity for manually reviewed Visual Fidelity evidence. This contract does not award visual points; it prevents ambiguous, duplicated or incomplete review records from reaching the numeric gate and requires current runtime diagnostics for render-only repetition and temporal risks.",
   "requiredViews": [
     "hero",
     "oblique",
@@ -44,9 +44,28 @@
     "requireCriticalDefectEvidenceText": true,
     "requireAtLeastOneObservedReferencePerCategory": true,
     "requireAtLeastOneObservedReferencePerCriticalDefect": true,
-    "requireRenderVerifiedTrueForReviewedEvidence": true
+    "requireRenderVerifiedTrueForReviewedEvidence": true,
+    "requireCurrentRenderedRepetitionDiagnostics": true,
+    "renderedRepetitionDiagnosticsCannotClearCriticalDefect": true
+  },
+  "runtimeDiagnosticPreconditions": {
+    "renderedRepetition": {
+      "owner": "QualityBlockRenderedRepetitionDiagnostics.ValidateLatestReportForScoring",
+      "reportPath": "Assets/QA/rendered_repetition_diagnostics.json",
+      "requireCurrentManifestSha256": true,
+      "requireCurrentCropSha256": true,
+      "warningOnly": true,
+      "mayAutomaticallyClearObviousRepetition": false,
+      "reason": "Static hierarchy/UV checks cannot establish whether repetition is immediately obvious in the actual post-tonemap native-4K pixels. The current rendered triage report is therefore mandatory, but the final critical-defect decision remains a direct human pixel review."
+    },
+    "temporalRuntime": {
+      "owner": "QualityBlockTemporalRuntimeEvidenceGuard.ValidateLatestReceiptForScoring",
+      "requireSealedPerFrameLightingFingerprint": true,
+      "requireFilmicHdrToLdrForEveryFrame": true,
+      "requireZeroFallback": true
+    }
   },
   "visualScoreAwardedByThisQA": false,
   "runtimeRenderVerified": false,
-  "note": "Implementation Readiness and source-side validation remain separate from Visual Fidelity. Reviewed evidence must still pass render provenance, observability, temporal sealing and the canonical 92/100 gate."
+  "note": "Implementation Readiness and source-side validation remain separate from Visual Fidelity. Reviewed evidence must still pass render provenance, observability, current SHA-256-bound rendered repetition triage, temporal sealing and the canonical 92/100 gate. Repetition diagnostics never substitute for direct review and never clear obvious_repetition by themselves."
 }

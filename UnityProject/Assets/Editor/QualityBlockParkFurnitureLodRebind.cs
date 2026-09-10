@@ -8,8 +8,8 @@ using UnityEngine;
 /// Rebinds LOD renderer sets after physical-refinement and notice-board display-case meshes replace/add
 /// first-pass renderers. LODGroup stores explicit Renderer references, so adding a refined mesh after
 /// SetLODs would otherwise leave it outside the LOD system and create an all-distance renderer / visible
-/// transition defect. Validation also re-runs the notice-board construction and printed-UV QA so every
-/// formal caller of this LOD gate proves the cover/paper/hardware geometry and print mapping survived.
+/// transition defect. Formal validation also re-runs notice-board construction and printed-UV QA so the
+/// completed prepared scene proves cover/paper/hardware geometry and print mapping survived.
 /// </summary>
 public static class QualityBlockParkFurnitureLodRebind
 {
@@ -30,7 +30,15 @@ public static class QualityBlockParkFurnitureLodRebind
         Rebind("HD_Lamp", LampExcluded);
         Rebind("HD_Bench", null);
         Rebind("HD_NoticeBoard", null);
-        ValidateOpenScene();
+
+        // Rebind happens before the shared microdetail pass converts generated meshes to metre-space UVs.
+        // Validate only renderer membership/construction here; printed-UV QA is intentionally deferred
+        // until after microdetail normalization in the save chain.
+        ValidateAssembly("HD_Slide", "PhysicalChute", SlideExcluded);
+        ValidateAssembly("HD_Lamp", "PhysicalDiffuser", LampExcluded);
+        ValidateAssembly("HD_Bench", null, null);
+        ValidateAssembly("HD_NoticeBoard", null, null);
+        QualityBlockNoticeBoardDisplayCaseQA.ValidateOpenScene();
         Debug.Log("Park/street furniture LOD renderer sets rebound after physical/detail refinement.");
     }
 

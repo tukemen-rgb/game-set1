@@ -5,9 +5,11 @@ using UnityEditor;
 using UnityEngine;
 
 /// <summary>
-/// Rebinds LOD renderer sets after physical-refinement meshes replace first-pass renderers. LODGroup
-/// stores explicit Renderer references, so adding a refined mesh after SetLODs would otherwise leave it
-/// outside the LOD system and create an all-distance renderer / visible transition defect.
+/// Rebinds LOD renderer sets after physical-refinement and notice-board display-case meshes replace/add
+/// first-pass renderers. LODGroup stores explicit Renderer references, so adding a refined mesh after
+/// SetLODs would otherwise leave it outside the LOD system and create an all-distance renderer / visible
+/// transition defect. Validation also re-runs the notice-board construction QA so every formal caller of
+/// this LOD gate proves the weather cover/paper/hinge/latch geometry survived into the bound tiers.
 /// </summary>
 public static class QualityBlockParkFurnitureLodRebind
 {
@@ -29,7 +31,7 @@ public static class QualityBlockParkFurnitureLodRebind
         Rebind("HD_Bench", null);
         Rebind("HD_NoticeBoard", null);
         ValidateOpenScene();
-        Debug.Log("Park/street furniture LOD renderer sets rebound after physical refinement.");
+        Debug.Log("Park/street furniture LOD renderer sets rebound after physical/detail refinement.");
     }
 
     [MenuItem("NewTown/QA/Validate Park Furniture Refined LOD Binding")]
@@ -39,6 +41,7 @@ public static class QualityBlockParkFurnitureLodRebind
         ValidateAssembly("HD_Lamp", "PhysicalDiffuser", LampExcluded);
         ValidateAssembly("HD_Bench", null, null);
         ValidateAssembly("HD_NoticeBoard", null, null);
+        QualityBlockNoticeBoardDisplayCaseQA.ValidateOpenScene();
     }
 
     private static void Rebind(string rootName, HashSet<string> excluded)

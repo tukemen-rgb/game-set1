@@ -1,7 +1,7 @@
 {
-  "schemaVersion": "1.0",
+  "schemaVersion": "1.1",
   "id": "qualityblock-hdr-tonemap-capture",
-  "purpose": "Prove at runtime that the authoritative native still path preserves scene HDR values until the filmic display transform and explicitly terminates the Built-in image-effect chain in LDR before PNG evidence is sealed.",
+  "purpose": "Prove at runtime that every authoritative native still preserves scene HDR values until the filmic display transform and explicitly terminates the Built-in image-effect chain in LDR before PNG evidence is sealed.",
   "pipeline": {
     "renderPipeline": "Built-in Render Pipeline",
     "renderingPath": "Forward",
@@ -13,6 +13,7 @@
   },
   "runtimeEvidence": {
     "hdrSourceRequired": true,
+    "hdrSourceRequiredForEveryStill": true,
     "acceptedObservedHdrSourceFormats": [
       "ARGBHalf",
       "ARGBFloat",
@@ -20,6 +21,7 @@
       "DefaultHDR"
     ],
     "ldrDestinationRequired": true,
+    "ldrDestinationRequiredForEveryStill": true,
     "destinationMustBeNonHdrFormat": true,
     "destinationMustBeNonNull": true,
     "nativeWidth": 3840,
@@ -51,6 +53,8 @@
     "actualRenderRequired": true,
     "runtimeReceiptRequired": true,
     "runtimeReceiptGeneratedOnlyAfterThreeNativeStills": true,
+    "perStillHdrSourceCounterMustEqualAuthoritativeStillCount": true,
+    "perStillLdrDestinationCounterMustEqualAuthoritativeStillCount": true,
     "sourceFlagsAloneAreInsufficient": true,
     "runtimeReceiptDoesNotProveVisualQuality": true,
     "manualPixelReviewStillRequired": true,
@@ -59,14 +63,15 @@
   },
   "failurePolicy": {
     "missingImageEffectTransformsToLDR": "FAIL native review packet before capture",
-    "nonHdrObservedSource": "FAIL native review packet; highlight preservation is not proven",
-    "hdrObservedDestination": "FAIL native review packet; HDR-to-LDR termination is not proven",
+    "anyStillWithoutHdrObservedSource": "FAIL native review packet; highlight preservation is not proven for every still",
+    "anyStillWithoutLdrObservedDestination": "FAIL native review packet; HDR-to-LDR termination is not proven for every still",
     "missingTonemapInvocation": "FAIL native review packet; do not seal or score stills",
     "fallbackInvocation": "FAIL native review packet; do not seal or score stills",
     "missingRuntimeReceipt": "FAIL evidence provenance"
   },
   "rationale": [
     "The benchmark uses physically plausible sunlight, specular response and a filmic shoulder, so clipping scene values before the display transform would invalidate lighting/material judgments even if the final PNG looks superficially acceptable.",
+    "A last-frame-only format observation is insufficient: each authoritative hero/oblique/grazing image-effect invocation contributes to explicit HDR-source and LDR-destination counters, and both counters must equal the still count.",
     "ImageEffectTransformsToLDR makes the intended transition explicit to Unity's Built-in image-effect pipeline instead of relying on an implicit destination format.",
     "Runtime telemetry proves execution and buffer class only. It cannot clear clipping, exposure, color, material, reflection or other visible defects without the actual 3840x2160 frames and 100% crops."
   ],

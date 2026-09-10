@@ -41,6 +41,7 @@ public static class QualityBlockNative4KReviewPacket
         QualityBlockTextureSamplingUpgrade.ValidateContractConfigOnly();
         QualityBlockPhysicalTexelDensityQA.ValidateContractConfigOnly();
         QualityBlockAlbedoLightingNeutralityQA.ValidateContractConfigOnly();
+        QualityBlockTreeWoodyContinuityQA.ValidateContractConfigOnly();
         QualityBlockFoliagePhysicalityQA.ValidateContractConfigOnly();
         QualityBlockHdrTonemapRuntimeQA.ValidateContractConfigOnly();
         QualityBlockReflectionProbeCaptureSyncQA.ValidateContractConfigOnly();
@@ -50,6 +51,14 @@ public static class QualityBlockNative4KReviewPacket
         // are deterministic corrections against that persisted state before reflection capture begins.
         QualityBlock4KCapture.PrepareSceneForSynchronizedCapture();
         QualityBlockSceneMaterialPhysicalityUpgrade.ApplyAndValidate();
+
+        // The tree builder intentionally remains replaceable by authored slots. For generated fallbacks,
+        // correct the source-observable segmented radius jumps and normalized bark-UV restarts only after
+        // the benchmark rebuild/PBR generation has finished, then persist exactly that state for probes.
+        QualityBlockTreeWoodyContinuityQA.ApplyAndPersist();
+        QualityBlockTreeDetailUpgrade.ValidateOpenScene();
+        QualityBlockTreeWoodyContinuityQA.ValidateOpenScene();
+        QualityBlockFoliagePhysicalityQA.ValidateOpenScene();
 
         // Main apartment facade: true openings + physical metric UV field.
         QualityBlockFacadeApertureConstructionQA.ApplyAndPersist();
@@ -81,13 +90,15 @@ public static class QualityBlockNative4KReviewPacket
         QualityBlockFutonBalconyDrapeQA.ApplyAndPersist();
         QualityBlockFutonBalconyDrapeQA.ValidateOpenScene();
 
-        // Park/street furniture, then texture/material/primitive preflight.
+        // Park/street furniture, vegetation continuity and texture/material/primitive preflight.
         QualityBlockParkFurnitureUpgrade.ValidateOpenScene();
         QualityBlockParkFurniturePhysicalRefinement.ValidateOpenScene();
         QualityBlockParkFurnitureLodRebind.ValidateOpenScene();
         QualityBlockSlideAccessInstallationQA.ValidateOpenScene();
         QualityBlockParkFurnitureMicrodetailUpgrade.Validate();
         QualityBlockBenchSeatConstructionInterfaceQA.ValidateOpenScene();
+        QualityBlockTreeWoodyContinuityQA.ValidateOpenScene();
+        QualityBlockFoliagePhysicalityQA.ValidateOpenScene();
         QualityBlockPhysicalTexelDensityQA.ValidateOpenScene();
         QualityBlockAlbedoLightingNeutralityQA.ValidateGeneratedBaseAlbedos();
         QualityBlockSceneMetadataCoverageQA.ValidateOpenScene();
@@ -97,8 +108,9 @@ public static class QualityBlockNative4KReviewPacket
         QualityBlockReflectionProbeAwaiter.Begin(FinishAfterReflectionSynchronization);
 
         Debug.Log(
-            "Native-4K review packet entered reflection synchronization after final material binding, true facade/stair apertures, " +
-            "corrected balcony slab/base interfaces, 30 reconstructed four-LOD vertical-lattice guardrails, AC/rainwater interfaces and two rail-bound textile drapes. Visual Fidelity remains UNSCORED.");
+            "Native-4K review packet entered reflection synchronization after final material binding, corrected continuous tree taper/metric bark UVs, " +
+            "true facade/stair apertures, corrected balcony slab/base interfaces, 30 reconstructed four-LOD vertical-lattice guardrails, " +
+            "AC/rainwater interfaces and two rail-bound textile drapes. Visual Fidelity remains UNSCORED.");
     }
 
     private static void FinishAfterReflectionSynchronization()
@@ -121,6 +133,8 @@ public static class QualityBlockNative4KReviewPacket
         QualityBlockParkFurnitureLodRebind.ValidateOpenScene();
         QualityBlockSlideAccessInstallationQA.ValidateOpenScene();
         QualityBlockBenchSeatConstructionInterfaceQA.ValidateOpenScene();
+        QualityBlockTreeWoodyContinuityQA.ValidateOpenScene();
+        QualityBlockFoliagePhysicalityQA.ValidateOpenScene();
         QualityBlockSceneMetadataCoverageQA.ValidateOpenScene();
         QualityBlockBenchmarkPrimitiveExposureQA.ValidateOpenScene();
 
@@ -149,6 +163,7 @@ public static class QualityBlockNative4KReviewPacket
         QualityBlockSlideAccessInstallationQA.ValidateOpenScene();
         QualityBlockParkFurnitureMicrodetailUpgrade.Validate();
         QualityBlockBenchSeatConstructionInterfaceQA.ValidateOpenScene();
+        QualityBlockTreeWoodyContinuityQA.ValidateOpenScene();
         QualityBlockBenchmarkPrimitiveExposureQA.ValidateOpenScene();
         QualityBlockSceneMaterialPhysicalityUpgrade.ValidateOpenScene();
         QualityBlockSceneMetadataCoverageQA.ValidateOpenScene();
@@ -167,7 +182,8 @@ public static class QualityBlockNative4KReviewPacket
 
         Debug.Log(
             "Complete native-4K review packet prepared: sealed hero/oblique/grazing 3840x2160 stills and 100% crops plus bound temporal evidence. " +
-            "Legacy stock balcony RailTop_*/Rail_* renderers are excluded from evidence and replaced by 30 dense four-LOD guardrails; the two closed-volume futon drapes resolve that final rail datum before still and temporal capture. " +
+            "Generated fallback trees retain continuous woody taper, metric non-restarting bark UVs and corrected meshes through retained LOD proxies; " +
+            "legacy stock balcony RailTop_*/Rail_* renderers are excluded from evidence and replaced by 30 dense four-LOD guardrails; the two closed-volume futon drapes resolve that final rail datum before still and temporal capture. " +
             "Visual Fidelity remains UNSCORED until the actual pixels are manually reviewed against the locked 100-point gate.");
     }
 }

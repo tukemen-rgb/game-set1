@@ -1,0 +1,153 @@
+{
+  "schemaVersion": "1.0",
+  "id": "bench_seat_construction_interface",
+  "purpose": "Fail-closed manufacture/install interface contract for the benchmark-close timber park bench. It corrects source-side floating seat hardware and the broken slat-to-bearer-to-precast load path. This is implementation evidence only; actual native 4K pixels are required for Visual Fidelity points or critical-defect clearance.",
+  "referenceBasis": [
+    {
+      "authority": "Takao Co., Ltd.",
+      "topic": "Japanese municipal natural-wood bench product class and manufacturer drawing availability",
+      "source": "https://www.takao-world.co.jp/product_list/715",
+      "useInModel": "Confirms that natural-wood park benches are a current Japanese landscape-furniture product class with manufacturer drawings. It is not treated as the exact fictional bench, and its current product dimensions are not copied into the circa-2000 scene."
+    },
+    {
+      "authority": "existing benchmark construction contract",
+      "topic": "scene-proportioned five-slat bench",
+      "source": "Assets/QA/park_street_furniture_contract.json",
+      "useInModel": "Retains the established five 3020 x 42 x 102 mm timber slats, 560 mm-high precast supports and 45 mm steel bearer while correcting their physical interfaces."
+    }
+  ],
+  "manufactureReconstruction": {
+    "assemblySequence": [
+      "five exterior timber slats",
+      "mechanical seat fasteners",
+      "continuous scene-proportioned steel bearer",
+      "two precast concrete supports",
+      "ground-contact moisture/splash sleeves",
+      "shallow hidden below-grade support embedment"
+    ],
+    "mounting": "Timber slats must physically seat on the steel bearer. The bearer must physically seat on both precast supports. LOD0 fastener heads must overlap timber rather than float above it and must be centered over actual outer slats rather than over the air gaps.",
+    "interfacesAndSeals": "No sealant is modeled at this exposed park-bench joint. Small steel/timber and steel/concrete contact overlap is represented only by contact tolerance; no painted AO or baked contact shadow is permitted.",
+    "orientation": "Slats run along local X; their five centers step along local Z. Seat bolts are placed at x +/-1.02 m and on the two outer-slat centerlines z +/-0.235 m.",
+    "exposure": "Upward timber receives direct midsummer UV and rain. Steel below the seat is partially sheltered. Concrete support bases receive splash and capillary moisture.",
+    "aging": "Timber bleaching/checking follows UV and wet-dry exposure; steel roughness/oxidation variance is material-scale; dark concrete is confined to the lowest 120 mm visible contact band.",
+    "geometryVsMaterialDetail": "Slat gaps, 42 mm slat thickness, 45 mm bearer thickness, 560 mm support height, 8 mm bolt-head height and the physical load-path contacts are geometry. Grain, checking, roughness, oxidation variance, splash darkening and micro-scratches are material/weathering detail.",
+    "lodPolicy": "LOD0/1 retain five individual slats and the steel bearer. LOD0 retains four fastener heads. LOD2/3 use the existing single seat proxy but its underside must seat on both precast supports. All four levels retain the same seat-top elevation and support-to-seat contact logic."
+  },
+  "dimensionsMetres": {
+    "slatCount": 5,
+    "slatCenterY": 0.56,
+    "slatThickness": 0.042,
+    "slatBottomY": 0.539,
+    "slatTopY": 0.581,
+    "steelBearerThickness": 0.045,
+    "steelBearerCenterY": 0.5165,
+    "steelBearerBottomY": 0.494,
+    "steelBearerTopY": 0.539,
+    "highDetailSupportCenterY": 0.214,
+    "proxySupportCenterY": 0.2275,
+    "supportHeight": 0.56,
+    "highDetailSupportTopY": 0.494,
+    "highDetailSupportBottomY": -0.066,
+    "proxySupportTopY": 0.5075,
+    "proxySupportBottomY": -0.0525,
+    "proxySeatBottomY": 0.5075,
+    "boltHeadHeight": 0.008,
+    "boltHeadCenterY": 0.583,
+    "boltHeadBottomY": 0.579,
+    "boltHeadTopY": 0.587,
+    "boltEmbedTarget": 0.002,
+    "outerSlatCenterAbsZ": 0.235,
+    "boltCenterAbsX": 1.02,
+    "contactBandHeight": 0.12
+  },
+  "materials": {
+    "timber": {
+      "material": "PBR_BenchTimber",
+      "albedo_linear_rgb": [0.255, 0.145, 0.072],
+      "roughness_range": [0.66, 0.84],
+      "metallic": 0.0,
+      "specularF0_target": 0.04,
+      "normalScale": 0.45,
+      "microstructure": "long-grain/checking aligned with local X",
+      "wetness": "localized darkening and lower roughness only in a rain state",
+      "uvAging": "up-facing faces bleach/desaturate more than sheltered undersides",
+      "angularResponse": "broad dielectric Fresnel response; no baked highlight"
+    },
+    "steel": {
+      "material": "PBR_ParkExposedSteel",
+      "albedo_linear_rgb": [0.34, 0.355, 0.36],
+      "roughness_range": [0.26, 0.42],
+      "metallic": 1.0,
+      "normalScale": 0.22,
+      "microstructure": "fine oxidation/machining variance",
+      "wetness": "localized only",
+      "uvAging": "not applicable as a paint-chalking mechanism",
+      "angularResponse": "metallic reflection from real sky/probes"
+    },
+    "precastConcrete": {
+      "material": "PBR_ParkPrecastConcrete",
+      "albedo_linear_rgb": [0.49, 0.485, 0.46],
+      "roughness_range": [0.80, 0.93],
+      "metallic": 0.0,
+      "specularF0_target": 0.04,
+      "normalScale": 0.55,
+      "microstructure": "fine aggregate and pinholes",
+      "wetness": "causal darkening only at contact/splash zone",
+      "uvAging": "minor tone drift only",
+      "angularResponse": "broad dielectric lobe"
+    },
+    "contactConcrete": {
+      "material": "PBR_ParkContactConcrete",
+      "albedo_linear_rgb": [0.395, 0.39, 0.37],
+      "roughness_range": [0.86, 0.96],
+      "metallic": 0.0,
+      "specularF0_target": 0.04,
+      "normalScale": 0.60,
+      "microstructure": "moisture/splash roughness and aggregate variance",
+      "wetness": "highest likelihood at lowest visible 120 mm",
+      "uvAging": "subordinate to moisture staining",
+      "angularResponse": "rough dielectric"
+    }
+  },
+  "qaRules": {
+    "contactToleranceMetres": 0.0025,
+    "positionToleranceMetres": 0.0025,
+    "boltEmbedMinMetres": 0.001,
+    "boltEmbedMaxMetres": 0.004,
+    "boltHeadEdgeMarginMinMetres": 0.02,
+    "minimumHiddenSupportEmbedMetres": 0.05,
+    "forbidden": [
+      "positive air gap between individual LOD0/1 timber slats and steel bearer",
+      "positive air gap between bearer and either precast support",
+      "seat bolt centered over an inter-slat air gap",
+      "seat bolt floating above timber",
+      "visible below-grade support edge",
+      "painted or baked contact shadow",
+      "materially impossible metallic timber or concrete",
+      "excluded disaster-oriented theme"
+    ],
+    "criticalDefectsProtected": [
+      "floating/interpenetrating hero geometry",
+      "materially impossible metallic/specular values",
+      "visible LOD pop",
+      "missing required construction/material metadata"
+    ]
+  },
+  "lookdev": {
+    "illustration": "Assets/QA/bench_seat_construction_lookdev.svg",
+    "requiredViews": ["seat/load-path cross-section", "LOD0 bolt/slat plan"],
+    "note": "Diagram is dimensional implementation guidance, not rendered Visual Fidelity evidence."
+  },
+  "renderVerification": {
+    "status": "PENDING_UNITY_RUNTIME",
+    "visualFidelityPointsAwarded": 0,
+    "requiredEvidence": [
+      "native 3840x2160 benchmark frame where HD_Bench is visible",
+      "100% crop proving timber-to-bearer and bearer-to-precast contact without light leaks",
+      "100% crop proving all visible bolt heads actually seat into timber rather than air gaps",
+      "oblique/grazing evidence separating timber dielectric, rough steel and concrete responses",
+      "temporal pass through bench LOD transitions with no visible seat/support pop"
+    ],
+    "scoringPolicy": "Do not self-award Geometry, Material, Lighting or Temporal points from this source contract. Only actual rendered evidence may receive Visual Fidelity credit."
+  }
+}

@@ -64,17 +64,19 @@
       "rootName": "ParkEntrance",
       "required": true,
       "manufacture": "Ordinary neighborhood-park slide and bench fallback assembled from coated steel tube/plate, stainless slide surface, timber seating and precast/concrete supports using visible joins and supports.",
-      "dimensionsThickness": "Slide shell, legs/platform/rails and bench seat/support dimensions are recorded in the park/street-furniture contracts; the slide running surface retains millimetre-scale physical thickness rather than a painted plane.",
+      "dimensionsThickness": "Slide shell, access stair/stringer/bracket/guard/support interfaces and bench seat/support dimensions are recorded in the park/street-furniture and assembly-interface contracts; the slide running surface retains millimetre-scale physical thickness rather than a painted plane.",
       "materialsFinish": "Aged coated steel, stainless/exposed metal, timber and precast concrete use separate PBR families with manufacture-scale texture structure, plausible metallic values and no baked highlights.",
-      "mounting": "Legs and bench supports meet ground/footings; slide shell attaches to the supporting frame; timber seating is supported/fastened rather than floating.",
-      "interfacesGapsSeals": "Ground contacts, frame joints, shell/frame seams, fastener locations and timber/support interfaces must retain plausible clearances and contact shadow.",
+      "mounting": "Slide access stringers terminate on grade plates, each tread bears through welded side brackets, access rails join the platform guard, chute head/runout use explicit load paths, and bench supports meet ground while timber seating is supported/fastened rather than floating.",
+      "interfacesGapsSeals": "Ground contacts, tread/bracket/stringer joins, stair/platform transition, frame/chute bearings, fastener locations and timber/support interfaces must retain plausible clearances, intended overlap and contact shadow.",
       "orientationExposure": "Outdoor equipment receives strong UV/rain; hand/foot contact, water runoff and near-ground splash vary wear by use and exposure.",
       "aging": "Paint chalking, contact polish, stainless abrasion direction, timber UV/checking and ground splash follow causal exposure; no random damage layer.",
-      "geometryVsMaterial": "Tube/plate/shell thickness, joins, supports and fastening are geometry; orange-peel, fine slide scratches, wood grain/checking and concrete pores are microtexture/material response.",
-      "lodPolicy": "LOD0 preserves physical construction and fine silhouette; LOD1/2/3 progressively reduce sub-pixel detail with cross-fade and mipmapped microdetail.",
+      "geometryVsMaterial": "Tube/plate/shell thickness, stair treads, brackets, stringers, rails, load-bearing joins, supports and fastening are geometry; orange-peel, fine slide scratches, wood grain/checking and concrete pores are microtexture/material response.",
+      "lodPolicy": "LOD0 preserves physical construction and fine silhouette; LOD1/2/3 progressively reduce sub-pixel detail with cross-fade while retaining stair/support/bench load-path silhouettes that would otherwise create visible topology pops.",
       "contractPaths": [
         "Assets/QA/park_street_furniture_contract.json",
-        "Assets/QA/park_furniture_microdetail_contract.json"
+        "Assets/QA/park_furniture_microdetail_contract.json",
+        "Assets/QA/slide_access_installation_contract.json",
+        "Assets/QA/bench_seat_construction_interface_contract.json"
       ]
     },
     {

@@ -1,14 +1,24 @@
 {
-  "schemaVersion": "1.2",
+  "schemaVersion": "1.3",
   "id": "park_street_furniture_construction",
-  "purpose": "Machine-readable manufacture/install/lookdev contract for benchmark-visible municipal park and street furniture. This is implementation evidence only; visual points require actual Unity renders.",
+  "purpose": "Machine-readable manufacture/install/lookdev summary for benchmark-visible municipal park and street furniture. Assembly-specific contracts are authoritative when they provide more detailed geometry/interface values. This is implementation evidence only; visual points require actual Unity renders.",
+  "authorityPolicy": {
+    "rule": "The aggregate contract may summarize an assembly but must not contradict its assembly-specific contract. Final prepared-scene QA executes the specific validators and therefore specific interface contracts control dimensions, interfaces and LOD membership.",
+    "specificContracts": {
+      "slide_access": "Assets/QA/slide_access_installation_contract.json",
+      "slide_chute": "Assets/QA/slide_chute_fabrication_contract.json",
+      "bench": "Assets/QA/bench_seat_construction_interface_contract.json",
+      "park_lamp": "Assets/QA/park_lamp_installation_contract.json",
+      "notice_board": "Assets/QA/notice_board_display_case_contract.json"
+    }
+  },
   "referenceBasis": [
     {
       "authority": "Yokohama City park design guideline",
       "topic": "playground slide construction",
       "requirement": "slide surface SUS304 thickness >=1.5 mm; SUS304 side sheet >=1.5 mm or painted steel side sheet >=2.3 mm",
       "source": "https://www.city.yokohama.lg.jp/business/nyusatsu/youshiki/kankyo/koenshiryo/download/1sekkeikijun-shiryou.files/sekkeishishinn202104.pdf",
-      "useInModel": "2.0 mm SUS304 sliding skin and side sheets are used as a reference-bounded design assumption; exact manufacturer drawing for the fictional scene asset is not available."
+      "useInModel": "2.0 mm SUS304 running/side sheet thickness is a reference-bounded design assumption; exact manufacturer drawing for the fictional scene asset is not available."
     },
     {
       "authority": "Tsukumura Seisakusho product specification",
@@ -22,55 +32,64 @@
     {
       "id": "slide",
       "periodIntent": "ordinary Japanese municipal/neighborhood park equipment plausible for the late 1980s through early 2000s",
-      "manufacture": "welded painted steel pipe support frame with bolted deck; separate formed SUS304 chute skin and raised side sheets",
-      "installation": "support frame is treated as fixed to the existing gameplay foundation/ground interface; generated visual shell adds no collider",
-      "orientation": "chute falls toward local +Z; surface centerline transitions from an approximately 26.6 degree initial slope to an approximately 1.7 degree runout",
-      "exposure": "full outdoor summer sun/rain; upward metal surfaces receive the strongest solar and water exposure",
+      "manufacture": "welded painted-steel pipe support/deck/access structure with a separately fabricated watertight SUS304 U-section chute solid; access uses individual treads, side brackets, stringers, handrails and ground/deck support interfaces",
+      "installation": "support/load paths terminate through explicit brackets, crossmembers and grade plates while generated visual geometry remains collider-free and legacy gameplay collision remains separate",
+      "orientation": "chute falls toward local +Z; surface centerline transitions from an approximately 26.6 degree initial slope to an approximately 1.7 degree runout; access rises toward the deck from the opposite side",
+      "exposure": "full outdoor midsummer sun/rain; upward stainless, painted treads/rails and horizontal joints receive strongest solar/water exposure while hand/foot contact creates localized polish",
       "components": [
         {"name": "support pipes", "modeled_diameter_mm": 48.6, "evidence_status": "scene-derived design assumption", "finish": "aged exterior paint over steel"},
         {"name": "deck", "modeled_thickness_mm": 55, "evidence_status": "structural visual proxy, not claimed manufacturer sheet thickness"},
-        {"name": "stainless chute skin", "material": "SUS304", "modeled_chute_thickness_mm": 2.0, "municipal_minimum_chute_thickness_mm": 1.5, "width_mm": 920, "geometry": "continuous Hermite-swept shell; 96/48/24/12 longitudinal sections in LOD0/1/2/3"},
-        {"name": "raised chute side sheets", "material": "SUS304", "thickness_mm": 2.0, "height_mm": 140, "geometry": "swept with the same centerline so no separate blocky lip is visible"},
+        {"name": "access treads", "count": 10, "tread_depth_mm": 180, "rise_mm": 190, "thickness_mm": 3.2, "authority": "slide_access_installation_contract"},
+        {"name": "stainless chute U-section", "material": "SUS304", "modeled_chute_thickness_mm": 2.0, "municipal_minimum_chute_thickness_mm": 1.5, "width_mm": 920, "side_wall_height_mm": 140, "geometry": "single watertight fabricated section with 96/48/24/12 longitudinal sections in LOD0/1/2/3 and zero allowed boundary/non-manifold edges"},
         {"name": "deck fasteners", "head_diameter_mm": 16, "head_height_mm": 9, "lod": "LOD0 only"}
       ],
-      "interfaces": "continuous chute skin begins just below deck elevation and terminates as a shallow runout; fasteners remain at deck interfaces; visual shell must not float or intersect hero geometry",
-      "geometryVsMaterialDetail": "sheet thickness, side height, rail diameters, slat/gap equivalents and fasteners are geometry; fine abrasion, paint orange-peel/chalking and contamination are material-scale detail",
-      "agingCauses": ["UV/chalking on exterior paint", "hand/contact polishing on rails", "fine abrasion along stainless chute travel direction", "rain exposure at horizontal joints"],
-      "forbidden": ["monolithic plastic playground shell", "oversized readability-thickness chute", "painted/baked highlight on chute", "random rust covering stainless chute", "visible Unity Cylinder/Cube placeholder"]
+      "interfaces": "treads bear through welded brackets into side stringers; access rails terminate into platform guard; chute head/runout are closed physical sheet ends and load-bearing joins may not float or interpenetrate",
+      "geometryVsMaterialDetail": "sheet thickness, U-section side height, pipe/plate dimensions, treads, brackets, stringers, rails and fasteners are geometry; fine stainless abrasion, paint orange-peel/chalking and contamination are material-scale detail",
+      "agingCauses": ["UV/chalking on exterior paint", "hand/foot contact polishing", "fine abrasion along stainless chute travel direction", "rain exposure at horizontal joints"],
+      "interfaceContracts": ["Assets/QA/slide_access_installation_contract.json", "Assets/QA/slide_chute_fabrication_contract.json"],
+      "forbidden": ["monolithic plastic playground shell", "oversized readability-thickness chute", "open/non-manifold chute sheet", "painted/baked highlight on chute", "random rust covering stainless chute", "visible Unity Cylinder/Cube placeholder"]
     },
     {
       "id": "bench",
-      "manufacture": "five timber seat slats mechanically fastened to a steel bearer supported by two precast concrete legs",
-      "installation": "precast supports bear on the existing ground; generated render shell is collider-free and leaves gameplay collision to the legacy object",
-      "orientation": "slats run along local X; gaps are perpendicular to the long grain",
-      "exposure": "upward timber receives direct summer UV/rain; concrete feet receive splash and capillary moisture",
+      "manufacture": "five timber seat slats mechanically fastened to a steel bearer supported by two precast concrete legs with an explicit timber-to-steel-to-concrete load path",
+      "installation": "slat undersides bear on the steel bearer; the bearer bears on the precast supports; supports extend below grade while only the above-grade lowest contact zone receives the causal moisture/splash material",
+      "orientation": "slats run along local X; real air gaps are perpendicular to the long grain",
+      "exposure": "upward timber receives direct midsummer UV/rain; supports receive splash/capillary moisture near grade",
       "components": [
         {"name": "timber slats", "count_lod0_lod1": 5, "size_mm": [3020, 42, 102], "evidence_status": "scene-proportioned design assumption", "finish": "aged exterior timber coating"},
-        {"name": "precast supports", "count": 2, "size_mm": [160, 560, 480]},
+        {"name": "precast supports", "count": 2, "finish": "dry precast concrete above causal grade-contact zone"},
         {"name": "steel bearer", "finish": "exposed/aged metal"},
-        {"name": "seat bolts", "lod": "LOD0 only"}
+        {"name": "seat bolts", "lod": "LOD0 only", "target_embed_mm": 2}
       ],
-      "interfaces": "lower 120 mm of concrete support has a darker, rougher ground-contact material because of capillary moisture/soil splash; no painted AO/contact shadow",
+      "interfaces": "slat/bearer and bearer/support contact errors are fail-closed by the dedicated interface QA; the lower visible support zone darkens/roughens causally without becoming protruding geometry",
       "geometryVsMaterialDetail": "five slats, real air gaps, bearer, supports and fasteners are geometry; grain/checks, UV bleaching and local polish are material-scale detail",
       "agingCauses": ["sun bleaching on upward timber faces", "hand/clothing polishing on slat edges", "capillary moisture and splash at concrete feet"],
-      "forbidden": ["single giant wood cube at close range", "metallic wood or concrete", "uniform random dirt mask"]
+      "interfaceContract": "Assets/QA/bench_seat_construction_interface_contract.json",
+      "forbidden": ["single giant wood cube at close range", "floating slats/bearer", "metallic wood or concrete", "uniform random dirt mask"]
     },
     {
       "id": "park_lamp",
-      "manufacture": "precast/spun concrete pole with metal neck/cap and retained-ring globe-era diffuser; daytime lamp remains off",
-      "installation": "pole enters the existing ground/foundation interface; lower 200 mm is a causally darker moisture/splash zone",
-      "orientation": "vertical pole, axisymmetric diffuser",
-      "exposure": "full exterior weather; top cap and diffuser receive direct sun/rain while pole base receives splash/capillary moisture",
+      "periodIntent": "ordinary Japanese neighborhood/municipal retained-globe park lamp plausible around 2000; not a claim of one exact manufacturer model",
+      "manufacture": "continuous tapered spun/precast-concrete visual pole shell with a curved weather-sealed service cover, inserted painted-metal pole-top adapter, lower/upper globe retainers, weather cap and topology-aware aged dielectric diffuser",
+      "installation": "pole extends 80 mm below visible grade; concrete taper is continuous from 190 mm diameter at grade to 125 mm at the 3.92 m top; service gasket/cover follows pole curvature; adapter/retainers/globe/cap use explicit millimetre-scale insertion/bearing relationships",
+      "orientation": "local +Y vertical; service cover faces local +Z toward the benchmark-camera side; diffuser remains axisymmetric",
+      "exposure": "full exterior midsummer weather; cap/globe receive direct sun/rain while the lowest 200 mm above grade receives causal splash/capillary darkening on the same pole surface",
       "components": [
-        {"name": "concrete pole lower", "diameter_mm": 190},
-        {"name": "concrete pole upper", "diameter_mm": 150},
-        {"name": "painted metal neck", "diameter_mm": 55},
-        {"name": "aged diffuser", "maximum_diameter_mm": 430, "height_mm": 255, "geometry": "lathed five-point profile with 32/24/16/10 radial segments in LOD0/1/2/3"}
+        {"name": "continuous concrete pole", "grade_diameter_mm": 190, "top_diameter_mm": 125, "visible_top_y_m": 3.92, "below_grade_embed_mm": 80, "radial_segments_lod0_lod3": [32, 24, 16, 12]},
+        {"name": "causal moisture zone", "visible_height_mm": 200, "geometry": "same pole surface via material submesh; never a protruding ring"},
+        {"name": "curved EPDM service gasket", "center_y_m": 0.86, "height_mm": 280},
+        {"name": "curved painted service cover", "center_y_m": 0.86, "height_mm": 260, "thickness_mm": 3},
+        {"name": "service-cover fasteners", "count": 4, "head_diameter_mm": 8, "lod": "LOD0 only"},
+        {"name": "painted top adapter and retainers", "interface_gap_max_mm": 3},
+        {"name": "aged diffuser", "maximum_diameter_mm": 430, "height_mm": 255, "geometry": "lathed retained-neck profile; dedicated installation QA verifies head overlaps and LOD membership"}
       ],
-      "periodAccuracy": "globe/mercury-vapor-era visual language; explicitly reject a modern flat LED luminaire",
-      "interfaces": "diffuser narrows into retained collars rather than intersecting a generic sphere; ground moisture band is confined to lowest 200 mm",
-      "geometryVsMaterialDetail": "pole taper/segmentation, neck, caps and diffuser silhouette are geometry; diffuse aging and micro-scratches belong to material detail",
-      "forbidden": ["daytime emissive glow", "modern LED slab", "perfect primitive sphere globe", "metallic concrete/diffuser", "painted highlight"]
+      "periodAccuracy": "retained globe/mercury-vapor-era visual language; explicitly reject a modern flat LED luminaire",
+      "interfaces": "adapter inserts into pole/lower retainer by 2 mm targets, lower and upper retainers overlap the diffuser necks by 5 mm targets, cap bears on upper retainer, and service cover/gasket allow no positive gap above 3 mm",
+      "geometryVsMaterialDetail": "continuous taper, grade embed, curved service gasket/cover, fastener heads, adapter/retainers/cap and diffuser silhouette are geometry; concrete aggregate, causal moisture optics, paint orange-peel/chalking, EPDM grain and diffuser frost/wiping haze are material detail",
+      "agingCauses": ["splash/capillary moisture at grade", "UV chalking of exposed paint", "diffuse UV haze and wiping micro-scratches on the globe", "fine runoff contamination at retainer/cap edges"],
+      "interfaceContract": "Assets/QA/park_lamp_installation_contract.json",
+      "lookdev": "Assets/QA/park_lamp_installation_lookdev.svg",
+      "forbidden": ["stacked lower/upper pole radius step", "protruding fake moisture ring", "daytime emissive glow", "modern LED slab", "perfect primitive sphere globe", "metallic concrete/diffuser", "painted highlight"]
     },
     {
       "id": "notice_board",
@@ -109,33 +128,33 @@
       "normalScale": 0.25,
       "microstructure": "subtle orange-peel/chalking; no specular baked into albedo",
       "wetness": "only localized after rain; dry benchmark default",
-      "uvAging": "slight chalking on sun-exposed upward/west-facing surfaces",
+      "uvAging": "slight chalking on sun-exposed surfaces",
       "angularResponse": "dielectric Fresnel; no metallic edge tint",
-      "implementationStatus": "scalar PBR implemented; dedicated micro-normal/roughness texture remains render-verification follow-up"
+      "implementationStatus": "final microdetail keeps the optically visible coating dielectric"
     },
     {
       "id": "stainless_chute",
       "albedo_linear_rgb": [0.49, 0.515, 0.52],
       "roughness": 0.22,
-      "metallic": 0.86,
+      "metallic": 1.0,
       "normalScale": 0.18,
       "microstructure": "fine directional abrasion along travel direction",
-      "wetness": "raises coherence and lowers apparent roughness only when rain state is active",
+      "wetness": "dry benchmark default; an explicit rain state would lower apparent roughness rather than paint a highlight",
       "uvAging": "none beyond contamination; stainless does not chalk like paint",
       "angularResponse": "strong grazing reflection driven by environment and Fresnel, never painted highlight",
-      "implementationStatus": "scalar PBR implemented; directional abrasion texture/anisotropy must be judged from real grazing-light capture before visual credit"
+      "implementationStatus": "authoritative park microdetail overrides the early bootstrap 0.86 scalar to fully metallic exposed stainless"
     },
     {
       "id": "exposed_steel",
       "albedo_linear_rgb": [0.34, 0.355, 0.36],
       "roughness": 0.31,
-      "metallic": 0.78,
+      "metallic": 1.0,
       "normalScale": 0.22,
       "microstructure": "fine machining/oxidation variance",
       "wetness": "localized only",
       "uvAging": "not applicable",
       "angularResponse": "metallic reflection from actual sky/probes",
-      "implementationStatus": "scalar PBR implemented; render verification pending"
+      "implementationStatus": "authoritative park microdetail enforces bareMetalMetallicMin >= 0.95; aggregate intent is fully exposed metal"
     },
     {
       "id": "bench_timber",
@@ -145,10 +164,10 @@
       "specularF0_target": 0.04,
       "normalScale": 0.45,
       "microstructure": "grain/checks run with slat length; geometry handles slat gaps",
-      "wetness": "darkens and reduces roughness only in rain state",
+      "wetness": "darkens and reduces roughness only in an explicit rain state",
       "uvAging": "up-facing slats may desaturate more than protected undersides",
       "angularResponse": "dielectric Fresnel with broad finish response",
-      "implementationStatus": "scalar PBR implemented; directional wood microstructure texture remains pending real-render prioritization"
+      "implementationStatus": "final microdetail uses directional wood structure; render verification remains pending"
     },
     {
       "id": "precast_concrete",
@@ -161,14 +180,14 @@
       "wetness": "capillary/contact zones may darken causally",
       "uvAging": "minor tone change; no metallic or glossy aging",
       "angularResponse": "broad dielectric lobe",
-      "implementationStatus": "scalar PBR plus separate causally darker contact material implemented; micro-normal still requires capture-based tuning"
+      "implementationStatus": "scalar PBR plus separate causally darker contact material implemented; native-4K tuning remains pending"
     }
   ],
   "lod": {
     "levels": 4,
     "screenRelativeTransitionHeights": [0.36, 0.18, 0.075, 0.025],
     "crossFade": "animated",
-    "policy": "LOD0 retains fasteners and highest curve/profile tessellation; LOD1 removes fasteners; LOD2/LOD3 reduce subcomponents/tessellation while preserving silhouette and material class",
+    "policy": "LOD0 retains fasteners and highest curve/profile tessellation; LOD1/2/3 reduce sub-pixel components/tessellation while preserving construction-critical silhouette, material class and physical interfaces",
     "criticalFail": "visible pop or silhouette/material-class discontinuity in benchmark motion"
   },
   "qaRules": {
@@ -179,6 +198,7 @@
     "oversizedFirstPassChuteRenderersMustBeDisabled": true,
     "primitiveSphereLampDiffuserMustBeDisabled": true,
     "dielectricMetallicMax": 0.05,
+    "bareMetalMetallicMinAfterMicrodetail": 0.95,
     "roughnessAllowed": [0.12, 0.98],
     "criticalAutomaticFail": [
       "visible primitive-placeholder geometry in benchmark framing",
@@ -196,11 +216,11 @@
     "visualFidelityPointsAwarded": 0,
     "requiredEvidence": [
       "3840x2160 benchmark frame where park/street furniture is visible",
-      "100% crop of the continuous 2 mm chute edge/frame interface under oblique or grazing light",
-      "100% crop of bench slat gaps/bolts/concrete ground interface",
-      "100% crop confirming the lamp diffuser reads as a retained-ring globe rather than a primitive",
+      "100% crop of the continuous watertight 2 mm chute edge/frame interface under oblique or grazing light",
+      "100% crop of bench slat/bearer/support load path and concrete ground interface",
+      "100% crop confirming continuous park-lamp pole taper, flush causal grade moisture, curved service-cover bearing and retained globe-head depth",
       "100% crop confirming the notice board reads as a recessed weatherproof display case with real cover depth, gasket, paper seating, hinges and latch",
-      "grazing-light crop separating clear acrylic dielectric Fresnel from exposed hinge/latch metal and rough printed paper/backing",
+      "grazing-light crops separating dielectric paint/concrete/acrylic/diffuser from exposed metal and showing environment-driven rather than painted highlights",
       "camera-motion check through all four LOD transitions"
     ]
   }

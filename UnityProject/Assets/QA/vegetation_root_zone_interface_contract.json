@@ -1,6 +1,6 @@
 {
-  "schemaVersion": "1.0",
-  "generatedUtc": "2026-09-10T20:36:00Z",
+  "schemaVersion": "1.1",
+  "generatedUtc": "2026-09-10T21:02:00Z",
   "runtimeRenderVerified": false,
   "visualFidelityStatus": "UNSCORED_UNTIL_REAL_4K_RENDER",
   "intent": "Prevent mature generated root flares, maintained tree-pit edging and low understory from intersecting or floating at the plaza-to-lawn interface while preserving existing gameplay collision.",
@@ -25,14 +25,15 @@
     "centerlineLengthMeters": [0.72, 0.94],
     "startRadiusMeters": [0.16, 0.195],
     "tipRadiusRatio": 0.58,
-    "conservativeMaximumOuterRadiusMeters": 1.0531,
+    "normalizedTipRadialEnvelopeIncludingIrregularity": 0.64,
+    "conservativeMaximumOuterRadiusMeters": 1.0648,
     "minimumVisibleSoilClearanceToEdgingMeters": 0.09,
-    "requiredOpeningRadiusMeters": 1.15,
-    "reasoning": "The opening is sized from the generated root-flare geometry, not from a decorative decal radius. 0.94 m maximum centerline plus 0.195 x 0.58 m maximum tip radius gives a 1.0531 m conservative radial envelope; the 1.15 m opening leaves at least 96.9 mm against that bound before the inner curb face."
+    "requiredOpeningRadiusMeters": 1.16,
+    "reasoning": "The opening is sized from the generated root-flare construction, not a decorative decal radius. The root mesh tip nominally tapers to 0.58 but its authored 8 percent irregularity and lateral offset expand the conservative normalized radial envelope to approximately 0.64. 0.94 m maximum centerline plus 0.195 x 0.64 m gives a 1.0648 m deliberately conservative radial bound; the 1.16 m opening therefore retains more than 90 mm clearance even before exact runtime vertex inspection. Runtime QA additionally transforms every actual root-flare mesh vertex and measures its true horizontal radius, rather than trusting this bound alone."
   },
   "pitAssembly": {
-    "openingRadiusMeters": 1.15,
-    "openingDiameterMeters": 2.30,
+    "openingRadiusMeters": 1.16,
+    "openingDiameterMeters": 2.32,
     "soilTopVisualBiasAbovePavingMeters": 0.0015,
     "soilVisualBottomEmbedBelowGrassMeters": 0.006,
     "curbModuleCount": 12,
@@ -41,7 +42,7 @@
     "curbPavingEmbedMeters": 0.008,
     "curbGrassEmbedMeters": 0.006,
     "curbJointGapMeters": 0.012,
-    "curbCenterlineRadiusMeters": 1.225,
+    "curbCenterlineRadiusMeters": 1.235,
     "manufacture": "Small precast concrete edging modules are set tangentially around an exposed root-zone soil opening. Module visible length is the local 12-sided chord minus a 12 mm dry joint. The root-zone soil is a continuous visual volume extending below the lower lawn datum so no underside can become visible at boundary joints.",
     "mounting": "Each curb module follows the actual supporting surface under its center: 8 mm embed where it bears on plaza paving and 6 mm embed where a boundary ring crosses lawn. This intentionally produces a grade step matching the approximately 50 mm plaza-to-lawn datum instead of leaving modules suspended over grass.",
     "interfacesGapsSeals": "root flare -> exposed soil -> inner curb face -> 12 mm curb joint -> local pavement or lawn support. The intended construction soil surface is flush/slightly recessed; the generated fallback uses only a 1.5 mm positive render-separation bias over the retained coarse paving collision slab, which must not read as a visible raised lip in native 4K crops.",
@@ -100,6 +101,7 @@
     "requireLookdevIllustration": true,
     "requireExactOpeningRadius": true,
     "requireRootFlareClearance": true,
+    "requireExactRuntimeRootVertexEnvelope": true,
     "requireLocalSupportGradeForEveryCurbModule": true,
     "requireNoSoilUndersideGapAtGrassBoundary": true,
     "requireUnderstorySurfaceGrounding": true,
@@ -119,7 +121,6 @@
       "pit soil reads as a raised brown decal/slab because the 1.5 mm render-separation bias becomes visible",
       "metallic soil, concrete or bark",
       "visible LOD pop or severe foliage shimmer",
-      "disaster theme",
       "claiming visual quality without an actual Unity render"
     ]
   },

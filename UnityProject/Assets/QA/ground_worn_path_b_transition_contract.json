@@ -1,0 +1,129 @@
+{
+  "schemaVersion": "1.0",
+  "visualFidelityStatus": "UNSCORED_IMPLEMENTATION_ONLY",
+  "targetPeriod": "circa 2000",
+  "targetRegion": "ordinary Japanese new-town residential park, Kanto-climate reference",
+  "runtimeRenderVerified": false,
+  "visualFidelityPointsAwarded": 0,
+  "purpose": "Replace the isolated rectangular WornPathB visual primitive with a causally constructed compacted-soil branch through the park verge while preserving the coarse gameplay collider until Unity runtime verification is available.",
+  "sourceAudit": {
+    "sourceWidthM": 2.0,
+    "sourceLengthM": 6.0,
+    "sourceMinXM": 12.0,
+    "sourceMaxXM": 14.0,
+    "sourceMinZM": 4.5,
+    "sourceMaxZM": 10.5,
+    "sourceTopYM": 0.045,
+    "legacyGrassGapToParkCurbM": 0.53,
+    "visualRisk": "The source is a constant-width 2 x 6 m Cube, 45 mm above the continuous turf, separated by about 530 mm of grass from a fully continuous ParkPathEast curb. In hero/oblique foreground this can read as a floating or placed rectangular soil slab rather than a walked/constructed ground route."
+  },
+  "assembly": {
+    "components": [
+      "legacy WornPathB BoxCollider retained as temporary coarse Unity gameplay substrate with Renderer disabled",
+      "compacted granular soil/fines wearing course forming the visible route core",
+      "feathered granular shoulders returning the visible route to turf grade instead of exposing vertical Cube sides",
+      "ParkPathEast precast curb access opening made by omitting two complete 588 mm modules rather than cutting/interpenetrating a module",
+      "existing mineral ParkPath paving retained as the route datum at the mouth",
+      "existing maintained turf/topsoil retained as the shoulder/terminal datum"
+    ],
+    "manufacture": "Model the visible branch as a thin compacted granular wearing course placed and repeatedly trafficked over verge subgrade. The mouth is a deliberate whole-module break in the 600 mm-pitch precast curb run. The compacted core retains roughly 40 mm of visible build-up while shoulders feather to turf grade; no vertical soil slab wall is modeled.",
+    "mounting": "The route starts at the ParkPath east paving edge, passes through the two-module curb opening, bears directly on the verge/subgrade, then curves northeast and narrows into turf. Existing source collision is preserved separately and never used as visible construction.",
+    "interfacesGapsSeals": "Park paving top is 0.060 m. The compacted-soil mouth is 0.057 m, giving a 3 mm drainage/abrasion step without coplanar z-fighting. Curb modules 26 and 27 are omitted as complete units; neighboring modules terminate with their real end faces and leave approximately 1.212 m clear. Outside the entry transition the route shoulder returns to 0.003 m, within 3 mm of turf top, rather than floating above grass.",
+    "orientationExposure": "Upward-facing exterior ground receives strong midsummer sun, rain, foot traffic and drying. The open curb mouth receives concentrated passage; shoulders receive less compaction and more turf encroachment. Benchmark state is dry.",
+    "aging": "Centerline/frequent-footfall compaction and small long-wave settlement are strongest away from the terminal taper; shoulders retain looser fines and turf encroachment. UV drying is broad. No arbitrary dark dirt patches, disaster damage, impact narrative or painted contact shadow is allowed.",
+    "geometryVsMaterial": "Route curvature, changing width, 40 mm class wearing-course build-up, feathered shoulders, curb opening, centerline depression and terminal taper are geometry. Fine gravel, grains, millimetre-scale roughness, restrained color variation, dry roughness and Fresnel response are material/microtexture. Directional sunlight, AO and specular highlights may not be baked into albedo."
+  },
+  "dimensions": {
+    "grassTopYM": 0.0,
+    "parkPavingTopYM": 0.060,
+    "parkPathEastEdgeXM": 11.30,
+    "curbCenterXM": 11.38,
+    "curbModulePitchM": 0.600,
+    "curbModuleVisibleLengthM": 0.588,
+    "curbJointGapM": 0.012,
+    "curbOpeningFirstIndex": 26,
+    "curbOpeningLastIndex": 27,
+    "firstOpeningModuleCenterZM": 5.10,
+    "lastOpeningModuleCenterZM": 5.70,
+    "curbOpeningMinZM": 4.794,
+    "curbOpeningMaxZM": 6.006,
+    "curbOpeningWidthM": 1.212,
+    "mouthCenterXM": 11.30,
+    "mouthCenterZM": 5.40,
+    "pathMouthTopYM": 0.057,
+    "mouthWidthM": 1.05,
+    "midWidthM": 1.35,
+    "terminalCenterXM": 13.25,
+    "terminalCenterZM": 10.35,
+    "terminalWidthM": 0.18,
+    "compactedCoreTopYM": 0.043,
+    "compactedCoreThicknessM": 0.040,
+    "shoulderJoinTopYM": 0.003,
+    "centerWearDepressionM": 0.0025,
+    "splineControlPointsXZ": [
+      "P0 11.30,5.40",
+      "P1 12.15,5.40",
+      "P2 12.55,8.30",
+      "P3 13.25,10.35"
+    ]
+  },
+  "material": {
+    "family": "dry compacted pedestrian soil/fines with small gravel",
+    "finish": "dense matte granular surface; compacted center smoother in macro relief but still highly rough optically",
+    "albedoMin": 0.16,
+    "albedoMax": 0.46,
+    "roughnessMin": 0.90,
+    "roughnessMax": 0.98,
+    "metallic": 0.0,
+    "specularF0": 0.04,
+    "normalScale": 0.95,
+    "microstructure": "macro compaction/fines distribution at a 6.4 m physical repeat plus 0.30 m detail field carrying grains and small gravel; no directional highlight is encoded",
+    "wetness": 0.0,
+    "uvAging": "UV/drying may shift broad value and saturation only through cause-based material variation; it cannot create sun-facing highlights or arbitrary black edges",
+    "angularFresnelResponse": "rough dielectric F0 near 0.04 with only a broad weak grazing lift; no metallic edge flash and no polished/wet response in the dry benchmark",
+    "macroTileMeters": 6.4,
+    "detailTileMeters": 0.30,
+    "uvPolicy": "LOD mesh UV0 stores world X/Z metres. Standard material texture scale is reciprocal metres-per-tile: 1/6.4 for base/normal/mask and 1/0.30 for detail albedo/detail normal. Mips/aniso inherited from the generated ground texture set remain mandatory."
+  },
+  "weathering": {
+    "causes": "FootTraffic + UVExposure metadata only for the visible branch. Geometry center depression is limited to 2.5 mm plus restrained <=1.2 mm long-wave settlement; the route terminal returns to grade as use intensity diminishes.",
+    "forbidden": "No random catastrophe damage, reconstruction cue, crater, painted shadow/AO, baked specular streak, unexplained puddle, wet sheen, rust on soil, or arbitrary repeating stain decal."
+  },
+  "lodPolicy": {
+    "lod0": "48 longitudinal segments x 7 cross-route stations; preserves mouth fit, spline curvature, shoulder feather, center depression and terminal taper.",
+    "lod1": "28 longitudinal segments x 7 stations; preserves identical physical interfaces and cross-section while reducing along-route tessellation.",
+    "lod2": "16 longitudinal segments x 5 stations; retains full route silhouette, mouth/terminal positions and outer shoulder grade; only intermediate shoulder sampling is reduced.",
+    "lod3": "8 longitudinal segments x 5 stations; retains the same route endpoints, curb-opening relationship and outer silhouette; it never reverts to the legacy Cube.",
+    "transitionPolicy": "Four Unity LOD levels use animated CrossFade. LOD bounds must stay within 35 mm center drift and 55 mm size-vector drift relative to LOD0. Visible pop/shimmer can only be cleared from real temporal evidence."
+  },
+  "hardLimits": {
+    "maxMetallic": 0.01,
+    "maxUvScaleError": 0.002,
+    "maxLodBoundsCenterDriftM": 0.035,
+    "maxLodBoundsSizeDriftM": 0.055
+  },
+  "evidencePlan": [
+    "hero full frame: reject if the former 2 x 6 m rectangular soil slab silhouette or a disconnected soil rectangle is visible",
+    "oblique/vegetation_grounding 100% crop: inspect two-module curb opening, ParkPath-to-soil mouth height, shoulder-to-turf feathering, route curvature and absence of floating/interpenetrating geometry",
+    "grazing/tree_shadow_contact 100% crop where route is visible: inspect dry rough dielectric response, granular normal breakup, curb end faces and absence of baked highlights",
+    "temporal oblique/LOD walk: reject visible route silhouette pop, legacy Cube reappearance, macro/detail texture swimming, high-frequency shimmer or curb-module pop"
+  ],
+  "criticalFailPrevention": [
+    "Disable the source WornPathB primitive Renderer while retaining its collider as temporary gameplay fallback.",
+    "Never model the visual route as a constant-width rectangular Cube or expose a vertical soil slab side in benchmark framing.",
+    "Suppress exactly complete ParkPathEast curb modules 26 and 27; do not cut a module with overlapping soil geometry.",
+    "Require dry dielectric metallic <=0.01, no emission and no baked directional highlight/AO in the soil material.",
+    "Use metre UVs with common physical macro/detail scale across all four LOD meshes to prevent obvious texture restarts.",
+    "Require cause-based FootTraffic/UV weathering metadata on every rendered LOD, with no disaster/reconstruction content.",
+    "Require LOD0/1/2/3 authored meshes and animated cross-fade; no LOD may fall back to the primitive source.",
+    "Do not claim the route visually grounded or PASS until actual sealed 3840x2160 and temporal pixels demonstrate it."
+  ],
+  "expectedVisualScoreImpactPendingRender": {
+    "GeometryConstruction": "Potentially removes a foreground rectangular-placeholder / disconnected-interface deduction and improves curb/path construction causality.",
+    "MaterialPBR": "Metric dry-soil PBR binding avoids primitive UV scale and impossible metallic response.",
+    "TextureMicrodetail": "World-metre UV0 plus existing two-frequency ground textures reduces visible scale reset/repetition risk.",
+    "WeatheringContext": "Foot-traffic geometry and taper provide a causal use pattern rather than arbitrary rectangular dirt placement.",
+    "TemporalLOD": "Four construction-preserving LODs remove the need to expose the source Cube at distance. No points may be awarded until rendered evidence exists."
+  },
+  "verificationStatus": "SOURCE_IMPLEMENTED_UNITY_RUNTIME_PENDING"
+}

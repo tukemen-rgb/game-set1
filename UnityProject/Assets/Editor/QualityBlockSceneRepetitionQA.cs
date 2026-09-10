@@ -46,7 +46,7 @@ public static class QualityBlockSceneRepetitionQA
 
         Debug.Log(
             "Benchmark static repetition preflight passed: metric ground phase, apartment occupancy diversity, exact natural-assembly clone checks and coarse perceptual near-clone checks are structurally valid. " +
-            "Critical repeated-pattern status remains render-unverified until native 4K frames and 100% crops are inspected.");
+            "The contract also requires current SHA-256-bound rendered repetition diagnostics before scoring. Critical repeated-pattern status remains render/human-review unverified until native 4K frames and 100% crops are inspected.");
     }
 
     private static void ValidateGeneratedTreeDiversity()
@@ -252,6 +252,8 @@ public static class QualityBlockSceneRepetitionQA
             "approved_repetition", "prohibited_repetition", "ground_world_phase",
             "generated_tree_fingerprint", "ecology_patch_fingerprint", "apartment_occupancy_layout",
             "perceptual_coarse_signature", "small_transform_jitter_does_not_count",
+            "rendered_repetition_diagnostics", "crop_sha256_binding", "manifest_sha256_binding", "warning_only",
+            "QualityBlockRenderedRepetitionDiagnostics", "automaticallyClearsCriticalDefect",
             "render_review_required", "visualFidelityPointsAwarded", "PENDING_UNITY_RUNTIME"
         };
         foreach (string token in required)

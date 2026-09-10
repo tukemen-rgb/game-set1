@@ -5,7 +5,10 @@ Shader "NewTown/QualityBlockWeatheringResidue"
         _Tint ("Dry Deposit Tint", Color) = (0.25,0.25,0.23,1)
         _Opacity ("Deposit Optical Density", Range(0,0.25)) = 0.10
         _Roughness ("Perceptual Roughness", Range(0.80,1.0)) = 0.94
+        _Metallic ("Metallic (must remain zero)", Float) = 0
         _DielectricF0 ("Dielectric F0", Range(0.02,0.06)) = 0.04
+        _NormalScale ("Normal Scale (no invented relief)", Float) = 0
+        _Wetness ("Wetness (dry benchmark)", Float) = 0
         _ProfileMode ("Mask Profile: 0 Ribbon, 1 Grade, 2 Ellipse", Float) = 0
         _EdgeFeatherU ("Cross-edge Feather", Range(0.001,0.49)) = 0.22
         _StartFeatherV ("Source-end Feather", Range(0,0.49)) = 0.08

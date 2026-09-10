@@ -1,0 +1,102 @@
+{
+  "schemaVersion": "1.0.0",
+  "targetPeriod": "late-1990s-to-circa-2000",
+  "targetRegion": "Kanto Japanese new-town fallback benchmark",
+  "runtimeRenderVerified": false,
+  "visualFidelityStatus": "UNSCORED_UNTIL_REAL_4K_RENDER",
+  "visualFidelityPointsAwarded": 0,
+  "assembly": {
+    "id": "worn_path_a_plaza_termination",
+    "sourceCondition": "WornPathA is a compacted-soil shortcut that approaches the south edge of DanchiPlaza. The legacy generated edging continued seven 0.60 m-pitch precast modules beyond the plaza boundary even though the soil surface is vertically hidden beneath the higher plaza slab there, producing two curb rails across the paved field.",
+    "components": [
+      "compacted-soil path substrate",
+      "two modular precast concrete edging runs",
+      "open path mouth before the paved plaza",
+      "buried bedding/subbase installation datum"
+    ],
+    "manufacture": "Individual precast concrete edging blocks are installed as modular units on prepared bedding/subbase. The rendered fallback models only visible block geometry; buried bedding is represented by the installation datum and metadata rather than exposed decorative geometry.",
+    "mounting": "Each retained edging block is embedded 10 mm below the compacted-soil top and stands approximately 70 mm above it. The two runs straddle the soil path with an approximately 5 mm inner interface gap. The run terminates on the last whole module before the plaza instead of carrying hidden-path edging into the paved field.",
+    "interfaces": "soil-to-curb inner seam, grass-to-curb outer face, modular block joints, and an open 356 mm transition from the final whole block to the plaza edge",
+    "orientation": "long axis north-south; the path approaches the plaza from negative Z toward positive Z",
+    "exposure": "top faces are sun/rain exposed; lower vertical faces receive soil splash; inner seams retain fine sediment; the open mouth receives pedestrian wear",
+    "aging": "Weathering is cause-based: lower-face splash, joint sediment and modest top-edge wear may occur. No random crack field, painted contact shadow or identical copied stain is allowed.",
+    "geometryVsMaterial": "Block dimensions, chamfer, module spacing, path-to-curb gap, termination setback and the paved/soil height relationship are geometry. Aggregate, micro-roughness, subtle color variation, moisture response and UV aging belong to the material/shader.",
+    "periodAuthenticity": "A modest modular concrete edge beside an informal pedestrian shortcut is treated as period-plausible fallback infrastructure. No claim is made that these exact dimensions reproduce a specific housing estate or historical product."
+  },
+  "dimensions": {
+    "modulePitchM": 0.600,
+    "moduleVisibleLengthM": 0.588,
+    "moduleJointGapM": 0.012,
+    "moduleWidthM": 0.110,
+    "moduleHeightM": 0.080,
+    "moduleCenterYM": 0.075,
+    "moduleBottomYM": 0.035,
+    "curbTopYM": 0.115,
+    "soilTopYM": 0.045,
+    "pavingTopYM": 0.050,
+    "pathToCurbInnerGapM": 0.005,
+    "lastRetainedModuleIndex": 6,
+    "lastRetainedModuleMaxZM": -5.856,
+    "plazaMinZM": -5.500,
+    "terminationSetbackM": 0.356,
+    "firstSuppressedModuleIndex": 7,
+    "firstSuppressedModuleMaxZM": -5.256,
+    "legacyIntrusionIntoPlazaM": 0.244
+  },
+  "material": {
+    "id": "precast_curb_concrete",
+    "assetPath": "Assets/Art/GeneratedPBR/PBR_WashedConcrete.mat",
+    "albedoSrgb": [0.56, 0.55, 0.51],
+    "roughnessNominal": 0.90,
+    "roughnessAllowedMin": 0.82,
+    "roughnessAllowedMax": 0.94,
+    "metallic": 0.0,
+    "specularF0": 0.04,
+    "normalScale": 1.0,
+    "microstructure": "dense precast cement paste with small aggregate; edge response comes from physical chamfer rather than painted highlights",
+    "wetness": 0.0,
+    "wetResponse": "if a later wet benchmark is authored, albedo may darken and roughness may fall locally according to real exposure; the current dry midsummer benchmark remains dry",
+    "uvAging": "small warm/gray drift and modest upper-face fade only; no repeated identical dirt stamp",
+    "angularFresnelResponse": "rough dielectric F0 near 0.04 with broad grazing lift; never metallic or mirror-like"
+  },
+  "lodPolicy": {
+    "lod0": "retain the seven whole authored chamfered modules per side and their physical joints",
+    "lod1": "retain the same installed module silhouette; no cutover is permitted until rendered evidence proves a cheaper representation does not pop",
+    "lod2": "retain the same installed module silhouette because the corrected assembly is only fourteen visible modules and avoids a geometry-changing transition",
+    "lod3": "retain the same installed module silhouette; distance optimization may be introduced only with temporal evidence proving no visible pop",
+    "transitionPolicy": "The generated fallback intentionally spends a small fixed renderer cost to eliminate an unverified LOD shape change. Any future authored replacement must provide explicit LOD0/1/2/3 evidence."
+  },
+  "hardLimits": {
+    "requiredRetainedModulesPerSide": 7,
+    "requiredSuppressedLegacyModulesPerSide": 7,
+    "terminationSetbackMinM": 0.250,
+    "terminationSetbackMaxM": 0.450,
+    "pathToCurbGapMinM": 0.003,
+    "pathToCurbGapMaxM": 0.008,
+    "pavingAboveSoilMinM": 0.003,
+    "pavingAboveSoilMaxM": 0.008,
+    "maxMetallic": 0.01,
+    "requireAuthoredMeshPrefix": "GM_HD_",
+    "requireNoActiveCurbInsidePlaza": true,
+    "requireNoColliderOnCorrectionState": true,
+    "requireWeatheringMetadataOnRetainedModules": true
+  },
+  "researchBasis": {
+    "source": "Yokohama City park/green-space standard drawings, current reference edition",
+    "referenceUse": "Installation principle only: modular concrete edging/curb blocks are placed on mortar/base layers and treated as discrete manufactured units. Current drawings show common 600 mm modules; exact present-day joint/base dimensions are not asserted as circa-2000 site facts.",
+    "sourceUrl": "https://www.city.yokohama.lg.jp/business/nyusatsu/youshiki/kankyo/koenshiryo/download/1sekkeikijun-shiryou.files/0297_20250801.pdf"
+  },
+  "evidencePlan": [
+    "hero/ground_contact 100% crop: confirm the worn-soil shortcut opens into the plaza and no parallel curb rails continue across paving",
+    "oblique/vegetation_grounding 100% crop where visible: confirm the final module has a manufactured end face, believable soil/grass contact and no floating edge",
+    "grazing/material_grazing if the path mouth enters frame: verify rough dielectric concrete, physical chamfer and no painted highlight",
+    "temporal evidence: confirm no renderer re-enables suppressed legacy modules and no curb silhouette pop appears"
+  ],
+  "criticalFailPrevention": [
+    "no active legacy curb geometry may project into the DanchiPlaza paved field",
+    "no retained curb renderer may use Unity primitive mesh geometry",
+    "no metallic/specularly impossible curb material",
+    "no missing construction/material metadata",
+    "no claim of visual quality without actual rendered evidence"
+  ]
+}

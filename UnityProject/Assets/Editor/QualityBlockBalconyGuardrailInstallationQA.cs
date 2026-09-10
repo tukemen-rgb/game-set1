@@ -11,6 +11,8 @@ using UnityEngine.Rendering;
 /// Reconstructs the generated apartment balcony guard as a manufactured vertical-lattice assembly.
 /// Legacy RailTop_* / Rail_* objects and their BoxColliders remain untouched as gameplay anchors, but
 /// their benchmark-visible stock Cube renderers are disabled. Four explicit render LODs replace them.
+/// The final-state QA also rechecks the slab fascia, lower rail, base plates and anchor-head interfaces
+/// after those legacy post renderers are no longer available to the earlier balcony-interface QA.
 /// Source/scene QA never awards Visual Fidelity points; native 3840x2160 pixels remain authoritative.
 /// </summary>
 public static class QualityBlockBalconyGuardrailInstallationQA
@@ -56,6 +58,9 @@ public static class QualityBlockBalconyGuardrailInstallationQA
     private const float MicroTileM = 0.080f;
     private const float HeightTolerance = 0.005f;
     private const float LowerCaptureTolerance = 0.006f;
+    private const float ContactTolerance = 0.003f;
+    private const float AnchorEmbedMin = 0.001f;
+    private const float AnchorEmbedMax = 0.006f;
     private const float LodBoundsTolerance = 0.010f;
 
     private static readonly float[] LodTransitions = { 0.18f, 0.08f, 0.03f, 0.008f };
@@ -126,6 +131,8 @@ public static class QualityBlockBalconyGuardrailInstallationQA
 
             BuildBayAssembly(root.transform, floor, bay, assemblyWorld, material, meshes, lowerTopRelative);
 
+            // Preserve the original transforms/MeshFilters/BoxColliders as gameplay/bookkeeping anchors.
+            // Only their stock renderers are disabled after replacement geometry exists.
             legacyTopRenderer.enabled = false;
             for (int r = -3; r <= 3; r++)
                 RequireRendererComponent(RequireObject($"Rail_{floor}_{bay}_{r}"), $"Rail_{floor}_{bay}_{r}").enabled = false;
@@ -163,6 +170,9 @@ public static class QualityBlockBalconyGuardrailInstallationQA
                     errors.Add("primary post count must remain seven");
                 if (c.dimensionsThickness.infill == null || c.dimensionsThickness.infill.count != InfillCount)
                     errors.Add("infill count must remain twenty-two");
+                if (c.dimensionsThickness.infill != null &&
+                    Mathf.Abs(c.dimensionsThickness.infill.maximumCalculatedClearOpeningM - MaximumCalculatedClearOpening) > 0.0001f)
+                    errors.Add("calculated clear opening must remain 0.102 m");
                 if (c.dimensionsThickness.infill != null && c.dimensionsThickness.infill.maximumCalculatedClearOpeningM > 0.1101f)
                     errors.Add("calculated clear opening exceeds 110 mm hard ceiling");
             }
@@ -188,7 +198,9 @@ public static class QualityBlockBalconyGuardrailInstallationQA
         }
 
         GameObject root = Find(RootName);
+        GameObject detailRootObject = Find("DanchiHighDetail");
         if (root == null) throw new InvalidOperationException("BalconyGuardrailAssemblies root is missing.");
+        if (detailRootObject == null) throw new InvalidOperationException("DanchiHighDetail root is missing during final guardrail QA.");
         if (root.GetComponentsInChildren<Collider>(true).Length != 0)
             throw new InvalidOperationException("Generated guardrail render assemblies must not add gameplay colliders.");
 
@@ -201,8 +213,10 @@ public static class QualityBlockBalconyGuardrailInstallationQA
         {
             int floor = manifest.Floor, bay = manifest.Bay;
             Renderer floorRenderer = RequireActiveRenderer($"BalconyFloor_{floor}_{bay}");
+            float floorTop = floorRenderer.bounds.max.y;
+            Transform detailBay = RequireDetailBay(detailRootObject.transform, floor, bay);
             Bounds top = ResolveTopRailBounds(floor, bay);
-            float height = top.max.y - floorRenderer.bounds.max.y;
+            float height = top.max.y - floorTop;
             if (Mathf.Abs(height - GuardTopHeight) > HeightTolerance)
                 throw new InvalidOperationException($"Guardrail {floor}/{bay} top height is {height:F4} m; expected 1.100 ± 0.005 m.");
             if (Mathf.Abs(top.size.x - TopRailLength) > 0.004f ||
@@ -216,7 +230,24 @@ public static class QualityBlockBalconyGuardrailInstallationQA
                 Mathf.Abs(manifest.MaximumClearOpeningM - MaximumCalculatedClearOpening) > 0.001f)
                 throw new InvalidOperationException($"Guardrail {floor}/{bay} clear-opening calculation is unsafe/inconsistent: {manifest.MaximumClearOpeningM:F4} m.");
             if (Mathf.Abs(manifest.LowerRailTopAboveFloorM - LowerRailExpectedTop) > LowerCaptureTolerance)
-                throw new InvalidOperationException($"Guardrail {floor}/{bay} lower capture no longer matches corrected lower rail.");
+                throw new InvalidOperationException($"Guardrail {floor}/{bay} lower-capture manifest no longer matches corrected lower rail.");
+
+            // Re-prove the construction stack that the earlier balcony-interface pass established before
+            // its seven legacy Rail_* renderers were intentionally disabled by this replacement.
+            Renderer fascia = RequireDirectChildRenderer(detailBay, "HD_BalconySlabLip");
+            if (Mathf.Abs(fascia.bounds.max.y - floorTop) > ContactTolerance)
+                throw new InvalidOperationException($"Guardrail {floor}/{bay}: concrete slab fascia top lost floor contact.");
+            if (fascia.sharedMaterial == null || floorRenderer.sharedMaterial == null || fascia.sharedMaterial != floorRenderer.sharedMaterial)
+                throw new InvalidOperationException($"Guardrail {floor}/{bay}: slab fascia no longer inherits balcony-floor concrete material.");
+
+            Renderer lowerRail = RequireDirectChildRenderer(detailBay, "HD_RailLower");
+            float lowerTopRelative = lowerRail.bounds.max.y - floorTop;
+            if (Mathf.Abs(lowerTopRelative - LowerRailExpectedTop) > LowerCaptureTolerance)
+                throw new InvalidOperationException($"Guardrail {floor}/{bay}: lower rail top is {lowerTopRelative:F4} m above floor, expected 0.110 ± 0.006 m.");
+
+            Renderer dividerLow = RequireDirectChildRenderer(detailBay, "HD_DividerBracketLow");
+            if (Mathf.Abs(dividerLow.bounds.min.y - floorTop) > ContactTolerance)
+                throw new InvalidOperationException($"Guardrail {floor}/{bay}: low divider bracket is not seated on the slab.");
 
             GameObject legacyTop = RequireObject($"RailTop_{floor}_{bay}");
             ValidateLegacyAnchor(legacyTop, new Vector3(3.55f, 0.09f, 0.09f));
@@ -225,13 +256,18 @@ public static class QualityBlockBalconyGuardrailInstallationQA
                 GameObject legacyPost = RequireObject($"Rail_{floor}_{bay}_{r}");
                 ValidateLegacyAnchor(legacyPost, new Vector3(0.045f, 0.88f, 0.045f));
                 Bounds support = ResolveSupportPostBounds(floor, bay, r);
-                Renderer plate = RequireDirectChildRenderer(RequireDetailBay(Find("DanchiHighDetail").transform, floor, bay), $"HD_RailBasePlate_{r}");
+                Renderer plate = RequireDirectChildRenderer(detailBay, $"HD_RailBasePlate_{r}");
+                if (Mathf.Abs(plate.bounds.min.y - floorTop) > ContactTolerance)
+                    throw new InvalidOperationException($"Guardrail {floor}/{bay} plate {r} is not seated on the slab.");
                 if (support.center.x < plate.bounds.min.x - 0.005f || support.center.x > plate.bounds.max.x + 0.005f ||
                     support.center.z < plate.bounds.min.z - 0.005f || support.center.z > plate.bounds.max.z + 0.005f)
                     throw new InvalidOperationException($"Guardrail {floor}/{bay} support {r} is not centered over its base plate.");
-                if (support.min.y > floorRenderer.bounds.max.y - PrimaryPostEmbed + 0.005f ||
+                if (support.min.y > floorTop - PrimaryPostEmbed + 0.005f ||
                     support.max.y < top.min.y - 0.005f)
                     throw new InvalidOperationException($"Guardrail {floor}/{bay} support {r} lost slab/top-rail load-path overlap.");
+
+                ValidateAnchorHead(detailBay, $"HD_RailBolt_{r}_A", plate, floor, bay);
+                ValidateAnchorHead(detailBay, $"HD_RailBolt_{r}_B", plate, floor, bay);
             }
 
             LODGroup group = manifest.GetComponent<LODGroup>();
@@ -268,7 +304,7 @@ public static class QualityBlockBalconyGuardrailInstallationQA
             }
         }
 
-        Debug.Log("Balcony guardrail source QA passed: 30 dense vertical-lattice assemblies, 1.10 m top height, legacy collider anchors preserved, stock renderers disabled, four decreasing-complexity cross-faded LODs. Native 4K review remains mandatory.");
+        Debug.Log("Balcony guardrail source QA passed: 30 dense vertical-lattice assemblies, 1.10 m top height, final fascia/base/anchor interfaces re-proved, legacy collider anchors preserved, stock renderers disabled and four decreasing-complexity cross-faded LODs retained. Native 4K review remains mandatory.");
     }
 
     /// <summary>Returns the actual generated top-rail datum when available, otherwise the active legacy renderer bounds.</summary>
@@ -435,14 +471,14 @@ public static class QualityBlockBalconyGuardrailInstallationQA
     {
         Vector3 e = size * 0.5f;
         int s = v.Count;
-        v.Add(c + new Vector3(-e.x, -e.y, -e.z)); // 0
-        v.Add(c + new Vector3(e.x, -e.y, -e.z));  // 1
-        v.Add(c + new Vector3(e.x, e.y, -e.z));   // 2
-        v.Add(c + new Vector3(-e.x, e.y, -e.z));  // 3
-        v.Add(c + new Vector3(-e.x, -e.y, e.z));  // 4
-        v.Add(c + new Vector3(e.x, -e.y, e.z));   // 5
-        v.Add(c + new Vector3(e.x, e.y, e.z));    // 6
-        v.Add(c + new Vector3(-e.x, e.y, e.z));   // 7
+        v.Add(c + new Vector3(-e.x, -e.y, -e.z));
+        v.Add(c + new Vector3(e.x, -e.y, -e.z));
+        v.Add(c + new Vector3(e.x, e.y, -e.z));
+        v.Add(c + new Vector3(-e.x, e.y, -e.z));
+        v.Add(c + new Vector3(-e.x, -e.y, e.z));
+        v.Add(c + new Vector3(e.x, -e.y, e.z));
+        v.Add(c + new Vector3(e.x, e.y, e.z));
+        v.Add(c + new Vector3(-e.x, e.y, e.z));
         int[] q =
         {
             0,2,1, 0,3,2, 4,5,6, 4,6,7,
@@ -562,6 +598,16 @@ public static class QualityBlockBalconyGuardrailInstallationQA
             throw new InvalidOperationException($"{label}: normal scale is outside restrained anodized range.");
         if (m.IsKeywordEnabled("_EMISSION") || (m.HasProperty("_EmissionColor") && m.GetColor("_EmissionColor").maxColorComponent > 0.001f))
             throw new InvalidOperationException($"{label}: daytime guardrail may not use emission/baked light.");
+    }
+
+    private static void ValidateAnchorHead(Transform detailBay, string name, Renderer plate, int floor, int bay)
+    {
+        Renderer bolt = RequireDirectChildRenderer(detailBay, name);
+        float embed = plate.bounds.max.y - bolt.bounds.min.y;
+        if (embed < AnchorEmbedMin || embed > AnchorEmbedMax)
+            throw new InvalidOperationException($"Guardrail {floor}/{bay}/{name}: anchor-head embed {embed:F4} m outside 0.001-0.006 m.");
+        if (bolt.bounds.max.y <= plate.bounds.max.y)
+            throw new InvalidOperationException($"Guardrail {floor}/{bay}/{name}: anchor head is fully buried in its base plate.");
     }
 
     private static void ValidateLegacyAnchor(GameObject go, Vector3 expectedColliderSize)

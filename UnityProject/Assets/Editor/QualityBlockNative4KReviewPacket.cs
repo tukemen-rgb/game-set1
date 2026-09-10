@@ -39,6 +39,7 @@ public static class QualityBlockNative4KReviewPacket
         QualityBlockSlideAccessInstallationQA.ValidateContractConfigOnly();
         QualityBlockSlideChuteFabricationQA.ValidateContractConfigOnly();
         QualityBlockBenchSeatConstructionInterfaceQA.ValidateContractConfigOnly();
+        QualityBlockParkLampInstallationQA.ValidateContractConfigOnly();
         QualityBlockTextureSamplingUpgrade.ValidateContractConfigOnly();
         QualityBlockPhysicalTexelDensityQA.ValidateContractConfigOnly();
         QualityBlockAlbedoLightingNeutralityQA.ValidateContractConfigOnly();
@@ -49,7 +50,8 @@ public static class QualityBlockNative4KReviewPacket
         QualityBlock4KCapture.ValidateCaptureContract();
 
         // Build/save/reopen the highest-quality generated scene first. The park save gate now leaves the
-        // final PhysicalChute as a watertight fabricated thin-sheet solid after shared microdetail has run.
+        // final PhysicalChute as a watertight fabricated thin-sheet solid and the park lamp as the dedicated
+        // continuous-taper installation assembly after shared microdetail and LOD rebind have run.
         QualityBlock4KCapture.PrepareSceneForSynchronizedCapture();
         QualityBlockSceneMaterialPhysicalityUpgrade.ApplyAndValidate();
 
@@ -87,8 +89,11 @@ public static class QualityBlockNative4KReviewPacket
         QualityBlockFutonBalconyDrapeQA.ApplyAndPersist();
         QualityBlockFutonBalconyDrapeQA.ValidateOpenScene();
 
-        // Park/street furniture and scene-wide source preflight. The chute fabrication validator must run
-        // after microdetail and LOD rebind because that is the exact mesh/material state sent to probes.
+        // Park/street furniture and scene-wide source preflight. The park-lamp validator is deliberately
+        // explicit here: existence of its source file is insufficient unless the prepared scene actually
+        // contains the continuous pole/service cover/head assembly rebound into all four LODs. The chute
+        // fabrication validator likewise runs after microdetail and LOD rebind because that is the exact
+        // mesh/material state sent to probes.
         QualityBlockParkFurnitureUpgrade.ValidateOpenScene();
         QualityBlockParkFurniturePhysicalRefinement.ValidateOpenScene();
         QualityBlockParkFurnitureLodRebind.ValidateOpenScene();
@@ -96,6 +101,7 @@ public static class QualityBlockNative4KReviewPacket
         QualityBlockSlideChuteFabricationQA.ValidateOpenScene();
         QualityBlockParkFurnitureMicrodetailUpgrade.Validate();
         QualityBlockBenchSeatConstructionInterfaceQA.ValidateOpenScene();
+        QualityBlockParkLampInstallationQA.ValidateOpenScene();
         QualityBlockTreeWoodyContinuityQA.ValidateOpenScene();
         QualityBlockFoliagePhysicalityQA.ValidateOpenScene();
         QualityBlockPhysicalTexelDensityQA.ValidateOpenScene();
@@ -109,7 +115,7 @@ public static class QualityBlockNative4KReviewPacket
         Debug.Log(
             "Native-4K review packet entered reflection synchronization after final material binding, corrected continuous tree taper/metric bark UVs, " +
             "true facade/stair apertures, corrected balcony slab/base interfaces, four-LOD guardrails, AC/rainwater/futon interfaces, " +
-            "and a watertight 2 mm fabricated stainless slide chute. Visual Fidelity remains UNSCORED.");
+            "a verified continuous-taper park-lamp installation, and a watertight 2 mm fabricated stainless slide chute. Visual Fidelity remains UNSCORED.");
     }
 
     private static void FinishAfterReflectionSynchronization()
@@ -131,6 +137,7 @@ public static class QualityBlockNative4KReviewPacket
         QualityBlockSlideAccessInstallationQA.ValidateOpenScene();
         QualityBlockSlideChuteFabricationQA.ValidateOpenScene();
         QualityBlockBenchSeatConstructionInterfaceQA.ValidateOpenScene();
+        QualityBlockParkLampInstallationQA.ValidateOpenScene();
         QualityBlockTreeWoodyContinuityQA.ValidateOpenScene();
         QualityBlockFoliagePhysicalityQA.ValidateOpenScene();
         QualityBlockSceneMetadataCoverageQA.ValidateOpenScene();
@@ -162,6 +169,7 @@ public static class QualityBlockNative4KReviewPacket
         QualityBlockSlideChuteFabricationQA.ValidateOpenScene();
         QualityBlockParkFurnitureMicrodetailUpgrade.Validate();
         QualityBlockBenchSeatConstructionInterfaceQA.ValidateOpenScene();
+        QualityBlockParkLampInstallationQA.ValidateOpenScene();
         QualityBlockTreeWoodyContinuityQA.ValidateOpenScene();
         QualityBlockBenchmarkPrimitiveExposureQA.ValidateOpenScene();
         QualityBlockSceneMaterialPhysicalityUpgrade.ValidateOpenScene();
@@ -182,7 +190,7 @@ public static class QualityBlockNative4KReviewPacket
         Debug.Log(
             "Complete native-4K review packet prepared: sealed hero/oblique/grazing 3840x2160 stills and 100% crops plus bound temporal evidence. " +
             "Generated fallback trees retain continuous woody taper and metric bark; legacy balcony rails are excluded from evidence; " +
-            "the two futon drapes resolve the final rail datum; and every slide LOD retains the watertight fabricated stainless chute. " +
-            "Visual Fidelity remains UNSCORED until the actual pixels are manually reviewed against the locked 100-point gate.");
+            "the two futon drapes resolve the final rail datum; the park lamp retains its continuous installed assembly through every evidence phase; " +
+            "and every slide LOD retains the watertight fabricated stainless chute. Visual Fidelity remains UNSCORED until the actual pixels are manually reviewed against the locked 100-point gate.");
     }
 }

@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "1.1",
+  "schemaVersion": "1.2",
   "id": "park_street_furniture_construction",
   "purpose": "Machine-readable manufacture/install/lookdev contract for benchmark-visible municipal park and street furniture. This is implementation evidence only; visual points require actual Unity renders.",
   "referenceBasis": [
@@ -74,20 +74,29 @@
     },
     {
       "id": "notice_board",
-      "manufacture": "two painted tubular posts supporting a framed weathered board/backing",
-      "installation": "two post feet meet the ground separately; no single central proxy support",
-      "orientation": "board face is approximately vertical; frame rails wrap all four edges",
-      "exposure": "top rail and upper board edge receive strongest sun/rain; post feet receive splash",
+      "periodIntent": "ordinary passive neighborhood/municipal notice board plausible for the late 1990s through early 2000s; printed paper notices sit behind a clear weather cover",
+      "manufacture": "two painted tubular posts support a 75 mm-deep framed weatherproof display case containing a recessed backing, individual printed notices, a 3 mm clear UV-stabilized acrylic cover, EPDM perimeter retention, three hinge knuckles, a right-side latch and a top runoff hood",
+      "installation": "two post feet meet ground separately; rigid frame spans the posts; backing is recessed behind the frame face; paper sheets seat on the backing; clear cover is retained in front with positive dry-air separation and left-hinge/right-latch hardware",
+      "orientation": "board face is approximately vertical and faces local +Z toward the benchmark camera side; frame rails wrap all four edges",
+      "exposure": "top hood and upper frame receive strongest sun/rain; clear cover receives runoff/wiping; backing and papers are sheltered; post feet receive splash",
       "components": [
         {"name": "posts", "count": 2, "diameter_mm": 55},
-        {"name": "backing panel", "size_mm": [2280, 1230, 55]},
-        {"name": "metal frame rails", "width_mm": 60},
-        {"name": "frame fasteners", "head_diameter_mm": 12, "lod": "LOD0 only"}
+        {"name": "outer frame", "size_mm": [2420, 1330, 75], "rail_face_width_mm": 60},
+        {"name": "recessed backing panel", "size_mm": [2280, 1230, 18]},
+        {"name": "clear acrylic weather cover", "size_mm": [2200, 1110, 3], "material_class": "transparent dielectric"},
+        {"name": "EPDM perimeter gasket", "face_width_mm": 10, "depth_mm": 6},
+        {"name": "left hinge knuckles", "count": 3, "diameter_mm": 16, "height_mm": 80},
+        {"name": "right latch", "body_mm": [35, 55, 12]},
+        {"name": "top drip hood", "size_mm": [2480, 25, 140]},
+        {"name": "printed notices", "count": 5, "paper_thickness_mm": 0.4, "print_rule": "ink/text is material texture detail, not raised geometry"},
+        {"name": "paper pin heads", "head_diameter_mm": 7, "head_height_mm": 4, "lod": "LOD0 only"}
       ],
-      "interfaces": "post-foot darkening limited to lowest 160 mm; frame bolts stay at frame corners",
-      "geometryVsMaterialDetail": "posts, panel thickness, frame rails and corner fasteners are geometry; faded finish/wood-fibre or coating microstructure belongs to material detail",
-      "periodAccuracy": "no digital display, QR code, LED panel or other post-2000 visual cue in benchmark geometry",
-      "forbidden": ["single central post proxy", "floating panel", "metallic backing board", "modern electronic signage"]
+      "interfaces": "paper backs contact the recessed backing within 1 mm; paper-to-cover dry-air gap remains at least 20 mm; clear-cover edge clearance inside the frame is 30-70 mm; drip hood bears on the frame within 2.5 mm; hinge/latch axes remain on their respective frame rails",
+      "geometryVsMaterialDetail": "case depth, back panel, clear-cover thickness, gasket, hinges, latch, hood, paper thickness and LOD0 pins are geometry; printed ink, paper fibre, acrylic wiping haze, paint microstructure, fine oxidation and UV fading are material detail",
+      "periodAccuracy": "no digital display, QR code, LED panel or other post-2000 electronic signage cue; notice occupancy persists through all four LODs to avoid content-class pop",
+      "interfaceContract": "Assets/QA/notice_board_display_case_contract.json",
+      "lookdev": "Assets/QA/notice_board_display_case_lookdev.svg",
+      "forbidden": ["single central post proxy", "floating panel or paper", "metallic backing/paper/acrylic", "opaque rectangle pretending to be a clear cover", "painted reflection", "modern electronic signage"]
     }
   ],
   "materials": [
@@ -179,7 +188,7 @@
       "floating/interpenetrating hero geometry",
       "visible LOD pop",
       "missing required construction/material metadata",
-      "excluded disaster-oriented theme"
+      "excluded non-ordinary-scene theme"
     ]
   },
   "renderVerification": {
@@ -190,6 +199,8 @@
       "100% crop of the continuous 2 mm chute edge/frame interface under oblique or grazing light",
       "100% crop of bench slat gaps/bolts/concrete ground interface",
       "100% crop confirming the lamp diffuser reads as a retained-ring globe rather than a primitive",
+      "100% crop confirming the notice board reads as a recessed weatherproof display case with real cover depth, gasket, paper seating, hinges and latch",
+      "grazing-light crop separating clear acrylic dielectric Fresnel from exposed hinge/latch metal and rough printed paper/backing",
       "camera-motion check through all four LOD transitions"
     ]
   }

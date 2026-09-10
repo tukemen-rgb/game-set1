@@ -19,6 +19,7 @@ public static class QualityBlockNative4KReviewPacket
         QualityBlockVisualGateIntegrityQA.ValidateContract();
         QualityBlockVisualFidelityGate.ValidateGateConfig();
         QualityBlockShadowStabilityUpgrade.ValidateOpenScene();
+        QualityBlockSolarShadowCaptureCoherenceQA.ValidateContractConfigOnly();
         QualityBlockRenderedImageDiagnostics.ValidateContractConfigOnly();
         QualityBlockTemporalStabilityCapture.ValidateContractConfigOnly();
         QualityBlockPreparedTemporalCapture.ValidateContractConfigOnly();
@@ -116,19 +117,25 @@ public static class QualityBlockNative4KReviewPacket
         QualityBlockSceneMetadataCoverageQA.ValidateOpenScene();
         QualityBlockBenchmarkPrimitiveExposureQA.ValidateOpenScene();
 
-        // Realtime probes are rendered only after final persisted geometry/material state exists.
+        // The reflection request is made only after the final persisted scene and its one physical
+        // SummerSun/sky/shadow state are valid. The awaiter fingerprints that state before RenderProbe,
+        // after asynchronous completion and again immediately before the still is accepted.
+        QualityBlockSolarShadowCaptureCoherenceQA.ValidateOpenScene();
         QualityBlockReflectionProbeAwaiter.Begin(FinishAfterReflectionSynchronization);
 
         Debug.Log(
             "Native-4K review packet entered reflection synchronization after final material binding, corrected WornPathA/plaza curb termination, " +
             "corrected continuous tree taper/metric bark UVs, true facade/stair apertures, corrected balcony slab/base interfaces, four-LOD guardrails, " +
-            "AC/rainwater/futon interfaces, a verified continuous-taper park-lamp installation, and a watertight 2 mm fabricated stainless slide chute. " +
-            "Visual Fidelity remains UNSCORED.");
+            "AC/rainwater/futon interfaces, a verified continuous-taper park-lamp installation, a watertight 2 mm fabricated stainless slide chute, " +
+            "and a SHA-256-bound physical sun/sky/ambient/shadow state. Visual Fidelity remains UNSCORED.");
     }
 
     private static void FinishAfterReflectionSynchronization()
     {
-        // Immediately before Camera.Render, re-prove synchronized probes and final construction state.
+        // Immediately before Camera.Render, re-prove synchronized probes, the exact lighting state
+        // used by those probes, and final construction state. ValidateLatestWaitProof recomputes the
+        // full physical-lighting fingerprint and aborts if it differs from probe completion.
+        QualityBlockSolarShadowCaptureCoherenceQA.ValidateOpenScene();
         QualityBlockReflectionProbeCaptureSyncQA.ValidateRuntimeReceipt();
         QualityBlockReflectionProbeAwaiter.ValidateLatestWaitProof();
         QualityBlockGroundPathPlazaTerminationQA.ValidateOpenScene();
@@ -159,7 +166,8 @@ public static class QualityBlockNative4KReviewPacket
         AssetDatabase.Refresh();
 
         // Seal-to-temporal invariants. No rebuilding/reopening is allowed here: temporal evidence must
-        // share the exact already-proven still geometry/material/reflection state.
+        // share the exact already-proven still geometry/material/reflection and solar/shadow state.
+        QualityBlockSolarShadowCaptureCoherenceQA.ValidateOpenScene();
         QualityBlockReflectionProbeCaptureSyncQA.ValidateRuntimeReceipt();
         QualityBlockReflectionProbeAwaiter.ValidateLatestWaitProof();
         QualityBlockStructuralSurfaceRefinement.ValidateOpenScene();
@@ -202,6 +210,7 @@ public static class QualityBlockNative4KReviewPacket
             "The worn-soil path terminates its modular curb runs before the paved plaza instead of carrying hidden-path edging across the field; " +
             "generated fallback trees retain continuous woody taper and metric bark; legacy balcony rails are excluded from evidence; " +
             "the two futon drapes resolve the final rail datum; the park lamp retains its continuous installed assembly through every evidence phase; " +
-            "and every slide LOD retains the watertight fabricated stainless chute. Visual Fidelity remains UNSCORED until the actual pixels are manually reviewed against the locked 100-point gate.");
+            "every slide LOD retains the watertight fabricated stainless chute; and the reflection cubemaps/stills share one hash-identical physical lighting state. " +
+            "Visual Fidelity remains UNSCORED until the actual pixels are manually reviewed against the locked 100-point gate.");
     }
 }

@@ -338,6 +338,16 @@ public static class QualityBlockParkLampInstallationQA
             if (r == null || !members.Contains(r))
                 throw new InvalidOperationException($"HD_Lamp/LOD{index} does not bind persistent renderer {name} to its LOD set.");
         }
+        if (index == 0)
+        {
+            for (int i = 0; i < 4; i++)
+            {
+                Transform bolt = tier.Find($"LampServiceBolt_{i}");
+                Renderer r = bolt != null ? bolt.GetComponent<Renderer>() : null;
+                if (r == null || !members.Contains(r))
+                    throw new InvalidOperationException($"HD_Lamp/LOD0 service-cover fastener {i} is not bound to LOD0.");
+            }
+        }
         foreach (string legacy in LegacyRendererNames)
         {
             Transform t = tier.Find(legacy);
@@ -433,8 +443,10 @@ public static class QualityBlockParkLampInstallationQA
                 int b = a + 1;
                 int c = (ring + 1) * stride + i + 1;
                 int d = (ring + 1) * stride + i;
-                target.Add(a); target.Add(b); target.Add(c);
-                target.Add(a); target.Add(c); target.Add(d);
+                // Vertex rings advance counter-clockwise when viewed from +Y. The outward side normal
+                // therefore requires a->c->b / a->d->c rather than the tempting but inward a->b->c order.
+                target.Add(a); target.Add(c); target.Add(b);
+                target.Add(a); target.Add(d); target.Add(c);
             }
         }
 
@@ -444,14 +456,16 @@ public static class QualityBlockParkLampInstallationQA
         vertices.Add(new Vector3(0f, PoleTopY, 0f)); uv.Add(Vector2.zero);
         for (int i = 0; i < sides; i++)
         {
+            // Bottom cap faces -Y; top cap faces +Y. This winding is intentionally the opposite of
+            // the initial audit draft, which would have produced an inside-out pole under backface culling.
             contactTriangles.Add(bottomCenter);
-            contactTriangles.Add(i + 1);
             contactTriangles.Add(i);
+            contactTriangles.Add(i + 1);
 
             int top = (ys.Length - 1) * stride;
             dryTriangles.Add(topCenter);
-            dryTriangles.Add(top + i);
             dryTriangles.Add(top + i + 1);
+            dryTriangles.Add(top + i);
         }
 
         var mesh = new Mesh();

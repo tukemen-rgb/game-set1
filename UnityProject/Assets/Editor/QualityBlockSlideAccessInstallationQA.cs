@@ -10,7 +10,8 @@ using UnityEngine;
 /// The prior generated assembly had an approximately two-metre platform and a physical chute but no
 /// climbable stair section. This pass adds a ten-tread coated-steel stair, laterally separated inclined
 /// stringers with welded tread brackets, access rails, grade plates, a chute-head bearing tied to the
-/// existing frame, and a ground-supported runout.
+/// existing frame, and a ground-supported runout. The coarsest source LOD omits the platform guard, so
+/// this pass restores a dimension-matched transition guard there to prevent a stair rail terminating in air.
 ///
 /// Source/runtime transform QA only. Passing this check awards zero Visual Fidelity points and cannot
 /// clear floating/interpenetration, primitive, material or LOD critical defects without native 4K evidence.
@@ -45,6 +46,8 @@ public static class QualityBlockSlideAccessInstallationQA
     {
         SlideContract contract = LoadAndValidateContract();
         Transform slide = RequireSlide();
+        Material painted = RequireMaterial(slide, "PBR_ParkPaintedSteel");
+        Material exposed = RequireMaterial(slide, "PBR_ParkExposedSteel");
         int generatedRenderers = 0;
 
         for (int lod = 0; lod < contract.qaRules.requiredLodCount; lod++)
@@ -52,8 +55,6 @@ public static class QualityBlockSlideAccessInstallationQA
             Transform tier = RequireDirectChild(slide, $"LOD{lod}");
             DestroyDirectChildIfPresent(tier, GeneratedRootName);
 
-            Material painted = RequireMaterial(tier, "PBR_ParkPaintedSteel");
-            Material exposed = RequireMaterial(tier, "PBR_ParkExposedSteel");
             Transform generated = new GameObject(GeneratedRootName).transform;
             generated.SetParent(tier, false);
 
@@ -75,7 +76,8 @@ public static class QualityBlockSlideAccessInstallationQA
             $"Slide access/support reconstruction applied: generatedRenderers={generatedRenderers}, " +
             $"accessAngle={summary.accessAngleDegrees:0.###} deg, " +
             $"minTread/StringerClearance={summary.minStringerTreadLateralClearanceMetres * 1000f:0.###} mm, " +
-            $"maxTread/BracketError={summary.maxTreadBracketContactErrorMetres * 1000f:0.###} mm. " +
+            $"maxTread/BracketError={summary.maxTreadBracketContactErrorMetres * 1000f:0.###} mm, " +
+            $"maxRailJoinGap={summary.maxRailJoinGapMetres * 1000f:0.###} mm. " +
             "LOD renderer rebinding must run next; native 4K review is still required before visual credit.");
     }
 
@@ -92,6 +94,7 @@ public static class QualityBlockSlideAccessInstallationQA
             $"minTread/StringerClearance={summary.minStringerTreadLateralClearanceMetres * 1000f:0.###} mm, " +
             $"maxTread/BracketError={summary.maxTreadBracketContactErrorMetres * 1000f:0.###} mm, " +
             $"maxBracket/StringerMiss={summary.maxBracketStringerAxisMissMetres * 1000f:0.###} mm, " +
+            $"maxRailJoinGap={summary.maxRailJoinGapMetres * 1000f:0.###} mm, " +
             $"headBearingGap={summary.maxHeadBearingGapMetres * 1000f:0.###} mm, " +
             $"runoutBearingGap={summary.maxRunoutBearingGapMetres * 1000f:0.###} mm. " +
             "Rendered contact shadows, material response and temporal stability remain unverified.");
@@ -150,6 +153,36 @@ public static class QualityBlockSlideAccessInstallationQA
 
         float lastY = d.firstTreadCenterY + (d.treadCount - 1) * d.treadRise;
         float lastZ = d.firstTreadCenterZ + (d.treadCount - 1) * d.treadRun;
+        bool sourceGuardExists = tier.Find("HandrailL") != null &&
+                                 tier.Find("HandrailR") != null &&
+                                 tier.Find("HandrailTop") != null;
+
+        // LOD3 in the source intentionally omitted the platform guard. Once the stair itself is preserved
+        // at all four LODs, allowing the rail to terminate into empty space would become both a construction
+        // defect and a large temporal topology pop. Restore the source guard dimensions only at that coarse LOD.
+        if (!sourceGuardExists)
+        {
+            for (int side = -1; side <= 1; side += 2)
+            {
+                CreatePipeBetween(
+                    $"AccessPlatformTransitionPost_{SideName(side)}", parent,
+                    new Vector3(
+                        side * d.platformGuardPostCenterAbsX,
+                        d.platformGuardPostCenterY - d.platformGuardPostHeight * 0.5f,
+                        d.platformGuardCenterZ),
+                    new Vector3(
+                        side * d.platformGuardPostCenterAbsX,
+                        d.platformGuardPostCenterY + d.platformGuardPostHeight * 0.5f,
+                        d.platformGuardCenterZ),
+                    d.handrailDiameter, painted);
+            }
+            CreatePipeBetween(
+                "AccessPlatformTransitionTop", parent,
+                new Vector3(-d.platformGuardTopLength * 0.5f, d.platformGuardTopCenterY, d.platformGuardCenterZ),
+                new Vector3(d.platformGuardTopLength * 0.5f, d.platformGuardTopCenterY, d.platformGuardCenterZ),
+                d.handrailDiameter, painted);
+        }
+
         for (int side = -1; side <= 1; side += 2)
         {
             Vector3 railStart = new Vector3(
@@ -162,7 +195,9 @@ public static class QualityBlockSlideAccessInstallationQA
                 lastZ);
             CreatePipeBetween($"AccessHandrail_{SideName(side)}", parent, railStart, railEnd, d.handrailDiameter, painted);
 
-            Transform platformRail = RequireDirectChild(tier, side < 0 ? "HandrailL" : "HandrailR");
+            Transform platformRail = sourceGuardExists
+                ? RequireDirectChild(tier, side < 0 ? "HandrailL" : "HandrailR")
+                : RequireDirectChild(parent, $"AccessPlatformTransitionPost_{SideName(side)}");
             Vector3 platformAttach = PointOnPipeAxisAtY(platformRail, railEnd.y);
             CreatePipeBetween(
                 $"AccessRailBridge_{SideName(side)}", parent,
@@ -364,6 +399,8 @@ public static class QualityBlockSlideAccessInstallationQA
                     errors.Add($"LOD{lod}: {SideName(side)} stringer does not terminate into its grade plate ({footError * 1000f:0.###} mm error).");
             }
 
+            ValidateRailTransition(tier, generated, d, q, summary, errors, lod);
+
             Transform chute = RequireDirectChild(tier, "PhysicalChute");
             MeshFilter chuteFilter = chute.GetComponent<MeshFilter>();
             if (chuteFilter == null || chuteFilter.sharedMesh == null)
@@ -422,6 +459,56 @@ public static class QualityBlockSlideAccessInstallationQA
                 "Slide access/support installation QA FAILED:\n - " + string.Join("\n - ", errors));
 
         return summary;
+    }
+
+    private static void ValidateRailTransition(
+        Transform tier,
+        Transform generated,
+        DimensionsMetres d,
+        QaRules q,
+        ValidationSummary summary,
+        List<string> errors,
+        int lod)
+    {
+        bool sourceGuardExists = tier.Find("HandrailL") != null &&
+                                 tier.Find("HandrailR") != null &&
+                                 tier.Find("HandrailTop") != null;
+        if (!sourceGuardExists && generated.Find("AccessPlatformTransitionTop") == null)
+            errors.Add($"LOD{lod}: source platform guard is absent and no generated transition top rail exists.");
+
+        float lastY = d.firstTreadCenterY + (d.treadCount - 1) * d.treadRise;
+        float lastZ = d.firstTreadCenterZ + (d.treadCount - 1) * d.treadRun;
+        for (int side = -1; side <= 1; side += 2)
+        {
+            Transform handrail = RequireDirectChild(generated, $"AccessHandrail_{SideName(side)}");
+            Transform bridge = RequireDirectChild(generated, $"AccessRailBridge_{SideName(side)}");
+            Transform platformPost = sourceGuardExists
+                ? RequireDirectChild(tier, side < 0 ? "HandrailL" : "HandrailR")
+                : RequireDirectChild(generated, $"AccessPlatformTransitionPost_{SideName(side)}");
+
+            Vector3 expectedRailEnd = new Vector3(
+                side * d.handrailCenterAbsX,
+                lastY + d.handrailVerticalOffset,
+                lastZ);
+            Vector3 expectedPlatformAttach = PointOnPipeAxisAtY(platformPost, expectedRailEnd.y);
+            AxisSegment railAxis = PipeAxis(handrail);
+            AxisSegment bridgeAxis = PipeAxis(bridge);
+
+            float railJoin = Mathf.Min(
+                Vector3.Distance(bridgeAxis.a, expectedRailEnd),
+                Vector3.Distance(bridgeAxis.b, expectedRailEnd));
+            float platformJoin = Mathf.Min(
+                Vector3.Distance(bridgeAxis.a, expectedPlatformAttach),
+                Vector3.Distance(bridgeAxis.b, expectedPlatformAttach));
+            float handrailEndError = Mathf.Min(
+                Vector3.Distance(railAxis.a, expectedRailEnd),
+                Vector3.Distance(railAxis.b, expectedRailEnd));
+            float worst = Mathf.Max(handrailEndError, Mathf.Max(railJoin, platformJoin));
+            summary.maxRailJoinGapMetres = Mathf.Max(summary.maxRailJoinGapMetres, worst);
+            if (worst > q.maximumRailJoinGapMetres)
+                errors.Add(
+                    $"LOD{lod} {SideName(side)}: access handrail/bridge/platform-guard join gap is {worst * 1000f:0.###} mm.");
+        }
     }
 
     private static void ValidateMaterialClass(Transform generated, List<string> errors, int lod)
@@ -582,7 +669,7 @@ public static class QualityBlockSlideAccessInstallationQA
         foreach (Material material in renderer.sharedMaterials ?? Array.Empty<Material>())
             if (material != null && material.name == materialName)
                 return material;
-        throw new InvalidOperationException($"Required slide material missing in {root.name}: {materialName}");
+        throw new InvalidOperationException($"Required slide material missing below {root.name}: {materialName}");
     }
 
     private static Transform RequireSlide()
@@ -677,6 +764,9 @@ public static class QualityBlockSlideAccessInstallationQA
             errors.Add("structural tube diameters must be positive.");
         if (d.treadBracketWidth <= 0f || d.treadBracketHeight <= 0f || d.treadBracketDepth <= 0f)
             errors.Add("tread support bracket dimensions must be positive.");
+        if (d.platformGuardPostHeight <= 0f || d.platformGuardTopLength <= 0f ||
+            d.platformGuardPostCenterAbsX <= 0f)
+            errors.Add("platform transition guard dimensions must be positive.");
 
         float lateralClearance =
             d.stringerCenterAbsX - d.stringerDiameter * 0.5f - d.treadWidth * 0.5f;
@@ -698,8 +788,9 @@ public static class QualityBlockSlideAccessInstallationQA
             q.minimumAccessAngleDegrees < 50f || q.maximumAccessAngleDegrees > 75f)
             errors.Add("QA safety/construction limits were relaxed beyond the locked reference.");
         if (q.minimumStringerToTreadLateralClearanceMetres < 0.015f ||
-            q.maximumBracketStringerAxisMissMetres > 0.004f)
-            errors.Add("tread/stringer separation or bracket/stringer join QA was relaxed beyond the locked interface limits.");
+            q.maximumBracketStringerAxisMissMetres > 0.004f ||
+            q.maximumRailJoinGapMetres > 0.004f)
+            errors.Add("slide access interface QA was relaxed beyond the locked separation/join limits.");
         if (contract.renderVerification.status != "PENDING_UNITY_RUNTIME" ||
             contract.renderVerification.visualFidelityPointsAwarded != 0)
             errors.Add("source contract must remain PENDING_UNITY_RUNTIME with zero visual points.");
@@ -718,6 +809,7 @@ public static class QualityBlockSlideAccessInstallationQA
             minStringerTreadLateralClearanceMetres = summary.minStringerTreadLateralClearanceMetres,
             maxTreadBracketContactErrorMetres = summary.maxTreadBracketContactErrorMetres,
             maxBracketStringerAxisMissMetres = summary.maxBracketStringerAxisMissMetres,
+            maxRailJoinGapMetres = summary.maxRailJoinGapMetres,
             maxFootPlateContactErrorMetres = summary.maxFootPlateContactErrorMetres,
             maxTopStepRiseMetres = summary.maxTopStepRiseMetres,
             maxTopHorizontalGapMetres = summary.maxTopHorizontalGapMetres,
@@ -770,6 +862,12 @@ public static class QualityBlockSlideAccessInstallationQA
         public float handrailVerticalOffset;
         public float handrailBridgeTargetAbsX;
         public float handrailBridgeTargetZ;
+        public float platformGuardPostCenterAbsX;
+        public float platformGuardPostCenterY;
+        public float platformGuardPostHeight;
+        public float platformGuardCenterZ;
+        public float platformGuardTopCenterY;
+        public float platformGuardTopLength;
         public float deckTopY;
         public float deckRearEdgeZ;
         public float headBearerDiameter;
@@ -806,6 +904,7 @@ public static class QualityBlockSlideAccessInstallationQA
         public float minimumFirstTreadRiseMetres;
         public float minimumStringerToTreadLateralClearanceMetres;
         public float maximumBracketStringerAxisMissMetres;
+        public float maximumRailJoinGapMetres;
         public float maximumChuteBearingGapMetres;
         public int requiredLodCount;
         public int generatedColliderCount;
@@ -831,6 +930,7 @@ public static class QualityBlockSlideAccessInstallationQA
         public float minStringerTreadLateralClearanceMetres;
         public float maxTreadBracketContactErrorMetres;
         public float maxBracketStringerAxisMissMetres;
+        public float maxRailJoinGapMetres;
         public float maxFootPlateContactErrorMetres;
         public float maxTopStepRiseMetres;
         public float maxTopHorizontalGapMetres;
@@ -850,6 +950,7 @@ public static class QualityBlockSlideAccessInstallationQA
         public float minStringerTreadLateralClearanceMetres;
         public float maxTreadBracketContactErrorMetres;
         public float maxBracketStringerAxisMissMetres;
+        public float maxRailJoinGapMetres;
         public float maxFootPlateContactErrorMetres;
         public float maxTopStepRiseMetres;
         public float maxTopHorizontalGapMetres;

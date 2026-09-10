@@ -22,10 +22,35 @@ public static class QualityBlockPeriodAuthenticityUpgrade
     private const string ScenePath = "Assets/Scenes/QualityBlock1990s.unity";
     private const string RootName = "PeriodAuthenticity2000";
     private const string MaterialRoot = "Assets/Art/GeneratedPeriodMaterials";
+    private const string ContractPath = "Assets/QA/period_authenticity_contract.json";
+    private const string LookdevPath = "Assets/QA/period_rooftop_reception_installation_lookdev.svg";
+
+    private const float MastDiameter = 0.048f;
+    private const float MastTop = 3.28f;
+    private const float StayDiameter = 0.025f;
+    private const float StayCollarHeight = 0.98f;
+
+    private static readonly Vector3[] StayBasePoints =
+    {
+        new Vector3(-0.54f, 0.1805f, -0.31f),
+        new Vector3( 0.54f, 0.1805f, -0.31f),
+        new Vector3(-0.54f, 0.1805f,  0.31f),
+        new Vector3( 0.54f, 0.1805f,  0.31f),
+    };
+
+    private static readonly Vector3[] StayCollarPoints =
+    {
+        new Vector3(-0.045f, StayCollarHeight, -0.045f),
+        new Vector3( 0.045f, StayCollarHeight, -0.045f),
+        new Vector3(-0.045f, StayCollarHeight,  0.045f),
+        new Vector3( 0.045f, StayCollarHeight,  0.045f),
+    };
 
     [MenuItem("NewTown/Period/Apply Year-2000 Rooftop Authenticity")]
     public static void ApplyToOpenScene()
     {
+        ValidateContractConfigOnly();
+
         Scene scene = EditorSceneManager.GetActiveScene();
         if (!scene.IsValid() || scene.path != ScenePath)
             scene = EditorSceneManager.OpenScene(ScenePath, OpenSceneMode.Single);
@@ -63,7 +88,7 @@ public static class QualityBlockPeriodAuthenticityUpgrade
         var root = new GameObject(RootName);
         root.transform.SetParent(danchi.transform, false);
         // Flat-roof benchmark slab top is y=13.20 m. The mount is kept away from the parapet edge
-        // so the antenna reads as a maintained communal service assembly, not a decorative prop.
+        // so the antenna reads as maintained communal service infrastructure, not a decorative prop.
         root.transform.localPosition = new Vector3(-10.35f, 13.20f, -11.25f);
         root.transform.localRotation = Quaternion.Euler(0f, 32f, 0f);
 
@@ -97,9 +122,39 @@ public static class QualityBlockPeriodAuthenticityUpgrade
         EditorSceneManager.MarkSceneDirty(scene);
     }
 
+    [MenuItem("NewTown/QA/Validate Year-2000 Period Authenticity Contract")]
+    public static void ValidateContractConfigOnly()
+    {
+        if (!File.Exists(ContractPath))
+            throw new InvalidOperationException($"Period-authenticity contract missing: {ContractPath}");
+        if (!File.Exists(LookdevPath))
+            throw new InvalidOperationException($"Period rooftop installation lookdev missing: {LookdevPath}");
+
+        string json = File.ReadAllText(ContractPath);
+        string[] requiredTokens =
+        {
+            "\"contractVersion\": 2",
+            "\"id\": \"communal_rooftop_vhf_uhf_reception\"",
+            "\"outsideDiameterMeters\": 0.048",
+            "\"heightAboveRoofMeters\": 3.28",
+            "\"mastStayCountPerLod\": 4",
+            "\"mastStayDiameterMeters\": 0.025",
+            "\"mastStayCollarHeightMeters\": 0.98",
+            "\"railFootPlateCountLod0And1\": 4",
+            "\"loadPathMustPersistAllLods\": true",
+            "\"visualFidelityPointsAwardedFromThisContract\": 0",
+            "PENDING_NATIVE_UNITY_3840x2160_RENDER_AND_100_PERCENT_CROP"
+        };
+        foreach (string token in requiredTokens)
+            if (json.IndexOf(token, StringComparison.Ordinal) < 0)
+                throw new InvalidOperationException($"Period-authenticity contract missing required token: {token}");
+    }
+
     [MenuItem("NewTown/QA/Validate Year-2000 Period Authenticity")]
     public static void ValidateOpenScene()
     {
+        ValidateContractConfigOnly();
+
         Scene scene = EditorSceneManager.GetActiveScene();
         var slot = Resources.FindObjectsOfTypeAll<QualityBlockArtSlot>()
             .FirstOrDefault(x => x.gameObject.scene == scene && x.SlotId == "danchi.main");
@@ -113,8 +168,10 @@ public static class QualityBlockPeriodAuthenticityUpgrade
         if (root == null) throw new InvalidOperationException("PeriodAuthenticity2000 root is missing.");
         if (root.transform.parent == null || root.transform.parent.name != "Danchi")
             throw new InvalidOperationException("Period rooftop assembly must remain parented to Danchi.");
-        if (Mathf.Abs(root.transform.localPosition.y - 13.20f) > 0.02f)
-            throw new InvalidOperationException("Period rooftop assembly no longer sits on the documented roof datum.");
+        AssertNear(root.transform.localPosition, new Vector3(-10.35f, 13.20f, -11.25f), 0.01f,
+            "period rooftop local installation datum");
+        if (Quaternion.Angle(root.transform.localRotation, Quaternion.Euler(0f, 32f, 0f)) > 0.2f)
+            throw new InvalidOperationException("Period rooftop assembly azimuth drifted from the documented 32 degree installation.");
 
         LODGroup group = root.GetComponent<LODGroup>();
         if (group == null) throw new InvalidOperationException("Period rooftop assembly has no LODGroup.");
@@ -123,17 +180,39 @@ public static class QualityBlockPeriodAuthenticityUpgrade
         if (group.fadeMode != LODFadeMode.CrossFade || !group.animateCrossFading)
             throw new InvalidOperationException("Period rooftop LOD must use animated cross-fade.");
 
-        int vhf0 = CountNamedPrefix("PA_VHF_Element_LOD0_");
-        int uhf0 = CountNamedPrefix("PA_UHF_Element_LOD0_");
-        if (vhf0 != 8) throw new InvalidOperationException($"LOD0 VHF element count must be 8, got {vhf0}.");
-        if (uhf0 != 14) throw new InvalidOperationException($"LOD0 UHF element count must be 14, got {uhf0}.");
-        if (CountNamedPrefix("PA_Ballast_LOD0_") != 4)
-            throw new InvalidOperationException("LOD0 must retain four non-penetrating precast ballast blocks.");
+        int[] expectedVhf = { 8, 6, 4, 2 };
+        int[] expectedUhf = { 14, 8, 4, 2 };
+        for (int lod = 0; lod < 4; lod++)
+        {
+            if (CountNamedPrefix($"PA_VHF_Element_LOD{lod}_") != expectedVhf[lod])
+                throw new InvalidOperationException($"LOD{lod} VHF element count drifted from {expectedVhf[lod]}.");
+            if (CountNamedPrefix($"PA_UHF_Element_LOD{lod}_") != expectedUhf[lod])
+                throw new InvalidOperationException($"LOD{lod} UHF element count drifted from {expectedUhf[lod]}.");
+            if (CountNamedPrefix($"PA_Ballast_LOD{lod}_") != 4)
+                throw new InvalidOperationException($"LOD{lod} must retain four non-penetrating precast ballast blocks.");
+            if (CountNamedPrefix($"PA_MastStay_LOD{lod}_") != 4)
+                throw new InvalidOperationException($"LOD{lod} must retain all four triangulating mast stays.");
+            if (FindSceneObject($"PA_MastStayCollar_LOD{lod}") == null)
+                throw new InvalidOperationException($"LOD{lod} mast stay collar is missing.");
+
+            int expectedFootDetails = lod <= 1 ? 4 : 0;
+            if (CountNamedPrefix($"PA_MastStayFoot_LOD{lod}_") != expectedFootDetails)
+                throw new InvalidOperationException($"LOD{lod} stay-foot plate count must be {expectedFootDetails}.");
+            if (CountNamedPrefix($"PA_MastStayLug_LOD{lod}_") != expectedFootDetails)
+                throw new InvalidOperationException($"LOD{lod} stay-collar lug count must be {expectedFootDetails}.");
+
+            ValidateStayGeometry(lod);
+        }
+
+        if (CountNamedPrefix("PA_CoaxClip_LOD0_") != 6 || CountNamedPrefix("PA_CoaxClip_LOD1_") != 6)
+            throw new InvalidOperationException("LOD0/LOD1 coax must retain six explicit mast clips instead of floating alongside the mast.");
+        if (CountNamedPrefix("PA_CoaxClip_LOD2_") != 0 || CountNamedPrefix("PA_CoaxClip_LOD3_") != 0)
+            throw new InvalidOperationException("LOD2/LOD3 unexpectedly retain sub-pixel coax clip detail.");
 
         if (root.GetComponentsInChildren<Collider>(true).Length != 0)
             throw new InvalidOperationException("Period-authentic visual service detail must not alter gameplay collision.");
 
-        foreach (var filter in root.GetComponentsInChildren<MeshFilter>(true))
+        foreach (MeshFilter filter in root.GetComponentsInChildren<MeshFilter>(true))
         {
             if (filter.sharedMesh == null)
                 throw new InvalidOperationException($"Missing mesh on period component {filter.name}.");
@@ -155,7 +234,9 @@ public static class QualityBlockPeriodAuthenticityUpgrade
                 throw new InvalidOperationException($"Period renderer {renderer.name} must participate in coherent sun/shadow response.");
         }
 
-        Debug.Log("Year-2000 period-authentic rooftop assembly passed source/scene QA. Visual period score still requires native 4K render evidence.");
+        Debug.Log(
+            "Year-2000 rooftop reception assembly passed source/scene QA with a four-way triangulated non-penetrating mast load path in every LOD, " +
+            "LOD0/1 stay-foot/lug hardware and explicit coax clips. Visual period/geometry/material points still require sealed native 4K pixels.");
     }
 
     private static void BuildReceptionLod(
@@ -165,7 +246,7 @@ public static class QualityBlockPeriodAuthenticityUpgrade
         BuildNonPenetratingBase(parent, lod, galvanized, precast);
 
         AddRod($"PA_Mast_LOD{lod}", parent,
-            new Vector3(0f, 0.16f, 0f), new Vector3(0f, 3.28f, 0f), 0.048f, galvanized);
+            new Vector3(0f, 0.16f, 0f), new Vector3(0f, MastTop, 0f), MastDiameter, galvanized);
 
         // Communal analogue-era VHF and UHF receiving arrays. VHF remains deliberately larger;
         // the compact UHF array is offset vertically so the silhouette cannot collapse into one
@@ -195,13 +276,24 @@ public static class QualityBlockPeriodAuthenticityUpgrade
                 new Vector3(0.04f, 0.17f, 0.03f), new Vector3(1.16f, 0.17f, 0.03f), 0.018f, coaxPvc);
             AddBox($"PA_RoofJunctionBox_LOD{lod}", parent,
                 new Vector3(1.25f, 0.20f, 0.03f), new Vector3(0.18f, 0.22f, 0.10f), blackAbs);
+
+            // Explicit UV-resistant clips bridge the cable-to-mast gap. They are geometry at the two
+            // near-camera LODs only; distant LODs retain the cable silhouette without sub-pixel blocks.
+            for (int clip = 0; clip < 6; clip++)
+            {
+                float y = 0.52f + clip * 0.43f;
+                AddBox($"PA_CoaxClip_LOD{lod}_{clip}", parent,
+                    new Vector3(0.018f, y, 0.0125f), new Vector3(0.046f, 0.018f, 0.040f), blackAbs);
+            }
         }
     }
 
     private static void BuildNonPenetratingBase(Transform parent, int lod, Material steel, Material concrete)
     {
-        // Four precast ballast blocks carry two hot-dip galvanized cross rails. This avoids an
-        // unexplained roof-membrane penetration and gives the mast a visible load path into the slab.
+        // Four precast ballast blocks carry paired hot-dip-galvanized rails. A short saddle alone is
+        // not a credible visible restraint for a 3.28 m mast under wind, so four diagonal stays transfer
+        // mast bending load into the ends of both ballast rails. The structural load path persists in
+        // every LOD; only small foot/lug hardware is culled beyond LOD1.
         Vector3[] positions =
         {
             new Vector3(-0.43f, 0.06f, -0.43f), new Vector3(0.43f, 0.06f, -0.43f),
@@ -213,6 +305,50 @@ public static class QualityBlockPeriodAuthenticityUpgrade
         AddBox($"PA_BaseRailA_LOD{lod}", parent, new Vector3(0f, 0.135f, -0.31f), new Vector3(1.22f, 0.055f, 0.065f), steel);
         AddBox($"PA_BaseRailB_LOD{lod}", parent, new Vector3(0f, 0.135f, 0.31f), new Vector3(1.22f, 0.055f, 0.065f), steel);
         AddBox($"PA_MastSaddle_LOD{lod}", parent, new Vector3(0f, 0.19f, 0f), new Vector3(0.18f, 0.11f, 0.16f), steel);
+
+        // 82 mm OD x 110 mm high galvanized sleeve/collar around the 48 mm mast gives the four stays
+        // an explicit upper node rather than letting them terminate in empty space.
+        AddRod($"PA_MastStayCollar_LOD{lod}", parent,
+            new Vector3(0f, 0.925f, 0f), new Vector3(0f, 1.035f, 0f), 0.082f, steel);
+
+        for (int i = 0; i < StayBasePoints.Length; i++)
+        {
+            if (lod <= 1)
+            {
+                AddBox($"PA_MastStayFoot_LOD{lod}_{i}", parent,
+                    new Vector3(StayBasePoints[i].x, 0.1715f, StayBasePoints[i].z),
+                    new Vector3(0.13f, 0.018f, 0.10f), steel);
+                AddBox($"PA_MastStayLug_LOD{lod}_{i}", parent,
+                    StayCollarPoints[i], new Vector3(0.055f, 0.050f, 0.055f), steel);
+            }
+
+            AddRod($"PA_MastStay_LOD{lod}_{i}", parent,
+                StayBasePoints[i], StayCollarPoints[i], StayDiameter, steel);
+        }
+    }
+
+    private static void ValidateStayGeometry(int lod)
+    {
+        for (int i = 0; i < StayBasePoints.Length; i++)
+        {
+            GameObject stay = FindSceneObject($"PA_MastStay_LOD{lod}_{i}");
+            if (stay == null)
+                throw new InvalidOperationException($"Missing LOD{lod} mast stay {i}.");
+            if (stay.transform.parent == null || stay.transform.parent.name != $"PA_RooftopReception_LOD{lod}")
+                throw new InvalidOperationException($"LOD{lod} mast stay {i} is outside its authored LOD root.");
+
+            Vector3 expectedMid = (StayBasePoints[i] + StayCollarPoints[i]) * 0.5f;
+            AssertNear(stay.transform.localPosition, expectedMid, 0.003f, $"LOD{lod} mast stay {i} midpoint");
+
+            Vector3 expectedAxis = (StayCollarPoints[i] - StayBasePoints[i]).normalized;
+            Vector3 actualAxis = (stay.transform.localRotation * Vector3.up).normalized;
+            if (Vector3.Dot(expectedAxis, actualAxis) < 0.9995f)
+                throw new InvalidOperationException($"LOD{lod} mast stay {i} no longer follows its rail-foot to collar load path.");
+
+            Renderer renderer = stay.GetComponent<Renderer>();
+            if (renderer == null || renderer.sharedMaterial == null || renderer.sharedMaterial.name != "MAT_Period_HotDipGalvanizedSteel")
+                throw new InvalidOperationException($"LOD{lod} mast stay {i} lost its galvanized steel material.");
+        }
     }
 
     private static void BuildYagiElements(
@@ -284,6 +420,8 @@ public static class QualityBlockPeriodAuthenticityUpgrade
         material.color = color;
         material.SetFloat("_Metallic", metallic);
         material.SetFloat("_Glossiness", smoothness);
+        material.DisableKeyword("_EMISSION");
+        if (material.HasProperty("_EmissionColor")) material.SetColor("_EmissionColor", Color.black);
         EditorUtility.SetDirty(material);
         return material;
     }
@@ -292,12 +430,23 @@ public static class QualityBlockPeriodAuthenticityUpgrade
     {
         Material material = AssetDatabase.LoadAssetAtPath<Material>($"{MaterialRoot}/{name}.mat");
         if (material == null) throw new InvalidOperationException($"Missing period material {name}.");
+        if (material.shader == null || material.shader.name != "Standard")
+            throw new InvalidOperationException($"Period material {name} must use Standard PBR in this benchmark pipeline.");
         float metallic = material.GetFloat("_Metallic");
         float smooth = material.GetFloat("_Glossiness");
         if (metallic < minMetallic || metallic > maxMetallic)
             throw new InvalidOperationException($"Material {name} metallic {metallic:F3} is outside [{minMetallic:F2},{maxMetallic:F2}].");
         if (smooth < minSmooth || smooth > maxSmooth)
             throw new InvalidOperationException($"Material {name} smoothness {smooth:F3} is outside [{minSmooth:F2},{maxSmooth:F2}].");
+        if (material.IsKeywordEnabled("_EMISSION") ||
+            (material.HasProperty("_EmissionColor") && material.GetColor("_EmissionColor").maxColorComponent > 0.0001f))
+            throw new InvalidOperationException($"Period material {name} may not fake highlights with emission.");
+    }
+
+    private static void AssertNear(Vector3 actual, Vector3 expected, float tolerance, string label)
+    {
+        if ((actual - expected).magnitude > tolerance)
+            throw new InvalidOperationException($"{label} drifted: expected {expected}, got {actual}.");
     }
 
     private static int CountNamedPrefix(string prefix)

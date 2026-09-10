@@ -65,9 +65,8 @@ public static class QualityBlockTreeWoodyContinuityQA
             throw new InvalidOperationException($"Missing bark material: {BarkMaterialPath}");
         ConfigureBarkMaterial(bark);
 
-        QualityBlockArtSlot[] slots = TreeSlots();
         int correctedTrees = 0;
-        foreach (QualityBlockArtSlot slot in slots)
+        foreach (QualityBlockArtSlot slot in TreeSlots())
         {
             int treeIndex = ParseTreeIndex(slot.SlotId);
             if (slot.IsUsingAuthoredArt)
@@ -141,17 +140,16 @@ public static class QualityBlockTreeWoodyContinuityQA
         ValidateContractConfigOnly();
         ValidateBarkMaterialAndSampling();
 
-        QualityBlockArtSlot[] slots = TreeSlots();
         var startPhases = new HashSet<int>();
         int validated = 0;
-
-        foreach (QualityBlockArtSlot slot in slots)
+        foreach (QualityBlockArtSlot slot in TreeSlots())
         {
             int treeIndex = ParseTreeIndex(slot.SlotId);
             if (slot.IsUsingAuthoredArt)
                 continue;
             if (slot.FallbackRoot == null)
                 throw new InvalidOperationException($"{slot.SlotId}: fallback root missing.");
+
             Transform master = slot.FallbackRoot.transform.Find(MasterPrefix + treeIndex);
             if (master == null)
                 throw new InvalidOperationException($"Tree {treeIndex}: corrected detailed master missing.");
@@ -174,8 +172,8 @@ public static class QualityBlockTreeWoodyContinuityQA
                 if (source.sharedMesh.name == "Cube" || source.sharedMesh.name == "Cylinder" ||
                     source.sharedMesh.name == "Sphere" || source.sharedMesh.name == "Capsule")
                     throw new InvalidOperationException($"Tree {treeIndex}: prohibited stock primitive remains on {source.name}.");
-                MeshRenderer renderer = source.GetComponent<MeshRenderer>();
-                if (renderer == null || renderer.sharedMaterial == null || renderer.sharedMaterial.name != "PBR_Bark")
+                MeshRenderer renderer = RequireRenderer(source);
+                if (renderer.sharedMaterial == null || renderer.sharedMaterial.name != "PBR_Bark")
                     throw new InvalidOperationException($"Tree {treeIndex}: {source.name} lost the dry dielectric bark material.");
                 ValidateRetainedProxyIdentity(master, source);
             }
@@ -186,13 +184,12 @@ public static class QualityBlockTreeWoodyContinuityQA
             for (int i = 0; i < trunk.Length - 1; i++)
             {
                 ValidateJoint(treeIndex, $"trunk {i}->{i + 1}", trunk[i], trunk[i + 1]);
-                float previousStart = EndpointRadiusMeters(trunk[i], false);
-                float previousEnd = EndpointRadiusMeters(trunk[i], true);
-                if (previousEnd > previousStart + ReverseTaperToleranceM)
+                if (EndpointRadiusMeters(trunk[i], true) > EndpointRadiusMeters(trunk[i], false) + ReverseTaperToleranceM)
                     throw new InvalidOperationException($"Tree {treeIndex}: trunk section {i} reverse-tapers outward toward crown.");
                 ValidateUvVContinuity(treeIndex, $"trunk {i}->{i + 1}", trunk[i], trunk[i + 1]);
             }
-            if (EndpointRadiusMeters(trunk[^1], true) > EndpointRadiusMeters(trunk[^1], false) + ReverseTaperToleranceM)
+            MeshFilter finalTrunk = trunk[trunk.Length - 1];
+            if (EndpointRadiusMeters(finalTrunk, true) > EndpointRadiusMeters(finalTrunk, false) + ReverseTaperToleranceM)
                 throw new InvalidOperationException($"Tree {treeIndex}: final trunk section reverse-tapers.");
 
             float phase = PositiveFraction(EndpointUvV(trunk[0], false) * BarkCyclesPerMeter);
@@ -209,13 +206,13 @@ public static class QualityBlockTreeWoodyContinuityQA
                     throw new InvalidOperationException($"Tree {treeIndex}: primary branch {p} reverse-tapers.");
             }
 
-            Vector3 anchor = slot.transform.position;
+            float anchorY = slot.FallbackRoot.transform.position.y;
             for (int r = 0; r < RootFlares; r++)
             {
                 MeshFilter root = RequireSource(master, $"RootFlare_{r}");
-                float tipY = SegmentEndpointWorld(root.transform, true).y - anchor.y;
+                float tipY = SegmentEndpointWorld(root.transform, true).y - anchorY;
                 if (tipY < -0.0101f || tipY > 0.1201f)
-                    throw new InvalidOperationException($"Tree {treeIndex}: root flare {r} tip is {tipY:F4} m relative to anchor grade; expected -0.01..0.12 m.");
+                    throw new InvalidOperationException($"Tree {treeIndex}: root flare {r} tip is {tipY:F4} m relative to fallback-root grade; expected -0.01..0.12 m.");
             }
 
             LODGroup group = master.GetComponent<LODGroup>();
@@ -239,8 +236,8 @@ public static class QualityBlockTreeWoodyContinuityQA
             CountPrefix(sources, "Twig_") != Twigs)
             throw new InvalidOperationException($"Tree {treeIndex}: unexpected woody hierarchy before correction.");
 
-        // Trunk: preserve authored centerline/transforms, but make every end radius equal the next start radius.
-        // Metric V accumulates through all seven modules, so bark never restarts at a trunk section boundary.
+        // Trunk: preserve the generated centerline/transforms, but make every end radius equal the next
+        // section's start radius. Metric V accumulates through all seven modules, so bark never restarts.
         float trunkV = treeIndex * 0.617f;
         float trunkU = treeIndex * 0.431f;
         for (int i = 0; i < TrunkSections; i++)
@@ -253,13 +250,11 @@ public static class QualityBlockTreeWoodyContinuityQA
             float length = SegmentLengthMeters(current.transform);
             Mesh mesh = BuildAndSaveMetricMesh(treeIndex, current.name, 12, endR / startR, 0.045f,
                 1000 + treeIndex * 101 + i, startR, endR, length, trunkU, trunkV);
-            AssignSourceAndRetainedProxies(master, current, mesh);
-            current.GetComponent<MeshRenderer>().sharedMaterial = bark;
+            SetSourceAndRetainedProxies(master, current, mesh, bark);
             trunkV += length;
         }
 
-        // Root flares: endpoints remain close to grade and get independent phase so seven radial roots do
-        // not repeat the same bark patch around the trunk base.
+        // Root flares retain their geometric role at grade but receive independent phase offsets.
         for (int r = 0; r < RootFlares; r++)
         {
             MeshFilter root = RequireSource(master, $"RootFlare_{r}");
@@ -270,8 +265,7 @@ public static class QualityBlockTreeWoodyContinuityQA
             float phaseV = treeIndex * 0.617f + r * 0.271f;
             Mesh mesh = BuildAndSaveMetricMesh(treeIndex, root.name, 10, 0.58f, 0.08f,
                 2000 + treeIndex * 101 + r, startR, endR, length, phaseU, phaseV);
-            AssignSourceAndRetainedProxies(master, root, mesh);
-            root.GetComponent<MeshRenderer>().sharedMaterial = bark;
+            SetSourceAndRetainedProxies(master, root, mesh, bark);
         }
 
         // Primary A/B chains: A ends at exactly B's start radius and shares continuous metric V with B.
@@ -288,14 +282,12 @@ public static class QualityBlockTreeWoodyContinuityQA
 
             Mesh meshA = BuildAndSaveMetricMesh(treeIndex, a.name, 10, bStart / aStart, 0.055f,
                 3000 + treeIndex * 101 + p * 2, aStart, bStart, aLength, phaseU, phaseV);
-            AssignSourceAndRetainedProxies(master, a, meshA);
-            a.GetComponent<MeshRenderer>().sharedMaterial = bark;
+            SetSourceAndRetainedProxies(master, a, meshA, bark);
 
             float bEnd = bStart * 0.62f;
             Mesh meshB = BuildAndSaveMetricMesh(treeIndex, b.name, 10, 0.62f, 0.055f,
                 3001 + treeIndex * 101 + p * 2, bStart, bEnd, bLength, phaseU, phaseV + aLength);
-            AssignSourceAndRetainedProxies(master, b, meshB);
-            b.GetComponent<MeshRenderer>().sharedMaterial = bark;
+            SetSourceAndRetainedProxies(master, b, meshB, bark);
         }
 
         foreach (MeshFilter secondary in sources.Where(x => x.name.StartsWith("SecondaryBranch_", StringComparison.Ordinal)))
@@ -315,8 +307,7 @@ public static class QualityBlockTreeWoodyContinuityQA
         float phaseV = treeIndex * 0.617f + PositiveFraction(ordinal * 0.193f) * 2.1f;
         Mesh mesh = BuildAndSaveMetricMesh(treeIndex, source.name, sides, endRatio, irregularity,
             seedBase + treeIndex * 997 + ordinal, startR, endR, length, phaseU, phaseV);
-        AssignSourceAndRetainedProxies(master, source, mesh);
-        source.GetComponent<MeshRenderer>().sharedMaterial = bark;
+        SetSourceAndRetainedProxies(master, source, mesh, bark);
     }
 
     private static Mesh BuildAndSaveMetricMesh(int treeIndex, string sourceName, int sides, float endRatio,
@@ -383,6 +374,7 @@ public static class QualityBlockTreeWoodyContinuityQA
             triangles.Add(b); triangles.Add(c); triangles.Add(d);
         }
 
+        // Separate cap vertices keep cylindrical side tangents/UVs independent from cap projection.
         int bottomCenter = vertices.Count;
         vertices.Add(Vector3.zero);
         uv.Add(new Vector2(phaseUM, vStartM));
@@ -427,9 +419,14 @@ public static class QualityBlockTreeWoodyContinuityQA
         return mesh;
     }
 
-    private static void AssignSourceAndRetainedProxies(Transform master, MeshFilter source, Mesh mesh)
+    private static void SetSourceAndRetainedProxies(Transform master, MeshFilter source, Mesh mesh, Material bark)
     {
+        MeshRenderer sourceRenderer = RequireRenderer(source);
         source.sharedMesh = mesh;
+        sourceRenderer.sharedMaterial = bark;
+        EditorUtility.SetDirty(source);
+        EditorUtility.SetDirty(sourceRenderer);
+
         int retained = RetainedThroughLod(source.name);
         string[] roots = { Lod1RootName, Lod2RootName, Lod3RootName };
         for (int lod = 1; lod <= retained; lod++)
@@ -438,15 +435,14 @@ public static class QualityBlockTreeWoodyContinuityQA
             if (proxyRoot == null)
                 throw new InvalidOperationException($"{master.name}: missing {roots[lod - 1]} while correcting {source.name}.");
             Transform proxy = proxyRoot.Find($"LOD{lod}_{source.name}");
-            MeshFilter proxyFilter = proxy?.GetComponent<MeshFilter>();
-            if (proxyFilter == null)
+            MeshFilter proxyFilter = proxy != null ? proxy.GetComponent<MeshFilter>() : null;
+            MeshRenderer proxyRenderer = proxy != null ? proxy.GetComponent<MeshRenderer>() : null;
+            if (proxyFilter == null || proxyRenderer == null)
                 throw new InvalidOperationException($"{master.name}: retained LOD{lod} proxy missing for {source.name}.");
             proxyFilter.sharedMesh = mesh;
-            MeshRenderer sourceRenderer = source.GetComponent<MeshRenderer>();
-            MeshRenderer proxyRenderer = proxy.GetComponent<MeshRenderer>();
-            if (sourceRenderer == null || proxyRenderer == null)
-                throw new InvalidOperationException($"{master.name}: renderer missing while rebinding {source.name} LOD{lod}.");
-            proxyRenderer.sharedMaterial = sourceRenderer.sharedMaterial;
+            proxyRenderer.sharedMaterial = bark;
+            EditorUtility.SetDirty(proxyFilter);
+            EditorUtility.SetDirty(proxyRenderer);
         }
     }
 
@@ -454,12 +450,17 @@ public static class QualityBlockTreeWoodyContinuityQA
     {
         int retained = RetainedThroughLod(source.name);
         string[] roots = { Lod1RootName, Lod2RootName, Lod3RootName };
+        MeshRenderer sourceRenderer = RequireRenderer(source);
         for (int lod = 1; lod <= retained; lod++)
         {
             Transform proxyRoot = master.Find(roots[lod - 1]);
-            MeshFilter proxy = proxyRoot?.Find($"LOD{lod}_{source.name}")?.GetComponent<MeshFilter>();
+            Transform proxyTransform = proxyRoot != null ? proxyRoot.Find($"LOD{lod}_{source.name}") : null;
+            MeshFilter proxy = proxyTransform != null ? proxyTransform.GetComponent<MeshFilter>() : null;
+            MeshRenderer proxyRenderer = proxyTransform != null ? proxyTransform.GetComponent<MeshRenderer>() : null;
             if (proxy == null || proxy.sharedMesh != source.sharedMesh)
                 throw new InvalidOperationException($"{master.name}: LOD{lod} proxy for {source.name} does not share the corrected source mesh.");
+            if (proxyRenderer == null || proxyRenderer.sharedMaterial != sourceRenderer.sharedMaterial)
+                throw new InvalidOperationException($"{master.name}: LOD{lod} proxy for {source.name} does not share corrected bark material.");
         }
     }
 
@@ -485,7 +486,7 @@ public static class QualityBlockTreeWoodyContinuityQA
         Mesh mesh = filter.sharedMesh;
         Vector3[] vertices = mesh.vertices;
         float targetY = top ? mesh.bounds.max.y : mesh.bounds.min.y;
-        var ring = vertices.Where(v => Mathf.Abs(v.y - targetY) < 0.0001f).ToArray();
+        Vector3[] ring = vertices.Where(v => Mathf.Abs(v.y - targetY) < 0.0001f).ToArray();
         if (ring.Length < 4)
             throw new InvalidOperationException($"{filter.name}: endpoint ring not found.");
         float maxLocal = ring.Max(v => Mathf.Sqrt(v.x * v.x + v.z * v.z));
@@ -514,7 +515,8 @@ public static class QualityBlockTreeWoodyContinuityQA
         }
         if (values.Count < 4)
             throw new InvalidOperationException($"{filter.name}: endpoint bark UV ring not found.");
-        // Side-ring V is constant. Cap-ring planar UV can differ, so use the median to reject cap outliers.
+        // Side-ring V is constant and has one more sample than the separate cap ring, so the median
+        // rejects the symmetric planar-cap values without depending on vertex ordering.
         values.Sort();
         return values[values.Count / 2];
     }
@@ -629,6 +631,14 @@ public static class QualityBlockTreeWoodyContinuityQA
         return matches[0];
     }
 
+    private static MeshRenderer RequireRenderer(MeshFilter filter)
+    {
+        MeshRenderer renderer = filter.GetComponent<MeshRenderer>();
+        if (renderer == null)
+            throw new InvalidOperationException($"{filter.name}: MeshRenderer missing.");
+        return renderer;
+    }
+
     private static int CountPrefix(IEnumerable<MeshFilter> filters, string prefix)
     {
         return filters.Count(f => f.name.StartsWith(prefix, StringComparison.Ordinal));
@@ -658,7 +668,8 @@ public static class QualityBlockTreeWoodyContinuityQA
     private static int ParseTreeIndex(string slotId)
     {
         int dot = slotId.LastIndexOf('.');
-        if (dot < 0 || !int.TryParse(slotId.Substring(dot + 1), out int index) || index < 0 || index >= ExpectedTrees)
+        int index;
+        if (dot < 0 || !int.TryParse(slotId.Substring(dot + 1), out index) || index < 0 || index >= ExpectedTrees)
             throw new InvalidOperationException($"Invalid tree slot id: {slotId}");
         return index;
     }
@@ -686,7 +697,9 @@ public static class QualityBlockTreeWoodyContinuityQA
 
     private static string AbsolutePath(string assetPath)
     {
-        string projectRoot = Directory.GetParent(Application.dataPath)?.FullName ?? throw new InvalidOperationException("Unity project root unavailable.");
+        string projectRoot = Directory.GetParent(Application.dataPath)?.FullName;
+        if (string.IsNullOrWhiteSpace(projectRoot))
+            throw new InvalidOperationException("Unity project root unavailable.");
         return Path.Combine(projectRoot, assetPath.Replace('/', Path.DirectorySeparatorChar));
     }
 

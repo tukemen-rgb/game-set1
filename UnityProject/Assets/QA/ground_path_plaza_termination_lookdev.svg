@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="1000" viewBox="0 0 1600 1000">
+  <rect width="1600" height="1000" fill="#f2efe7"/>
+  <style>
+    .h{font:700 34px Arial,sans-serif;fill:#222}.t{font:24px Arial,sans-serif;fill:#222}.s{font:20px Arial,sans-serif;fill:#333}.d{font:18px Arial,sans-serif;fill:#555}.line{stroke:#222;stroke-width:4;fill:none}.dim{stroke:#444;stroke-width:2;fill:none}.dash{stroke:#8a4f36;stroke-width:4;stroke-dasharray:14 10;fill:none}
+  </style>
+  <text x="70" y="60" class="h">WornPathA → DanchiPlaza termination lookdev</text>
+  <text x="70" y="96" class="s">Plan + section reasoning; generated fallback, not a claim of one exact historical product.</text>
+
+  <text x="80" y="155" class="t">PLAN — modular edging stops before paved field</text>
+  <rect x="110" y="205" width="1380" height="250" rx="4" fill="#b9b6aa" stroke="#333" stroke-width="3"/>
+  <text x="1230" y="245" class="s">DanchiPlaza</text>
+  <line x1="110" y1="455" x2="1490" y2="455" class="line"/>
+  <text x="1210" y="490" class="d">plaza south edge z = −5.500 m</text>
+
+  <path d="M620 455 L620 900 L1040 900 L1040 455 Z" fill="#866744" opacity="0.85"/>
+  <text x="735" y="850" class="s" fill="#fff">compacted-soil shortcut</text>
+
+  <g fill="#d0ccc1" stroke="#343434" stroke-width="2">
+    <rect x="585" y="610" width="24" height="62"/><rect x="585" y="682" width="24" height="62"/><rect x="585" y="754" width="24" height="62"/><rect x="585" y="826" width="24" height="62"/>
+    <rect x="1051" y="610" width="24" height="62"/><rect x="1051" y="682" width="24" height="62"/><rect x="1051" y="754" width="24" height="62"/><rect x="1051" y="826" width="24" height="62"/>
+  </g>
+  <text x="250" y="790" class="d">representative retained 588 mm blocks</text>
+  <path d="M585 610 L585 520 M1075 610 L1075 520" class="line"/>
+  <line x1="585" y1="520" x2="1075" y2="520" class="dim"/>
+  <text x="720" y="510" class="d">open path mouth</text>
+  <line x1="585" y1="455" x2="585" y2="520" class="dim"/>
+  <text x="260" y="478" class="d">final whole module ends 0.356 m before plaza edge</text>
+
+  <g opacity="0.28" fill="#b04b3b" stroke="#8a2f25" stroke-width="2">
+    <rect x="585" y="460" width="24" height="55"/><rect x="1051" y="460" width="24" height="55"/>
+    <rect x="585" y="390" width="24" height="55"/><rect x="1051" y="390" width="24" height="55"/>
+    <rect x="585" y="320" width="24" height="55"/><rect x="1051" y="320" width="24" height="55"/>
+  </g>
+  <path d="M570 450 L1090 315" class="dash"/>
+  <text x="690" y="350" class="s" fill="#8a2f25">SUPPRESS legacy curb continuation across paving</text>
+
+  <text x="80" y="945" class="t">SECTION — visible installation relationship</text>
+  <rect x="1110" y="690" width="390" height="70" fill="#b9b6aa" stroke="#333" stroke-width="3"/>
+  <rect x="1110" y="760" width="390" height="95" fill="#866744" opacity="0.85" stroke="#333" stroke-width="3"/>
+  <rect x="1190" y="700" width="110" height="80" rx="3" fill="#d0ccc1" stroke="#222" stroke-width="3"/>
+  <line x1="1110" y1="745" x2="1500" y2="745" class="dim"/>
+  <text x="1320" y="740" class="d">soil top y=.045</text>
+  <text x="1320" y="775" class="d">curb bottom y=.035</text>
+  <text x="1320" y="810" class="d">10 mm embed; ~70 mm exposed</text>
+  <text x="1110" y="895" class="d">Material: rough dielectric precast concrete · metallic 0 · F0≈0.04 · dry benchmark</text>
+</svg>

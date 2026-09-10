@@ -1,0 +1,111 @@
+{
+  "schemaVersion": "1.0",
+  "runDate": "2026-09-10",
+  "branch": "gpt/unity-migration",
+  "startHead": "54e7f76bb5f1d58cb1f55876b5ad5e01d71e99a4",
+  "substantiveHead": "af685c95eceec5037590087dd485307d5d697387",
+  "readinessBookkeepingHead": "e3828d6627ec789297319ae1fe43d305b317843b",
+  "scope": "Solar/shadow capture coherence and fail-closed evidence integrity for the Built-in Render Pipeline benchmark.",
+  "priorityRationale": "Lighting/shadows/reflections carries 15 Visual Fidelity points with a hard minimum of 13 and inconsistent sun/shadow direction is an automatic critical FAIL. Before adding more speculative visible assets, this run audited whether the deterministic midsummer sun and the high-quality shadow settings remain the same state through scene rebuild, save and Camera.Render.",
+  "audit": {
+    "initialFinding": "QualityBlockEnvironmentContext.ApplyToDirectionalLight historically wrote SummerSun shadowBias=0.04 and shadowNormalBias=0.28, while QualityBlockShadowStabilityUpgrade required 0.025 and 0.38. This showed two independent writers for the same capture-critical light state.",
+    "selfCorrection": "Follow-up source inspection found QualityBlockShadowStabilitySaveGate already subscribed to benchmark sceneSaving and reapplied/validated the 0.025/0.38 shadow-stability state. Therefore the initial hypothesis was narrowed: the mismatch was a transient writer inconsistency before save, not evidence that the final saved native-4K capture necessarily used 0.04/0.28. The implementation retained only changes that improve the invariant beyond the existing save repair.",
+    "remainingRisksBeforeThisRun": [
+      "The solar application entry point and shadow-stability pass could temporarily disagree about the same SummerSun state.",
+      "The old shadow validator identified SummerSun but did not fail merely because another enabled directional key existed.",
+      "There was no independent MainCamera pre-cull rejection of a second directional key or post-save shadow-state drift immediately before Camera.Render.",
+      "Solar geometry was deterministic in code but was not bound to an explicit machine-readable expected elevation/azimuth/shadow-length reference for capture QA."
+    ]
+  },
+  "sourceMath": {
+    "latitudeDegrees": 35.6,
+    "dayOfYear": 213,
+    "localApparentSolarTimeHours": 14.0,
+    "expectedElevationDegrees": 58.10658,
+    "expectedAzimuthDegrees": 244.22672,
+    "expectedHorizontalShadowPerVerticalMetre": 0.622286,
+    "interpretation": "Southwest source sun, approximately northeast horizontal shadow direction. These values are source-math evidence only and do not clear pixel-level shadow defects."
+  },
+  "implemented": [
+    "Moved the complete deterministic solar plus StableFit/4-cascade/VeryHigh shadow/camera/LOD state into runtime-safe QualityBlockSolarShadowRuntimeContract and made every QualityBlockEnvironmentContext.ApplyToDirectionalLight call use it.",
+    "Added exact-one-active-directional enforcement. The only allowed enabled active directional light is SummerSun, which must also be RenderSettings.sun and match the calculated solar ray, intensity and color temperature.",
+    "Added QualityBlockSolarShadowPreRenderGuard on the physical environment context. It subscribes to Camera.onPreCull and validates the benchmark MainCamera state immediately before culling; configuration drift or a contradictory second key throws before authoritative rendering can proceed.",
+    "Added QualityBlockSolarShadowCaptureCoherenceQA with structured source-math, exact shadow-setting, guard-binding and critical-fail validation. It awards zero Visual Fidelity points.",
+    "Added QualityBlockSolarShadowCaptureSaveGate. Primitive scratch scene saves remain allowed before a physical environment context exists; contextualized benchmark saves fail unless the contract and bound guard validate.",
+    "Strengthened QualityBlockShadowStabilityUpgrade so its validator fails on more than one active directional light and requires the new machine-readable solar/shadow contract.",
+    "Added solar_shadow_capture_coherence_contract.json and synchronized environment_lighting_contract.json and shadow_stability_contract.json with the same capture authority and non-scoring policy.",
+    "Added a lookdev SVG showing plan/elevation solar geometry, expected 58.11 degree elevation, 244.23 degree azimuth, 0.622 m/m shadow ratio, locked shadow state, pre-cull guard and the 92/100 evidence gate."
+  ],
+  "substantiveCommits": [
+    "5d7b31b62bdf9b7be518ee331905e36f7cc1e267",
+    "1fc8ed62ebe6113ab9ab2141aa98b229fac77e23",
+    "5d5fa9416dde2382518161ec0c68526f01b0896e",
+    "8b5c98d8635c9dd7b0e1f2f84578181239d76632",
+    "a196c81ee0a57f57a9d91458cb0e0cd000821fd1",
+    "a1a7ae561a0cdc70d444a9ad716e71bda9b9aa3f",
+    "ea9eb3f5ca27200975e3248758cfde3f1082151a",
+    "a83404b0ece607b95b8b14e2904fa4e58bc4a58f",
+    "af685c95eceec5037590087dd485307d5d697387"
+  ],
+  "selfAuditFixes": [
+    {
+      "issue": "The first version of QualityBlockSolarShadowCaptureCoherenceQA used x.gameObject.scene while iterating GameObject values in RequireSummerSun, which would not compile.",
+      "resolution": "Corrected immediately in commit 5d5fa9416dde2382518161ec0c68526f01b0896e to use x.scene.IsValid().",
+      "status": "source_fixed_compile_still_requires_real_unity"
+    },
+    {
+      "issue": "Initial audit wording overstated the old per-light bias mismatch as an unguarded final-capture defect.",
+      "resolution": "Inspected QualityBlockShadowStabilitySaveGate, confirmed it already repaired/validated canonical shadow values on benchmark save, and updated contracts/readiness to describe the actual residual risk: competing writers plus missing exact-one-key and pre-cull enforcement.",
+      "status": "analysis_corrected_no_gate_weakening"
+    }
+  ],
+  "changedPaths": [
+    "UnityProject/Assets/Scripts/Art/QualityBlockEnvironmentContext.cs",
+    "UnityProject/Assets/Editor/QualityBlockShadowStabilityUpgrade.cs",
+    "UnityProject/Assets/Editor/QualityBlockSolarShadowCaptureCoherenceQA.cs",
+    "UnityProject/Assets/Editor/QualityBlockSolarShadowCaptureSaveGate.cs",
+    "UnityProject/Assets/QA/solar_shadow_capture_coherence_contract.json",
+    "UnityProject/Assets/QA/Lookdev/solar_shadow_capture_coherence.svg",
+    "UnityProject/Assets/QA/environment_lighting_contract.json",
+    "UnityProject/Assets/QA/shadow_stability_contract.json",
+    "UnityProject/Assets/QA/implementation_readiness.json",
+    "UnityProject/Assets/QA/autonomous_run_2026-09-10_solar_shadow_capture_coherence.json"
+  ],
+  "verification": {
+    "method": "GitHub source/static inspection and Unity 6 Scripting API verification only; no local or hosted Unity editor was available.",
+    "unityProjectVersion": "6000.3.0f1",
+    "unityDocumentationFactsUsed": [
+      "Camera.onPreCull is called before a Camera culls the scene in the Built-in Render Pipeline.",
+      "Camera.Render manually renders a camera and invokes its pre-cull/pre-render/post-render lifecycle and image effects."
+    ],
+    "unityCompileVerified": false,
+    "runtimeGuardExecutionVerified": false,
+    "native3840x2160Verified": false,
+    "hundredPercentCropsReviewed": false,
+    "actualShadowBearingVerified": false,
+    "shadowAcneOrPeterPanningVerified": false,
+    "temporalCascadeStabilityVerified": false,
+    "visualFidelityPointsAwarded": 0,
+    "visualFidelityPass": false,
+    "visualFidelityStatus": "UNSCORED_REVIEW_REQUIRED"
+  },
+  "implementationReadiness": {
+    "score": 93,
+    "possible": 100,
+    "unchangedThisRun": true,
+    "reason": "The remaining seven readiness points are reserved for actual Unity 6000.3.0f1 compile/runtime verification, which is still unavailable."
+  },
+  "expectedVisualScoreImpact": [
+    "Lighting/shadows/reflections: reduces the risk of inconsistent key direction, contradictory directional sources and shadow-state drift; actual category points remain unawarded until rendered evidence.",
+    "Temporal/LOD/aliasing stability: ensures StableFit cascades, high LOD bias and MSAA policy are reapplied with the solar state and fail-closed at pre-cull; actual shimmer/pop still requires moving-image evidence.",
+    "Cinematic image quality/composition/color/exposure: locks deterministic midsummer sun intensity/color temperature before filmic capture; highlight/exposure quality remains pixel-review only.",
+    "Evidence integrity: configuration/source math can reject invalid capture state but cannot produce a Visual Fidelity PASS without real 3840x2160 frames and 100% crops."
+  ],
+  "constraints": {
+    "godotModified": false,
+    "baseMerged": false,
+    "prohibitedThemesAdded": false,
+    "prohibitedThemes": ["earthquake", "disaster", "reconstruction"]
+  },
+  "nextBlocker": "A real Unity 6000.3.0f1 editor/runner. At first availability, stop speculative expansion and run Prepare Complete Native 4K Review Packet. Confirm the solar/shadow save gate and MainCamera pre-cull guard execute, then inspect hero/ground_contact, oblique/construction_depth and grazing/tree_shadow_contact at 100% for actual southwest-sun/northeast-shadow coherence, contact detachment/acne, contradictory highlights, light leaks and cascade shimmer. Fix any critical rendered defect before scoring."
+}

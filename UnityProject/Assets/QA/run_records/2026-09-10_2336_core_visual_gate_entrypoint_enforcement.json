@@ -1,0 +1,76 @@
+{
+  "schemaVersion": "1.0",
+  "runId": "2026-09-10_2336_core_visual_gate_entrypoint_enforcement",
+  "startHead": "d2b051bb9c1927806c1c70ac2c69a25673f870eb",
+  "substantiveWorkHeadBeforeRunRecord": "b34f34fb466baf2bc1227e3d5ed04dca7baef0b6",
+  "substantiveCommits": [
+    {
+      "sha": "864fae376151d92a3d02338f5b40e7ba563da572",
+      "message": "qa: enforce gate integrity inside core evaluator"
+    },
+    {
+      "sha": "b34f34fb466baf2bc1227e3d5ed04dca7baef0b6",
+      "message": "qa: record core evaluator enforcement rule"
+    }
+  ],
+  "finding": {
+    "severity": "HIGH_EVIDENCE_INTEGRITY",
+    "summary": "The exact owner-approved Visual Fidelity Gate and reviewed-evidence exact-set checks were strongly enforced by MenuItem validators, but the public core evaluator could be invoked directly by -executeMethod, reflection, or another runner entry point without traversing those menu validators.",
+    "priorCoreBehavior": [
+      "QualityBlockVisualFidelityGate.ValidateConfig enforced threshold 92, native 3840x2160, nine category IDs, weights summing to 100, and only a coarse critical-defect-count floor.",
+      "Exact per-category weights/hard minima and the exact canonical twelve critical-defect IDs lived in QualityBlockVisualGateIntegrityQA.",
+      "Duplicate/unknown reviewed categories, duplicate/unknown critical-defect reviews, mandatory correctiveAction text, and exact reviewed-entry counts lived in QualityBlockReviewedVisualEvidenceIntegrityQA.",
+      "Render provenance was already intrinsic to the core evaluator, so this finding concerns scoring-schema integrity rather than still-image byte provenance."
+    ],
+    "risk": "A non-menu caller could theoretically evaluate a rebalanced or otherwise weakened but still 100-point-total configuration, or bypass reviewed-document exact-set hardening, creating a false PASS path even though normal editor UI remained guarded."
+  },
+  "changes": [
+    "QualityBlockVisualFidelityGate.ValidateGateConfig now invokes QualityBlockVisualGateIntegrityQA.ValidateContract from inside the core method.",
+    "QualityBlockVisualFidelityGate.EvaluateVisualGate now invokes QualityBlockVisualGateIntegrityQA.ValidateContract before scoring.",
+    "QualityBlockVisualFidelityGate.EvaluateVisualGate now invokes QualityBlockReviewedVisualEvidenceIntegrityQA.ValidateReviewedEvidence before reading/scoring category values.",
+    "visual_gate_integrity_contract.json now records the core-entrypoint enforcement requirement so later refactors cannot silently move protection back to menu-only validation."
+  ],
+  "verification": {
+    "type": "GITHUB_SOURCE_STATIC_ONLY",
+    "unityCompileVerified": false,
+    "unityRuntimeAvailable": false,
+    "native3840x2160CaptureAvailable": false,
+    "visualPixelReviewPerformed": false,
+    "sourceChecks": [
+      "Fetched the modified core evaluator after commit and confirmed intrinsic gate-integrity and reviewed-evidence calls are present before category scoring.",
+      "Compared start HEAD to substantive work HEAD: only the core evaluator and machine-readable gate-integrity contract changed; no unrelated project paths changed.",
+      "Confirmed the new calls do not create recursive validation: QualityBlockVisualGateIntegrityQA validates configuration and reviewed-contract schema, while QualityBlockReviewedVisualEvidenceIntegrityQA validates the reviewed document and neither calls the core evaluator."
+    ]
+  },
+  "scores": {
+    "implementationReadiness": 93,
+    "implementationReadinessMaximum": 100,
+    "visualFidelityStatus": "UNSCORED",
+    "visualFidelityPointsAwardedThisRun": 0,
+    "visualPassClaimed": false
+  },
+  "expectedVisualScoreImpactWhenRenderedAndReviewed": {
+    "automaticPoints": 0,
+    "effect": "No visual pixels were changed. The improvement is that any future >=92 result must survive the immutable exact category weights/minima, exact twelve critical defects, reviewed-entry integrity, and existing render provenance even when the evaluator is invoked outside the editor menu.",
+    "categoriesPotentiallyProtectedFromFalseScoring": [
+      "geometry_construction",
+      "material_pbr",
+      "lighting_shadows_reflections",
+      "texture_microdetail",
+      "weathering_causality",
+      "vegetation_natural_complexity",
+      "period_authenticity",
+      "cinematic_image",
+      "temporal_lod_aliasing"
+    ]
+  },
+  "constraints": {
+    "godotChanged": false,
+    "baseMerged": false,
+    "forbiddenNarrativeThemesAdded": false,
+    "unityOnlyPathsChanged": true
+  },
+  "nextBlocker": "Actual Unity 6000.3.0f1 editor/runner compile and runtime execution. At first availability, stop speculative expansion and run the complete native 4K review packet, then inspect actual hero/oblique/grazing frames, 100% crops, and sealed temporal evidence before assigning any Visual Fidelity points.",
+  "nextSourceSideTargetIfRuntimeStillUnavailable": "Bind the supplemental rooftop period-authenticity crops into sealed render evidence/provenance rather than relying only on their separate exact-texel extraction manifest, so every crop cited for scoring is cryptographically tied to the same capture session.",
+  "note": "This run strengthens score validity rather than image appearance. Implementation Readiness remains separate from Visual Fidelity and cannot contribute visual points."
+}

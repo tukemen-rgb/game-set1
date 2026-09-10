@@ -8,8 +8,8 @@ using UnityEngine;
 /// Rebinds LOD renderer sets after physical-refinement and notice-board display-case meshes replace/add
 /// first-pass renderers. LODGroup stores explicit Renderer references, so adding a refined mesh after
 /// SetLODs would otherwise leave it outside the LOD system and create an all-distance renderer / visible
-/// transition defect. Validation also re-runs the notice-board construction QA so every formal caller of
-/// this LOD gate proves the weather cover/paper/hinge/latch geometry survived into the bound tiers.
+/// transition defect. Validation also re-runs the notice-board construction and printed-UV QA so every
+/// formal caller of this LOD gate proves the cover/paper/hardware geometry and print mapping survived.
 /// </summary>
 public static class QualityBlockParkFurnitureLodRebind
 {
@@ -42,6 +42,7 @@ public static class QualityBlockParkFurnitureLodRebind
         ValidateAssembly("HD_Bench", null, null);
         ValidateAssembly("HD_NoticeBoard", null, null);
         QualityBlockNoticeBoardDisplayCaseQA.ValidateOpenScene();
+        QualityBlockNoticeBoardPrintedUvQA.ValidateOpenScene();
     }
 
     private static void Rebind(string rootName, HashSet<string> excluded)

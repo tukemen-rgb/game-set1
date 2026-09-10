@@ -1,7 +1,7 @@
 {
-  "schemaVersion": "1.1",
+  "schemaVersion": "1.2",
   "pipeline": "Built-in Render Pipeline",
-  "purpose": "Reduce shadow crawling, contact detachment, jagged thin geometry and LOD instability without hiding defects in post-processing.",
+  "purpose": "Reduce shadow crawling, contact detachment, jagged thin geometry and LOD instability without hiding defects in post-processing, while proving the same stable shadow state survives every generated-scene solar/environment reapplication.",
   "qualitySettings": {
     "shadows": "HardAndSoft",
     "shadowResolution": "VeryHigh",
@@ -19,13 +19,16 @@
   },
   "summerSun": {
     "singleCoherentDirectionalSource": true,
+    "requiredActiveDirectionalLightCount": 1,
+    "requiredDirectionalLightName": "SummerSun",
     "softShadows": true,
     "shadowResolution": "VeryHigh",
     "shadowStrength": 0.92,
     "shadowBias": 0.025,
     "shadowNormalBias": 0.38,
     "shadowNearPlaneMeters": 0.10,
-    "notes": "Bias is deliberately constrained: excessive bias creates peter-panning/light leaks, while insufficient bias creates self-shadow acne. Final acceptance is render-based."
+    "solarCaptureCoherenceContract": "Assets/QA/solar_shadow_capture_coherence_contract.json",
+    "notes": "Bias is deliberately constrained: excessive bias creates peter-panning/light leaks, while insufficient bias creates self-shadow acne. Source settings and solar math are implementation evidence only; final acceptance is render-based."
   },
   "thinGeometry": {
     "targets": [
@@ -53,10 +56,14 @@
   "enforcement": {
     "configurationPass": "Assets/Editor/QualityBlockShadowStabilityUpgrade.cs",
     "sceneSaveGate": "Assets/Editor/QualityBlockShadowStabilitySaveGate.cs",
+    "solarShadowSaveGate": "Assets/Editor/QualityBlockSolarShadowCaptureSaveGate.cs",
+    "runtimeSourceOfTruth": "QualityBlockSolarShadowRuntimeContract",
+    "mainCameraPreCullGuard": "QualityBlockSolarShadowPreRenderGuard",
     "scenePath": "Assets/Scenes/QualityBlock1990s.unity",
-    "activationPrerequisites": ["QualityBlock1990s", "SummerSun"],
-    "saveBehavior": "Apply configuration, then validate before the benchmark scene save completes.",
-    "captureChainRelationship": "QualityBlockEnvironmentLightingUpgrade saves the benchmark during native-4K preparation, so the save gate persists the shadow/edge policy before the final capture-scene reopen.",
+    "activationPrerequisites": ["QualityBlock1990s", "SummerSun", "PhysicalEnvironmentContext"],
+    "saveBehavior": "The legacy shadow save gate reapplies the stable shadow policy. The solar/shadow save gate then requires the physical context, sole SummerSun, runtime contract and bound MainCamera pre-cull guard before the contextualized benchmark scene can save.",
+    "captureChainRelationship": "Environment/weathering passes can reapply SummerSun during generated-scene construction. QualityBlockEnvironmentContext now reapplies the same stable shadow state at that moment; both save gates persist/validate it, and the pre-cull guard validates it again immediately before MainCamera culling for Camera.Render.",
+    "previousTransientWriterMismatch": "The environment context formerly wrote per-light bias 0.04/0.28 while the shadow pass used 0.025/0.38. The existing shadow save gate repaired this on save, so it was not an unguarded final-capture state; the new shared runtime contract removes the transient writer mismatch and adds independent pre-render verification.",
     "visualPointsAwardedByEnforcement": 0
   },
   "benchmarkEvidence": {
@@ -90,7 +97,8 @@
     "Excessive blur used to conceal aliasing",
     "Shadow bias increased until real contacts visibly detach",
     "Transparent window planes casting opaque card shadows",
+    "Selecting the strongest directional light while silently allowing a second contradictory key",
     "Claiming stable 4K quality without an actual Unity render"
   ],
-  "verificationStatus": "IMPLEMENTED_AND_SAVE_GATED_UNVERIFIED_NO_UNITY_RUNNER"
+  "verificationStatus": "IMPLEMENTED_SAVE_AND_PRE_CULL_GATED_UNVERIFIED_NO_UNITY_RUNNER"
 }

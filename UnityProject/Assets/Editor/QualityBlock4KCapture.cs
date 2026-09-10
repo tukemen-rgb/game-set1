@@ -32,6 +32,7 @@ public static class QualityBlock4KCapture
                 new CropSpec("facade_center", 1280, 500, 1280, 720),
                 new CropSpec("ground_contact", 1280, 80, 1280, 720),
                 new CropSpec("facade_right", 2100, 500, 1280, 720),
+                new CropSpec("rooftop_period_hardware", 1280, 1440, 1280, 720),
             }),
         new ViewSpec(
             "oblique",
@@ -43,6 +44,7 @@ public static class QualityBlock4KCapture
                 new CropSpec("construction_depth", 1180, 500, 1280, 720),
                 new CropSpec("balcony_services", 1900, 560, 1280, 720),
                 new CropSpec("vegetation_grounding", 1900, 80, 1280, 720),
+                new CropSpec("rooftop_reception_oblique", 1280, 1440, 1280, 720),
             }),
         new ViewSpec(
             "grazing",
@@ -158,8 +160,11 @@ public static class QualityBlock4KCapture
             if (view.crops == null || view.crops.Length < 1)
                 throw new InvalidOperationException($"View {view.id} has no 100% crops.");
 
+            var cropIds = new HashSet<string>(StringComparer.Ordinal);
             foreach (CropSpec crop in view.crops)
             {
+                if (string.IsNullOrWhiteSpace(crop.id) || !cropIds.Add(crop.id))
+                    throw new InvalidOperationException($"View {view.id} contains a blank/duplicate crop id: '{crop.id}'.");
                 if (crop.x < 0 || crop.y < 0 || crop.width <= 0 || crop.height <= 0 ||
                     crop.x + crop.width > Width || crop.y + crop.height > Height)
                     throw new InvalidOperationException(
@@ -172,7 +177,35 @@ public static class QualityBlock4KCapture
             if (!seen.Contains(id))
                 throw new InvalidOperationException($"Required visual-gate capture view missing: {id}");
 
-        Debug.Log("4K capture contract valid: 3840x2160, hero/oblique/grazing, pixel-exact 100% crops.");
+        RequireLockedCrop("hero", "rooftop_period_hardware", 1280, 1440, 1280, 720);
+        RequireLockedCrop("oblique", "rooftop_reception_oblique", 1280, 1440, 1280, 720);
+
+        Debug.Log("4K capture contract valid: 3840x2160, hero/oblique/grazing, pixel-exact 100% crops including sealed rooftop period-authenticity evidence.");
+    }
+
+    private static void RequireLockedCrop(string viewId, string cropId, int x, int y, int width, int height)
+    {
+        foreach (ViewSpec view in Views)
+        {
+            if (!string.Equals(view.id, viewId, StringComparison.Ordinal))
+                continue;
+
+            foreach (CropSpec crop in view.crops)
+            {
+                if (!string.Equals(crop.id, cropId, StringComparison.Ordinal))
+                    continue;
+
+                if (crop.x != x || crop.y != y || crop.width != width || crop.height != height)
+                    throw new InvalidOperationException(
+                        $"Locked evidence crop {viewId}/{cropId} drifted. Expected ({x},{y},{width},{height}), " +
+                        $"got ({crop.x},{crop.y},{crop.width},{crop.height}).");
+                return;
+            }
+
+            throw new InvalidOperationException($"Locked evidence crop missing: {viewId}/{cropId}.");
+        }
+
+        throw new InvalidOperationException($"Locked evidence crop view missing: {viewId}.");
     }
 
     private static void PrepareAndValidateScene()

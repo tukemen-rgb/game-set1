@@ -31,6 +31,7 @@ public static class QualityBlockNative4KReviewPacket
         QualityBlockFacadeAperturePhysicalUvQA.ValidateContractConfigOnly();
         QualityBlockStairTowerApertureInstallationQA.ValidateContractConfigOnly();
         QualityBlockBalconyConstructionInterfaceQA.ValidateContractConfigOnly();
+        QualityBlockBalconyGuardrailInstallationQA.ValidateContractConfigOnly();
         QualityBlockAcOutdoorUnitInstallationQA.ValidateContractConfigOnly();
         QualityBlockRainwaterDownpipeInstallationQA.ValidateContractConfigOnly();
         QualityBlockFutonBalconyDrapeQA.ValidateContractConfigOnly();
@@ -63,10 +64,16 @@ public static class QualityBlockNative4KReviewPacket
         QualityBlockStairTowerApertureInstallationQA.ValidateOpenScene();
         QualityBlockStairTowerShellJointQA.ValidateOpenScene();
 
-        // Remaining building construction interfaces. Futon drapes deliberately run after balcony
-        // correction because the final rendered RailTop and slab bounds are their installation datums.
+        // Establish the slab/base-plate/anchor relationship while the original seven Rail_* renderer
+        // datums still exist. Then replace those benchmark-visible stock Cube rails with a period-plausible
+        // 1.10 m vertical-lattice assembly. Its final-state QA takes over the same fascia/base/anchor checks.
         QualityBlockBalconyConstructionInterfaceQA.ApplyAndPersist();
         QualityBlockBalconyConstructionInterfaceQA.ValidateOpenScene();
+        QualityBlockBalconyGuardrailInstallationQA.ApplyAndPersist();
+        QualityBlockBalconyGuardrailInstallationQA.ValidateOpenScene();
+
+        // Remaining building construction interfaces. Futon drapes deliberately run after guardrail
+        // reconstruction so the final 1.10 m top rail is their physical installation datum.
         QualityBlockAcOutdoorUnitInstallationQA.ApplyAndPersist();
         QualityBlockAcOutdoorUnitInstallationQA.ValidateOpenScene();
         QualityBlockRainwaterDownpipeInstallationQA.ApplyAndPersist();
@@ -90,21 +97,22 @@ public static class QualityBlockNative4KReviewPacket
         QualityBlockReflectionProbeAwaiter.Begin(FinishAfterReflectionSynchronization);
 
         Debug.Log(
-            "Native-4K review packet entered reflection synchronization after final material binding, apartment/stair true-aperture reconstruction, " +
-            "balcony/AC/rainwater interfaces and two physical balcony futon rail-wrap drapes. Visual Fidelity remains UNSCORED.");
+            "Native-4K review packet entered reflection synchronization after final material binding, true facade/stair apertures, " +
+            "corrected balcony slab/base interfaces, 30 reconstructed four-LOD vertical-lattice guardrails, AC/rainwater interfaces and two rail-bound textile drapes. Visual Fidelity remains UNSCORED.");
     }
 
     private static void FinishAfterReflectionSynchronization()
     {
-        // Immediately before Camera.Render, re-prove synchronized probes and construction state that
-        // can alter silhouette, contact, reflection or light transport.
+        // Immediately before Camera.Render, re-prove synchronized probes and final construction state.
+        // Do not call the legacy-post-dependent balcony-interface validator here: generated guardrail QA
+        // rechecks its fascia/base/anchor invariants after intentionally disabling the old Rail_* renderers.
         QualityBlockReflectionProbeCaptureSyncQA.ValidateRuntimeReceipt();
         QualityBlockReflectionProbeAwaiter.ValidateLatestWaitProof();
         QualityBlockFacadeApertureConstructionQA.ValidateOpenScene();
         QualityBlockFacadeAperturePhysicalUvQA.ValidateOpenScene();
         QualityBlockStairTowerApertureInstallationQA.ValidateOpenScene();
         QualityBlockStairTowerShellJointQA.ValidateOpenScene();
-        QualityBlockBalconyConstructionInterfaceQA.ValidateOpenScene();
+        QualityBlockBalconyGuardrailInstallationQA.ValidateOpenScene();
         QualityBlockAcOutdoorUnitInstallationQA.ValidateOpenScene();
         QualityBlockRainwaterDownpipeInstallationQA.ValidateOpenScene();
         QualityBlockFutonBalconyDrapeQA.ValidateOpenScene();
@@ -131,7 +139,7 @@ public static class QualityBlockNative4KReviewPacket
         QualityBlockFacadeAperturePhysicalUvQA.ValidateOpenScene();
         QualityBlockStairTowerApertureInstallationQA.ValidateOpenScene();
         QualityBlockStairTowerShellJointQA.ValidateOpenScene();
-        QualityBlockBalconyConstructionInterfaceQA.ValidateOpenScene();
+        QualityBlockBalconyGuardrailInstallationQA.ValidateOpenScene();
         QualityBlockAcOutdoorUnitInstallationQA.ValidateOpenScene();
         QualityBlockRainwaterDownpipeInstallationQA.ValidateOpenScene();
         QualityBlockFutonBalconyDrapeQA.ValidateOpenScene();
@@ -159,7 +167,7 @@ public static class QualityBlockNative4KReviewPacket
 
         Debug.Log(
             "Complete native-4K review packet prepared: sealed hero/oblique/grazing 3840x2160 stills and 100% crops plus bound temporal evidence. " +
-            "Legacy flat balcony Futon_* renderers are excluded from evidence and replaced by two closed-volume, non-identical, four-LOD textile drapes whose rail contact and slab clearance are revalidated before still and temporal capture. " +
+            "Legacy stock balcony RailTop_*/Rail_* renderers are excluded from evidence and replaced by 30 dense four-LOD guardrails; the two closed-volume futon drapes resolve that final rail datum before still and temporal capture. " +
             "Visual Fidelity remains UNSCORED until the actual pixels are manually reviewed against the locked 100-point gate.");
     }
 }

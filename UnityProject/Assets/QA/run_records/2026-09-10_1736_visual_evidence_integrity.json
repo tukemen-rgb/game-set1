@@ -1,0 +1,78 @@
+{
+  "schemaVersion": "1.0",
+  "runTopic": "reviewed visual evidence integrity and fail-closed scoring semantics",
+  "branch": "gpt/unity-migration",
+  "startHead": "55b412be368483d743ff8628be5439f2aef4507c",
+  "substantiveHead": "8fb84d872abaf2af89c4101c7b62e797c88da433",
+  "substantiveCommits": [
+    {
+      "sha": "7889503c2bf0375b8793cab68255eddf660e5c62",
+      "message": "qa: add reviewed visual evidence integrity contract"
+    },
+    {
+      "sha": "775b2e62d3f8ae54efb9e917a4a985f4289ce3ae",
+      "message": "qa: reject ambiguous reviewed visual evidence"
+    },
+    {
+      "sha": "8fb84d872abaf2af89c4101c7b62e797c88da433",
+      "message": "qa: bind reviewed evidence integrity to visual gate"
+    }
+  ],
+  "problemFound": {
+    "summary": "The canonical gate configuration was already locked, but the manually reviewed evidence arrays were not separately required to be exact sets. The numeric evaluator consumes categories, critical-defect reviews and captures by ID lookup, so duplicate or unknown entries were an avoidable ambiguity. Category correctiveAction text was also present in the schema but not fail-closed for scoring.",
+    "risk": [
+      "ambiguous duplicate capture/category/critical-defect entries in reviewed evidence",
+      "unknown extra entries surviving manual authoring",
+      "deductions recorded without a concrete corrective action",
+      "incomplete observed-reference bookkeeping being mistaken for a complete manual review"
+    ]
+  },
+  "implementation": {
+    "contract": "Assets/QA/reviewed_visual_evidence_integrity_contract.json",
+    "validator": "Assets/Editor/QualityBlockReviewedVisualEvidenceIntegrityQA.cs",
+    "integration": "QualityBlockVisualGateIntegrityQA now validates the reviewed-evidence integrity contract in every source-side gate integrity pass and validates the completed reviewed evidence before enabling the normal evidence-bound scoring menu.",
+    "rules": [
+      "exactly hero, oblique and grazing capture entries; duplicate/unknown view IDs fail",
+      "exactly nine canonical category entries; duplicate/unknown category IDs fail",
+      "exactly twelve canonical critical-defect reviews; duplicate/unknown defect IDs fail",
+      "each category requires observed evidence text and non-empty correctiveAction text",
+      "any category below full weight requires explicit deduction rationale",
+      "each category and critical-defect review requires at least one observed view/crop/temporal reference",
+      "reviewed evidence requires renderVerified=true and native 3840x2160 capture declarations",
+      "the new validator awards zero Visual Fidelity points"
+    ]
+  },
+  "verification": {
+    "sourceInspection": "PASS_STATIC",
+    "branchCompare": {
+      "status": "ahead",
+      "aheadBy": 3,
+      "behindBy": 0,
+      "mergeBaseUnchanged": true
+    },
+    "githubCommitStatusContexts": 0,
+    "githubWorkflowRunsForBranch": 0,
+    "captures4KDirectoryPresent": false,
+    "unityCompile": "PENDING_UNITY_RUNTIME",
+    "unityRuntime": "PENDING_UNITY_RUNTIME",
+    "native3840x2160Stills": "PENDING_UNITY_RUNTIME",
+    "pixelExact100PercentCrops": "PENDING_UNITY_RUNTIME",
+    "temporalEvidence": "PENDING_UNITY_RUNTIME"
+  },
+  "qualityState": {
+    "implementationReadinessScore": 93,
+    "implementationReadinessPossible": 100,
+    "visualFidelityStatus": "UNSCORED",
+    "visualFidelityPointsAwardedThisRun": 0,
+    "visualFidelityPassClaimed": false,
+    "criticalDefectClearedBySourceOnly": false,
+    "expectedVisualScoreImpact": "0 direct points. This change prevents false or ambiguous scoring and forces each deducted category to carry an actionable correction before PASS can be considered from real rendered evidence."
+  },
+  "constraints": {
+    "godotModified": false,
+    "baseMerged": false,
+    "excludedThemesAdded": false,
+    "newCommitsAllowedByDate": true
+  },
+  "nextBlocker": "A real Unity 6000.3.0f1 editor/runner session is still required. When it appears, stop speculative expansion, run the complete native-4K packet, inspect the sealed hero/oblique/grazing frames and 100% crops, populate exactly one review entry per canonical category/critical defect, then run the evidence-bound gate."
+}

@@ -35,6 +35,8 @@ public static class QualityBlockNative4KReviewPacket
         QualityBlockBenchmarkPrimitiveExposureQA.ValidateContractConfigOnly();
         QualityBlockSceneMaterialPhysicalityUpgrade.ValidateContract();
         QualityBlockSceneMetadataCoverageQA.ValidateContractConfigOnly();
+        QualityBlockFacadeApertureConstructionQA.ValidateContractConfigOnly();
+        QualityBlockFacadeAperturePhysicalUvQA.ValidateContractConfigOnly();
         QualityBlockBalconyConstructionInterfaceQA.ValidateContractConfigOnly();
         QualityBlockAcOutdoorUnitInstallationQA.ValidateContractConfigOnly();
         QualityBlockTextureSamplingUpgrade.ValidateContractConfigOnly();
@@ -45,17 +47,23 @@ public static class QualityBlockNative4KReviewPacket
         QualityBlockReflectionProbeCaptureSyncQA.ValidateContractConfigOnly();
         QualityBlock4KCapture.ValidateCaptureContract();
 
-        // Build/save/reopen first. Generated fallback construction interfaces are corrected against the
-        // actual persisted balcony slab-top plane rather than trusted from hard-coded prop coordinates:
-        // rail fascia/plates/bolts/lower rail first, then each condenser's slab -> mount plate -> support
-        // foot -> chassis stack plus its connected refrigerant/drain geometry. Those corrections are saved
-        // before reflection probes are rendered so cubemaps cannot describe stale interpenetrating hardware.
-        // Low physical texel density is corrected at texture/UV/tiling level. Broad illumination patterns
-        // found in generated base albedo are corrected in the source/PBR split; they are never hidden by
-        // sharpening, grading, painted highlights or by weakening the native 4K gate. Any visibly significant
-        // active Unity stock solid in the exact hero/oblique/grazing framing fails here as a primitive-placeholder
-        // risk and must be reconstructed rather than renamed or threshold-exempted.
+        // Build/save/reopen first. The original generated MainBlock is one opaque cube, so apartment
+        // glazing placed at/behind its front plane is not a physically valid opening. Reconstruct the
+        // render shell around thirty real rough openings, keep the original collider only for gameplay,
+        // seat perimeter seals around the existing aluminum sash/glass stack, and bake building-local
+        // world-aligned physical UVs before any reflection/capture work. This prevents both opaque-wall
+        // occlusion behind glass and the equally unacceptable workaround of restarting the same concrete
+        // texture patch on every repeated wall module. Generated balcony and outdoor-AC construction
+        // interfaces are then corrected against the actual persisted slab top. Low physical texel density
+        // is corrected at texture/UV/tiling level. Broad illumination patterns found in generated base
+        // albedo are corrected in the source/PBR split; they are never hidden by sharpening, grading,
+        // painted highlights or by weakening the native 4K gate. Any visibly significant active Unity
+        // stock solid in the exact hero/oblique/grazing framing fails here and must be reconstructed.
         QualityBlock4KCapture.PrepareSceneForSynchronizedCapture();
+        QualityBlockFacadeApertureConstructionQA.ApplyAndPersist();
+        QualityBlockFacadeAperturePhysicalUvQA.ApplyAndPersist();
+        QualityBlockFacadeApertureConstructionQA.ValidateOpenScene();
+        QualityBlockFacadeAperturePhysicalUvQA.ValidateOpenScene();
         QualityBlockBalconyConstructionInterfaceQA.ApplyAndPersist();
         QualityBlockBalconyConstructionInterfaceQA.ValidateOpenScene();
         QualityBlockAcOutdoorUnitInstallationQA.ApplyAndPersist();
@@ -70,7 +78,7 @@ public static class QualityBlockNative4KReviewPacket
         QualityBlockReflectionProbeAwaiter.Begin(FinishAfterReflectionSynchronization);
 
         Debug.Log(
-            "Native-4K review packet entered reflection synchronization after the final prepared scene passed balcony rail/slab and outdoor-AC support/service-line construction correction+QA, physical texel-density, generated base-albedo lighting-neutrality, and exact-framing stock-solid primitive exposure source preflight. " +
+            "Native-4K review packet entered reflection synchronization after the final prepared scene passed real apartment facade-aperture reconstruction, world-aligned physical facade UV anti-repeat QA, balcony rail/slab and outdoor-AC support/service-line construction correction+QA, physical texel-density, generated base-albedo lighting-neutrality, and exact-framing stock-solid primitive exposure source preflight. " +
             "Still and temporal capture are deferred until later Editor updates prove both realtime probe RenderIDs complete. Visual Fidelity remains UNSCORED.");
     }
 
@@ -80,11 +88,13 @@ public static class QualityBlockNative4KReviewPacket
         // async-wait proof produced after at least one later EditorApplication.update callback.
         // CapturePreparedSceneAfterProbeSync must not rebuild the scene, otherwise the just-proven
         // cubemaps would become stale relative to the benchmark geometry/material state. Construction
-        // interfaces are revalidated here, after probe completion and immediately before Camera.Render.
-        // The capture method also owns the HDR-tonemap telemetry reset and fail-closed runtime proof so
-        // alternate callers cannot bypass the display-transform evidence requirement.
+        // interfaces and the real facade opening/UV state are revalidated here, after probe completion
+        // and immediately before Camera.Render. The capture method also owns the HDR-tonemap telemetry
+        // reset and fail-closed runtime proof so alternate callers cannot bypass display-transform evidence.
         QualityBlockReflectionProbeCaptureSyncQA.ValidateRuntimeReceipt();
         QualityBlockReflectionProbeAwaiter.ValidateLatestWaitProof();
+        QualityBlockFacadeApertureConstructionQA.ValidateOpenScene();
+        QualityBlockFacadeAperturePhysicalUvQA.ValidateOpenScene();
         QualityBlockBalconyConstructionInterfaceQA.ValidateOpenScene();
         QualityBlockAcOutdoorUnitInstallationQA.ValidateOpenScene();
         QualityBlockBenchmarkPrimitiveExposureQA.ValidateOpenScene();
@@ -100,6 +110,8 @@ public static class QualityBlockNative4KReviewPacket
         QualityBlockReflectionProbeCaptureSyncQA.ValidateRuntimeReceipt();
         QualityBlockReflectionProbeAwaiter.ValidateLatestWaitProof();
         QualityBlockStructuralSurfaceRefinement.ValidateOpenScene();
+        QualityBlockFacadeApertureConstructionQA.ValidateOpenScene();
+        QualityBlockFacadeAperturePhysicalUvQA.ValidateOpenScene();
         QualityBlockBalconyConstructionInterfaceQA.ValidateOpenScene();
         QualityBlockAcOutdoorUnitInstallationQA.ValidateOpenScene();
         QualityBlockBenchmarkPrimitiveExposureQA.ValidateOpenScene();
@@ -125,6 +137,8 @@ public static class QualityBlockNative4KReviewPacket
         Debug.Log(
             "Complete native-4K review packet prepared: sealed hero/oblique/grazing stills + 100% crops, " +
             "immutable 92/100 category/minimum/critical-defect gate integrity checked before capture, " +
+            "the opaque generated MainBlock render surface replaced by a persisted shell with thirty true apartment rough openings while the gameplay collider remains, sash/glass planes verified recessed inside the 0.22 m shell and four perimeter seal pieces required per opening, " +
+            "aperture-shell concrete re-UVed from absolute Danchi-local metres at a 2.4 m macro scale with distinct repeated-cell phase and 0.22 m detail-normal scale so module repetition is not hidden by arbitrary texture restarts, " +
             "generated balcony slab fascia/material and rail base-plate/bolt/lower-rail/bracket interfaces corrected from the persisted slab-top plane, " +
             "generated outdoor AC units reconstructed as slab -> plate -> foot -> supported chassis stacks with moved casing detail, continuous paired refrigerant lines and a drain outlet above the slab, all revalidated before/after still capture, " +
             "final persisted generated textured geometry proven above the conservative physical texel-density floor, generated baseline albedos checked for broad baked-lighting patterns, and exact benchmark projections checked for visibly significant active Unity stock solid primitive risk before reflection/capture work, " +

@@ -25,6 +25,11 @@ public static class QualityBlockVisualFidelityGate
     [MenuItem("NewTown/QA/Validate Visual Fidelity Gate Config")]
     public static void ValidateGateConfig()
     {
+        // Enforce the immutable owner-approved weights/minima/critical-defect set in the core method,
+        // not only through MenuItem validators. This keeps -executeMethod / reflection / alternate runner
+        // entry points from validating a merely 100-point-balanced but weakened gate.
+        QualityBlockVisualGateIntegrityQA.ValidateContract();
+
         GateConfig config = LoadJson<GateConfig>(ConfigPath);
         ObservabilityConfig observability = LoadJson<ObservabilityConfig>(ObservabilityPath);
         ValidateConfig(config);
@@ -39,6 +44,12 @@ public static class QualityBlockVisualFidelityGate
     [MenuItem("NewTown/QA/Evaluate 4K Visual Fidelity Gate")]
     public static void EvaluateVisualGate()
     {
+        // These checks deliberately live inside the evaluator as well as in editor-menu validation.
+        // A CLI/runner invocation therefore cannot bypass exact category weights/minima, the canonical
+        // 12 critical defects, duplicate/unknown reviewed entries, corrective actions, or observed refs.
+        QualityBlockVisualGateIntegrityQA.ValidateContract();
+        QualityBlockReviewedVisualEvidenceIntegrityQA.ValidateReviewedEvidence();
+
         GateConfig config = LoadJson<GateConfig>(ConfigPath);
         ObservabilityConfig observability = LoadJson<ObservabilityConfig>(ObservabilityPath);
         ValidateConfig(config);

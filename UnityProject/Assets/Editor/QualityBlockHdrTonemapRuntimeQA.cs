@@ -23,7 +23,7 @@ public static class QualityBlockHdrTonemapRuntimeQA
     [Serializable]
     private sealed class RuntimeReceipt
     {
-        public string schemaVersion = "1.0";
+        public string schemaVersion = "1.1";
         public string generatedUtc;
         public string unityVersion;
         public string graphicsDeviceName;
@@ -41,6 +41,8 @@ public static class QualityBlockHdrTonemapRuntimeQA
         public int native4KInvocationCount;
         public int native4KTonemapAppliedCount;
         public int fallbackInvocationCount;
+        public int hdrSourceInvocationCount;
+        public int ldrDestinationInvocationCount;
         public string lastSourceFormat;
         public string lastDestinationFormat;
         public int lastSourceWidth;
@@ -50,11 +52,11 @@ public static class QualityBlockHdrTonemapRuntimeQA
         public bool lastDestinationWasNull;
         public bool lastSourceSrgb;
         public bool lastDestinationSrgb;
-        public bool hdrSourceObserved;
-        public bool ldrDestinationObserved;
+        public bool everyStillHadHdrSource;
+        public bool everyStillHadLdrDestination;
         public int automaticVisualPoints = 0;
         public bool visualVerificationStillRequired = true;
-        public string status = "RUNTIME_HDR_TO_LDR_PROVEN_FOR_NATIVE_STILLS_ONLY";
+        public string status = "RUNTIME_HDR_TO_LDR_PROVEN_FOR_EVERY_NATIVE_STILL";
     }
 
     [MenuItem("NewTown/QA/Validate HDR Tonemap Capture Contract")]
@@ -67,11 +69,11 @@ public static class QualityBlockHdrTonemapRuntimeQA
         foreach (string token in new[]
         {
             "ImageEffectTransformsToLDR",
-            "hdrSourceRequired",
-            "ldrDestinationRequired",
+            "hdrSourceRequiredForEveryStill",
+            "ldrDestinationRequiredForEveryStill",
             "3840",
             "2160",
-            "minimumTonemappedInvocations",
+            "authoritativeStillCount",
             "actualRenderRequired",
             "runtimeReceiptRequired",
             "automaticVisualPoints"
@@ -87,7 +89,7 @@ public static class QualityBlockHdrTonemapRuntimeQA
         if (onRenderImage == null || !Attribute.IsDefined(onRenderImage, typeof(ImageEffectTransformsToLDR), true))
             throw new InvalidOperationException("QualityBlockFilmicTonemap.OnRenderImage must carry ImageEffectTransformsToLDR so the benchmark tonemap explicitly terminates the HDR image-effect chain in LDR.");
 
-        Debug.Log("HDR-tonemap contract QA passed. Actual HDR source/LDR destination and three native tonemap executions remain runtime-verification pending.");
+        Debug.Log("HDR-tonemap contract QA passed. Every still must individually contribute one HDR-source and one LDR-destination telemetry count; actual execution remains runtime-verification pending.");
     }
 
     /// <summary>
@@ -116,6 +118,10 @@ public static class QualityBlockHdrTonemapRuntimeQA
             throw new InvalidOperationException("The filmic tonemap material did not execute for every authoritative native-4K still.");
         if (tonemap.FallbackInvocationCount != 0)
             throw new InvalidOperationException("At least one authoritative still bypassed the filmic tonemap through its fallback blit; evidence must not be sealed or scored.");
+        if (tonemap.HdrSourceInvocationCount != RequiredStillCount)
+            throw new InvalidOperationException($"Only {tonemap.HdrSourceInvocationCount}/{RequiredStillCount} authoritative stills observed a floating-point HDR image-effect source.");
+        if (tonemap.LdrDestinationInvocationCount != RequiredStillCount)
+            throw new InvalidOperationException($"Only {tonemap.LdrDestinationInvocationCount}/{RequiredStillCount} authoritative stills observed a non-HDR image-effect destination.");
 
         if (tonemap.LastSourceWidth != NativeWidth || tonemap.LastSourceHeight != NativeHeight)
             throw new InvalidOperationException($"Last tonemap source was not native 3840x2160: {tonemap.LastSourceWidth}x{tonemap.LastSourceHeight}.");
@@ -151,6 +157,8 @@ public static class QualityBlockHdrTonemapRuntimeQA
             native4KInvocationCount = tonemap.Native4KInvocationCount,
             native4KTonemapAppliedCount = tonemap.Native4KTonemapAppliedCount,
             fallbackInvocationCount = tonemap.FallbackInvocationCount,
+            hdrSourceInvocationCount = tonemap.HdrSourceInvocationCount,
+            ldrDestinationInvocationCount = tonemap.LdrDestinationInvocationCount,
             lastSourceFormat = tonemap.LastSourceFormat.ToString(),
             lastDestinationFormat = tonemap.LastDestinationFormat.ToString(),
             lastSourceWidth = tonemap.LastSourceWidth,
@@ -160,8 +168,8 @@ public static class QualityBlockHdrTonemapRuntimeQA
             lastDestinationWasNull = tonemap.LastDestinationWasNull,
             lastSourceSrgb = tonemap.LastSourceSrgb,
             lastDestinationSrgb = tonemap.LastDestinationSrgb,
-            hdrSourceObserved = hdrSource,
-            ldrDestinationObserved = ldrDestination,
+            everyStillHadHdrSource = tonemap.HdrSourceInvocationCount == RequiredStillCount,
+            everyStillHadLdrDestination = tonemap.LdrDestinationInvocationCount == RequiredStillCount,
         };
 
         File.WriteAllText(ReceiptPath, JsonUtility.ToJson(receipt, true));
@@ -169,7 +177,7 @@ public static class QualityBlockHdrTonemapRuntimeQA
 
         Debug.Log(
             "Native-4K HDR->LDR runtime QA passed: all three benchmark stills invoked the filmic tonemap, " +
-            $"source={tonemap.LastSourceFormat} HDR, destination={tonemap.LastDestinationFormat} LDR, no fallback blit. " +
+            $"all {RequiredStillCount} observed HDR sources and LDR destinations, last source={tonemap.LastSourceFormat}, destination={tonemap.LastDestinationFormat}, no fallback blit. " +
             "This proves display-transform execution only; Visual Fidelity remains UNSCORED until actual pixels are reviewed.");
     }
 

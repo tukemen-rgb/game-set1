@@ -9,12 +9,16 @@ using UnityEngine;
 /// generated furniture meshes from legacy 0..1 face UVs to metre-space planar UVs. Each notice has its
 /// own material, so inverse physical sheet dimensions plus a 0.5/0.5 center offset map metre-space
 /// coordinates back to one complete printed sheet without texture repetition or stretched pseudo-text.
+/// This post-microdetail normalization also keeps the clear acrylic inside the scene-wide furniture
+/// roughness floor: the case-specific optical contract allows 0.08-0.15 roughness, while the broader
+/// furniture validator requires >=0.12. A final 0.14 roughness satisfies both without weakening either gate.
 /// </summary>
 public static class QualityBlockNoticeBoardPrintedUvQA
 {
     private const string ScenePath = "Assets/Scenes/QualityBlock1990s.unity";
     private const string BoardName = "HD_NoticeBoard";
     private const string CaseRootName = "DisplayCaseConstruction";
+    private const float CompatibleAcrylicSmoothness = 0.86f; // roughness 0.14
 
     [MenuItem("NewTown/Quality/Normalize Notice Board Printed UVs")]
     public static void ApplyAndValidate()
@@ -48,9 +52,10 @@ public static class QualityBlockNoticeBoardPrintedUvQA
             }
         }
 
+        NormalizeAcrylicCompatibility(board);
         AssetDatabase.SaveAssets();
         ValidateOpenScene();
-        Debug.Log($"Notice-board printed metre-UV normalization applied to {normalized} LOD notice renderers. Render quality remains unscored.");
+        Debug.Log($"Notice-board printed metre-UV normalization applied to {normalized} LOD notice renderers; acrylic roughness normalized to 0.14 so case-specific and scene-wide physicality gates agree. Render quality remains unscored.");
     }
 
     [MenuItem("NewTown/QA/Validate Notice Board Printed UVs")]
@@ -70,6 +75,17 @@ public static class QualityBlockNoticeBoardPrintedUvQA
                 .Where(x => x.name.StartsWith("Notice_", StringComparison.Ordinal)).ToArray();
             if (notices.Length != 5)
                 throw new InvalidOperationException($"LOD{lod} requires five printed notice sheets, got {notices.Length}.");
+
+            Transform cover = caseRoot.Find("ClearAcrylicCover");
+            Renderer coverRenderer = cover != null ? cover.GetComponent<Renderer>() : null;
+            Material coverMaterial = coverRenderer != null ? coverRenderer.sharedMaterial : null;
+            if (coverMaterial == null || !coverMaterial.HasProperty("_Glossiness"))
+                throw new InvalidOperationException($"LOD{lod} notice-board acrylic material/smoothness property missing.");
+            float smoothness = coverMaterial.GetFloat("_Glossiness");
+            float roughness = 1f - smoothness;
+            if (Mathf.Abs(smoothness - CompatibleAcrylicSmoothness) > 0.005f || roughness < 0.12f || roughness > 0.15f)
+                throw new InvalidOperationException(
+                    $"Notice-board acrylic roughness is not compatible with both optical and scene-wide furniture gates: smoothness={smoothness:F3}, roughness={roughness:F3}.");
 
             foreach (Transform notice in notices)
             {
@@ -105,6 +121,17 @@ public static class QualityBlockNoticeBoardPrintedUvQA
 
         if (checkedCount != 20)
             throw new InvalidOperationException($"Expected 20 notice-sheet renderer instances across four LODs, got {checkedCount}.");
+    }
+
+    private static void NormalizeAcrylicCompatibility(GameObject board)
+    {
+        Material material = board.GetComponentsInChildren<Renderer>(true)
+            .Select(x => x.sharedMaterial)
+            .FirstOrDefault(x => x != null && x.name.Contains("PBR_NoticeClearAcrylic", StringComparison.Ordinal));
+        if (material == null || !material.HasProperty("_Glossiness"))
+            throw new InvalidOperationException("Notice-board acrylic material missing during post-microdetail compatibility normalization.");
+        material.SetFloat("_Glossiness", CompatibleAcrylicSmoothness);
+        EditorUtility.SetDirty(material);
     }
 
     private static bool Approximately(float a, float b, float relativeTolerance)

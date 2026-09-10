@@ -1,6 +1,6 @@
 {
   "schemaVersion": "1.1",
-  "generatedUtc": "2026-09-10T20:36:00Z",
+  "generatedUtc": "2026-09-10T21:02:00Z",
   "runtimeRenderVerified": false,
   "visualFidelityStatus": "UNSCORED_UNTIL_REAL_4K_RENDER",
   "intent": "Increase vegetation/natural complexity through maintained root-zone planting interfaces and cause-based low understory while preserving the benchmark's ordinary midsummer Japanese residential-estate character.",
@@ -16,13 +16,13 @@
     {
       "id": "maintained_paved_tree_pit",
       "establishment": "Four tree anchors touch the plaza paving footprint. One ring is fully pavement-supported; three sit on a plaza/lawn boundary and therefore require the curb modules to follow their actual local support grade rather than hover at one world height.",
-      "nominalDimensions": "final exposed-soil opening diameter 2.30 m; radius 1.15 m sized from the generated mature root-flare envelope; 12 edging modules; edging section 150 x 80 mm; approximately 12 mm tangential dry joints",
+      "nominalDimensions": "final exposed-soil opening diameter 2.32 m; radius 1.16 m sized from the generated mature root-flare envelope including authored mesh irregularity; 12 edging modules; edging section 150 x 80 mm; approximately 12 mm tangential dry joints",
       "materialsFinish": "dry mineral topsoil with compacted fine aggregate; matte non-metallic precast concrete edging with small physical chamfers; root bark remains a rough dielectric",
       "mounting": "the root-zone visual volume extends below the lower lawn datum so its underside cannot become visible; paving-supported curb modules embed 8 mm and lawn-supported modules embed 6 mm. The intended soil construction datum is flush/slightly recessed, while the retained coarse collision slab requires only a 1.5 mm positive visual separation that must be invisible at native 4K.",
-      "interfaces": "generated root flare -> exposed soil with at least 90 mm contracted clearance -> inner curb face -> 12 mm module joint -> locally supported plaza paving or lawn; no unexplained painted contact ring or floating curb is allowed",
+      "interfaces": "generated root flare -> exposed soil with at least 90 mm contracted conservative clearance -> inner curb face -> 12 mm module joint -> locally supported plaza paving or lawn; runtime QA measures the exact transformed root-flare mesh vertices; no unexplained painted contact ring or floating curb is allowed",
       "orientationExposure": "upward-facing, rain/sun exposed, with three boundary rings following the approximately 50 mm plaza-to-lawn grade change and one interior ring fully supported by paving",
       "aging": "ordinary compaction, circulation-side soil wear, mild soil darkening near the trunk and slight concrete aggregate exposure are permitted only where caused by use/exposure; arbitrary damage cues are not used",
-      "geometryVsMaterial": "opening radius, root clearance, soil volume, curb height/embed, module joints and support-grade steps are geometry; soil grain, bark fissure, concrete pores and ordinary UV/roughness variation remain material detail",
+      "geometryVsMaterial": "opening radius, exact root clearance, soil volume, curb height/embed, module joints and support-grade steps are geometry; soil grain, bark fissure, concrete pores and ordinary UV/roughness variation remain material detail",
       "lodPolicy": "root flares remain through tree LOD0/1/2/3; tree-pit substrate and edging remain static construction geometry; added biological understory uses explicit LOD0/1/2/3",
       "lookdevBrief": "At oblique 100 percent crop, roots must remain inside the exposed root zone without entering curb/paving, every curb module must bear on its local pavement/lawn grade, and the 1.5 mm fallback separation must not read as a raised brown slab. Grazing light should reveal real curb chamfers/joints rather than baked highlights."
     },

@@ -41,6 +41,7 @@ public static class QualityBlockNative4KReviewPacket
         QualityBlockAcOutdoorUnitInstallationQA.ValidateContractConfigOnly();
         QualityBlockRainwaterDownpipeInstallationQA.ValidateContractConfigOnly();
         QualityBlockParkFurnitureSaveGate.ValidateContract();
+        QualityBlockSlideAccessInstallationQA.ValidateContractConfigOnly();
         QualityBlockBenchSeatConstructionInterfaceQA.ValidateContractConfigOnly();
         QualityBlockTextureSamplingUpgrade.ValidateContractConfigOnly();
         QualityBlockPhysicalTexelDensityQA.ValidateContractConfigOnly();
@@ -60,13 +61,15 @@ public static class QualityBlockNative4KReviewPacket
         // interfaces are then corrected against the actual persisted slab top. The full-height rainwater
         // leader is also reconstructed as a manufactured PVC-U drainage assembly with explicit hollow socket
         // joints, wall bands/standoffs/anchors, roof-line offset and a hollow ground receiver instead of a
-        // floating cylinder with detached hardware. The benchmark-save gate also rebuilds park furniture and
-        // corrects the bench load path so timber slats seat on the steel bearer, the bearer seats on both
-        // precast supports, and LOD0 bolt heads sit over actual timber rather than floating in slat gaps.
-        // Low physical texel density is corrected at texture/UV/tiling level. Broad illumination patterns
-        // found in generated base albedo are corrected in the source/PBR split; they are never hidden by
-        // sharpening, grading, painted highlights or by weakening the native 4K gate. Any visibly significant
-        // active Unity stock solid in the exact hero/oblique/grazing framing fails here and must be reconstructed.
+        // floating cylinder with detached hardware. The benchmark-save gate also rebuilds park furniture,
+        // reconstructs the approximately two-metre slide's missing climbable access stair plus chute-head and
+        // runout support load paths before LOD renderer rebinding, and corrects the bench load path so timber
+        // slats seat on the steel bearer, the bearer seats on both precast supports, and LOD0 bolt heads sit
+        // over actual timber rather than floating in slat gaps. Low physical texel density is corrected at
+        // texture/UV/tiling level. Broad illumination patterns found in generated base albedo are corrected in
+        // the source/PBR split; they are never hidden by sharpening, grading, painted highlights or by weakening
+        // the native 4K gate. Any visibly significant active Unity stock solid in the exact hero/oblique/grazing
+        // framing fails here and must be reconstructed.
         QualityBlock4KCapture.PrepareSceneForSynchronizedCapture();
 
         // Apply the actual scene material bindings before any construction QA that consumes them. This is
@@ -88,6 +91,7 @@ public static class QualityBlockNative4KReviewPacket
         QualityBlockParkFurnitureUpgrade.ValidateOpenScene();
         QualityBlockParkFurniturePhysicalRefinement.ValidateOpenScene();
         QualityBlockParkFurnitureLodRebind.ValidateOpenScene();
+        QualityBlockSlideAccessInstallationQA.ValidateOpenScene();
         QualityBlockParkFurnitureMicrodetailUpgrade.Validate();
         QualityBlockBenchSeatConstructionInterfaceQA.ValidateOpenScene();
         QualityBlockPhysicalTexelDensityQA.ValidateOpenScene();
@@ -100,7 +104,7 @@ public static class QualityBlockNative4KReviewPacket
         QualityBlockReflectionProbeAwaiter.Begin(FinishAfterReflectionSynchronization);
 
         Debug.Log(
-            "Native-4K review packet entered reflection synchronization after the final prepared scene passed actual material binding/physicality, real apartment facade-aperture reconstruction, world-aligned physical facade UV anti-repeat QA, balcony rail/slab and outdoor-AC support/service-line correction, physically installed hollow-interface rainwater downpipe reconstruction, manufactured bench slat/bearer/support/bolt load-path QA, physical texel-density, generated base-albedo lighting-neutrality, and exact-framing stock-solid primitive exposure source preflight. " +
+            "Native-4K review packet entered reflection synchronization after the final prepared scene passed actual material binding/physicality, real apartment facade-aperture reconstruction, world-aligned physical facade UV anti-repeat QA, balcony rail/slab and outdoor-AC support/service-line correction, physically installed hollow-interface rainwater downpipe reconstruction, manufactured slide access/head/runout load-path QA, manufactured bench slat/bearer/support/bolt load-path QA, physical texel-density, generated base-albedo lighting-neutrality, and exact-framing stock-solid primitive exposure source preflight. " +
             "Still and temporal capture are deferred until later Editor updates prove both realtime probe RenderIDs complete. Visual Fidelity remains UNSCORED.");
     }
 
@@ -123,6 +127,7 @@ public static class QualityBlockNative4KReviewPacket
         QualityBlockParkFurnitureUpgrade.ValidateOpenScene();
         QualityBlockParkFurniturePhysicalRefinement.ValidateOpenScene();
         QualityBlockParkFurnitureLodRebind.ValidateOpenScene();
+        QualityBlockSlideAccessInstallationQA.ValidateOpenScene();
         QualityBlockBenchSeatConstructionInterfaceQA.ValidateOpenScene();
         QualityBlockBenchmarkPrimitiveExposureQA.ValidateOpenScene();
         QualityBlock4KCapture.CapturePreparedSceneAfterProbeSync();
@@ -145,6 +150,7 @@ public static class QualityBlockNative4KReviewPacket
         QualityBlockParkFurnitureUpgrade.ValidateOpenScene();
         QualityBlockParkFurniturePhysicalRefinement.ValidateOpenScene();
         QualityBlockParkFurnitureLodRebind.ValidateOpenScene();
+        QualityBlockSlideAccessInstallationQA.ValidateOpenScene();
         QualityBlockParkFurnitureMicrodetailUpgrade.Validate();
         QualityBlockBenchSeatConstructionInterfaceQA.ValidateOpenScene();
         QualityBlockBenchmarkPrimitiveExposureQA.ValidateOpenScene();
@@ -176,6 +182,7 @@ public static class QualityBlockNative4KReviewPacket
             "generated balcony slab fascia/material and rail base-plate/bolt/lower-rail/bracket interfaces corrected from the persisted slab-top plane, " +
             "generated outdoor AC units reconstructed as slab -> plate -> foot -> supported chassis stacks with moved casing detail, continuous paired refrigerant lines and a drain outlet above the slab, all revalidated before/after still capture, " +
             "the camera-right rainwater leader rebuilt as a 75 mm-class rough dielectric PVC-U macro body with hollow manufactured joint sleeves, eight hollow wall bands, physically continuous standoffs/anchor plates, roof-line offset/hollow collar and inserted hollow ground receiver, with small hardware participating in the existing four-level Danchi LOD policy while the macro pipe silhouette stays continuously rendered, " +
+            "the benchmark-close municipal slide given a ten-tread 180 mm-deep access stair with 190 mm nominal rises at about 50.9 degrees, paired tangent-seated stringers, grade foot plates, access handrails bridged into the platform guard, a frame-tied chute-head bearing and a ground-supported runout bearing; the stair/support silhouette persists through all four LODs and only sub-pixel fastener heads disappear after LOD0, " +
             "the benchmark-close timber bench source load path corrected so five slats physically seat on the steel bearer, the bearer seats on both precast supports, LOD2/3 proxy undersides remain seated, and all four LOD0 bolt heads overlap outer timber slats by the locked installation range instead of floating in the gaps, " +
             "final persisted generated textured geometry proven above the conservative physical texel-density floor, generated baseline albedos checked for broad baked-lighting patterns, and exact benchmark projections checked for visibly significant active Unity stock solid primitive risk before reflection/capture work, " +
             "reflection cubemaps proven complete on later Editor updates before capture with a SHA-256-bound wait proof, retained structural geometry and actual material physicality validated, " +

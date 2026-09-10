@@ -1,5 +1,5 @@
 {
-  "generatedUtc": "2026-09-10T18:37:00Z",
+  "generatedUtc": "2026-09-10T22:36:08Z",
   "readinessScore": 93,
   "possibleScore": 100,
   "visualFidelityStatus": "UNSCORED_UNTIL_REAL_4K_RENDER",
@@ -43,15 +43,15 @@
       "id": "cause_based_weathering",
       "weight": 8,
       "passed": true,
-      "evidence": "Weathering remains source/exposure driven. Ground-route use is now also encoded through compacted-center/feathered-shoulder geometry and FootTraffic/UV metadata instead of rectangular arbitrary dirt placement.",
-      "assetPaths": ["Assets/Editor/QualityBlockWeatheringUpgrade.cs", "Assets/Editor/QualityBlockFacadeWeatheringDetailUpgrade.cs", "Assets/Editor/QualityBlockGroundPathPlazaTerminationQA.cs", "Assets/Editor/QualityBlockGroundWornPathBTransitionQA.cs", "Assets/QA/ground_worn_path_b_transition_contract.json"]
+      "evidence": "Weathering remains source/exposure driven, including optically feathered dry-dielectric facade residue and pedestrian-use ground routes rather than arbitrary grime/highlight painting.",
+      "assetPaths": ["Assets/Editor/QualityBlockWeatheringUpgrade.cs", "Assets/Editor/QualityBlockFacadeWeatheringDetailUpgrade.cs", "Assets/Editor/QualityBlockFacadeWeatheringOpticalRefinementQA.cs", "Assets/Editor/QualityBlockGroundPathPlazaTerminationQA.cs", "Assets/Editor/QualityBlockGroundWornPathBTransitionQA.cs"]
     },
     {
       "id": "pbr_generation",
       "weight": 8,
       "passed": true,
-      "evidence": "Generated PBR families have physical metallic/roughness/normal constraints, metre-scaled UV/sampling rules and scene-wide physicality QA. WornPathB uses dry dielectric compacted-soil PBR with world-metre UV0 and 6.4 m/0.30 m macro/detail scales.",
-      "assetPaths": ["Assets/Editor/QualityBlockPbrUpgrade.cs", "Assets/Editor/QualityBlockGroundBaseSurfaceUpgrade.cs", "Assets/Editor/QualityBlockGroundWornPathBTransitionQA.cs", "Assets/Editor/QualityBlockSceneMaterialPhysicalityUpgrade.cs", "Assets/Editor/QualityBlockPhysicalTexelDensityQA.cs"]
+      "evidence": "Generated PBR families have physical metallic/roughness/normal constraints, metre-scaled UV/sampling rules and scene-wide physicality QA.",
+      "assetPaths": ["Assets/Editor/QualityBlockPbrUpgrade.cs", "Assets/Editor/QualityBlockGroundBaseSurfaceUpgrade.cs", "Assets/Editor/QualityBlockSceneMaterialPhysicalityUpgrade.cs", "Assets/Editor/QualityBlockPhysicalTexelDensityQA.cs"]
     },
     {
       "id": "physical_solar_context",
@@ -71,22 +71,22 @@
       "id": "material_construction_lookdev_registry",
       "weight": 10,
       "passed": true,
-      "evidence": "Machine-readable contracts cover manufacture/installation, dimensions/thickness, materials/PBR, mounting/interfaces, exposure/aging, geometry-vs-material and LOD policy for high-value benchmark assemblies. WornPathB now has a dedicated construction contract and lookdev illustration.",
-      "assetPaths": ["Assets/QA/material_construction_lookdev.json", "Assets/QA/scene_metadata_coverage_contract.json", "Assets/QA/ground_worn_path_b_transition_contract.json", "Assets/QA/ground_worn_path_b_transition_lookdev.svg"]
+      "evidence": "Machine-readable contracts cover manufacture/installation, dimensions/thickness, materials/PBR, mounting/interfaces, exposure/aging, geometry-vs-material and LOD policy for high-value benchmark assemblies.",
+      "assetPaths": ["Assets/QA/material_construction_lookdev.json", "Assets/QA/scene_metadata_coverage_contract.json"]
     },
     {
       "id": "native_4k_capture_pipeline",
       "weight": 8,
       "passed": true,
-      "evidence": "The native 3840x2160 hero/oblique/grazing packet includes pixel-exact crops, reflection/lighting synchronization, HDR-to-LDR telemetry, construction preflight and pre-render revalidation. WornPathB transition QA is now applied after the ground rebuild and revalidated before reflection, still rendering and temporal evidence.",
-      "assetPaths": ["Assets/Editor/QualityBlock4KCapture.cs", "Assets/Editor/QualityBlockNative4KReviewPacket.cs", "Assets/Editor/QualityBlockGroundWornPathBTransitionQA.cs", "Assets/Editor/QualityBlockRenderEvidenceProvenanceQA.cs"]
+      "evidence": "The native 3840x2160 hero/oblique/grazing packet includes pixel-exact crops, reflection/lighting synchronization, HDR-to-LDR telemetry, construction preflight, temporal sealing and now post-tonemap rendered repetition triage bound to exact manifest/crop bytes.",
+      "assetPaths": ["Assets/Editor/QualityBlock4KCapture.cs", "Assets/Editor/QualityBlockNative4KReviewPacket.cs", "Assets/Editor/QualityBlockRenderEvidenceProvenanceQA.cs", "Assets/Editor/QualityBlockRenderedRepetitionDiagnostics.cs", "Assets/QA/rendered_repetition_diagnostics_contract.json"]
     },
     {
       "id": "multi_angle_capture_manifest",
       "weight": 5,
       "passed": true,
-      "evidence": "Capture/evidence contracts require hero, oblique and grazing stills plus exact 100% crops and temporal evidence; source-side gates are forbidden from clearing render-only defects.",
-      "assetPaths": ["Assets/QA/4k_capture_manifest.json", "Assets/QA/visual_evidence_observability_contract.json", "Assets/QA/reviewed_visual_evidence_integrity_contract.json"]
+      "evidence": "Capture/evidence contracts require hero, oblique and grazing stills plus exact 100% crops and temporal evidence; scoring additionally requires a current SHA-256-bound rendered repetition triage report while direct human review remains authoritative.",
+      "assetPaths": ["Assets/QA/4k_capture_manifest.json", "Assets/QA/visual_evidence_observability_contract.json", "Assets/QA/reviewed_visual_evidence_integrity_contract.json", "Assets/QA/scene_repetition_contract.json"]
     },
     {
       "id": "unity_compile_verification",
@@ -98,28 +98,28 @@
   ],
   "blockers": ["unity_compile_verification"],
   "latestRun": {
-    "startHead": "e5cc27c92671067f06b9e025b7a46c03fcb6bc7b",
-    "substantiveWorkHead": "15259337658b5b4539b8846fde712257e46954d7",
+    "startHead": "11d51ac63e1736be061c50fa4551db40dbde19e2",
+    "substantiveWorkHead": "d66763c662f43680ce0fcb12db2fa7509b1b2983",
     "substantiveCommits": [
-      "c108bd2a18b18145966b0ad299041cb28e026c3f",
-      "89a713983ce2c02a7bdb7148e2489f763c1a6396",
-      "28c688128a272783857d16856c2a920fa7dd37d2",
-      "8479d72b51d7ebe6070007c202774c06af095929",
-      "3d86d1e126e0c6fac9c7283188f549cdbfa6b38a",
-      "264d8a206ce06f1d456e101e0d744d494a322ef9",
-      "15259337658b5b4539b8846fde712257e46954d7"
+      "685f454b0c20694495b48b4e86e574da0c8e0375",
+      "5110c29605f61e7fdea5a31f4a165f37eb8c0fce",
+      "90427c079d1e4864e9a1dabbdb627695affbbde5",
+      "a4e9255b6b970e1ac6fbd0c6cf30a8c7bf50b1ad",
+      "c41320a753847d8e31e6b265ea8bf3b2a8ad99a7",
+      "4c289302a678565e9e1817cf4b62191a41564cba",
+      "d66763c662f43680ce0fcb12db2fa7509b1b2983"
     ],
-    "verification": "GitHub/source-math only; no Unity runtime was available. Source audit confirmed WornPathB is a 2.0 x 6.0 m rectangular Cube at y-top 0.045 m, about 0.53 m east of the continuous ParkPathEast curb. The correction disables only its Renderer, preserves the gameplay collider, removes complete curb modules 26/27 to create an approximately 1.212 m opening, and creates four authored curved/tapered soil LOD meshes with world-metre UV0. Self-audit rejected the first spline: P1=12.15 plus early width expansion produced 11 inverted source-math triangles. The corrected spline uses P1=12.45 and holds the 1.05 m mouth width through t=0.22 before expansion. Independent source math then measured minimum triangle-normal Y of 0.78795/0.80034/0.85094/0.85920 for LOD0-3, vertex counts 343/203/85/45, maximum LOD bounds-center drift about 0.001421 m and size drift about 0.002842 m. Mouth z=4.875-5.925 m remains inside the curb opening z=4.794-6.006 m with about 81 mm end clearance. These are not Unity/runtime/render observations.",
+    "verification": "GitHub/source review only; no Unity runtime or native capture was available. Existing static repetition QA already rejects exact/coarse near-clone risks in generated trees/ecology and world-phase/occupancy repetition, but it explicitly could not prove whether repetition is visible in the final image. Existing render diagnostics covered clipping/exposure, not repeated image structure. This run added a warning-only native-4K repetition diagnostic over five canonical 100% crops. It sweeps horizontal/vertical translations from 32-512 px at 8 px steps, samples every 4 px, qualifies textured comparisons with a local display-luma gradient threshold, and flags local mean-absolute-luma-difference troughs by prominence against neighboring shifts. The report binds the current 4K manifest SHA-256 and each analyzed crop SHA-256. Native4KReviewPacket now generates the report after real still/temporal capture, and the reviewed-evidence integrity gate requires a current report before the core Visual Fidelity evaluator can score. The detector remains triage-only and cannot clear obvious_repetition; perspective, legitimate manufactured rhythm and chroma-dominant repetition remain human-review concerns. No Unity compile/runtime assertions are made.",
     "expectedVisualScoreImpact": [
-      "Geometry & construction: removes a likely foreground rectangular soil-placeholder/disconnected curb interface and replaces it with a whole-module access opening plus feathered compacted route; actual points remain render-only.",
-      "Material/PBR and texture: new route uses dry dielectric soil, no emission, metre UV0 and existing two-frequency ground maps; physical texel-density math should remain above the 256 texel/m source floor for the 2048/6.4 m macro layer, but Unity QA must confirm.",
-      "Weathering/context: centerline compaction, shoulder return and terminal taper are tied to pedestrian use and exposure instead of arbitrary dirt placement.",
-      "Temporal/LOD: LOD0/1/2/3 retain the same route endpoints/interface and use animated cross-fade; visible pop/shimmer is still unverified.",
+      "Critical obvious repetition: improves the probability that repeated texture/module rhythms in final pixels are surfaced before scoring; it does not automatically fail or clear the defect.",
+      "Texture/microdetail: adds native-4K periodicity triage on ground/material crops where tiling beats can otherwise evade source UV checks.",
+      "Vegetation/natural complexity: adds pixel-domain repetition triage on vegetation_grounding/tree_shadow_contact in addition to static hierarchy fingerprints.",
+      "Weathering/context and facade authenticity: hero/facade_center periodicity warnings can prioritize review of repeated residue or occupancy/module rhythms while preserving legitimate manufactured repetition as a human judgment.",
       "Automatic Visual Fidelity impact: 0 points. No actual render exists."
     ],
     "visualFidelityPointsAwarded": 0,
-    "nextBlocker": "Unity 6000.3.0f1 compile/runtime. At first Runner availability run Prepare Complete Native 4K Review Packet and stop speculative expansion. Verify WornPathB source Renderer suppression/collider preservation, exact two-module curb opening, upward mesh orientation, material bindings, Physical Texel Density QA and scene metadata coverage before reflection capture. Then inspect oblique/vegetation_grounding at 100% plus hero/grazing and temporal evidence for soil-slab silhouette, mouth interpenetration, shoulder float, texture repetition/shimmer, LOD pop and dry dielectric grazing response. Fix any critical pixel defect before assigning points.",
-    "recordingNote": "Readiness remains 93/100 because this run adds source implementation/QA but does not provide the missing 7-point Unity compile/runtime verification."
+    "nextBlocker": "Unity 6000.3.0f1 compile/runtime. At first Runner availability stop speculative expansion and run Prepare Complete Native 4K Review Packet. Confirm the new diagnostics compile, produce a SHA-256-bound report for all five canonical crops, and do not interpret zero warnings as clearance. Review hero/facade_center, hero/ground_contact, oblique/vegetation_grounding, grazing/material_grazing and grazing/tree_shadow_contact at 100%; use warnings to find candidate periods, then judge obvious repetition directly. If the detector is noisy, calibrate diagnostic thresholds from the real pixels without weakening human critical-defect review.",
+    "recordingNote": "Readiness remains 93/100 because this run improves render-evidence triage/integrity but does not provide the missing 7-point Unity compile/runtime verification."
   },
   "note": "Implementation Readiness measures source/pipeline coverage only. Visual Fidelity is unscored and cannot pass until real 3840x2160 Unity render evidence is captured and reviewed."
 }

@@ -1,0 +1,52 @@
+{
+  "schemaVersion": "1.0",
+  "purpose": "Fail-closed schema integrity for manually reviewed Visual Fidelity evidence. This contract does not award visual points; it prevents ambiguous, duplicated or incomplete review records from reaching the numeric gate.",
+  "requiredViews": [
+    "hero",
+    "oblique",
+    "grazing"
+  ],
+  "categories": [
+    { "id": "geometry_construction", "weight": 20, "hardMinimum": 18 },
+    { "id": "material_pbr", "weight": 20, "hardMinimum": 18 },
+    { "id": "lighting_shadows_reflections", "weight": 15, "hardMinimum": 13 },
+    { "id": "texture_microdetail", "weight": 10, "hardMinimum": 9 },
+    { "id": "weathering_causality", "weight": 10, "hardMinimum": 9 },
+    { "id": "vegetation_natural_complexity", "weight": 8, "hardMinimum": 7 },
+    { "id": "period_authenticity", "weight": 7, "hardMinimum": 6 },
+    { "id": "cinematic_image", "weight": 5, "hardMinimum": 4 },
+    { "id": "temporal_lod_aliasing", "weight": 5, "hardMinimum": 4 }
+  ],
+  "criticalDefectIds": [
+    "visible_primitive_placeholder",
+    "baked_or_painted_highlights",
+    "impossible_material_physics",
+    "obvious_repetition",
+    "hero_geometry_intersection",
+    "sun_shadow_inconsistency",
+    "forbidden_disaster_theme",
+    "severe_aliasing_or_shimmer",
+    "visible_lod_pop",
+    "major_light_leak",
+    "missing_construction_material_metadata",
+    "unverified_render_claim"
+  ],
+  "rules": {
+    "rejectDuplicateViewEntries": true,
+    "rejectDuplicateCategoryEntries": true,
+    "rejectDuplicateCriticalDefectEntries": true,
+    "rejectUnknownEntries": true,
+    "requireExactlyNineCategoryEntries": true,
+    "requireExactlyTwelveCriticalDefectEntries": true,
+    "requireCategoryEvidenceText": true,
+    "requireCategoryCorrectiveActionText": true,
+    "requireDeductionTextWhenScoreBelowWeight": true,
+    "requireCriticalDefectEvidenceText": true,
+    "requireAtLeastOneObservedReferencePerCategory": true,
+    "requireAtLeastOneObservedReferencePerCriticalDefect": true,
+    "requireRenderVerifiedTrueForReviewedEvidence": true
+  },
+  "visualScoreAwardedByThisQA": false,
+  "runtimeRenderVerified": false,
+  "note": "Implementation Readiness and source-side validation remain separate from Visual Fidelity. Reviewed evidence must still pass render provenance, observability, temporal sealing and the canonical 92/100 gate."
+}

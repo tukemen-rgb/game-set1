@@ -16,8 +16,9 @@ using UnityEngine.Rendering;
 /// Successful completion writes the schema-1.0 probe receipt consumed by
 /// QualityBlockReflectionProbeCaptureSyncQA plus a schema-1.1 SHA-256-bound async-wait proof. The
 /// proof binds not only the probe receipt but also the exact physical sun/sky/ambient/shadow state at
-/// probe request and completion, preventing cubemaps rendered under one lighting state from being
-/// reused for a still rendered under another. Neither artifact can award Visual Fidelity points.
+/// probe request, every Editor polling boundary, completion and immediate pre-still validation. This
+/// prevents cubemaps rendered under one persistent lighting state from being reused for a still rendered
+/// under another. Neither artifact can award Visual Fidelity points.
 /// </summary>
 public static class QualityBlockReflectionProbeAwaiter
 {
@@ -40,6 +41,7 @@ public static class QualityBlockReflectionProbeAwaiter
     private static int[] renderIds;
     private static double startedAt;
     private static int editorPollCount;
+    private static int lightingFingerprintPollCount;
     private static Action continuation;
     private static bool running;
     private static string requestedLightingStateSha256;
@@ -49,7 +51,8 @@ public static class QualityBlockReflectionProbeAwaiter
     /// <summary>
     /// Starts a fail-closed probe refresh and returns immediately. The supplied continuation is
     /// invoked only after a subsequent Editor update proves that every requested cubemap completed,
-    /// its 512x512 Cube realtimeTexture exists, and the physical lighting fingerprint is unchanged.
+    /// its 512x512 Cube realtimeTexture exists, and the physical lighting fingerprint stayed unchanged
+    /// at every observed Editor polling boundary.
     /// </summary>
     public static void Begin(Action onCompleted)
     {
@@ -64,9 +67,9 @@ public static class QualityBlockReflectionProbeAwaiter
         QualityBlockSolarShadowCaptureCoherenceQA.ValidateOpenScene();
 
         // Hash the actual physical lighting state before RenderProbe. This includes the active sun,
-        // procedural-sky parameters, sky/reflection/fog settings, global shadow settings and current
-        // ambient SH coefficients. If any of those drift while Unity advances the probe-render frame,
-        // the resulting cubemap cannot be paired with the still and the packet aborts.
+        // procedural-sky parameters, sky/reflection/fog settings, ambient SH coefficients and global
+        // shadow/LOD settings. Any observed drift while Unity advances the probe-render frame invalidates
+        // the resulting cubemap instead of allowing a visually plausible but incoherent reflection state.
         requestedLightingStateSha256 = QualityBlockReflectionLightingStateFingerprint.BuildCurrentSha256();
 
         GameObject root = Resources.FindObjectsOfTypeAll<GameObject>()
@@ -99,6 +102,7 @@ public static class QualityBlockReflectionProbeAwaiter
         continuation = onCompleted;
         startedAt = EditorApplication.timeSinceStartup;
         editorPollCount = 0;
+        lightingFingerprintPollCount = 0;
         running = true;
         EditorApplication.update += Poll;
 
@@ -107,13 +111,14 @@ public static class QualityBlockReflectionProbeAwaiter
         EditorApplication.QueuePlayerLoopUpdate();
         SceneView.RepaintAll();
         Debug.Log(
-            $"Reflection probe refresh requested under lighting fingerprint {requestedLightingStateSha256}. Native-4K capture is deferred until later Editor updates prove both RenderIDs complete with no lighting drift.");
+            $"Reflection probe refresh requested under lighting fingerprint {requestedLightingStateSha256}. Native-4K capture is deferred until later Editor updates prove both RenderIDs complete with no observed lighting drift.");
     }
 
     /// <summary>
     /// Validates that the current probe completion receipt was produced by the asynchronous waiter,
     /// not by the legacy same-call-stack compatibility path. The proof must also show one unchanged
-    /// lighting fingerprint from probe request through completion through the current pre-still state.
+    /// lighting fingerprint from request through every observed poll, completion and the current
+    /// pre-still state.
     /// </summary>
     public static void ValidateLatestWaitProof()
     {
@@ -131,6 +136,8 @@ public static class QualityBlockReflectionProbeAwaiter
             throw new InvalidOperationException("Async reflection wait proof does not match the active benchmark scene/current Unity editor.");
         if (proof.observationMechanism != "EditorApplication.update" || proof.editorPollCount < 1)
             throw new InvalidOperationException("Async reflection wait proof does not demonstrate a later EditorApplication.update completion observation.");
+        if (proof.lightingFingerprintPollCount != proof.editorPollCount || proof.lightingFingerprintPollCount < 1)
+            throw new InvalidOperationException("Async reflection wait proof does not demonstrate one lighting-fingerprint validation at every observed Editor poll.");
         if (proof.timeoutSeconds != TimeoutSeconds || proof.elapsedSeconds < 0.0)
             throw new InvalidOperationException("Async reflection wait proof timing policy drifted.");
         if (proof.renderIds == null || proof.renderIds.Length != RequiredProbeCount || proof.renderIds.Any(x => x < 0))
@@ -148,11 +155,11 @@ public static class QualityBlockReflectionProbeAwaiter
             !proof.lightingStateStableAcrossProbeRender ||
             !string.Equals(proof.requestLightingStateSha256, proof.completionLightingStateSha256, StringComparison.OrdinalIgnoreCase))
             throw new InvalidOperationException(
-                "Async reflection wait proof does not demonstrate one SHA-256-identical physical lighting state across probe request and completion.");
+                "Async reflection wait proof does not demonstrate one SHA-256-identical physical lighting state across probe request, observed polling and completion.");
 
         // This recomputation happens immediately before still capture in the review packet. It rejects
-        // a cubemap that completed correctly but whose sun, sky, ambient SH or shadow state changed in
-        // the short interval between probe completion and Camera.Render.
+        // a cubemap that completed correctly but whose sun, sky, ambient SH or shadow/LOD state changed
+        // in the short interval between probe completion and Camera.Render.
         QualityBlockReflectionLightingStateFingerprint.RequireCurrentMatch(
             proof.completionLightingStateSha256,
             "native-4K still capture");
@@ -165,7 +172,7 @@ public static class QualityBlockReflectionProbeAwaiter
             throw new InvalidOperationException($"Async reflection wait proof is not fresh enough for immediate still capture (ageMinutes={age.TotalMinutes:F2}).");
 
         Debug.Log(
-            $"Async reflection wait proof valid: polls={proof.editorPollCount}, elapsed={proof.elapsedSeconds:F3}s, receipt SHA-256 bound, lighting SHA-256 unchanged through current pre-still state. No visual points awarded.");
+            $"Async reflection wait proof valid: polls={proof.editorPollCount}, lightingPolls={proof.lightingFingerprintPollCount}, elapsed={proof.elapsedSeconds:F3}s, receipt SHA-256 bound, lighting SHA-256 unchanged through current pre-still state. No visual points awarded.");
     }
 
     private static void Poll()
@@ -176,6 +183,17 @@ public static class QualityBlockReflectionProbeAwaiter
         try
         {
             editorPollCount++;
+
+            // Validate every observed Editor boundary, not only request and completion. This catches
+            // persistent solar/sky/ambient/shadow changes as soon as they become observable while the
+            // probe RenderIDs are in flight. A truly transient mutation entirely between callbacks is
+            // still an engine-level runtime concern and must be judged from actual runner evidence.
+            string polledLightingStateSha256 = QualityBlockReflectionLightingStateFingerprint.BuildCurrentSha256();
+            lightingFingerprintPollCount++;
+            if (!string.Equals(requestedLightingStateSha256, polledLightingStateSha256, StringComparison.OrdinalIgnoreCase))
+                throw new InvalidOperationException(
+                    $"Physical lighting changed while realtime reflection probes were in flight at Editor poll {editorPollCount}. request={requestedLightingStateSha256}, observed={polledLightingStateSha256}. Native-4K capture aborted.");
+
             bool allReady = true;
             for (int i = 0; i < probes.Length; ++i)
             {
@@ -197,20 +215,19 @@ public static class QualityBlockReflectionProbeAwaiter
                 return;
             }
 
-            // Revalidate and hash after the asynchronous probe render actually completed. A changing
-            // ambient probe, sky parameter, solar key or global shadow configuration makes the cubemap
-            // non-coherent with the requested state even when RenderID completion itself succeeded.
-            string completionLightingStateSha256 = QualityBlockReflectionLightingStateFingerprint.BuildCurrentSha256();
-            if (!string.Equals(requestedLightingStateSha256, completionLightingStateSha256, StringComparison.OrdinalIgnoreCase))
-                throw new InvalidOperationException(
-                    $"Physical lighting changed while realtime reflection probes rendered. request={requestedLightingStateSha256}, completion={completionLightingStateSha256}. Native-4K capture aborted.");
-
+            string completionLightingStateSha256 = polledLightingStateSha256;
             double elapsedSeconds = EditorApplication.timeSinceStartup - startedAt;
             int completedPollCount = editorPollCount;
+            int completedLightingPollCount = lightingFingerprintPollCount;
             int[] completedRenderIds = (int[])renderIds.Clone();
             QualityBlockReflectionProbeRefreshReceipt receipt = BuildReceipt(elapsedSeconds);
             WriteReceipt(receipt);
-            WriteWaitProof(elapsedSeconds, completedPollCount, completedRenderIds, completionLightingStateSha256);
+            WriteWaitProof(
+                elapsedSeconds,
+                completedPollCount,
+                completedLightingPollCount,
+                completedRenderIds,
+                completionLightingStateSha256);
             AssetDatabase.Refresh();
             QualityBlockReflectionProbeCaptureSyncQA.ValidateRuntimeReceipt();
             ValidateLatestWaitProof();
@@ -218,7 +235,7 @@ public static class QualityBlockReflectionProbeAwaiter
             Action next = continuation;
             Cleanup();
             Debug.Log(
-                $"Reflection synchronization completed after {completedPollCount} Editor polls / {elapsedSeconds:F3}s with invariant lighting fingerprint {completionLightingStateSha256}. Continuing native-4K capture.");
+                $"Reflection synchronization completed after {completedPollCount} Editor polls / {elapsedSeconds:F3}s with {completedLightingPollCount} matching lighting checks and invariant fingerprint {completionLightingStateSha256}. Continuing native-4K capture.");
             next();
         }
         catch (Exception ex)
@@ -309,7 +326,12 @@ public static class QualityBlockReflectionProbeAwaiter
         File.WriteAllText(absolute, JsonUtility.ToJson(receipt, true));
     }
 
-    private static void WriteWaitProof(double elapsedSeconds, int pollCount, int[] completedRenderIds, string completionLightingStateSha256)
+    private static void WriteWaitProof(
+        double elapsedSeconds,
+        int pollCount,
+        int fingerprintPollCount,
+        int[] completedRenderIds,
+        string completionLightingStateSha256)
     {
         string receiptAbsolute = AbsolutePath(ReceiptPath);
         if (!File.Exists(receiptAbsolute))
@@ -317,6 +339,8 @@ public static class QualityBlockReflectionProbeAwaiter
         if (string.IsNullOrWhiteSpace(requestedLightingStateSha256) || requestedLightingStateSha256.Length != 64 ||
             string.IsNullOrWhiteSpace(completionLightingStateSha256) || completionLightingStateSha256.Length != 64)
             throw new InvalidOperationException("Cannot write async wait proof without valid request/completion lighting fingerprints.");
+        if (fingerprintPollCount != pollCount || fingerprintPollCount < 1)
+            throw new InvalidOperationException("Cannot write async wait proof unless every Editor completion poll also validated the lighting fingerprint.");
 
         var proof = new ReflectionProbeAsyncWaitProof
         {
@@ -326,6 +350,7 @@ public static class QualityBlockReflectionProbeAwaiter
             scenePath = EditorSceneManager.GetActiveScene().path,
             observationMechanism = "EditorApplication.update",
             editorPollCount = pollCount,
+            lightingFingerprintPollCount = fingerprintPollCount,
             elapsedSeconds = elapsedSeconds,
             timeoutSeconds = TimeoutSeconds,
             renderIds = completedRenderIds,
@@ -340,7 +365,7 @@ public static class QualityBlockReflectionProbeAwaiter
                 completionLightingStateSha256,
                 StringComparison.OrdinalIgnoreCase),
             visualFidelityStatus = "UNSCORED_REVIEW_REQUIRED",
-            note = "Evidence-integrity proof only. It proves Editor-frame progression, receipt binding and one invariant physical lighting state across realtime probe rendering; no image-quality points are implied."
+            note = "Evidence-integrity proof only. It proves Editor-frame progression, receipt binding and one invariant physical lighting state at request, every observed polling boundary and completion; no image-quality points are implied."
         };
 
         string proofAbsolute = AbsolutePath(WaitProofPath);
@@ -370,6 +395,7 @@ public static class QualityBlockReflectionProbeAwaiter
         requestedLightingStateSha256 = null;
         startedAt = 0.0;
         editorPollCount = 0;
+        lightingFingerprintPollCount = 0;
         running = false;
     }
 
@@ -382,6 +408,7 @@ public static class QualityBlockReflectionProbeAwaiter
         public string scenePath;
         public string observationMechanism;
         public int editorPollCount;
+        public int lightingFingerprintPollCount;
         public double elapsedSeconds;
         public double timeoutSeconds;
         public int[] renderIds;

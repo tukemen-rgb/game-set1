@@ -57,13 +57,13 @@
     "loadPath": "top rail/infill wind and occupant load -> seven primary posts -> existing seated base plates -> anchor heads/slab",
     "primaryPostAlignment": "Primary post centers remain at bay-local x = -1.44, -0.96, -0.48, 0, 0.48, 0.96, 1.44 m, exactly above the seven existing base-plate centers.",
     "infillLayout": "Twenty-nine vertical centerlines span x=-1.68..+1.68 m at 0.12 m pitch; the seven 0.48 m-grid positions are primary posts and the remaining twenty-two are infill bars.",
-    "legacyCompatibility": "The original RailTop_* and Rail_* GameObjects/BoxColliders remain as named gameplay anchors. Their render meshes are reconstructed and their transforms may move for visual correctness only while BoxCollider world center/size are compensated to the original fallback envelope."
+    "legacyCompatibility": "The original RailTop_* and Rail_* GameObjects, MeshFilters and BoxColliders remain as named gameplay/bookkeeping anchors at their original transforms. Their stock Cube MeshRenderers are disabled only after the generated four-LOD visual guardrail exists; generated render geometry adds no collider."
   },
   "interfacesGapsSeals": {
     "topRail": "Primary posts/infill terminate 5 mm into the top-rail underside capture zone; visible positive air gaps are forbidden.",
     "lowerRail": "Infill bars terminate 5 mm into the already-corrected lower rail. The existing lower-rail underside remains 70 mm above the balcony finished floor.",
     "openingRule": "Maximum horizontal clear opening between vertical members is 102 mm; any source calculation above 110 mm is FAIL.",
-    "base": "Primary posts penetrate 40 mm below finished-floor datum and remain centered over existing base plates; base plates/anchor heads continue to be governed by balcony_construction_interface_contract.json.",
+    "base": "Primary posts penetrate 40 mm below finished-floor datum and remain centered over existing base plates; base plates/anchor heads continue to be governed by balcony_construction_interface_contract.json and are rechecked by final-state guardrail QA after the legacy post renderers are disabled.",
     "seals": "No elastomeric seal is invented between exposed railing extrusions; close joints are mechanical insertion/welded/fixed interfaces."
   },
   "orientationExposure": {
@@ -81,14 +81,14 @@
     "levels": 4,
     "transitions": [0.18, 0.08, 0.03, 0.008],
     "crossFadeRequired": true,
-    "lod0": "Chamfered top/post/infill geometry plus close-range insertion sleeves; legacy named top/post renderers are retained as LOD0 construction datums after their primitive meshes are replaced.",
+    "lod0": "Combined chamfered generated top/post/infill geometry plus close-range insertion sleeves. Legacy RailTop_*/Rail_* stock MeshRenderers are disabled rather than reused as visible LOD geometry.",
     "lod1": "Single combined chamfered proxy preserves top rail, all seven posts and all twenty-two infill bars; sleeves are removed.",
     "lod2": "Single combined non-primitive box proxy preserves every vertical centerline and exact macro bounds with reduced edge complexity.",
     "lod3": "Top rail and seven supports remain closed box geometry; all twenty-two infill centerlines remain as crossed thin long-distance proxies so guard density does not collapse into a visibly different pattern.",
     "hardRule": "All four LODs preserve 1.10 m guard top and the same 3.55 m span; macro bounds may drift by at most 10 mm. Source triangle count must decrease LOD0 > LOD1 > LOD2 > LOD3. Visible pop/shimmer remains a rendered temporal critical check."
   },
   "qaRules": {
-    "legacyBuiltInCubeMeshAfterApply": "FAIL",
+    "legacyBuiltInCubeRendererEnabledAfterApply": "FAIL",
     "guardTopHeightBelowM": 1.095,
     "guardTopHeightAboveM": 1.105,
     "maximumClearOpeningM": 0.110,
@@ -97,6 +97,8 @@
     "generatedColliderCount": 0,
     "missingFourLodsOrCrossFade": "FAIL",
     "nonDecreasingLodTriangles": "FAIL",
+    "basePlateFloorContactToleranceM": 0.003,
+    "anchorHeadEmbedRangeM": [0.001, 0.006],
     "materialMetallicMax": 0.02,
     "materialSmoothnessRange": [0.42, 0.58],
     "normalMapRequired": true,

@@ -99,7 +99,7 @@
     {"id":"forbidden_disaster_theme","requiredViews":["hero","oblique","grazing"],"requiredCropRefs":[],"minimumCropReferences":0},
     {"id":"severe_aliasing_or_shimmer","requiredViews":["oblique","grazing"],"requiredCropRefs":["oblique/vegetation_grounding","grazing/sash_rail_response"],"minimumCropReferences":2,"requiredTemporalRefs":["subpixel_grazing","lod_walk_oblique"],"minimumTemporalReferences":2},
     {"id":"visible_lod_pop","requiredViews":["oblique","grazing"],"requiredCropRefs":["oblique/vegetation_grounding","grazing/sash_rail_response"],"minimumCropReferences":2,"requiredTemporalRefs":["lod_walk_oblique"],"minimumTemporalReferences":1},
-    {"id":"major_light_leak","requiredViews":["hero","oblique"],"requiredCropRefs":["hero/facade_center","oblique/construction_depth"],"minimumCropReferences":2},
+    {"id":"major_light_leak","requiredViews":["hero","oblique","grazing"],"requiredCropRefs":["hero/facade_center","hero/ground_contact","oblique/construction_depth","oblique/balcony_services","grazing/material_grazing"],"minimumCropReferences":5},
     {"id":"missing_construction_material_metadata","requiredViews":[],"requiredCropRefs":[],"minimumCropReferences":0},
     {"id":"unverified_render_claim","requiredViews":["hero","oblique","grazing"],"requiredCropRefs":[],"minimumCropReferences":0}
   ],
@@ -111,6 +111,7 @@
     "Implementation readiness or source-code inspection can never substitute for observed render references.",
     "The Temporal/LOD/aliasing category cannot clear its hard minimum from still frames alone.",
     "severe_aliasing_or_shimmer cannot be cleared without subpixel_grazing and lod_walk_oblique; visible_lod_pop cannot be cleared without lod_walk_oblique.",
-    "Period authenticity cannot be scored without the canonical sealed frontal and oblique rooftop receiving-hardware crops in addition to occupied facade/service evidence."
+    "Period authenticity cannot be scored without the canonical sealed frontal and oblique rooftop receiving-hardware crops in addition to occupied facade/service evidence.",
+    "major_light_leak cannot be cleared without direct review of all five leak-sensitive canonical crops used by the SHA-256-bound pixel-domain diagnostic."
   ]
 }

@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "1.1.1",
+  "schemaVersion": "1.1.2",
   "targetPeriod": "late-1990s-to-circa-2000",
   "targetRegion": "Kanto Japanese new-town fallback benchmark",
   "runtimeRenderVerified": false,
@@ -49,7 +49,7 @@
     "terminationSetbackM": 0.356,
     "firstSuppressedModuleIndex": 7,
     "firstSuppressedModuleMaxZM": -5.256,
-    "legacyContinuationBeyondPlazaEdgeM": 0.244,
+    "legacyWestCurbIntrusionIntoPlazaM": 0.244,
     "legacyVisibleEastSoilStripWidthM": 0.700
   },
   "curbMaterial": {

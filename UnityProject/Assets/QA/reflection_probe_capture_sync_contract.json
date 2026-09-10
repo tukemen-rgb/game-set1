@@ -1,7 +1,7 @@
 {
   "schemaVersion": "1.1",
   "status": "PENDING_REAL_UNITY_4K_RENDER",
-  "purpose": "Prevent native-4K benchmark evidence from being captured against stale, merely-requested, unfinished, or lighting-incoherent realtime reflection cubemaps. The exact physical sun/sky/ambient/shadow state must remain SHA-256-identical from probe request through completion through immediate pre-still validation. This contract is implementation/evidence integrity only and cannot award Visual Fidelity points.",
+  "purpose": "Prevent native-4K benchmark evidence from being captured against stale, merely-requested, unfinished, or lighting-incoherent realtime reflection cubemaps. The exact physical sun/sky/ambient/shadow state must remain SHA-256-identical from probe request through every observed Editor polling boundary, completion and immediate pre-still validation. This contract is implementation/evidence integrity only and cannot award Visual Fidelity points.",
   "visualFidelityCategoryImpact": [
     "lighting_shadows_reflections",
     "material_pbr_physical_plausibility",
@@ -12,7 +12,7 @@
     "completionCheck": "ReflectionProbe.IsFinishedRendering(RenderID) is the completion check for a requested probe render; completion is observed during later EditorApplication.update callbacks rather than assumed in the RenderProbe call stack.",
     "timeSlicing": "ReflectionProbeTimeSlicingMode.NoTimeSlicing renders the probe entirely in one frame; one frame is not treated as proof of same-call-stack completion.",
     "realtimeTexture": "ReflectionProbe.realtimeTexture is the realtime cubemap resource used by the probe.",
-    "ambientProbe": "RenderSettings.ambientProbe is included in the lighting fingerprint so a DynamicGI sky-fill update cannot silently occur between reflection rendering and still capture.",
+    "ambientProbe": "RenderSettings.ambientProbe is included in the lighting fingerprint so a DynamicGI sky-fill update cannot silently persist between reflection rendering and still capture.",
     "solarGuard": "QualityBlockSolarShadowCaptureCoherenceQA validates the sole SummerSun, physical solar datum, global shadow state and pre-cull guard before lighting hashes are accepted."
   },
   "requiredSceneState": {
@@ -44,6 +44,7 @@
     "fingerprintImplementation": "QualityBlockReflectionLightingStateFingerprint.BuildCurrentSha256",
     "fingerprintAlgorithm": "SHA-256",
     "validateBeforeProbeRequest": true,
+    "validateEveryEditorPollWhileWaiting": true,
     "validateAfterProbeCompletion": true,
     "validateImmediatelyBeforeStillCapture": true,
     "requireRequestCompletionMatch": true,
@@ -54,7 +55,7 @@
     "includeRenderSettingsReflectionAndFogState": true,
     "includeGlobalShadowAndLodSettings": true,
     "actualRenderRequiredForVisualPoints": true,
-    "reason": "A completed cubemap is still invalid evidence if its illumination differs from the still. The hash binds direct sun, physical sky, diffuse sky fill, reflection/fog policy and shadow/LOD settings across the asynchronous boundary."
+    "reason": "A completed cubemap is still invalid evidence if its illumination differs from the still. The hash binds direct sun, physical sky, diffuse sky fill, reflection/fog policy and shadow/LOD settings across the asynchronous boundary and every observable Editor polling boundary while the RenderIDs are in flight."
   },
   "preCaptureAlgorithm": [
     "Build, save, reopen and validate the final benchmark scene before requesting any realtime probe refresh.",
@@ -64,13 +65,14 @@
     "Force NoTimeSlicing immediately before still capture.",
     "Call RenderProbe() for each probe and retain its returned RenderID; reject negative RenderIDs.",
     "Return control to the Unity Editor and poll completion on subsequent EditorApplication.update callbacks instead of treating the RenderProbe call itself as a completed render frame.",
+    "At every observed EditorApplication.update polling boundary while RenderIDs are in flight, recompute the complete lighting fingerprint and require equality with the request hash before checking probe completion.",
     "While waiting, request PlayerLoop progression and SceneView repaint; abort after 30 seconds if completion cannot be proven.",
     "Require RenderID >= 0 and IsFinishedRendering(RenderID) == true for every probe before any benchmark Camera.Render is accepted.",
     "Require realtimeTexture to be non-null, created, Cube-dimensional, and exactly 512x512 per face.",
-    "After both RenderIDs complete, revalidate solar/sky state and compute the completion lighting fingerprint; require byte-equivalent request/completion SHA-256 values.",
-    "Write reflection_probe_refresh_receipt.json only after all probes are complete and the request/completion lighting hashes match.",
-    "Write schema-1.1 reflection_probe_async_wait_receipt.json containing the Editor poll count, elapsed wait, RenderIDs, SHA-256 of the exact reflection completion receipt, fingerprint algorithm, request lighting hash and completion lighting hash.",
-    "Require the async wait proof to be current-Unity/current-scene, at least one later Editor poll, no older than two minutes, hash-bound to the current reflection completion receipt and lighting-stable across probe rendering.",
+    "After both RenderIDs complete, treat the matching fingerprint from that completion poll as the completion lighting fingerprint and require exact request/completion equality.",
+    "Write reflection_probe_refresh_receipt.json only after all probes are complete and every observed lighting hash matched.",
+    "Write schema-1.1 reflection_probe_async_wait_receipt.json containing Editor poll count, lighting-fingerprint poll count, elapsed wait, RenderIDs, SHA-256 of the exact reflection completion receipt, fingerprint algorithm, request lighting hash and completion lighting hash.",
+    "Require the async wait proof to be current-Unity/current-scene, at least one later Editor poll, one lighting check per Editor poll, no older than two minutes, hash-bound to the current reflection completion receipt and lighting-stable across probe rendering.",
     "Immediately before still capture, recompute the complete lighting fingerprint and require it to equal the completion hash; then validate both receipts without rebuilding scene geometry/materials or lighting.",
     "Capture hero/oblique/grazing only after all synchronization, solar-shadow and lighting-fingerprint checks pass.",
     "Abort native-4K capture if any requested probe, wait proof, solar state or lighting fingerprint is unproven."
@@ -110,6 +112,7 @@
       "scenePath",
       "observationMechanism",
       "editorPollCount",
+      "lightingFingerprintPollCount",
       "elapsedSeconds",
       "timeoutSeconds",
       "renderIds[]",
@@ -133,6 +136,7 @@
       "wrong_texture_dimension",
       "missing_async_wait_proof",
       "async_wait_proof_has_no_later_editor_poll",
+      "async_wait_proof_missing_per_poll_lighting_checks",
       "async_wait_proof_is_stale",
       "async_wait_proof_runtime_receipt_sha256_mismatch",
       "solar_shadow_contract_invalid_before_probe_request",
@@ -152,7 +156,7 @@
     "Do not treat calling RenderProbe() alone as proof that the cubemap finished.",
     "Do not treat an IsFinishedRendering check in the same RenderProbe call stack as sufficient evidence when Unity has not advanced a rendering frame.",
     "Do not accept a reflection completion receipt unless a fresh schema-1.1 async-wait proof is SHA-256-bound to that exact receipt.",
-    "Do not accept a completed reflection cubemap unless request and completion physical-lighting fingerprints are identical.",
+    "Do not accept a completed reflection cubemap unless request, every observed polling-boundary state and completion physical-lighting fingerprints are identical.",
     "Do not capture a still if the immediately recomputed physical-lighting fingerprint differs from the completed-probe fingerprint.",
     "Do not rebuild the benchmark after synchronization and then reuse old completion/wait receipts.",
     "Do not set probesRefreshedImmediatelyBeforeCapture=true unless later-update completion/texture checks and lighting-coherence checks succeeded for the exact scene state being captured.",

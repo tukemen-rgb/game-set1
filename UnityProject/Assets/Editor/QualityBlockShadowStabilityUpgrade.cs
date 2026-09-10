@@ -157,7 +157,18 @@ public static class QualityBlockShadowStabilityUpgrade
 
         Light sun = FindSceneObject("SummerSun")?.GetComponent<Light>();
         if (sun == null || RenderSettings.sun != sun || sun.type != LightType.Directional)
-            throw new InvalidOperationException("SummerSun must remain the single coherent directional shadow source.");
+            throw new InvalidOperationException("SummerSun must remain the coherent directional shadow source.");
+
+        Light[] activeDirectional = Resources.FindObjectsOfTypeAll<Light>()
+            .Where(x => x.gameObject.scene.IsValid() && x.enabled && x.gameObject.activeInHierarchy && x.type == LightType.Directional)
+            .ToArray();
+        if (activeDirectional.Length != 1 || activeDirectional[0] != sun)
+        {
+            string names = string.Join(", ", activeDirectional.Select(x => x.name));
+            throw new InvalidOperationException(
+                $"Critical sun/shadow direction risk: exactly one active directional light is required; found {activeDirectional.Length}: {names}");
+        }
+
         if (sun.shadows != LightShadows.Soft || sun.shadowResolution != LightShadowResolution.VeryHigh)
             throw new InvalidOperationException("SummerSun must use soft VeryHigh-resolution realtime shadows.");
         if (Mathf.Abs(sun.shadowBias - ShadowBias) > 0.001f ||
@@ -196,7 +207,13 @@ public static class QualityBlockShadowStabilityUpgrade
             if (!contract.Contains(token))
                 throw new InvalidOperationException($"Shadow-stability contract missing token: {token}");
 
-        Debug.Log("Shadow/edge implementation QA passed: StableFit 4-cascade VeryHigh sun shadows, constrained bias, forward MSAA, high LOD bias and cross-fading. Render review remains mandatory.");
+        // The native-4K packet already calls this validator before its generated-scene rebuild. Binding
+        // the new machine contract here ensures missing/relaxed solar-coherence metadata fails early,
+        // while QualityBlockSolarShadowPreRenderGuard independently re-validates the rebuilt state at
+        // MainCamera pre-cull immediately before actual still/temporal rendering.
+        QualityBlockSolarShadowCaptureCoherenceQA.ValidateContractConfigOnly();
+
+        Debug.Log("Shadow/edge implementation QA passed: one active SummerSun, StableFit 4-cascade VeryHigh shadows, constrained bias, forward MSAA, high LOD bias and cross-fading. Render review remains mandatory.");
     }
 
     private static void EnsureSceneOpen()

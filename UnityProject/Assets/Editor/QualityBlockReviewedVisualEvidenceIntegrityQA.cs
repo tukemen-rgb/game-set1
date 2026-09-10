@@ -76,9 +76,17 @@ public static class QualityBlockReviewedVisualEvidenceIntegrityQA
         ValidateCategoryEntries(evidence.categories);
         ValidateCriticalDefectEntries(evidence.criticalDefects);
 
+        // Temporal/LOD/aliasing review is not scoreable from PNG existence alone. Require the
+        // authoritative prepared sequence to prove one MainCamera pre-cull lighting fingerprint per
+        // temporal frame and one filmic native-4K HDR->LDR invocation per frame with zero fallback.
+        // The runtime receipt is SHA-256-bound to the temporal manifest/receipt, prepared scene binding,
+        // persisted scene and accepted reflection completion/wait proofs. It still awards zero points.
+        QualityBlockTemporalRuntimeEvidenceGuard.ValidateLatestReceiptForScoring();
+
         Debug.Log(
             "Reviewed Visual Fidelity evidence integrity valid: exact hero/oblique/grazing entries, exact nine categories, " +
-            "exact twelve critical-defect reviews, no duplicates/unknown IDs, and complete evidence/corrective-action text. " +
+            "exact twelve critical-defect reviews, no duplicates/unknown IDs, complete evidence/corrective-action text, " +
+            "and a sealed per-frame temporal lighting + filmic HDR->LDR runtime receipt. " +
             "This QA awards 0 Visual Fidelity points; provenance and the numeric gate still decide scoring eligibility/PASS.");
     }
 

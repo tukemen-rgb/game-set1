@@ -66,10 +66,12 @@ public static class QualityBlockReflectionLightingStateFingerprint
         Append(sb, "sun.colorTemperature", sun.colorTemperature);
         AppendColor(sb, "sun.color", sun.color);
         Append(sb, "sun.shadows", sun.shadows.ToString());
+        Append(sb, "sun.shadowResolution", sun.shadowResolution.ToString());
         Append(sb, "sun.shadowStrength", sun.shadowStrength);
         Append(sb, "sun.shadowBias", sun.shadowBias);
         Append(sb, "sun.shadowNormalBias", sun.shadowNormalBias);
         Append(sb, "sun.shadowNearPlane", sun.shadowNearPlane);
+        Append(sb, "sun.cullingMask", sun.cullingMask);
 
         string skyPath = AssetDatabase.GetAssetPath(sky);
         Append(sb, "sky.assetPath", skyPath ?? string.Empty);
@@ -116,6 +118,8 @@ public static class QualityBlockReflectionLightingStateFingerprint
         Append(sb, "quality.shadowNearPlaneOffset", QualitySettings.shadowNearPlaneOffset);
         Append(sb, "quality.antiAliasing", QualitySettings.antiAliasing);
         Append(sb, "quality.lodBias", QualitySettings.lodBias);
+        Append(sb, "quality.maximumLODLevel", QualitySettings.maximumLODLevel);
+        Append(sb, "quality.anisotropicFiltering", QualitySettings.anisotropicFiltering.ToString());
 
         byte[] payload = Encoding.UTF8.GetBytes(sb.ToString());
         using var sha = SHA256.Create();

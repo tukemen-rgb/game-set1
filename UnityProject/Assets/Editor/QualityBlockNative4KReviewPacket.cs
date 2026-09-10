@@ -22,6 +22,7 @@ public static class QualityBlockNative4KReviewPacket
         QualityBlockSolarShadowCaptureCoherenceQA.ValidateContractConfigOnly();
         QualityBlockRenderedImageDiagnostics.ValidateContractConfigOnly();
         QualityBlockRenderedRepetitionDiagnostics.ValidateContractConfigOnly();
+        QualityBlockRenderedLightLeakDiagnostics.ValidateContractConfigOnly();
         QualityBlockTemporalStabilityCapture.ValidateContractConfigOnly();
         QualityBlockPreparedTemporalCapture.ValidateContractConfigOnly();
         QualityBlockTemporalRuntimeEvidenceGuard.ValidateContractConfigOnly();
@@ -255,16 +256,17 @@ public static class QualityBlockNative4KReviewPacket
 
         QualityBlockRenderedImageDiagnostics.AnalyzeExistingCapture();
         QualityBlockRenderedRepetitionDiagnostics.AnalyzeExistingCapture();
+        QualityBlockRenderedLightLeakDiagnostics.AnalyzeExistingCapture();
         QualityBlockTemporalDiagnostics.AnalyzeLatestEvidence();
         AssetDatabase.Refresh();
 
         Debug.Log(
-            "Complete native-4K review packet prepared: sealed hero/oblique/grazing 3840x2160 stills and 100% crops plus bound temporal evidence and SHA-256-bound pixel-domain repetition triage. " +
+            "Complete native-4K review packet prepared: sealed hero/oblique/grazing 3840x2160 stills and 100% crops plus bound temporal evidence and SHA-256-bound pixel-domain repetition/light-leak triage. " +
             "The year-2000 rooftop reception assembly is explicitly present and retains four-way mast restraint through every LOD before reflection, still and temporal evidence; " +
             "WornPathA terminates its modular curb runs before the paved plaza, while WornPathB uses a two-module curb opening, curved compacted core and feathered turf shoulders; " +
             "generated fallback trees retain continuous woody taper/metric bark plus a 2.32 m root-zone opening whose curb modules follow local plaza/lawn support and whose understory is grounded; " +
             "legacy balcony rails are excluded from evidence; the two futon drapes resolve the final rail datum; source-anchored facade weathering keeps optically feathered dry-dielectric residue through the formal evidence phases; " +
             "the park lamp retains its continuous installed assembly through every evidence phase; every slide LOD retains the watertight fabricated stainless chute; reflection cubemaps/stills share one hash-identical physical lighting state; " +
-            "and every temporal MainCamera frame must prove that same physical-lighting fingerprint plus the filmic HDR->LDR path with zero fallback. Repetition diagnostics remain warning-only and cannot clear obvious_repetition. Visual Fidelity remains UNSCORED until the actual pixels are manually reviewed against the locked 100-point gate.");
+            "and every temporal MainCamera frame must prove that same physical-lighting fingerprint plus the filmic HDR->LDR path with zero fallback. Pixel diagnostics remain warning-only and cannot clear/assert their associated critical defects. Visual Fidelity remains UNSCORED until the actual pixels are manually reviewed against the locked 100-point gate.");
     }
 }

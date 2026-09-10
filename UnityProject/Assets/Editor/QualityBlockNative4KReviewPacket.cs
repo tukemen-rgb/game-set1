@@ -23,6 +23,7 @@ public static class QualityBlockNative4KReviewPacket
         QualityBlockRenderedImageDiagnostics.ValidateContractConfigOnly();
         QualityBlockTemporalStabilityCapture.ValidateContractConfigOnly();
         QualityBlockPreparedTemporalCapture.ValidateContractConfigOnly();
+        QualityBlockTemporalRuntimeEvidenceGuard.ValidateContractConfigOnly();
         QualityBlockTemporalDiagnostics.ValidateContractConfigOnly();
         QualityBlockStructuralSurfaceSaveGate.ValidateContract();
         QualityBlockBenchmarkPrimitiveExposureQA.ValidateContractConfigOnly();
@@ -198,8 +199,22 @@ public static class QualityBlockNative4KReviewPacket
         QualityBlockFoliagePhysicalityQA.ValidateOpenScene();
         QualityBlockSceneRepetitionQA.ValidateOpenScene();
 
-        QualityBlockPreparedTemporalCapture.CaptureAndSealPreparedScene();
-        QualityBlockPreparedTemporalCapture.ValidateLatestPreparedBinding();
+        // Temporal evidence is now guarded at runtime, not just source-bound. The guard resets the
+        // filmic telemetry after the three stills, verifies the invariant physical-lighting fingerprint
+        // in MainCamera.onPreCull for every temporal Camera.Render, and seals exact HDR->LDR/fallback
+        // counts to the generated temporal manifest/receipt and the already-accepted reflection proofs.
+        QualityBlockTemporalRuntimeEvidenceGuard.Begin();
+        try
+        {
+            QualityBlockPreparedTemporalCapture.CaptureAndSealPreparedScene();
+            QualityBlockPreparedTemporalCapture.ValidateLatestPreparedBinding();
+            QualityBlockTemporalRuntimeEvidenceGuard.CompleteAndSeal();
+        }
+        catch
+        {
+            QualityBlockTemporalRuntimeEvidenceGuard.Abort();
+            throw;
+        }
 
         QualityBlockRenderedImageDiagnostics.AnalyzeExistingCapture();
         QualityBlockTemporalDiagnostics.AnalyzeLatestEvidence();
@@ -210,7 +225,8 @@ public static class QualityBlockNative4KReviewPacket
             "The worn-soil path terminates its modular curb runs before the paved plaza instead of carrying hidden-path edging across the field; " +
             "generated fallback trees retain continuous woody taper and metric bark; legacy balcony rails are excluded from evidence; " +
             "the two futon drapes resolve the final rail datum; the park lamp retains its continuous installed assembly through every evidence phase; " +
-            "every slide LOD retains the watertight fabricated stainless chute; and the reflection cubemaps/stills share one hash-identical physical lighting state. " +
+            "every slide LOD retains the watertight fabricated stainless chute; reflection cubemaps/stills share one hash-identical physical lighting state; " +
+            "and every temporal MainCamera frame must prove that same physical-lighting fingerprint plus the filmic HDR->LDR path with zero fallback. " +
             "Visual Fidelity remains UNSCORED until the actual pixels are manually reviewed against the locked 100-point gate.");
     }
 }

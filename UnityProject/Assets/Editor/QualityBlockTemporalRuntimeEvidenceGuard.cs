@@ -55,8 +55,8 @@ public static class QualityBlockTemporalRuntimeEvidenceGuard
             !contract.requirements.requireSameLightingFingerprintBeforeEveryMainCameraCull ||
             !contract.requirements.requireOnePreCullLightingCheckPerTemporalFrame ||
             !contract.requirements.requireFilmicTonemapForEveryTemporalFrame ||
-            !contract.requirements.requireHdrSourceForEveryTemporalSequence ||
-            !contract.requirements.requireLdrDestinationForEveryTemporalSequence ||
+            !contract.requirements.requireHdrSourceForEveryTemporalFrame ||
+            !contract.requirements.requireLdrDestinationForEveryTemporalFrame ||
             !contract.requirements.requireZeroFallbackBlits ||
             !contract.requirements.bindSceneSha256 ||
             !contract.requirements.bindTemporalManifestSha256 ||
@@ -71,7 +71,7 @@ public static class QualityBlockTemporalRuntimeEvidenceGuard
         if (contractFrameCount < 18)
             throw new InvalidOperationException($"Temporal runtime evidence requires at least 18 native-4K frames across the two probes; contract resolves to {contractFrameCount}.");
 
-        Debug.Log("Temporal runtime evidence contract valid: per-frame pre-cull lighting invariance + filmic HDR->LDR execution, zero automatic visual points.");
+        Debug.Log("Temporal runtime evidence contract valid: per-frame pre-cull lighting invariance + per-frame filmic HDR->LDR execution, zero automatic visual points.");
     }
 
     public static void Begin()
@@ -191,6 +191,8 @@ public static class QualityBlockTemporalRuntimeEvidenceGuard
                 native4KInvocationCount = tonemap.Native4KInvocationCount,
                 native4KTonemapAppliedCount = tonemap.Native4KTonemapAppliedCount,
                 fallbackInvocationCount = tonemap.FallbackInvocationCount,
+                hdrSourceInvocationCount = tonemap.HdrSourceInvocationCount,
+                ldrDestinationInvocationCount = tonemap.LdrDestinationInvocationCount,
                 lastSourceFormat = tonemap.LastSourceFormat.ToString(),
                 lastDestinationFormat = tonemap.LastDestinationFormat.ToString(),
                 lastSourceWidth = tonemap.LastSourceWidth,
@@ -222,7 +224,8 @@ public static class QualityBlockTemporalRuntimeEvidenceGuard
 
             Debug.Log(
                 $"Temporal runtime evidence sealed: frames={expectedFrameCount}, preCullLightingChecks={preCullLightingCheckCount}, " +
-                $"filmicInvocations={tonemap.Native4KTonemapAppliedCount}, fallback=0, lighting={lightingStateSha256}. " +
+                $"filmicInvocations={tonemap.Native4KTonemapAppliedCount}, hdrSources={tonemap.HdrSourceInvocationCount}, " +
+                $"ldrDestinations={tonemap.LdrDestinationInvocationCount}, fallback=0, lighting={lightingStateSha256}. " +
                 "Visual Fidelity remains UNSCORED_REVIEW_REQUIRED.");
         }
         finally
@@ -262,8 +265,10 @@ public static class QualityBlockTemporalRuntimeEvidenceGuard
             receipt.tonemapAppliedInvocationCount != currentExpectedFrameCount ||
             receipt.native4KInvocationCount != currentExpectedFrameCount ||
             receipt.native4KTonemapAppliedCount != currentExpectedFrameCount ||
+            receipt.hdrSourceInvocationCount != currentExpectedFrameCount ||
+            receipt.ldrDestinationInvocationCount != currentExpectedFrameCount ||
             receipt.fallbackInvocationCount != 0)
-            throw new InvalidOperationException("Temporal runtime receipt does not prove one guarded filmic native-4K render for every required temporal frame.");
+            throw new InvalidOperationException("Temporal runtime receipt does not prove one guarded filmic HDR-source/native-4K/LDR-destination render for every required temporal frame.");
 
         if (receipt.lightingFingerprintAlgorithm != QualityBlockReflectionLightingStateFingerprint.Algorithm ||
             string.IsNullOrWhiteSpace(receipt.lightingStateSha256) || receipt.lightingStateSha256.Length != 64 ||
@@ -317,10 +322,14 @@ public static class QualityBlockTemporalRuntimeEvidenceGuard
         if (tonemap.RenderInvocationCount != requiredFrames ||
             tonemap.TonemapAppliedInvocationCount != requiredFrames ||
             tonemap.Native4KInvocationCount != requiredFrames ||
-            tonemap.Native4KTonemapAppliedCount != requiredFrames)
+            tonemap.Native4KTonemapAppliedCount != requiredFrames ||
+            tonemap.HdrSourceInvocationCount != requiredFrames ||
+            tonemap.LdrDestinationInvocationCount != requiredFrames)
             throw new InvalidOperationException(
                 $"Temporal filmic telemetry mismatch. expected={requiredFrames}, render={tonemap.RenderInvocationCount}, " +
-                $"tonemap={tonemap.TonemapAppliedInvocationCount}, native4K={tonemap.Native4KInvocationCount}, nativeTonemap={tonemap.Native4KTonemapAppliedCount}.");
+                $"tonemap={tonemap.TonemapAppliedInvocationCount}, native4K={tonemap.Native4KInvocationCount}, " +
+                $"nativeTonemap={tonemap.Native4KTonemapAppliedCount}, hdrSources={tonemap.HdrSourceInvocationCount}, " +
+                $"ldrDestinations={tonemap.LdrDestinationInvocationCount}.");
         if (tonemap.FallbackInvocationCount != 0)
             throw new InvalidOperationException($"Temporal capture used {tonemap.FallbackInvocationCount} fallback blits; evidence is not scoreable.");
         if (tonemap.LastSourceWidth != Width || tonemap.LastSourceHeight != Height ||
@@ -434,8 +443,8 @@ public static class QualityBlockTemporalRuntimeEvidenceGuard
         public bool requireSameLightingFingerprintBeforeEveryMainCameraCull;
         public bool requireOnePreCullLightingCheckPerTemporalFrame;
         public bool requireFilmicTonemapForEveryTemporalFrame;
-        public bool requireHdrSourceForEveryTemporalSequence;
-        public bool requireLdrDestinationForEveryTemporalSequence;
+        public bool requireHdrSourceForEveryTemporalFrame;
+        public bool requireLdrDestinationForEveryTemporalFrame;
         public bool requireZeroFallbackBlits;
         public bool bindSceneSha256;
         public bool bindTemporalManifestSha256;
@@ -493,6 +502,8 @@ public static class QualityBlockTemporalRuntimeEvidenceGuard
         public int native4KInvocationCount;
         public int native4KTonemapAppliedCount;
         public int fallbackInvocationCount;
+        public int hdrSourceInvocationCount;
+        public int ldrDestinationInvocationCount;
         public string lastSourceFormat;
         public string lastDestinationFormat;
         public int lastSourceWidth;

@@ -9,8 +9,9 @@ using UnityEngine;
 /// Machine-enforced integrity checks for realtime reflection-probe state used by native-4K evidence.
 /// The production review packet writes the runtime receipt only after QualityBlockReflectionProbeAwaiter
 /// has observed completion on later Editor updates. Schema 1.1 additionally requires one SHA-256-identical
-/// physical sun/sky/ambient/shadow state across probe request, completion and immediate pre-still review.
-/// Passing this QA proves synchronization/coherence only; it never awards Visual Fidelity points.
+/// physical sun/sky/ambient/shadow state across probe request, every observed Editor poll, completion and
+/// immediate pre-still review. Passing this QA proves synchronization/coherence only; it never awards
+/// Visual Fidelity points.
 /// </summary>
 public static class QualityBlockReflectionProbeCaptureSyncQA
 {
@@ -39,6 +40,7 @@ public static class QualityBlockReflectionProbeCaptureSyncQA
         "scenePath",
         "observationMechanism",
         "editorPollCount",
+        "lightingFingerprintPollCount",
         "elapsedSeconds",
         "timeoutSeconds",
         "renderIds[]",
@@ -52,6 +54,7 @@ public static class QualityBlockReflectionProbeCaptureSyncQA
 
     private static readonly string[] RequiredLightingAbortReasons =
     {
+        "async_wait_proof_missing_per_poll_lighting_checks",
         "solar_shadow_contract_invalid_before_probe_request",
         "lighting_state_changed_during_probe_render",
         "ambient_probe_changed_during_probe_render",
@@ -105,6 +108,7 @@ public static class QualityBlockReflectionProbeCaptureSyncQA
             lighting.fingerprintImplementation != "QualityBlockReflectionLightingStateFingerprint.BuildCurrentSha256" ||
             lighting.fingerprintAlgorithm != QualityBlockReflectionLightingStateFingerprint.Algorithm ||
             !lighting.validateBeforeProbeRequest ||
+            !lighting.validateEveryEditorPollWhileWaiting ||
             !lighting.validateAfterProbeCompletion ||
             !lighting.validateImmediatelyBeforeStillCapture ||
             !lighting.requireRequestCompletionMatch ||
@@ -116,7 +120,7 @@ public static class QualityBlockReflectionProbeCaptureSyncQA
             !lighting.includeGlobalShadowAndLodSettings ||
             !lighting.actualRenderRequiredForVisualPoints)
             throw new InvalidOperationException(
-                "Reflection lighting-state binding was weakened. Probe request, completion and immediate pre-still state must remain SHA-256-identical across sun, sky, ambient SH, reflection/fog and shadow/LOD state.");
+                "Reflection lighting-state binding was weakened. Probe request, every observed Editor poll, completion and immediate pre-still state must remain SHA-256-identical across sun, sky, ambient SH, reflection/fog and shadow/LOD state.");
 
         AsyncWaitProofConfig waitProof = contract.asyncWaitProof;
         if (waitProof == null)
@@ -135,10 +139,10 @@ public static class QualityBlockReflectionProbeCaptureSyncQA
 
         if (contract.criticalFailurePolicy == null || contract.criticalFailurePolicy.captureMustAbortWhen == null ||
             RequiredLightingAbortReasons.Any(required => !contract.criticalFailurePolicy.captureMustAbortWhen.Contains(required)))
-            throw new InvalidOperationException("Reflection critical-failure policy no longer fails closed on solar/ambient lighting drift.");
+            throw new InvalidOperationException("Reflection critical-failure policy no longer fails closed on missing per-poll checks or solar/ambient lighting drift.");
 
         Debug.Log(
-            "Reflection-probe capture synchronization contract valid: later-Editor completion, receipt hash binding and request/completion/pre-still physical-lighting SHA-256 coherence are mandatory. Visual Fidelity remains render-evidence dependent.");
+            "Reflection-probe capture synchronization contract valid: later-Editor completion, receipt hash binding and request/every-poll/completion/pre-still physical-lighting SHA-256 coherence are mandatory. Visual Fidelity remains render-evidence dependent.");
     }
 
     [MenuItem("NewTown/QA/Validate Latest Reflection Probe Refresh Receipt")]
@@ -147,7 +151,7 @@ public static class QualityBlockReflectionProbeCaptureSyncQA
         ValidateContractConfigOnly();
 
         // A completion receipt is only meaningful while the current scene still satisfies the same
-        // physical sun/sky contract. The stronger request/completion/current hash identity is checked
+        // physical sun/sky contract. The stronger request/poll/completion/current hash identity is checked
         // by QualityBlockReflectionProbeAwaiter.ValidateLatestWaitProof immediately before stills.
         QualityBlockSolarShadowCaptureCoherenceQA.ValidateOpenScene();
         QualityBlockEnvironmentLightingUpgrade.ValidateOpenScene();
@@ -201,7 +205,7 @@ public static class QualityBlockReflectionProbeCaptureSyncQA
             throw new InvalidOperationException("Reflection receipt timestamp is implausibly in the future.");
 
         Debug.Log(
-            $"Reflection probe refresh receipt valid: {RequiredProbeCount}/{RequiredProbeCount} current-Unity 512px HDR cubemaps were proven complete before benchmark still capture. Lighting-state identity is additionally required by the schema-1.1 async proof. No visual points awarded.");
+            $"Reflection probe refresh receipt valid: {RequiredProbeCount}/{RequiredProbeCount} current-Unity 512px HDR cubemaps were proven complete before benchmark still capture. Lighting-state identity is additionally required at every poll by the schema-1.1 async proof. No visual points awarded.");
     }
 
     private static string AbsolutePath(string assetPath)
@@ -255,6 +259,7 @@ public static class QualityBlockReflectionProbeCaptureSyncQA
         public string fingerprintImplementation;
         public string fingerprintAlgorithm;
         public bool validateBeforeProbeRequest;
+        public bool validateEveryEditorPollWhileWaiting;
         public bool validateAfterProbeCompletion;
         public bool validateImmediatelyBeforeStillCapture;
         public bool requireRequestCompletionMatch;

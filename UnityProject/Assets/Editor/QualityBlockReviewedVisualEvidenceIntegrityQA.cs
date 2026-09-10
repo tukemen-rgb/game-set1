@@ -161,7 +161,8 @@ public static class QualityBlockReviewedVisualEvidenceIntegrityQA
             if (capture.width != 3840 || capture.height != 2160)
                 throw new InvalidOperationException(
                     $"Reviewed capture '{capture.viewId}' is not native 3840x2160: {capture.width}x{capture.height}.");
-            if (string.IsNullOrWhiteSpace(capture.assetPath))n                throw new InvalidOperationException($"Reviewed capture '{capture.viewId}' is missing assetPath.");
+            if (string.IsNullOrWhiteSpace(capture.assetPath))
+                throw new InvalidOperationException($"Reviewed capture '{capture.viewId}' is missing assetPath.");
             if (capture.cropPaths == null || capture.cropPaths.Length == 0 ||
                 capture.cropPaths.Any(string.IsNullOrWhiteSpace))
                 throw new InvalidOperationException(

@@ -42,7 +42,8 @@
       "cropRecords": [
         { "id": "facade_center", "assetPath": "Assets/QA/Captures4K/hero_crop_facade_center_1280x720_100pct.png", "x": 1280, "y": 500, "width": 1280, "height": 720, "resampled": false },
         { "id": "ground_contact", "assetPath": "Assets/QA/Captures4K/hero_crop_ground_contact_1280x720_100pct.png", "x": 1280, "y": 80, "width": 1280, "height": 720, "resampled": false },
-        { "id": "facade_right", "assetPath": "Assets/QA/Captures4K/hero_crop_facade_right_1280x720_100pct.png", "x": 2100, "y": 500, "width": 1280, "height": 720, "resampled": false }
+        { "id": "facade_right", "assetPath": "Assets/QA/Captures4K/hero_crop_facade_right_1280x720_100pct.png", "x": 2100, "y": 500, "width": 1280, "height": 720, "resampled": false },
+        { "id": "rooftop_period_hardware", "assetPath": "Assets/QA/Captures4K/hero_crop_rooftop_period_hardware_1280x720_100pct.png", "x": 1280, "y": 1440, "width": 1280, "height": 720, "resampled": false }
       ]
     },
     {
@@ -57,7 +58,8 @@
       "cropRecords": [
         { "id": "construction_depth", "assetPath": "Assets/QA/Captures4K/oblique_crop_construction_depth_1280x720_100pct.png", "x": 1180, "y": 500, "width": 1280, "height": 720, "resampled": false },
         { "id": "balcony_services", "assetPath": "Assets/QA/Captures4K/oblique_crop_balcony_services_1280x720_100pct.png", "x": 1900, "y": 560, "width": 1280, "height": 720, "resampled": false },
-        { "id": "vegetation_grounding", "assetPath": "Assets/QA/Captures4K/oblique_crop_vegetation_grounding_1280x720_100pct.png", "x": 1900, "y": 80, "width": 1280, "height": 720, "resampled": false }
+        { "id": "vegetation_grounding", "assetPath": "Assets/QA/Captures4K/oblique_crop_vegetation_grounding_1280x720_100pct.png", "x": 1900, "y": 80, "width": 1280, "height": 720, "resampled": false },
+        { "id": "rooftop_reception_oblique", "assetPath": "Assets/QA/Captures4K/oblique_crop_rooftop_reception_oblique_1280x720_100pct.png", "x": 1280, "y": 1440, "width": 1280, "height": 720, "resampled": false }
       ]
     },
     {
@@ -76,5 +78,5 @@
       ]
     }
   ],
-  "note": "Template only. renderProducedByUnity remains false and probesRefreshedImmediatelyBeforeCapture remains false until QualityBlock4KCapture actually runs in Unity. This file is not visual_fidelity_evidence.json and cannot award a Visual Fidelity score."
+  "note": "Template only. The two rooftop period-authenticity crops are now canonical capture records so runtime sealing/provenance covers them with the same native frame session. renderProducedByUnity remains false and probesRefreshedImmediatelyBeforeCapture remains false until QualityBlock4KCapture actually runs in Unity. This file is not visual_fidelity_evidence.json and cannot award a Visual Fidelity score."
 }

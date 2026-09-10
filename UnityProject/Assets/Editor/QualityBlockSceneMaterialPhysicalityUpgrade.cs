@@ -41,8 +41,9 @@ public static class QualityBlockSceneMaterialPhysicalityUpgrade
         SetStandardSurface(galvanized, smoothness: 0.40f, metallic: 0.88f);
         SetStandardSurface(downpipePvc, smoothness: 0.18f, metallic: 0.0f);
 
-        // The base rails remain benchmark-visible beneath the added anchorage/detail hierarchy.
-        // Treat them as the same aged anodized-aluminium extrusion family as the authored rail detail.
+        // At this early binding stage the base rail renderers are still active construction datums.
+        // A later guardrail reconstruction disables their stock Cube renderers and provides its own
+        // oxide-coated/anodized material with a dedicated physicality gate.
         RebindPrefix("RailTop_", aluminum);
         RebindPrefix("Rail_", aluminum);
 
@@ -81,8 +82,20 @@ public static class QualityBlockSceneMaterialPhysicalityUpgrade
 
         if (aluminum != null)
         {
-            ValidateBinding("RailTop_", aluminum, minimumCount: 30, errors);
-            ValidateBinding("Rail_", aluminum, minimumCount: 210, errors);
+            if (HasGeneratedGuardrailReplacement())
+            {
+                // Once the manufactured guardrail is installed these old stock-Cube renderers must be
+                // inactive. Still require the pre-replacement material binding to remain intact so an
+                // accidental re-enable cannot reintroduce both primitive and bad-material defects.
+                ValidateDisabledBinding("RailTop_", aluminum, exactCount: 30, errors);
+                ValidateDisabledBinding("Rail_", aluminum, exactCount: 210, errors);
+            }
+            else
+            {
+                ValidateBinding("RailTop_", aluminum, minimumCount: 30, errors);
+                ValidateBinding("Rail_", aluminum, minimumCount: 210, errors);
+            }
+
             ValidateBinding("HD_WindowFrame_", aluminum, minimumCount: 120, errors);
             ValidateBinding("HD_WindowSashStile_", aluminum, minimumCount: 60, errors);
             ValidateBinding("HD_WindowSillDrip", aluminum, minimumCount: 30, errors);
@@ -110,7 +123,7 @@ public static class QualityBlockSceneMaterialPhysicalityUpgrade
                 "Scene material physicality QA FAILED:\n - " + string.Join("\n - ", errors));
 
         Debug.Log(
-            "Scene material physicality QA passed for actual active Unity materials and hero construction bindings. Native 4K render review is still required.");
+            "Scene material physicality QA passed for actual active Unity materials and hero construction bindings, including inactive legacy rail compatibility bindings when the reconstructed guardrail is present. Native 4K render review is still required.");
     }
 
     [MenuItem("NewTown/QA/Validate Scene Material Physicality Contract")]
@@ -159,8 +172,6 @@ public static class QualityBlockSceneMaterialPhysicalityUpgrade
             material.shader = shader;
         }
 
-        // Medium gray weathered PVC-U: dark enough to separate from the facade, but not a black void.
-        // Macro runoff/chalking remains in the causal weathering system, not baked into this base color.
         material.color = new Color(0.31f, 0.315f, 0.30f, 1f);
         material.DisableKeyword("_EMISSION");
         if (material.HasProperty("_EmissionColor")) material.SetColor("_EmissionColor", Color.black);
@@ -216,6 +227,25 @@ public static class QualityBlockSceneMaterialPhysicalityUpgrade
         {
             if (renderer.sharedMaterial != expected)
                 errors.Add($"{renderer.gameObject.name} uses '{renderer.sharedMaterial?.name ?? "<null>"}' instead of required '{expected.name}'.");
+        }
+    }
+
+    private static void ValidateDisabledBinding(string prefix, Material expected, int exactCount, List<string> errors)
+    {
+        Renderer[] renderers = SceneRenderers()
+            .Where(x => x.gameObject.name.StartsWith(prefix, StringComparison.Ordinal))
+            .ToArray();
+        if (renderers.Length != exactCount)
+        {
+            errors.Add($"Legacy compatibility renderer count for '{prefix}' drifted: {renderers.Length} != {exactCount}.");
+            return;
+        }
+        foreach (Renderer renderer in renderers)
+        {
+            if (renderer.enabled)
+                errors.Add($"Legacy stock renderer {renderer.gameObject.name} was re-enabled after guardrail replacement.");
+            if (renderer.sharedMaterial != expected)
+                errors.Add($"Inactive legacy renderer {renderer.gameObject.name} lost its bound '{expected.name}' material.");
         }
     }
 
@@ -299,10 +329,22 @@ public static class QualityBlockSceneMaterialPhysicalityUpgrade
             errors.Add($"{label} has active emission ({e}); daylight benchmark materials must not self-light.");
     }
 
-    private static IEnumerable<Renderer> ActiveRenderers()
+    private static bool HasGeneratedGuardrailReplacement()
+    {
+        int count = Resources.FindObjectsOfTypeAll<QualityBlockBalconyGuardrailManifest>()
+            .Count(x => x != null && x.gameObject.scene.IsValid() && x.gameObject.scene.path == ScenePath);
+        return count == 30;
+    }
+
+    private static IEnumerable<Renderer> SceneRenderers()
     {
         return Resources.FindObjectsOfTypeAll<Renderer>()
-            .Where(x => x != null && x.gameObject.scene.IsValid() && x.enabled && x.gameObject.activeInHierarchy);
+            .Where(x => x != null && x.gameObject.scene.IsValid() && x.gameObject.scene.path == ScenePath);
+    }
+
+    private static IEnumerable<Renderer> ActiveRenderers()
+    {
+        return SceneRenderers().Where(x => x.enabled && x.gameObject.activeInHierarchy);
     }
 
     private static Material RequireMaterial(string path)

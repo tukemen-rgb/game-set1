@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "1.0.0",
+  "schemaVersion": "1.0.1",
   "scenePath": "Assets/Scenes/QualityBlock1990s.unity",
   "sceneRootName": "QualityBlock1990s",
   "coverageMode": "all_active_renderers_in_benchmark",
@@ -101,18 +101,19 @@
       "id": "street_furniture_domain",
       "rootName": "StreetFurniture",
       "required": true,
-      "manufacture": "Neighborhood lamp and notice-board fallback assembled from concrete/steel support, luminaire diffuser/housing and board frame/backing with visible support logic appropriate to an ordinary circa-2000 public-space context.",
-      "dimensionsThickness": "Pole, globe/diffuser, frame, panel and support dimensions are recorded by the park/street-furniture contract; thin housings/diffusers use dedicated physical refinement where observable.",
-      "materialsFinish": "Concrete, coated/exposed metal, frosted dielectric diffuser and board backing remain separate material families with restrained roughness/metallicity and physical angular response.",
-      "mounting": "Pole and posts meet ground support; luminaire head attaches to the pole; board panel attaches to posts/frame instead of unsupported placement.",
-      "interfacesGapsSeals": "Pole-to-ground, head-to-pole, diffuser-housing and panel/post interfaces require plausible joins/contact; no floating or hero-scale penetration.",
-      "orientationExposure": "Outdoor faces receive UV/rain; upper surfaces collect dust/water; contact and near-ground splash vary locally.",
-      "aging": "Ordinary weathering from UV, rain, dust and contact; no damage-story overlays.",
-      "geometryVsMaterial": "Pole/head/frame/panel thickness and joints are geometry; concrete pores, paint orange-peel, diffuser frost and fine board texture are material response.",
-      "lodPolicy": "Street-furniture LOD0 preserves physical silhouette/construction with LOD1/2/3 simplification and cross-fade where the generated fallback defines it.",
+      "manufacture": "Neighborhood lamp and notice-board fallback assembled from concrete/steel support, luminaire diffuser/housing and a framed weatherproof notice-board case with recessed backing, passive printed notices, clear acrylic cover, EPDM retention, hinge/latch hardware and runoff hood appropriate to an ordinary circa-2000 public-space context.",
+      "dimensionsThickness": "Pole and diffuser dimensions are recorded by the park/street-furniture contract; the notice-board contract separately fixes 75 mm case depth, 18 mm backing, 3 mm clear cover, 10 mm gasket face, hinge/latch hardware and 0.4 mm paper thickness.",
+      "materialsFinish": "Concrete, coated/exposed metal, frosted dielectric lamp diffuser, rough backing/paper, matte EPDM and transparent dielectric acrylic remain separate material families with restrained roughness/metallicity and physical angular response.",
+      "mounting": "Pole and posts meet ground support; luminaire head attaches to the pole; the notice-board frame spans two posts, backing is recessed, papers seat on the backing, the clear cover is hinged/latching on the frame, and the drip hood bears on the top rail.",
+      "interfacesGapsSeals": "Pole-to-ground, head-to-pole and diffuser-housing joints remain plausible; notice-board papers contact backing within 1 mm, retain dry-air separation from the cover, cover edges seat inside the frame with EPDM retention, and hinge/latch axes remain on the corresponding rails.",
+      "orientationExposure": "Outdoor faces receive UV/rain; lamp and board upper surfaces collect dust/water; notice-board cover receives runoff/wiping while backing/papers stay sheltered; near-ground splash varies locally.",
+      "aging": "Ordinary weathering from UV, rain, dust, wiping and contact; papers fade/yellow independently behind the cover; no damage-story overlays.",
+      "geometryVsMaterial": "Pole/head/frame/case/backing/cover/gasket/hinges/latch/paper thickness and physical joints are geometry; concrete pores, paint orange-peel, diffuser frost, printed ink, paper fibre, acrylic wiping haze and fine board texture are material response.",
+      "lodPolicy": "Street-furniture LOD0 preserves physical silhouette/construction; the notice-board cover/case and five-notice occupancy persist through LOD1/2/3 while only sub-pixel pin heads are omitted, avoiding content-class or cover silhouette pop.",
       "contractPaths": [
         "Assets/QA/park_street_furniture_contract.json",
-        "Assets/QA/park_furniture_microdetail_contract.json"
+        "Assets/QA/park_furniture_microdetail_contract.json",
+        "Assets/QA/notice_board_display_case_contract.json"
       ]
     },
     {

@@ -10,8 +10,9 @@ using UnityEngine.SceneManagement;
 /// Makes the park/street-furniture construction pass part of the persisted benchmark scene whenever
 /// the existing high-detail ground chain is present. The gate checks machine-readable manufacture/
 /// material metadata, rebuilds the assembly, applies physical-profile refinement, reconstructs the
-/// slide's manufactured stair/head/runout support path before explicit LOD renderer rebinding, applies
-/// physical-scale microdetail, corrects the bench load path, then runs structural/material QA.
+/// notice-board weatherproof display case and slide manufactured access/head/runout support path before
+/// explicit LOD renderer rebinding, applies physical-scale microdetail, corrects the bench load path,
+/// then runs structural/material QA.
 /// </summary>
 [InitializeOnLoad]
 public static class QualityBlockParkFurnitureSaveGate
@@ -23,6 +24,8 @@ public static class QualityBlockParkFurnitureSaveGate
     private const string SlideLookdevPath = "Assets/QA/slide_access_installation_lookdev.svg";
     private const string BenchInterfaceContractPath = "Assets/QA/bench_seat_construction_interface_contract.json";
     private const string BenchLookdevPath = "Assets/QA/bench_seat_construction_lookdev.svg";
+    private const string NoticeBoardContractPath = "Assets/QA/notice_board_display_case_contract.json";
+    private const string NoticeBoardLookdevPath = "Assets/QA/notice_board_display_case_lookdev.svg";
     private static bool applying;
 
     static QualityBlockParkFurnitureSaveGate()
@@ -46,8 +49,9 @@ public static class QualityBlockParkFurnitureSaveGate
             QualityBlockParkFurnitureUpgrade.BuildAndApply();
             QualityBlockParkFurniturePhysicalRefinement.ApplyAndValidate();
 
-            // Build the missing access/load-path before LOD rebind so every new renderer is captured by
-            // the corresponding LOD0/1/2/3 renderer set instead of becoming an all-distance renderer.
+            // Build benchmark-visible subassemblies before LOD rebind so their new renderers are captured
+            // by the corresponding LOD0/1/2/3 renderer sets instead of becoming all-distance renderers.
+            QualityBlockNoticeBoardDisplayCaseQA.ApplyToOpenScene();
             QualityBlockSlideAccessInstallationQA.ApplyToOpenScene();
             QualityBlockParkFurnitureLodRebind.RebindAndValidate();
 
@@ -56,6 +60,7 @@ public static class QualityBlockParkFurnitureSaveGate
             QualityBlockParkFurnitureUpgrade.ValidateOpenScene();
             QualityBlockParkFurniturePhysicalRefinement.ValidateOpenScene();
             QualityBlockParkFurnitureLodRebind.ValidateOpenScene();
+            QualityBlockNoticeBoardDisplayCaseQA.ValidateOpenScene();
             QualityBlockSlideAccessInstallationQA.ValidateOpenScene();
             QualityBlockParkFurnitureMicrodetailUpgrade.Validate();
             QualityBlockBenchSeatConstructionInterfaceQA.ValidateOpenScene();
@@ -63,7 +68,7 @@ public static class QualityBlockParkFurnitureSaveGate
         catch (Exception ex)
         {
             throw new InvalidOperationException(
-                "Benchmark save blocked: park/street-furniture manufacture, material, physical-profile, slide access/support, LOD, microdetail or bench load-path contract failed.", ex);
+                "Benchmark save blocked: park/street-furniture manufacture, material, physical-profile, notice-board display-case, slide access/support, LOD, microdetail or bench load-path contract failed.", ex);
         }
         finally
         {
@@ -86,6 +91,10 @@ public static class QualityBlockParkFurnitureSaveGate
             throw new InvalidOperationException($"Missing required bench construction-interface metadata: {BenchInterfaceContractPath}");
         if (!File.Exists(BenchLookdevPath))
             throw new InvalidOperationException($"Missing required bench construction lookdev illustration: {BenchLookdevPath}");
+        if (!File.Exists(NoticeBoardContractPath))
+            throw new InvalidOperationException($"Missing required notice-board display-case metadata: {NoticeBoardContractPath}");
+        if (!File.Exists(NoticeBoardLookdevPath))
+            throw new InvalidOperationException($"Missing required notice-board display-case lookdev illustration: {NoticeBoardLookdevPath}");
 
         string json = File.ReadAllText(ContractPath);
         string[] requiredTokens =
@@ -156,7 +165,25 @@ public static class QualityBlockParkFurnitureSaveGate
             if (!benchJson.Contains(token, StringComparison.Ordinal))
                 throw new InvalidOperationException($"Bench construction-interface metadata missing required token: {token}");
 
+        string noticeJson = File.ReadAllText(NoticeBoardContractPath);
+        string[] noticeTokens =
+        {
+            "\"id\": \"notice_board_display_case_installation\"",
+            "\"clearCoverThickness\": 0.003",
+            "\"requiredHingeCount\": 3",
+            "\"requiredNoticeCount\": 5",
+            "\"minimumDistinctNoticeMaterialCount\": 3",
+            "\"requiredLodCount\": 4",
+            "\"generatedColliderCount\": 0",
+            "\"visualFidelityPointsAwarded\": 0",
+            "PENDING_UNITY_RUNTIME"
+        };
+        foreach (string token in noticeTokens)
+            if (!noticeJson.Contains(token, StringComparison.Ordinal))
+                throw new InvalidOperationException($"Notice-board display-case metadata missing required token: {token}");
+
         QualityBlockSlideAccessInstallationQA.ValidateContractConfigOnly();
         QualityBlockBenchSeatConstructionInterfaceQA.ValidateContractConfigOnly();
+        QualityBlockNoticeBoardDisplayCaseQA.ValidateContractConfigOnly();
     }
 }

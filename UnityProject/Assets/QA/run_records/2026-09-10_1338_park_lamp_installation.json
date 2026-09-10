@@ -1,0 +1,175 @@
+{
+  "schemaVersion": "1.0",
+  "runId": "2026-09-10_1338_park_lamp_installation",
+  "branch": "gpt/unity-migration",
+  "startHead": "91dea58035652e96840ceecff5b1a6d9bd48fe5f",
+  "substantiveWorkHead": "eda481375f42dbe5102b6ab66c8d40ca2fe39ff6",
+  "commits": [
+    {"sha": "748bdfda304f88f5d3ab4101892e6649386e81db", "purpose": "add machine-readable park-lamp manufacture/install/material/LOD contract with zero automatic visual credit"},
+    {"sha": "960dc94ef0301e05fb375708de3524c12c4b79c0", "purpose": "add front/section construction lookdev showing continuous pole taper, grade contact, curved service cover and retained globe interfaces"},
+    {"sha": "9c447410c594a7a6f83476b4e51619b7882458b5", "purpose": "initial park-lamp installation reconstruction and fail-closed source/runtime QA"},
+    {"sha": "bf7620abadc60bee57a3f8da531ca57259e7bfad", "purpose": "run lamp reconstruction immediately before explicit furniture LOD rebind and exclude replaced legacy lamp renderers from all LOD sets"},
+    {"sha": "eda481375f42dbe5102b6ab66c8d40ca2fe39ff6", "purpose": "self-audit correction: reverse initial tapered-pole side/cap triangle winding to outward-facing normals and explicitly prove LOD0 service-fastener membership"}
+  ],
+  "problemFound": {
+    "assembly": "HD_Lamp",
+    "sourceEvidence": [
+      "The first-pass lamp pole was two independently generated concrete cylinders meeting at Y=2.10 m: lower diameter 0.190 m and upper diameter 0.150 m. That creates an abrupt 20 mm radial step rather than the continuous manufactured taper expected of a purpose-made lighting pole.",
+      "The old GroundMoistureBand used a 0.196 m diameter around a 0.190 m base pole, making weathering a 3 mm radial geometry bulge on every side. The requested causal-weathering rule requires the moisture/splash state to change optical/material response without inventing a raised dirt sleeve.",
+      "The old head relied on generic Neck/Cap/DiffuserCrown cylinders around the topology-aware PhysicalDiffuser, but did not lock real insertion/retention relationships between the pole top, adapter, diffuser necks and weather cap.",
+      "The first-pass lamp had no modeled service-access interface. A benchmark-visible public lighting pole therefore lacked a manufactured access/maintenance cue and risked reading as a generic procedural post.",
+      "The first draft of the new custom tapered-pole mesh used intuitive a-b-c side winding. Static vector cross-product audit showed those triangles faced inward; bottom/top cap winding was also reversed. The substantive final code corrects side normals and both caps before any Unity render is claimed."
+    ],
+    "criticalDefectRisk": [
+      "visible primitive-placeholder-like geometry",
+      "floating or weakly connected luminaire-head geometry",
+      "material shortcut that turns causal moisture into protruding geometry",
+      "materially impossible metal/dielectric separation",
+      "visible LOD content/silhouette pop",
+      "missing required construction/material metadata",
+      "claiming quality without an actual render"
+    ],
+    "affectedCategories": [
+      "Geometry & construction fidelity",
+      "Material/PBR physical plausibility",
+      "Weathering/context causality",
+      "Period accuracy/scene authenticity",
+      "Temporal/LOD/aliasing stability"
+    ]
+  },
+  "implementation": {
+    "pole": {
+      "visibleConstruction": "single continuous tapered generated mesh with separate lower contact-material submesh rather than stacked cylinders",
+      "bottomYMetres": -0.080,
+      "topYMetres": 3.920,
+      "gradeDiameterMetres": 0.190,
+      "topDiameterMetres": 0.125,
+      "radialSegmentsLOD0To3": [32, 24, 16, 12],
+      "moistureZone": "same pole geometry; submesh material boundary at Y=0.20 m, eliminating the former 3 mm-per-side raised moisture ring"
+    },
+    "serviceInterface": {
+      "centerYMetres": 0.860,
+      "gasket": "curved EPDM shell, 0.280 m high, 33 degree half-angle, 1.5 mm radial thickness",
+      "cover": "curved painted-steel shell, 0.260 m high, 30 degree half-angle, 3 mm radial thickness",
+      "bearing": "cover inner shell intentionally overlaps gasket outer shell by 0.5 mm; positive gap above 3 mm or unintended penetration above 8 mm fails",
+      "fasteners": "four 8 mm exposed-steel heads only at LOD0; final LOD validator requires those four renderers to belong to LOD0"
+    },
+    "headLoadPath": {
+      "poleToAdapterOverlapMetres": 0.002,
+      "adapterToLowerRetainerOverlapMetres": 0.002,
+      "lowerRetainerToDiffuserOverlapMetres": 0.005,
+      "diffuserToUpperRetainerOverlapMetres": 0.005,
+      "upperRetainerToWeatherCapGapMetres": 0.0,
+      "maxPositiveInterfaceGapMetres": 0.003,
+      "maxUnintendedPenetrationMetres": 0.008
+    },
+    "materials": {
+      "dryConcrete": "dielectric PBR_ParkPrecastConcrete with concrete microdetail",
+      "gradeContactConcrete": "dielectric PBR_ParkContactConcrete, same substrate with cause-based moisture/splash optical state",
+      "paintedHeadAndCover": "rough painted dielectric steel; metallic hard maximum 0.05",
+      "serviceFasteners": "exposed steel normalized by authoritative park microdetail; final metallic minimum 0.95",
+      "serviceSeal": "PBR_LampEPDM, metallic 0, roughness 0.92",
+      "diffuser": "existing PBR_LampDiffuserAged, dielectric and non-emissive in the daytime benchmark"
+    },
+    "lod": "PhysicalPole, gasket, curved cover, pole-top boot, adapter, lower retainer, PhysicalDiffuser, upper retainer and weather cap persist through LOD0/1/2/3. Only four 8 mm service-cover heads are LOD0-only. The reconstruction runs immediately before QualityBlockParkFurnitureLodRebind rebuilds explicit Renderer arrays; replaced PoleLower/PoleUpper/GroundMoistureBand/Neck/Cap/Diffuser/DiffuserCrown are excluded from those arrays.",
+    "lookdev": "Assets/QA/park_lamp_installation_lookdev.svg",
+    "contract": "Assets/QA/park_lamp_installation_contract.json",
+    "qa": "Assets/Editor/QualityBlockParkLampInstallationQA.cs"
+  },
+  "referenceResearch": [
+    {
+      "authority": "Panasonic",
+      "url": "https://jpn.faq.panasonic.com/app/answers/detail/a_id/101310/",
+      "use": "construction-class reference only: lighting poles may use a continuous taper from larger base diameter to smaller top diameter; the cited page describes steel road-lighting poles and is not treated as exact historical dimensional evidence for this fictional concrete park pole"
+    },
+    {
+      "authority": "Panasonic",
+      "url": "https://jpn.faq.panasonic.com/app/answers/detail/a_id/110067/",
+      "use": "supports treating pole-top diameter/insertion and luminaire attachment as a real interface rather than a decorative floating head; no exact product compatibility is claimed"
+    },
+    {
+      "authority": "Shizuoka City",
+      "url": "https://www.city.shizuoka.lg.jp/shisetsu/s0000626.html",
+      "use": "current municipal-park morphology reference showing a simple pole plus retained globe form in an ordinary neighborhood park; not used as proof of a 2000 product model"
+    }
+  ],
+  "qaEnforcement": [
+    "Contract validation requires manufacture, dimensions/thickness, component interfaces, geometry-vs-material allocation, material optical values, cause-based aging, LOD policy, critical-fail rules and explicit zero Visual Fidelity credit.",
+    "Scene QA rejects the old stacked-pole/moisture/head renderers if still visible or if any remain bound into formal LOD renderer arrays.",
+    "PhysicalPole QA requires a two-submesh custom taper, 0.04-0.12 m below-grade embed, top Y within 4 mm, at least 3.98 m physical height, and grade/top radii within 2 mm of contract values.",
+    "Curved service-interface QA measures shell radial ranges from real generated mesh vertices at top/bottom and rejects positive cover/gasket gaps above 3 mm, penetration above 8 mm, or drift from the designed 0.5 mm bearing overlap.",
+    "Head-interface QA derives real mesh Y envelopes and rejects pole/adapter, adapter/lower-retainer, lower-retainer/diffuser, diffuser/upper-retainer and upper-retainer/cap gaps or penetrations outside hard limits.",
+    "Final scene QA requires dielectric concrete/paint/diffuser/EPDM, metallic exposed fasteners after the microdetail pass, no daytime emissive diffuser, no generated colliders and no active stock Cube/Cylinder/Sphere/Capsule mesh in the lamp.",
+    "Formal park-furniture LOD validation now calls the completed park-lamp QA after shared microdetail, so the existing Native 4K review packet inherits the lamp checks before/after evidence stages without creating a parallel scoring path.",
+    "No source-side pass clears a rendered critical defect and no Visual Fidelity point is awarded by this QA."
+  ],
+  "verification": {
+    "sourceDimensionalAudit": "PASS_BY_CODE_MATH_ONLY",
+    "meshWindingAudit": "PASS_BY_VECTOR_CROSS_PRODUCT_MATH_ONLY_AFTER_SELF_AUDIT_CORRECTION",
+    "interfaceSignedGapsBySourceMathMetres": {
+      "poleAdapter": -0.002,
+      "adapterLowerRetainer": -0.002,
+      "lowerRetainerDiffuser": -0.005,
+      "diffuserUpperRetainer": -0.005,
+      "upperRetainerWeatherCap": 0.0
+    },
+    "contractJson": "CREATED_MACHINE_READABLE",
+    "lookdevIllustration": "CREATED_SVG",
+    "researchScope": "current authoritative pages used only for general construction/interface principles; no unsupported exact 2000-model claim",
+    "selfAuditCorrections": [
+      "custom tapered-pole side triangle order corrected from inward to outward winding",
+      "bottom cap corrected to -Y and top cap corrected to +Y winding",
+      "LOD0 service-cover fasteners changed from count-only checking to explicit Renderer membership proof"
+    ],
+    "runStartToSubstantiveHead": {
+      "aheadBy": 5,
+      "behindBy": 0,
+      "mergeBaseRemainedStartHead": true,
+      "changedPaths": [
+        "UnityProject/Assets/Editor/QualityBlockParkFurnitureLodRebind.cs",
+        "UnityProject/Assets/Editor/QualityBlockParkLampInstallationQA.cs",
+        "UnityProject/Assets/QA/park_lamp_installation_contract.json",
+        "UnityProject/Assets/QA/park_lamp_installation_lookdev.svg"
+      ]
+    },
+    "godotTouched": false,
+    "baseMergePerformed": false,
+    "githubCommitStatusContextsAtSubstantiveHead": 0,
+    "githubWorkflowRunsOnBranchAtSubstantiveHead": 0,
+    "captures4kDirectory": "ABSENT",
+    "unity6000_3_0f1Compile": "PENDING_NO_RUNNER",
+    "native3840x2160Render": "PENDING_NO_RUNNER",
+    "hundredPercentCropReview": "PENDING_NO_RUNNER",
+    "temporalRenderEvidence": "PENDING_NO_RUNNER"
+  },
+  "implementationReadiness": {
+    "score": 93,
+    "possible": 100,
+    "status": "UNCHANGED",
+    "reason": "The repository readiness model reserves the remaining seven points for actual Unity 6000.3.0f1 compile/runtime evidence. This run improved source construction fidelity and fail-closed QA but cannot satisfy that missing runtime evidence."
+  },
+  "visualFidelity": {
+    "status": "UNSCORED",
+    "pointsAwardedThisRun": 0,
+    "passClaimed": false
+  },
+  "expectedVisualScoreImpact": {
+    "geometryConstruction": "Potential deduction recovery because the benchmark-visible lamp moves from stacked pole cylinders and decorative head solids to a continuous taper, below-grade embed, service interface and explicit head retention. No point is assumed until native pixels prove silhouette/contact quality.",
+    "materialPbr": "Potential improvement because moisture-state concrete, dry concrete, painted steel, exposed fasteners, EPDM and aged diffuser have distinct physical material classes and metallic/Fresnel constraints. Grazing/oblique rendered evidence remains mandatory.",
+    "weatheringContext": "Potential improvement because the former 3 mm-per-side raised moisture ring is replaced by the same pole surface with a lower cause-based contact-material submesh; actual appearance must still avoid a visible hard texture band.",
+    "periodAuthenticity": "Potential deduction recovery because a retained globe, maintainable service cover and non-LED daytime fixture read more plausibly as ordinary legacy neighborhood infrastructure than an abstract procedural post; exact historical-product credit is not claimed.",
+    "temporalLod": "Potential stability improvement because all silhouette/construction parts persist through four cross-faded tiers while only 8 mm heads are removed after LOD0; actual pop/shimmer must be judged from temporal evidence.",
+    "automaticCredit": 0
+  },
+  "benchmarkObservability": {
+    "sourceProjection": "Using the locked camera positions/targets/FOV, the lamp lies inside the hero and oblique full frames. The service-cover zone is expected in/near the oblique construction_depth 100% crop; this is projection math only and must be confirmed against actual captures.",
+    "grazingView": "lamp is outside the locked grazing frame, so material-angle judgment should use hero/oblique lamp pixels plus grazing evidence from other material instances unless future approved framing explicitly includes the lamp"
+  },
+  "nextBlocker": "No Unity 6000.3.0f1 runner/workflow or native render evidence exists. At first Runner availability, stop speculative expansion and execute Prepare Complete Native 4K Review Packet. For the lamp, inspect the oblique full frame and construction_depth crop at 100% for continuous pole taper, grade embed/contact, absence of the old raised moisture sleeve, curved service-cover/gasket bearing, cover fasteners, adapter/retainer/globe/cap continuity and correct outward-facing surfaces. Check concrete vs painted steel vs exposed fastener vs dielectric globe response, then traverse LOD thresholds for silhouette/material pop. If any actual pixel shows a critical defect, fix the rendered failure rather than weakening the QA thresholds.",
+  "constraints": {
+    "preserveGodot": true,
+    "mergeBaseWithoutApproval": false,
+    "excludedThemes": ["earthquake", "disaster", "reconstruction"],
+    "stopNewCommitsAfter": "2026-09-18"
+  }
+}

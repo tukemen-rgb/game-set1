@@ -1,11 +1,12 @@
 {
-  "schemaVersion": "1.1",
+  "schemaVersion": "1.2",
   "status": "PENDING_REAL_UNITY_4K_RENDER",
   "purpose": "Physical outdoor illumination and reflection contract for the 4K live-action fidelity target. This contract does not award Visual Fidelity points without actual Unity render evidence.",
   "visualFidelityCategoryImpact": [
     "lighting_shadows_reflections",
     "material_pbr_physical_plausibility",
-    "cinematic_image_quality_composition_color_exposure"
+    "cinematic_image_quality_composition_color_exposure",
+    "temporal_lod_aliasing_stability"
   ],
   "benchmarkContext": {
     "latitudeDegrees": 35.6,
@@ -13,7 +14,21 @@
     "localApparentSolarTimeHours": 14.0,
     "recentRain": false,
     "seasonIntent": "midsummer Japanese new-town afternoon",
+    "expectedSolarElevationDegrees": 58.10658,
+    "expectedSolarAzimuthDegrees": 244.22672,
+    "expectedHorizontalShadowPerVerticalMetre": 0.622286,
     "sunPolicy": "The same SummerSun directional light must drive scene shadows and the procedural sky sun disk. A second contradictory key light is forbidden."
+  },
+  "solarShadowCaptureCoherence": {
+    "contractPath": "Assets/QA/solar_shadow_capture_coherence_contract.json",
+    "runtimeSourceOfTruth": "QualityBlockSolarShadowRuntimeContract",
+    "preRenderGuard": "QualityBlockSolarShadowPreRenderGuard",
+    "guardCallback": "Camera.onPreCull",
+    "requiredActiveDirectionalLightCount": 1,
+    "requiredDirectionalLightName": "SummerSun",
+    "rebuildInvariant": "Every QualityBlockEnvironmentContext.ApplyToDirectionalLight call reapplies the complete shadow/camera/LOD stability state so a fresh generated-scene rebuild cannot reset settings validated earlier.",
+    "historicalDriftClosed": "Environment solar application previously wrote shadowBias=0.04 and shadowNormalBias=0.28 after the separate shadow-stability contract expected 0.025/0.38. The runtime source of truth now reapplies 0.025/0.38 plus the complete stable shadow state.",
+    "actualPixelsStillRequired": true
   },
   "sky": {
     "shader": "Skybox/Procedural",
@@ -90,6 +105,7 @@
   "camera": {
     "hdrRequired": true,
     "msaaAllowedRequired": true,
+    "dynamicResolutionAllowed": false,
     "clearFlags": "Skybox",
     "captureResolution": [3840, 2160]
   },
@@ -98,7 +114,7 @@
     "facadeGlass": "At frontal view, retain readable but subdued non-emissive interior backing. At oblique view, sky/building/ground reflection contribution should rise. At grazing view, specular/Fresnel response should become dominant without turning the pane into cyan chrome or a painted highlight.",
     "paintedMetal": "Rail and painted steel should show narrow, roughness-controlled environment highlights that change with camera angle and geometry, never fixed bright streaks in albedo.",
     "concrete": "Rough concrete should retain broad low-energy response and readable micro-normal grazing detail without mirror-like reflections.",
-    "shadowAndSky": "Visible sun position, key-light direction and cast-shadow direction must agree in all benchmark views.",
+    "shadowAndSky": "Visible sun position, the sole directional key, key-light direction and cast-shadow direction must agree in all benchmark views. The 58.11 degree elevation / 244.23 degree azimuth source sample is configuration evidence only; actual shadow bearing must still be verified from rendered pixels.",
     "exposure": "Sunlit facade texture and cloud/sky structure must retain highlight detail; shaded recesses and non-emissive window interiors may be dark but should not collapse into featureless black everywhere.",
     "probeSeams": "No hard reflection transition, cubemap orientation discontinuity, or sudden brightness jump may be visible while moving through overlapping probe volumes."
   },
@@ -106,6 +122,8 @@
     "obviously_painted_or_baked_highlights",
     "materially_impossible_metallic_or_specular_values",
     "inconsistent_sun_shadow_direction",
+    "severe_aliasing_or_shimmering",
+    "visible_lod_pop",
     "major_light_leak",
     "missing_required_construction_or_material_metadata",
     "claiming_render_quality_without_actual_render"
@@ -113,11 +131,13 @@
   "verification": {
     "compileVerified": false,
     "native4kRenderVerified": false,
+    "solarShadowPreCullGuardObservedInUnity": false,
     "probeRefreshCompletionReceiptVerified": false,
     "probeSeamVerified": false,
     "glassFresnelBalanceVerified": false,
     "highlightClippingVerified": false,
+    "actualShadowBearingVerified": false,
     "visualFidelityPointsAwarded": 0,
-    "note": "Implementation metadata only. Real Unity 3840x2160 captures, verified probe refresh receipt, and 100% crops are mandatory before visual scoring."
+    "note": "Implementation metadata only. Real Unity 3840x2160 captures, verified probe refresh receipt, pre-cull guard execution, and 100% crops are mandatory before visual scoring."
   }
 }

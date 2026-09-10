@@ -43,6 +43,7 @@
     "The critical defect set is exact: entries may not be removed, renamed, substituted, duplicated, or silently supplemented as a way to change gate semantics.",
     "Only native 3840x2160 hero, oblique and grazing Unity renders plus pixel-exact 100% crops qualify as still evidence.",
     "Temporal/LOD/aliasing evidence remains separately sealed and must not be inferred from implementation settings.",
-    "Implementation Readiness never contributes Visual Fidelity points."
+    "Implementation Readiness never contributes Visual Fidelity points.",
+    "QualityBlockVisualFidelityGate.ValidateGateConfig and EvaluateVisualGate must invoke QualityBlockVisualGateIntegrityQA from inside the core methods; EvaluateVisualGate must additionally invoke QualityBlockReviewedVisualEvidenceIntegrityQA before reading/scoring category values so MenuItem validators cannot be bypassed by -executeMethod, reflection, or alternate runner entry points."
   ]
 }

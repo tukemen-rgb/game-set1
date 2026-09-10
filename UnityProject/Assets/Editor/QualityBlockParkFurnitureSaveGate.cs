@@ -10,7 +10,9 @@ using UnityEngine.SceneManagement;
 /// Persists the manufactured park/street-furniture state into the benchmark scene. Construction passes
 /// are ordered so new renderers are rebound to LOD sets, shared microdetail is applied, and the final
 /// stainless chute is then replaced with its topology-aware watertight sheet solid so the generic planar
-/// UV rewrite cannot destroy the chute's authored path topology.
+/// UV rewrite cannot destroy the chute's authored path topology. The physical park-lamp installation is
+/// applied before LOD rebind so its tapered pole, service hardware and retained head cannot be orphaned
+/// from the authoritative benchmark save path.
 /// </summary>
 [InitializeOnLoad]
 public static class QualityBlockParkFurnitureSaveGate
@@ -24,6 +26,8 @@ public static class QualityBlockParkFurnitureSaveGate
     private const string SlideChuteLookdevPath = "Assets/QA/slide_chute_fabrication_lookdev.svg";
     private const string BenchInterfaceContractPath = "Assets/QA/bench_seat_construction_interface_contract.json";
     private const string BenchLookdevPath = "Assets/QA/bench_seat_construction_lookdev.svg";
+    private const string ParkLampContractPath = "Assets/QA/park_lamp_installation_contract.json";
+    private const string ParkLampLookdevPath = "Assets/QA/park_lamp_installation_lookdev.svg";
     private const string NoticeBoardContractPath = "Assets/QA/notice_board_display_case_contract.json";
     private const string NoticeBoardLookdevPath = "Assets/QA/notice_board_display_case_lookdev.svg";
     private static bool applying;
@@ -49,15 +53,20 @@ public static class QualityBlockParkFurnitureSaveGate
             QualityBlockParkFurnitureUpgrade.BuildAndApply();
             QualityBlockParkFurniturePhysicalRefinement.ApplyAndValidate();
 
-            // Benchmark-visible subassemblies exist before rebind so their renderers join the matching LOD.
+            // Benchmark-visible subassemblies must exist before rebind so every generated renderer joins
+            // exactly one matching LOD. The lamp pass depends on PhysicalDiffuser from physical refinement.
             QualityBlockNoticeBoardDisplayCaseQA.ApplyToOpenScene();
             QualityBlockSlideAccessInstallationQA.ApplyToOpenScene();
+            QualityBlockParkLampInstallationQA.ApplyToOpenScene();
             QualityBlockParkFurnitureLodRebind.RebindAndValidate();
 
-            // Apply shared material microdetail first. The physical-refinement chute still has its legacy
-            // authored-mesh prefix here and is therefore protected from the generic metre-planar rewrite.
-            // Replace it afterwards with the final watertight U-section sheet solid; the existing renderer
-            // remains in the LOD set, while the final mesh keeps longitudinal fabrication UV continuity.
+            // Apply shared material microdetail before final validation. In particular, lamp service
+            // fasteners use the shared exposed-steel material and must reach the authoritative metallic
+            // state before the park-lamp physicality validator is allowed to pass.
+            // The physical-refinement chute still has its legacy authored-mesh prefix here and is therefore
+            // protected from the generic metre-planar rewrite. Replace it afterwards with the final
+            // watertight U-section sheet solid; the existing renderer remains in the LOD set, while the
+            // final mesh keeps longitudinal fabrication UV continuity.
             QualityBlockParkFurnitureMicrodetailUpgrade.BuildAndApply();
             QualityBlockSlideChuteFabricationQA.ApplyToOpenScene();
             QualityBlockNoticeBoardPrintedUvQA.ApplyAndValidate();
@@ -72,13 +81,14 @@ public static class QualityBlockParkFurnitureSaveGate
             QualityBlockSlideChuteFabricationQA.ValidateOpenScene();
             QualityBlockParkFurnitureMicrodetailUpgrade.Validate();
             QualityBlockBenchSeatConstructionInterfaceQA.ValidateOpenScene();
+            QualityBlockParkLampInstallationQA.ValidateOpenScene();
         }
         catch (Exception ex)
         {
             throw new InvalidOperationException(
                 "Benchmark save blocked: park/street-furniture manufacture, material, physical-profile, " +
                 "notice-board display-case/printed-UV, slide access/support, watertight chute fabrication, " +
-                "LOD, microdetail or bench load-path contract failed.", ex);
+                "park-lamp installation, LOD, microdetail or bench load-path contract failed.", ex);
         }
         finally
         {
@@ -97,6 +107,8 @@ public static class QualityBlockParkFurnitureSaveGate
         RequireFile(SlideChuteLookdevPath, "slide chute fabrication lookdev illustration");
         RequireFile(BenchInterfaceContractPath, "bench construction-interface metadata");
         RequireFile(BenchLookdevPath, "bench construction lookdev illustration");
+        RequireFile(ParkLampContractPath, "park-lamp construction/material metadata");
+        RequireFile(ParkLampLookdevPath, "park-lamp installation lookdev illustration");
         RequireFile(NoticeBoardContractPath, "notice-board display-case metadata");
         RequireFile(NoticeBoardLookdevPath, "notice-board display-case lookdev illustration");
 
@@ -151,6 +163,20 @@ public static class QualityBlockParkFurnitureSaveGate
             "PENDING_UNITY_RUNTIME"
         });
 
+        RequireTokens(ParkLampContractPath, "Park-lamp construction/material metadata", new[]
+        {
+            "\"id\": \"park_lamp_installation_interface\"",
+            "\"bottomBelowGradeMetres\": 0.08", "\"topYMetres\": 3.92",
+            "\"gradeDiameterMetres\": 0.190", "\"topDiameterMetres\": 0.125",
+            "\"visibleHeightAboveGradeMetres\": 0.20", "\"curved service cover\"",
+            "\"poleAdapterOverlapTargetMetres\": 0.002",
+            "\"lowerRetainerDiffuserOverlapTargetMetres\": 0.005",
+            "\"upperRetainerDiffuserOverlapTargetMetres\": 0.005",
+            "\"physicalPoleRadialSegments\": [32, 24, 16, 12]",
+            "\"requiredLodCount\": 4", "\"visualFidelityPointsAwarded\": 0",
+            "PENDING_UNITY_RUNTIME"
+        });
+
         RequireTokens(NoticeBoardContractPath, "Notice-board display-case metadata", new[]
         {
             "\"id\": \"notice_board_display_case_installation\"",
@@ -163,6 +189,7 @@ public static class QualityBlockParkFurnitureSaveGate
         QualityBlockSlideAccessInstallationQA.ValidateContractConfigOnly();
         QualityBlockSlideChuteFabricationQA.ValidateContractConfigOnly();
         QualityBlockBenchSeatConstructionInterfaceQA.ValidateContractConfigOnly();
+        QualityBlockParkLampInstallationQA.ValidateContractConfigOnly();
         QualityBlockNoticeBoardDisplayCaseQA.ValidateContractConfigOnly();
     }
 

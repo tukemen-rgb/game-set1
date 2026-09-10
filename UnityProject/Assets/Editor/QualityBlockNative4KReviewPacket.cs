@@ -59,10 +59,13 @@ public static class QualityBlockNative4KReviewPacket
 
         // Projecting stair tower: the legacy opaque cuboid must not remain behind transparent stair
         // glazing. Rebuild a 0.22 m-deep RC front shell around five true rough openings, seat the existing
-        // manufactured sash/optical stack in those openings, retain the gameplay collider only, and keep
-        // the macro opening silhouette identical through four cross-faded LODs.
+        // manufactured sash/optical stack in those openings, retain the gameplay collider only, keep the
+        // macro opening silhouette identical through four cross-faded LODs, then convert the shell returns
+        // to butt joints so side/back/roof/base pieces do not share coplanar exterior faces.
         QualityBlockStairTowerApertureInstallationQA.ApplyAndPersist();
+        QualityBlockStairTowerShellJointQA.ApplyAndPersist();
         QualityBlockStairTowerApertureInstallationQA.ValidateOpenScene();
+        QualityBlockStairTowerShellJointQA.ValidateOpenScene();
 
         // Remaining building construction interfaces.
         QualityBlockBalconyConstructionInterfaceQA.ApplyAndPersist();
@@ -88,7 +91,7 @@ public static class QualityBlockNative4KReviewPacket
         QualityBlockReflectionProbeAwaiter.Begin(FinishAfterReflectionSynchronization);
 
         Debug.Log(
-            "Native-4K review packet entered reflection synchronization after final material binding, apartment and stair-tower true-aperture reconstruction, " +
+            "Native-4K review packet entered reflection synchronization after final material binding, apartment and stair-tower true-aperture reconstruction with non-coplanar shell joints, " +
             "physical facade UV anti-repeat QA, balcony/AC/rainwater installation correction, park load-path QA, physical texel-density, albedo-neutrality and exact-framing primitive preflight. " +
             "Visual Fidelity remains UNSCORED.");
     }
@@ -102,6 +105,7 @@ public static class QualityBlockNative4KReviewPacket
         QualityBlockFacadeApertureConstructionQA.ValidateOpenScene();
         QualityBlockFacadeAperturePhysicalUvQA.ValidateOpenScene();
         QualityBlockStairTowerApertureInstallationQA.ValidateOpenScene();
+        QualityBlockStairTowerShellJointQA.ValidateOpenScene();
         QualityBlockBalconyConstructionInterfaceQA.ValidateOpenScene();
         QualityBlockAcOutdoorUnitInstallationQA.ValidateOpenScene();
         QualityBlockRainwaterDownpipeInstallationQA.ValidateOpenScene();
@@ -126,6 +130,7 @@ public static class QualityBlockNative4KReviewPacket
         QualityBlockFacadeApertureConstructionQA.ValidateOpenScene();
         QualityBlockFacadeAperturePhysicalUvQA.ValidateOpenScene();
         QualityBlockStairTowerApertureInstallationQA.ValidateOpenScene();
+        QualityBlockStairTowerShellJointQA.ValidateOpenScene();
         QualityBlockBalconyConstructionInterfaceQA.ValidateOpenScene();
         QualityBlockAcOutdoorUnitInstallationQA.ValidateOpenScene();
         QualityBlockRainwaterDownpipeInstallationQA.ValidateOpenScene();
@@ -155,7 +160,7 @@ public static class QualityBlockNative4KReviewPacket
         Debug.Log(
             "Complete native-4K review packet prepared: sealed hero/oblique/grazing 3840x2160 stills and 100% crops plus bound temporal evidence. " +
             "The generated MainBlock and projecting StairTower opaque render masses are replaced only at render level by true-opening RC shells while original gameplay colliders remain; " +
-            "apartment and stair glazing are recessed into physical wall depth, metric UVs prevent repeated concrete restarts, and all construction/material/LOD/primitive invariants are revalidated before and after still capture. " +
+            "stair shell returns use butt joints rather than overlapping coplanar faces, apartment and stair glazing are recessed into physical wall depth, metric UVs prevent repeated concrete restarts, and construction/material/LOD/primitive invariants are revalidated before and after still capture. " +
             "Visual Fidelity remains UNSCORED until the actual pixels are manually reviewed against the locked 100-point gate.");
     }
 }

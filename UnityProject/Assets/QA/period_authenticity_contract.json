@@ -1,5 +1,5 @@
 {
-  "contractVersion": 1,
+  "contractVersion": 2,
   "status": "SOURCE_IMPLEMENTED_RENDER_VERIFICATION_PENDING",
   "targetEra": {
     "nominalYear": 2000,
@@ -17,11 +17,16 @@
       "topic": "VHF plus UHF visual vocabulary",
       "claim": "Analogue-era Japanese rooftop reception commonly used Yagi-style antennas, with VHF used for major analogue terrestrial channels and UHF also used for regional channels; this pass therefore models separate large-VHF and compact-UHF arrays rather than a modern flat design antenna.",
       "source": "https://asahi-antenna.jp/column/%E3%80%902023%E5%B9%B4%E5%BA%A6%E6%9C%80%E6%96%B0%E7%89%88%E3%80%91%E5%B1%8B%E6%A0%B9%E3%81%AE%E5%BD%A2%E7%8A%B6%E3%80%81%E7%B4%A0%E6%9D%90%E3%81%AB%E9%81%A9%E3%81%97%E3%81%9F%E3%83%86%E3%83%AC/"
+    },
+    {
+      "topic": "communal mast dimensional plausibility",
+      "claim": "A Japanese communal-reception product reference documents hot-dip-galvanized 40A antenna masts at approximately 48.6 mm outside diameter and 3.0-4.0 m lengths. This is used only as a dimensional/manufacturing comparator for the modeled 48 mm x 3.28 m mast, not as a claim that the exact current/discontinued product was installed in 2000.",
+      "source": "https://www.maspro.co.jp/prod/mst4036k/"
     }
   ],
   "assembly": {
     "id": "communal_rooftop_vhf_uhf_reception",
-    "reasoning": "Use one maintained communal rooftop service assembly as a period marker. Do not randomize manufactured apartment modules or scatter nostalgic props. The assembly must have a legible load path, cable path and frequency-dependent antenna proportions.",
+    "reasoning": "Use one maintained communal rooftop service assembly as a period marker. Do not randomize manufactured apartment modules or scatter nostalgic props. The assembly must have a legible roof-to-ballast-to-rail-to-stay/collar-to-mast load path, a cable path and frequency-dependent antenna proportions.",
     "location": {
       "parent": "Danchi",
       "roofDatumMeters": 13.2,
@@ -37,8 +42,8 @@
         "material": "precast_concrete",
         "manufacture": "small precast ballast blocks",
         "mounting": "gravity ballast supporting paired galvanized base rails; no unexplained roof membrane penetration",
-        "interfaces": "block-to-roof bearing surface, block-to-rail compression/contact, mast saddle at crossed rail center",
-        "geometryVsMaterial": "block mass, rail thickness, saddle and gaps are geometry; aggregate/pinhole response belongs to material microdetail"
+        "interfaces": "block-to-roof bearing surface, block-to-rail compression/contact, mast saddle at paired rail center, stay-foot plates at rail ends",
+        "geometryVsMaterial": "block mass, rail thickness, saddle, stay feet and gaps are geometry; aggregate/pinhole response belongs to material microdetail"
       },
       {
         "name": "galvanized_mast",
@@ -47,9 +52,30 @@
         "heightAboveRoofMeters": 3.28,
         "material": "hot_dip_galvanized_steel",
         "manufacture": "round steel tube, hot-dip galvanized after fabrication",
-        "mounting": "clamped into galvanized saddle above paired base rails",
-        "interfaces": "mast-saddle clamp, boom-to-mast clamps, coax tied alongside mast",
+        "mounting": "lower saddle plus four-way stayed collar transfer lateral mast load into paired ballast rails",
+        "interfaces": "mast-saddle clamp, mast-stay collar, boom-to-mast clamps, coax tied alongside mast",
         "orientation": "vertical"
+      },
+      {
+        "name": "four_way_mast_stay_system",
+        "quantity": 1,
+        "mastStayCountPerLod": 4,
+        "mastStayDiameterMeters": 0.025,
+        "mastStayCollarHeightMeters": 0.98,
+        "collarOuterDiameterMeters": 0.082,
+        "collarHeightMeters": 0.11,
+        "railFootPlateCountLod0And1": 4,
+        "railFootPlateMeters": [0.13, 0.018, 0.10],
+        "collarLugCountLod0And1": 4,
+        "loadPathMustPersistAllLods": true,
+        "material": "hot_dip_galvanized_steel",
+        "manufacture": "galvanized tubular compression/tension stays fixed to formed rail-foot plates and a clamped mast collar",
+        "mounting": "two stays land on each of the two ballast rails near opposite ends; four upper nodes terminate at collar lugs around the mast",
+        "interfaces": "stay-to-foot plate, foot plate-to-base rail, stay-to-collar lug, collar-to-mast",
+        "orientation": "four triangulated diagonals around the mast; do not collapse to a decorative vertical support",
+        "exposure": "fully sun/rain/wind exposed rooftop hardware",
+        "aging": "zinc dulling and runoff concentration may occur at clamp/foot interfaces; intact galvanized surfaces must not receive arbitrary orange rust",
+        "geometryVsMaterial": "all stays, collar, feet and near-camera lugs are geometry; zinc spangle, oxidation and fine runoff variation are material/weathering response"
       },
       {
         "name": "vhf_yagi_array",
@@ -81,12 +107,14 @@
         "dimensions": {
           "coaxOutsideDiameterMeters": 0.012,
           "roofConduitOutsideDiameterMeters": 0.018,
-          "junctionBoxMeters": [0.18, 0.22, 0.10]
+          "junctionBoxMeters": [0.18, 0.22, 0.10],
+          "mastClipCountLod0And1": 6,
+          "mastClipMeters": [0.046, 0.018, 0.040]
         },
         "materials": ["black_coax_pvc", "uv_aged_black_abs"],
-        "mounting": "coax follows mast downward, then turns into a short roof conduit and weather-resistant junction box",
-        "interfaces": "feed-box cable exit, mast clips implied by cable adjacency, roof conduit, enclosure entry",
-        "geometryVsMaterial": "cable route and enclosure depth are geometry; UV chalking and fine molding texture belong to material"
+        "mounting": "coax follows mast downward with six explicit UV-resistant mast clips in LOD0/1, then turns into a short roof conduit and weather-resistant junction box",
+        "interfaces": "feed-box cable exit, cable-to-mast clips, roof conduit, enclosure entry",
+        "geometryVsMaterial": "cable route, clip bridges and enclosure depth are geometry; UV chalking and fine molding/extrusion texture belong to material"
       }
     ]
   },
@@ -140,41 +168,59 @@
       "angularFresnelResponse": "broad low-energy dielectric response"
     }
   ],
+  "weatheringCausality": {
+    "allowed": [
+      "UV dulling/chalking on upward or sunward polymer surfaces",
+      "zinc oxidation/dulling on exposed galvanized members",
+      "localized runoff concentration below collar, lug and rail-foot interfaces",
+      "fine accumulated grime at ballast-to-roof and rail-to-ballast contact recesses"
+    ],
+    "forbidden": [
+      "random rust decals without exposed ferrous substrate",
+      "painted contact shadows",
+      "baked white metallic highlights",
+      "uniform wet gloss in the dry benchmark",
+      "damage or staining that implies disaster/reconstruction"
+    ]
+  },
   "lodPolicy": {
     "levels": 4,
     "crossFade": true,
     "screenRelativeTransitions": [0.38, 0.20, 0.095, 0.025],
-    "lod0": "8 VHF elements + 14 UHF elements + feed boxes + coax path + four ballast blocks",
-    "lod1": "6 VHF + 8 UHF elements while retaining feed/cable/base read",
-    "lod2": "4 VHF + 4 UHF elements; preserve two-frequency silhouette and load path",
-    "lod3": "2 VHF + 2 UHF elements plus mast/booms/base; silhouette only",
-    "antiPopRequirement": "actual 4K motion evidence is required; source-side cross-fade is readiness only"
+    "lod0": "8 VHF elements + 14 UHF elements + feed boxes + coax path/clips + four ballast blocks + four mast stays + collar + stay feet/lugs",
+    "lod1": "6 VHF + 8 UHF elements while retaining feed/cable/clips/base/stays/collar and simplified near-camera attachment hardware",
+    "lod2": "4 VHF + 4 UHF elements; preserve two-frequency silhouette plus all four stays, collar and ballast load path; omit sub-pixel feet/lugs/clips",
+    "lod3": "2 VHF + 2 UHF elements plus mast/booms/base/four stays/collar; structural silhouette only",
+    "antiPopRequirement": "actual 4K motion evidence is required; source-side cross-fade and persistent stay geometry are readiness only"
   },
   "lookdevBrief": {
-    "frontal": "At native 4K the roofline should gain a restrained late-analogue-era infrastructure silhouette. Large VHF and smaller UHF arrays must read as two engineered scales, not one decorative comb. Mast base should sit on the roof without floating.",
-    "oblique": "Boom depth, element spacing, mast clamps/base rails and cable path should demonstrate real assembly depth. No element should visibly interpenetrate the mast or another array.",
-    "grazingLight": "Galvanized members should develop narrow moving metallic highlights from sky/sun reflection while remaining rough; black feed boxes/coax stay dielectric. Concrete ballast remains broad and matte. No highlight may be painted into albedo.",
+    "illustration": "Assets/QA/period_rooftop_reception_installation_lookdev.svg",
+    "frontal": "At native 4K the roofline should gain a restrained late-analogue-era infrastructure silhouette. Large VHF and smaller UHF arrays must read as two engineered scales, not one decorative comb. Four-way stayed mast support should read as infrastructure without becoming visually dominant.",
+    "oblique": "Boom depth, element spacing, paired ballast rails, four diagonal stays, mast collar, saddle and cable path should demonstrate a continuous installation load path. No stay or element should visibly float or interpenetrate another hero part.",
+    "grazingLight": "Galvanized mast/stays/rails should develop narrow environment-driven metallic highlights while remaining rough; black feed boxes/coax stay dielectric. Concrete ballast remains broad and matte. No highlight may be painted into albedo.",
     "100PercentCropChecks": [
       "element thickness and aliasing",
       "ballast-to-roof contact",
+      "stay-foot-to-rail and stay-to-collar continuity",
       "boom-to-mast connection depth",
       "metallic versus dielectric separation",
-      "coax path continuity",
+      "coax clip/path continuity",
       "LOD transition or shimmer if motion evidence becomes available"
     ]
   },
   "visualGateMapping": {
     "periodAccuracySceneAuthenticity": "primary expected benefit; year-2000 roofline receives a historically coherent analogue receiving system rather than generic modern flat antennas",
-    "geometryConstructionFidelity": "visible load path from roof ballast to rails/saddle/mast/booms/elements and explicit cable route",
+    "geometryConstructionFidelity": "visible load path from roof ballast to rails/saddle/stays/collar/mast/booms/elements and explicit cable restraint",
     "materialPBR": "bare galvanized zinc is metallic; feed enclosure/PVC/concrete are dielectric",
-    "temporalLod": "four explicit cross-faded LOD levels; runtime evidence still mandatory"
+    "weatheringContextCausality": "runoff, UV aging and zinc dulling are tied to exposure and installation interfaces",
+    "temporalLod": "four explicit cross-faded LOD levels preserve the mast support silhouette; runtime evidence still mandatory"
   },
   "automaticFailIfObserved": [
     "modern flat/design terrestrial antenna replacing the year-2000 analogue Yagi silhouette without documented context",
     "Unity primitive placeholder mesh visible in benchmark framing",
     "galvanized metal treated as painted dielectric or ABS/PVC/concrete treated as metal",
     "painted or baked white antenna highlights",
-    "floating mast base or unexplained roof penetration",
+    "floating mast base, floating stay endpoint or unexplained roof penetration",
     "severe element shimmer/aliasing",
     "visible LOD pop",
     "disaster, earthquake or reconstruction context"
@@ -182,6 +228,6 @@
   "renderVerification": {
     "visualFidelityPointsAwardedFromThisContract": 0,
     "status": "PENDING_NATIVE_UNITY_3840x2160_RENDER_AND_100_PERCENT_CROP",
-    "instruction": "Do not award Period Accuracy, Geometry, Material or Temporal points from source configuration alone."
+    "instruction": "Do not award Period Accuracy, Geometry, Material, Weathering or Temporal points from source configuration alone."
   }
 }

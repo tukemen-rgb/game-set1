@@ -32,6 +32,7 @@ Shader "NewTown/QualityBlockWeatheringResidue"
         #pragma target 3.0
         #pragma surface surf Standard alpha:fade fullforwardshadows
 
+        sampler2D _MaskTex;
         fixed4 _Tint;
         half _Opacity;
         half _Roughness;

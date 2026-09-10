@@ -1,10 +1,10 @@
 {
-  "schemaVersion": "1.1",
+  "schemaVersion": "1.2",
   "id": "benchmark_scene_repetition_preflight",
   "status": "PENDING_UNITY_RUNTIME",
   "visualFidelityPointsAwarded": 0,
   "critical_defect": "immediately_obvious_repeated_texture_or_module_pattern",
-  "principle": "Repetition is judged against real manufacture, installation and biology. Mass-produced construction may repeat when it would repeat in reality; natural growth, occupant behavior, weathering causality and large-area material phase may not collapse into conspicuous exact or perceptual near-clones.",
+  "principle": "Repetition is judged against real manufacture, installation and biology. Mass-produced construction may repeat when real construction would repeat, while natural growth, occupant behavior, weathering causality and broad material phase may not collapse into conspicuous clones. Static implementation checks can reject known clone risks; actual native-4K pixels remain authoritative for the critical-defect decision.",
   "approved_repetition": [
     {
       "assembly": "danchi exterior sash and balcony modules",
@@ -72,6 +72,32 @@
       "render_review_required": "Still inspect crown silhouettes and understory rhythm in native 4K. The coarse signature is intentionally conservative and cannot prove perceptual uniqueness."
     }
   ],
+  "rendered_repetition_diagnostics": {
+    "owner": "QualityBlockRenderedRepetitionDiagnostics",
+    "contractPath": "Assets/QA/rendered_repetition_diagnostics_contract.json",
+    "reportPath": "Assets/QA/rendered_repetition_diagnostics.json",
+    "generatedByNative4KReviewPacket": true,
+    "requiredBeforeScoring": true,
+    "crop_sha256_binding": true,
+    "manifest_sha256_binding": true,
+    "warning_only": true,
+    "visualFidelityPointsAwarded": 0,
+    "automaticallyClearsCriticalDefect": false,
+    "requiredCropRefs": [
+      "hero/facade_center",
+      "hero/ground_contact",
+      "oblique/vegetation_grounding",
+      "grazing/material_grazing",
+      "grazing/tree_shadow_contact"
+    ],
+    "measurementIntent": "Search the exact post-tonemap native-4K 100% crops for local horizontal/vertical translation-similarity troughs in texture-qualified regions. This is a review prioritizer, not a substitute for perceptual judgment.",
+    "limitations": [
+      "Perspective foreshortening can weaken a true repetition signal.",
+      "Legitimate manufactured modules can create a strong signal without being a defect.",
+      "A luma-based detector can miss some chroma-dominant repetition.",
+      "No warning or weak warning can never clear obvious_repetition; direct review of all required pixels remains mandatory."
+    ]
+  },
   "fingerprint_quantization": {
     "fine": {
       "position_m": 0.005,
@@ -93,8 +119,8 @@
   "render_review_required": {
     "native_resolution": [3840, 2160],
     "views": ["hero", "oblique", "grazing"],
-    "minimum_crops": ["facade_center", "facade_right", "ground_contact", "vegetation_grounding", "tree_shadow_contact"],
-    "decision": "Static fine/coarse preflight can only reject implementation clone risk. It cannot award Visual Fidelity points or clear the critical repeated-pattern defect without actual Unity render evidence."
+    "minimum_crops": ["facade_center", "facade_right", "ground_contact", "vegetation_grounding", "material_grazing", "tree_shadow_contact"],
+    "decision": "Static fine/coarse preflight and runtime diagnostics can reject or prioritize implementation/render risks. Neither can award Visual Fidelity points nor clear the critical repeated-pattern defect without direct review of the actual Unity pixels."
   },
   "exclusions": [
     "No earthquake/disaster/reconstruction interpretation is permitted.",

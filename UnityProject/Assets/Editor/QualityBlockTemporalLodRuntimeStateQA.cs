@@ -179,9 +179,9 @@ public static class QualityBlockTemporalLodRuntimeStateQA
         var sb = new StringBuilder(32768);
         Append(sb, "algorithm", Algorithm);
         Append(sb, "scene", scene.path);
-        Append(sb, "qualityLevelIndex", QualitySettings.GetQualityLevel().ToString(CultureInfo.InvariantCulture));
-        string[] qualityNames = QualitySettings.names ?? Array.Empty<string>();
         int qualityIndex = QualitySettings.GetQualityLevel();
+        Append(sb, "qualityLevelIndex", qualityIndex.ToString(CultureInfo.InvariantCulture));
+        string[] qualityNames = QualitySettings.names ?? Array.Empty<string>();
         string qualityName = qualityIndex >= 0 && qualityIndex < qualityNames.Length ? qualityNames[qualityIndex] : "<out-of-range>";
         Append(sb, "qualityLevelName", qualityName);
         Append(sb, "enableLODCrossFade", QualitySettings.enableLODCrossFade ? "1" : "0");
@@ -233,8 +233,9 @@ public static class QualityBlockTemporalLodRuntimeStateQA
                 Append(sb, $"lod{i}.renderer[{j}]", assignments[j]);
         }
 
-        using SHA256 sha = SHA256.Create();
-        byte[] digest = sha.ComputeHash(Encoding.UTF8.GetBytes(sb.ToString()));
+        byte[] digest;
+        using (SHA256 sha = SHA256.Create())
+            digest = sha.ComputeHash(Encoding.UTF8.GetBytes(sb.ToString()));
         return string.Concat(digest.Select(b => b.ToString("x2", CultureInfo.InvariantCulture)));
     }
 
@@ -260,13 +261,7 @@ public static class QualityBlockTemporalLodRuntimeStateQA
             sequencePreCullCheckCount = 0;
             sequenceActive = true;
         }
-        else
-        {
-            RequireCurrentMatch(sequenceBaselineSha256, $"formal temporal MainCamera pre-cull #{sequencePreCullCheckCount + 1}");
-        }
 
-        // Rebuild even for the first frame after the baseline was captured so every formal pre-cull
-        // has an explicit validated state observation rather than relying only on initialization.
         RequireCurrentMatch(sequenceBaselineSha256, $"formal temporal MainCamera pre-cull #{sequencePreCullCheckCount + 1}");
         sequencePreCullCheckCount++;
     }

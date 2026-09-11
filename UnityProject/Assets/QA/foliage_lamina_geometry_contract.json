@@ -1,0 +1,116 @@
+{
+  "schemaVersion": "1.0",
+  "status": "IMPLEMENTATION_READY_RENDER_PENDING",
+  "scenePath": "Assets/Scenes/QualityBlock1990s.unity",
+  "generator": "Assets/Editor/QualityBlockFoliageLaminaGeometryUpgrade.cs",
+  "purpose": "Replace the visibly synthetic perfectly-planar diamond-lamina response in the generated fallback foliage with a shallow deterministic midrib fold and mild natural asymmetry while preserving the established branch/twig attachment, two-sided topology, morphology diversity, material optics and four-level LOD identity. Source checks award zero Visual Fidelity points; native 3840x2160 rendered evidence remains authoritative.",
+  "biologicalReasoning": {
+    "assembly": "woody twig -> leaf-cluster transform -> thin petiole-implied attachment -> lamina with tip-to-base midrib fold; this pass changes only lamina vertex positions inside existing generated spray meshes",
+    "dimensionsThickness": "Generated laminae remain thin two-sided surfaces rather than solid slabs. The fold depth is 8.5-15.5% of lamina half-width, producing a shallow V around the tip-to-base midrib. Right/left longitudinal asymmetry is limited to +/-3.5% of leaf length and tip/base lateral asymmetry to +/-1.8% of leaf width.",
+    "materialFinish": "No optical values are authored by this geometry pass. Living-leaf albedo, dielectric F0, roughness, normal map, transmission and exposure remain governed by the foliage optical/material contracts and NewTown/FoliageTransmission shader.",
+    "mounting": "LeafCluster transforms, tree placement, branch/twig construction and gameplay colliders are unchanged. Folded laminae stay inside the existing spray asset coordinate frame and therefore retain the same branch attachment hierarchy.",
+    "interfacesGapsSeals": "Vegetation has no manufactured seals. The relevant natural interface is petiole-implied lamina-to-cluster attachment; this pass may not introduce detached/floating leaf clusters or alter woody interfaces.",
+    "orientationExposure": "Fold sign and bounded asymmetry are deterministic per generated mesh/leaf so neighboring laminae do not share one perfectly planar highlight response. Lighting remains the coherent midsummer Japanese sun, sky fill, contact, occlusion and reflection environment.",
+    "aging": "No tears, scorch, storm damage, disease, disaster or reconstruction cue is generated. Ordinary midsummer leaf variation remains material/exposure-side and must be cause-based if expanded later.",
+    "geometryVsMaterialDetail": {
+      "geometry": [
+        "tip-to-base midrib fold",
+        "bounded lamina left/right asymmetry",
+        "existing leaf silhouette and morphology scale",
+        "cluster attachment",
+        "LOD population and morphology identity"
+      ],
+      "material": [
+        "albedo pigmentation",
+        "vein/micro-normal",
+        "dielectric Fresnel",
+        "roughness",
+        "thin-leaf transmission",
+        "canopy exposure variation"
+      ],
+      "forbiddenShortcut": "Do not paint a central highlight, edge darkening, fake fold shadow or silhouette breakup into albedo to imitate three-dimensional lamina curvature."
+    }
+  },
+  "meshPolicy": {
+    "baseMeshes": ["GM_LeafSpray_A", "GM_LeafSpray_B", "GM_LeafSpray_C"],
+    "derivedMorphologyCount": 12,
+    "verticesPerLeaf": 8,
+    "triangleIndicesPerLeaf": 12,
+    "frontBackCoincidenceRequired": true,
+    "minimumFoldDegrees": 3.0,
+    "maximumFoldDegrees": 28.0,
+    "deterministicOnly": true,
+    "sceneSaveConvergenceBinding": true,
+    "reason": "The upstream high-detail tree generator intentionally recreates base spray assets. A benchmark-scene save binding folds any regenerated planar sprays before downstream morphology/capture; derived variants then inherit the physical fold from the base sprays."
+  },
+  "installationPolicy": {
+    "treePlacementMutationForbidden": true,
+    "woodyConstructionMutationForbidden": true,
+    "clusterTransformMutationForbidden": true,
+    "colliderMutationForbidden": true,
+    "materialMutationForbidden": true,
+    "authoredArtSupersedesGeneratedFallback": true
+  },
+  "lodPolicy": {
+    "levels": 4,
+    "retainedMorphologyIdentityRequired": true,
+    "foldMustBePresentInBaseAndDerivedMeshes": true,
+    "temporalReviewRequired": true
+  },
+  "criticalDefectRisksReduced": [
+    "visible_primitive_placeholder",
+    "obvious_repetition",
+    "severe_aliasing_or_shimmer",
+    "visible_lod_pop"
+  ],
+  "hardFailRules": [
+    "a required base or derived generated leaf-spray mesh is missing at formal capture time",
+    "a generated spray no longer consists of contiguous eight-vertex two-sided lamina groups",
+    "triangle topology drifts from four triangles/twelve indices per lamina",
+    "front/back duplicate positions separate enough to create a fake thick slab or z-gap",
+    "any lamina remains effectively planar below the 3 degree source fold minimum",
+    "any lamina exceeds the 28 degree source fold maximum before rendered review",
+    "lamina UV0, normals or tangents are incomplete after folding",
+    "folding changes tree placement, branch/twig construction, LeafCluster transforms, colliders or foliage material values",
+    "painted/baked highlights or fold shadows are introduced into albedo",
+    "any earthquake/disaster/reconstruction theme is introduced",
+    "source fold checks are represented as rendered Visual Fidelity evidence"
+  ],
+  "formalEvidenceRequirements": {
+    "nativeResolution": [3840, 2160],
+    "requiredViews": ["hero", "oblique", "grazing"],
+    "required100PercentCrops": [
+      "oblique/vegetation_grounding",
+      "grazing/tree_shadow_contact"
+    ],
+    "requiredTemporalTarget": "temporal/subpixel_grazing",
+    "humanReviewRequired": true,
+    "actualRenderRequiredForVisualPoints": true,
+    "reviewFor": [
+      "leaf highlights break naturally across the shallow midrib fold rather than reading as flat cards",
+      "no immediately obvious diamond-card silhouette at benchmark distance",
+      "no detached/floating leaf cluster introduced by curvature",
+      "no metallic/plastic flash from the changed geometric normals",
+      "no severe leaf-edge aliasing, normal shimmer or moire at grazing view",
+      "no lamina geometry snap through LOD cross-fades",
+      "dappled shadows remain plausible and do not become faceted starbursts",
+      "crown remains plausible as ordinary healthy midsummer vegetation"
+    ]
+  },
+  "implementationReadinessScore": 93,
+  "visualFidelityStatus": "UNSCORED_UNTIL_REAL_4K_RENDER",
+  "runtimeRenderVerified": false,
+  "autoVisualPoints": 0,
+  "expectedVisualScoreImpact": {
+    "vegetation_natural_complexity": "direct positive candidate; removes the perfectly planar lamina BRDF/silhouette response but requires actual pixels before points",
+    "lighting_shadows_reflections": "secondary positive candidate through more physical leaf normal orientation and dapple response; render-unverified",
+    "temporal_lod_aliasing": "mixed-risk candidate: geometric normal diversity can reduce synchronous flashes but may increase shimmer, therefore native temporal evidence is mandatory",
+    "criticalDefects": ["visible_primitive_placeholder", "obvious_repetition", "severe_aliasing_or_shimmer", "visible_lod_pop"]
+  },
+  "limitations": [
+    "This is a generic healthy deciduous-lamina construction, not a claim of species-specific botanical reconstruction.",
+    "Eight vertices are retained for realtime cost and compatibility; the source fold is intentionally shallow and cannot reproduce fine edge serration or high-order leaf warping.",
+    "Static geometry checks cannot prove that the fold is visible at the benchmark camera distance or that it avoids temporal shimmer.",
+    "Authored replacement tree assets intentionally supersede the generated fallback and require their own render review if present."
+  ]
+}

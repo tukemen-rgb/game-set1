@@ -1,0 +1,31 @@
+{
+  "schemaVersion": "1.0",
+  "status": "IMPLEMENTATION_READY_RENDER_PENDING",
+  "purpose": "Fail closed before and throughout realtime reflection-probe synchronization unless the prepared DanchiHighDetail source set still uses the canonical manufacturing-scale physical UV meshes, deterministic per-piece phase identities and six registered texture transforms. ReflectionProbe.RenderProbe does not invoke the formal MainCamera pre-cull guard, so this binding prevents a stale normalized or malformed UV state from contaminating the cubemap baseline. It awards zero Visual Fidelity points.",
+  "scenePath": "Assets/Scenes/QualityBlock1990s.unity",
+  "detailPhysicalUvContractPath": "Assets/QA/detail_physical_uv_contract.json",
+  "requirements": {
+    "validateDetailPhysicalUvBeforeEveryReflectionLightingFingerprint": true,
+    "reflectionFingerprintUsedBeforeRenderProbeRequest": true,
+    "reflectionFingerprintRevalidatedOnEveryEditorPoll": true,
+    "reflectionFingerprintRevalidatedAtCompletion": true,
+    "reflectionFingerprintRevalidatedImmediatelyBeforeStillCapture": true,
+    "physicalUvValidationMustBeReportFreeDuringFingerprinting": true,
+    "physicalUvFailureAbortsReflectionEvidence": true,
+    "actualRenderRequiredForVisualPoints": true
+  },
+  "criticalDefectRisksReduced": [
+    "obvious_repetition",
+    "severe_aliasing_or_shimmer"
+  ],
+  "visualFidelityPointsAwarded": 0,
+  "implementationReadinessScore": 93,
+  "visualFidelityStatus": "UNSCORED_UNTIL_REAL_4K_RENDER",
+  "runtimeRenderVerified": false,
+  "limitations": [
+    "This binding proves only that the source/runtime physical-UV contract is valid whenever reflection evidence is fingerprinted; it cannot prove that repeated phase, cylinder seams, bevel stretch or micro-normal shimmer are invisible in final pixels.",
+    "Reflection coherence does not convert source validation into Visual Fidelity credit. The required native 3840x2160 grazing/material_grazing, grazing/sash_rail_response and oblique/balcony_services crops remain authoritative.",
+    "The cylindrical circumference policy intentionally permits bounded texel-density deviation to close the tangent-space wrap seam; only real rendered evidence can determine whether that compromise is visually acceptable.",
+    "Unity 6000.3.0f1 compilation, generated physical-UV asset production and runtime reflection synchronization remain unverified until an actual Runner executes the packet."
+  ]
+}

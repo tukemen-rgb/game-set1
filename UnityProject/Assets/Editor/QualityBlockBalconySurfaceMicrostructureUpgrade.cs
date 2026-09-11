@@ -1,17 +1,21 @@
 using System;
 using System.IO;
 using UnityEditor;
+using UnityEditor.SceneManagement;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 /// <summary>
 /// Builds a deterministic, tileable micro-normal + metallic/smoothness pair for the dry balcony
 /// waterproof finish. The macro 1:50 fall remains geometry; this pass only represents the sub-centimetre
 /// coating/topcoat texture that would otherwise leave a broad, perfectly uniform CG-looking plane.
 ///
-/// This is intentionally a formal-preparation pass rather than an always-on scene mutation. It must run
-/// after the drainage/waterproofing assembly has created MAT_BalconyWaterproofingDry and before reflection
-/// synchronization. Once a probe cycle begins, QA is read-only and any drift fails closed.
+/// This is intentionally a formal-preparation pass rather than an in-flight render mutation. The benchmark
+/// drainage assembly is created/revalidated from sceneSaving; this pass runs from sceneSaved so its material
+/// bindings are applied after that construction callback has finished and before reflection synchronization.
+/// Once a probe cycle begins, QA is read-only and any drift fails closed.
 /// </summary>
+[InitializeOnLoad]
 public static class QualityBlockBalconySurfaceMicrostructureUpgrade
 {
     public const string NormalTexturePath =
@@ -31,6 +35,13 @@ public static class QualityBlockBalconySurfaceMicrostructureUpgrade
     // the deliberately conservative perceptual amplitude used by the Standard shader.
     private const float NormalEncodingStrength = 1.65f;
     private const int NoiseSeed = 1998;
+    private static bool applyingAfterSave;
+
+    static QualityBlockBalconySurfaceMicrostructureUpgrade()
+    {
+        EditorSceneManager.sceneSaved -= OnSceneSaved;
+        EditorSceneManager.sceneSaved += OnSceneSaved;
+    }
 
     [MenuItem("NewTown/Materials/Build Balcony Waterproof Microstructure")]
     public static void BuildAndApply()
@@ -73,6 +84,38 @@ public static class QualityBlockBalconySurfaceMicrostructureUpgrade
         AssetDatabase.SaveAssets();
         AssetDatabase.Refresh();
         QualityBlockBalconySurfaceMicrostructureQA.ValidateAssetsAndMaterial();
+    }
+
+    private static void OnSceneSaved(Scene scene)
+    {
+        if (applyingAfterSave || !scene.IsValid() ||
+            scene.path != QualityBlockBalconyDrainageWaterproofingUpgrade.ScenePath ||
+            QualityBlockBalconyDrainageWaterproofingUpgrade.IsAuthoredDanchiActive(scene))
+            return;
+
+        // Early/partial benchmark saves can occur before the generated fallback exists. Do nothing until the
+        // canonical drainage root/material has been created; formal capture preparation saves the completed
+        // scene and therefore deterministically reaches this path before any reflection probe request.
+        if (QualityBlockBalconyDrainageWaterproofingUpgrade.FindSceneObject(
+                scene, QualityBlockBalconyDrainageWaterproofingUpgrade.RootName) == null ||
+            AssetDatabase.LoadAssetAtPath<Material>(
+                QualityBlockBalconyDrainageWaterproofingUpgrade.WaterproofMaterialPath) == null)
+            return;
+
+        applyingAfterSave = true;
+        try
+        {
+            BuildAndApply();
+        }
+        catch (Exception ex)
+        {
+            throw new InvalidOperationException(
+                "Benchmark post-save balcony waterproof microstructure preparation failed: " + ex.Message, ex);
+        }
+        finally
+        {
+            applyingAfterSave = false;
+        }
     }
 
     private static void GenerateTextures()

@@ -73,11 +73,16 @@ public static class QualityBlockVisualGateIntegrityQA
         // Unity evidence pipeline actually owns. This runs from the core integrity entrypoint so
         // direct CLI/reflection calls cannot validate a drifted observability vocabulary.
         QualityBlockObservedEvidenceReferenceBindingQA.ValidateContractConfigOnly();
+        // Light-side render injection must be bound to the same canonical critical-defect vocabulary.
+        // The runtime guard is InitializeOnLoad and executes per formal frame, but validating its contract
+        // here prevents the numeric gate/packet from accepting a weakened or alias-mapped light policy.
+        QualityBlockLightEvidencePurityQA.ValidateContractConfigOnly();
 
         Debug.Log(
             "Visual Fidelity Gate integrity valid: exact 92/100 threshold, immutable per-category weights/minima, " +
             "exact 12 critical defects, native 3840x2160 hero/oblique/grazing evidence, 100% crops, reviewed-evidence " +
-            "schema hardening, and canonical still/temporal reference binding are preserved. This is source-side gate integrity only and awards 0 Visual Fidelity points.");
+            "schema hardening, canonical still/temporal reference binding, and canonical light-evidence purity mappings are preserved. " +
+            "This is source-side gate integrity only and awards 0 Visual Fidelity points.");
     }
 
     // The legacy unbound evaluator already has a validator in QualityBlockRenderEvidenceProvenanceQA

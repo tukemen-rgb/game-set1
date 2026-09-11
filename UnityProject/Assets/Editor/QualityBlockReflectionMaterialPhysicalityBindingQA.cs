@@ -11,9 +11,9 @@ using UnityEngine;
 /// Editor poll, at completion and immediately before still capture; therefore a material-registry drift
 /// cannot enter or survive the formal cubemap baseline merely because MainCamera pre-cull has not run yet.
 /// The same entrypoint also chains manufacturing-scale detail UVs, the facade formal-build binding,
-/// generated-foliage formal evidence, and balcony drainage/floor-fall construction, closing equivalent
-/// ReflectionProbe blind spots for stale UV meshes, missing facade construction/occupancy, stale foliage,
-/// or a cubemap generated before the physical balcony drainage surface exists.
+/// generated-foliage formal evidence, balcony drainage/floor-fall construction, and the dry waterproof
+/// microsurface state, closing equivalent ReflectionProbe blind spots for stale UV meshes, missing facade
+/// construction/occupancy, stale foliage, stale balcony geometry, or stale flat-material response.
 ///
 /// This is evidence-integrity infrastructure only. It awards zero Visual Fidelity points and cannot clear
 /// any critical defect without sealed native-4K rendered evidence.
@@ -84,14 +84,19 @@ public static class QualityBlockReflectionMaterialPhysicalityBindingQA
         // machine-readable construction/material contract to the same source-side integrity path so a future
         // edit cannot silently remove the physical fall while reflection evidence still seals successfully.
         QualityBlockBalconyDrainageWaterproofingQA.ValidateContractConfigOnly();
+        // The post-save waterproof microsurface pass intentionally runs before reflection synchronization.
+        // Its contract must also be part of the central source-side integrity chain; otherwise a probe could
+        // seal with the older perfectly uniform material while MainCamera later sees the micro-normal state.
+        QualityBlockBalconySurfaceMicrostructureQA.ValidateContractConfigOnly();
     }
 
     /// <summary>
     /// Called from every formal reflection-lighting fingerprint evaluation. The delegated validations are
     /// deliberately report-free during the in-flight probe stage. The facade binding may create missing
     /// generated passes only on the first pre-RenderProbe evaluation; once present, it validates/fails
-    /// closed rather than silently rebuilding drift during subsequent polls. Foliage and balcony drainage
-    /// validations are read-only here and never repair geometry, mesh or material state during a probe cycle.
+    /// closed rather than silently rebuilding drift during subsequent polls. Foliage, balcony drainage and
+    /// balcony microsurface validations are read-only here and never repair geometry, mesh, texture or
+    /// material state during a probe cycle.
     /// </summary>
     public static void ValidateOpenScene()
     {
@@ -101,6 +106,7 @@ public static class QualityBlockReflectionMaterialPhysicalityBindingQA
         QualityBlockReflectionDetailPhysicalUvBindingQA.ValidateOpenScene();
         QualityBlockFoliageFormalEvidenceBindingQA.ValidateOpenScene();
         QualityBlockBalconyDrainageWaterproofingQA.ValidateOpenScene();
+        QualityBlockBalconySurfaceMicrostructureQA.ValidateOpenScene();
     }
 
     private static void RequireExactSet(string[] actual, string[] expected, string label)

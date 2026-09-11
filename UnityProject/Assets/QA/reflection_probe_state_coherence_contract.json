@@ -30,7 +30,6 @@
       "shadowDistance": 70.0,
       "cullingMask": -1,
       "clearFlags": "Skybox",
-      "backgroundColor": { "r": 0.0, "g": 0.0, "b": 0.0, "a": 1.0 },
       "mode": "Realtime",
       "refreshMode": "ViaScripting",
       "timeSlicingMode": "NoTimeSlicing"
@@ -53,12 +52,12 @@
       "shadowDistance": 70.0,
       "cullingMask": -1,
       "clearFlags": "Skybox",
-      "backgroundColor": { "r": 0.0, "g": 0.0, "b": 0.0, "a": 1.0 },
       "mode": "Realtime",
       "refreshMode": "ViaScripting",
       "timeSlicingMode": "NoTimeSlicing"
     }
   ],
+  "backgroundColorPolicy": "No fixed RGB is imposed while clearFlags=Skybox and the physical skybox contract is valid because Unity's fallback clear color is not sampled in the valid path. The finite runtime value is nevertheless fingerprinted so an unexplained request-to-still mutation is rejected.",
   "fingerprintedFields": [
     "worldPosition",
     "worldRotation",

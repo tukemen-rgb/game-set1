@@ -1,0 +1,161 @@
+{
+  "schemaVersion": "1.0",
+  "contractId": "balcony-drainage-waterproofing-v1",
+  "scope": "Generated fallback balcony drainage and waterproofing interfaces for the 30-bay five-storey danchi benchmark.",
+  "intent": "Replace the physically implausible condition of a bare balcony slab with no terminal drainage or waterproofing interfaces. The assembly is a conservative benchmark reconstruction, not a claim about the exact original building specification.",
+  "externalReferenceBasis": [
+    {
+      "manufacturer": "Kaneso",
+      "reference": "KWB-M / KWB-C balcony and roof drain families",
+      "url": "https://www.kaneso.co.jp/seihin/KWB-M.htm",
+      "usedFor": "Sheet-waterproof-compatible balcony drain / strainer construction and nominal 50 mm outlet plausibility."
+    },
+    {
+      "manufacturer": "Kaneso",
+      "reference": "EDSMD-1 / EPMDF-1 balcony-corridor drain families",
+      "url": "https://www.kaneso.co.jp/seihin/EDSMD-1.htm",
+      "usedFor": "80 mm-class drainage-channel width around nominal 50 mm balcony drains."
+    }
+  ],
+  "benchmarkAssumptions": {
+    "bayCount": 30,
+    "balconySlabNominalWidthM": 3.65,
+    "balconySlabNominalDepthM": 1.15,
+    "slidingOpeningNominalWidthM": 2.15,
+    "nominalOutletDiameterM": 0.05,
+    "channelWidthM": 0.085,
+    "channelCentreFromBalconyCentreZM": 0.43,
+    "drainGrateOuterSizeM": 0.11,
+    "waterproofUpstandHeightM": 0.10,
+    "waterproofMembraneNominalBuildUpM": 0.003,
+    "renderedTerminationProfileDepthM": 0.008,
+    "thresholdTurnWidthM": 2.20,
+    "thresholdTurnDepthM": 0.08,
+    "drainSidePattern": "bay parity alternates left/right; vertically aligned by bay to communicate service routing without random placement"
+  },
+  "manufactureAndInstallation": {
+    "components": [
+      {
+        "id": "rear_waterproof_upstands",
+        "construction": "Dry sheet/coating waterproof layer returned up the rear wall at both sides of the sliding opening, with a thin rendered termination build-up.",
+        "dimensions": "100 mm visible upstand; nominal waterproof build-up 3 mm; rendered termination depth 8 mm to remain geometrically legible at 4K.",
+        "mounting": "Bonded/terminated to the concrete substrate behind the balcony finish; no floating gap.",
+        "interfaces": "Meets rear wall and floor plane; does not cover the sliding opening itself.",
+        "orientation": "Vertical rear-wall returns, exterior-facing balcony side.",
+        "exposure": "Rain and UV exposed but dry in the benchmark capture.",
+        "aging": "Minor UV/chalking belongs to roughness/albedo microvariation only; no peeling, failure, disaster or reconstruction state.",
+        "geometryVsMaterial": "Upstand/termination thickness is geometry. Chalking and fine orange-peel response are material-scale only."
+      },
+      {
+        "id": "threshold_waterproof_turn",
+        "construction": "Continuous waterproof turn beneath the sliding-window threshold.",
+        "dimensions": "2.20 m wide, 80 mm deep, approximately 12 mm rendered interface thickness.",
+        "mounting": "Continuous to rear substrate and floor waterproof field.",
+        "interfaces": "Below sash threshold, between the two rear upstands.",
+        "orientation": "Horizontal/rear interface.",
+        "exposure": "Recessed, intermittently rain exposed, dry at capture.",
+        "aging": "Low dirt loading relative to the open slab; no wet sheen.",
+        "geometryVsMaterial": "Threshold turn and edge break are geometry; residue is material-scale."
+      },
+      {
+        "id": "terminal_drainage_channel",
+        "construction": "Shallow terminal channel/liner near the balcony outer edge, feeding the local drain. The broad slab fall is treated as a construction condition and is not faked with a painted normal gradient.",
+        "dimensions": "85 mm channel width; spans the usable bay width; shallow 3 mm rendered liner surface.",
+        "mounting": "Bonded to/formed at slab finish before the front guardrail zone.",
+        "interfaces": "Continuous with the drain strainer and inside slab boundaries.",
+        "orientation": "Horizontal, parallel to balcony front edge.",
+        "exposure": "Rain exposed, dry at benchmark capture.",
+        "aging": "Any future residue must be source-attributed to drainage concentration; no random dark stripe.",
+        "geometryVsMaterial": "Channel termination and lip are geometry. Water staining is a separate cause-based weathering layer."
+      },
+      {
+        "id": "coated_drain_strainer",
+        "construction": "Square coated-metal strainer above an embedded drain body. The concealed outlet/body below the floor is represented in metadata rather than exposed geometry.",
+        "dimensions": "110 mm square external grate; nominal 50 mm outlet; millimetric frame/slat thickness.",
+        "mounting": "Flush/semi-flush in the channel with no floating offset.",
+        "interfaces": "Overlaps the terminal channel and remains entirely inside the balcony slab footprint.",
+        "orientation": "Horizontal grate, near one side of each bay.",
+        "exposure": "Rain/foot-traffic exposed, dry at capture.",
+        "aging": "Coating may be slightly dulled; exposed surface remains dielectric because resin coating covers the metal substrate.",
+        "geometryVsMaterial": "Open-frame/slat silhouette is geometry; coating microtexture is material response."
+      }
+    ],
+    "broadFloorFallPolicy": "No visual-fidelity credit may be claimed for slab fall unless an actual sloped floor surface is rendered and observed. This contract only guarantees the terminal drainage interface."
+  },
+  "materials": {
+    "MAT_BalconyWaterproofingDry": {
+      "surface": "aged dry exterior waterproof membrane/termination coating",
+      "albedoSrgb": [0.245, 0.255, 0.245],
+      "roughnessTarget": 0.72,
+      "metallic": 0.0,
+      "dielectricF0Approx": 0.04,
+      "normalScale": 0.0,
+      "microstructure": "fine orange-peel/chalk micro-roughness; no baked highlight",
+      "wetness": 0.0,
+      "uvAging": "subtle desaturation/chalking only; no catastrophic failure",
+      "angularFresnel": "ordinary dielectric Fresnel; no painted edge highlight"
+    },
+    "MAT_BalconyDrainCoatedCast": {
+      "surface": "resin-coated cast-metal drain strainer",
+      "albedoSrgb": [0.20, 0.22, 0.20],
+      "roughnessTarget": 0.66,
+      "metallic": 0.0,
+      "dielectricF0Approx": 0.04,
+      "normalScale": 0.0,
+      "microstructure": "fine coating texture; substrate metal does not make the coated top surface metallic",
+      "wetness": 0.0,
+      "uvAging": "minor dulling only",
+      "angularFresnel": "coated dielectric Fresnel; no baked/specular-painted highlight"
+    }
+  },
+  "geometryPolicy": {
+    "visibleUnityPrimitiveMeshesForbidden": true,
+    "dimensionBakedChamferedSourceRequired": true,
+    "combinedAssemblyMeshesRequired": true,
+    "collidersForbiddenOnDetailRoot": true,
+    "rendererBudgetMaximum": 60,
+    "expectedWaterproofAssemblyRenderers": 30,
+    "expectedDrainGrateRenderers": 30
+  },
+  "lodPolicy": {
+    "policy": "Construction-critical terminal drainage/waterproofing remains through LOD0/1/2/3 rather than disappearing during Danchi renderer-subset transitions.",
+    "reason": "The assembly is low-poly and a sudden loss of the 4K-visible grate/channel edge would create visible LOD pop.",
+    "actualTemporalVerificationRequired": true
+  },
+  "weatheringPolicy": {
+    "causeBasedOnly": true,
+    "benchmarkState": "dry midsummer Japanese daylight",
+    "wetnessMustRemainZero": true,
+    "futureDrainResidueRequiresDrainCatchmentAttribution": true,
+    "disasterDamageForbidden": true
+  },
+  "formalEvidencePolicy": {
+    "nativeResolutionRequired": [3840, 2160],
+    "views": ["hero", "oblique", "grazing"],
+    "required100PercentCrops": ["oblique/balcony_services", "oblique/construction_depth", "grazing/material_grazing"],
+    "temporalCases": ["temporal/subpixel_grazing", "temporal/lod_transition"],
+    "automaticVisualPoints": 0,
+    "renderVerificationStatus": "pending_real_unity_runtime"
+  },
+  "visualFidelityRelevance": {
+    "geometry_and_construction_fidelity": "direct",
+    "material_pbr_physical_plausibility": "direct",
+    "weathering_context_causality": "direct",
+    "period_accuracy_scene_authenticity": "supporting",
+    "temporal_lod_aliasing_stability": "risk_must_be_observed"
+  },
+  "criticalDefects": [
+    "visible_primitive_placeholder_geometry",
+    "obviously_painted_baked_highlights",
+    "materially_impossible_metallic_specular_values",
+    "obvious_repetition",
+    "floating_or_interpenetrating_hero_geometry",
+    "inconsistent_sun_shadow_direction",
+    "disaster_theme",
+    "severe_aliasing_or_shimmer",
+    "visible_lod_pop",
+    "major_light_leak",
+    "missing_required_construction_material_metadata",
+    "claiming_render_quality_without_actual_render"
+  ]
+}

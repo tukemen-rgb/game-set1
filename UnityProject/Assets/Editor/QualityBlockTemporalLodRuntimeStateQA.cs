@@ -253,17 +253,40 @@ public static class QualityBlockTemporalLodRuntimeStateQA
         if (!QualityBlockTemporalRuntimeEvidenceGuard.IsRunning || cam == null || cam != Camera.main)
             return;
 
-        if (!sequenceActive)
+        try
         {
-            ValidateContractConfigOnly();
-            QualityBlockDetailLodPhysicalUvBindingQA.ValidateOpenScene();
-            sequenceBaselineSha256 = BuildCurrentSha256();
-            sequencePreCullCheckCount = 0;
-            sequenceActive = true;
-        }
+            if (!sequenceActive)
+            {
+                ValidateContractConfigOnly();
+                QualityBlockDetailLodPhysicalUvBindingQA.ValidateOpenScene();
+                sequenceBaselineSha256 = BuildCurrentSha256();
+                sequencePreCullCheckCount = 0;
+                sequenceActive = true;
+            }
 
-        RequireCurrentMatch(sequenceBaselineSha256, $"formal temporal MainCamera pre-cull #{sequencePreCullCheckCount + 1}");
-        sequencePreCullCheckCount++;
+            RequireCurrentMatch(sequenceBaselineSha256, $"formal temporal MainCamera pre-cull #{sequencePreCullCheckCount + 1}");
+            sequencePreCullCheckCount++;
+        }
+        catch (Exception ex)
+        {
+            PoisonFormalTemporalEvidence(cam, ex);
+            throw;
+        }
+    }
+
+    private static void PoisonFormalTemporalEvidence(Camera cam, Exception cause)
+    {
+        // Camera.onPreCull exceptions originate from an engine callback and should already abort the formal
+        // render path. Disabling the required filmic component is a second fail-closed mechanism: even if a
+        // native Camera.Render call continues after the callback exception, the authoritative temporal
+        // runtime guard can no longer satisfy its required one-tonemap-invocation-per-frame telemetry.
+        QualityBlockFilmicTonemap[] effects = cam.GetComponents<QualityBlockFilmicTonemap>();
+        foreach (QualityBlockFilmicTonemap effect in effects)
+        {
+            if (effect != null)
+                effect.enabled = false;
+        }
+        Debug.LogError("Formal temporal evidence poisoned after LOD runtime-state failure; rebuild/re-prepare before retrying. " + cause.Message);
     }
 
     private static void OnEditorUpdate()

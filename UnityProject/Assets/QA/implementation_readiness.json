@@ -1,5 +1,5 @@
 {
-  "generatedUtc": "2026-09-11T01:10:00Z",
+  "generatedUtc": "2026-09-11T02:00:00Z",
   "readinessScore": 93,
   "possibleScore": 100,
   "visualFidelityStatus": "UNSCORED_UNTIL_REAL_4K_RENDER",
@@ -78,8 +78,8 @@
       "id": "native_4k_capture_pipeline",
       "weight": 8,
       "passed": true,
-      "evidence": "The native 3840x2160 hero/oblique/grazing packet includes pixel-exact crops, async reflection synchronization, physical-lighting plus renderable scene/material/texture SHA-256 coherence, hidden MaterialPropertyBlock rejection, HDR-to-LDR telemetry, construction preflight, temporal sealing and post-tonemap repetition plus major-light-leak triage.",
-      "assetPaths": ["Assets/Editor/QualityBlock4KCapture.cs", "Assets/Editor/QualityBlockNative4KReviewPacket.cs", "Assets/Editor/QualityBlockRenderEvidenceProvenanceQA.cs", "Assets/Editor/QualityBlockReflectionLightingStateFingerprint.cs", "Assets/Editor/QualityBlockReflectionRenderStateFingerprint.cs", "Assets/Editor/QualityBlockReflectionMaterialOverrideGuard.cs", "Assets/Editor/QualityBlockRenderedRepetitionDiagnostics.cs", "Assets/Editor/QualityBlockRenderedLightLeakDiagnostics.cs", "Assets/QA/reflection_render_state_coherence_contract.json", "Assets/QA/rendered_repetition_diagnostics_contract.json", "Assets/QA/rendered_light_leak_diagnostics_contract.json"]
+      "evidence": "The native 3840x2160 hero/oblique/grazing packet includes pixel-exact crops, async reflection synchronization, physical-lighting plus renderable scene/material/texture SHA-256 coherence, hidden MaterialPropertyBlock rejection, HDR-to-LDR telemetry, construction preflight, temporal sealing, post-tonemap repetition/light-leak triage, and a fail-closed formal-camera purity guard that locks Forward perspective/full viewport/physical-sky output while rejecting extra OnRenderImage effects and Camera CommandBuffers and re-proving accepted reflection state around every canonical frame.",
+      "assetPaths": ["Assets/Editor/QualityBlock4KCapture.cs", "Assets/Editor/QualityBlockNative4KReviewPacket.cs", "Assets/Editor/QualityBlockRenderEvidenceProvenanceQA.cs", "Assets/Editor/QualityBlockReflectionLightingStateFingerprint.cs", "Assets/Editor/QualityBlockReflectionRenderStateFingerprint.cs", "Assets/Editor/QualityBlockReflectionMaterialOverrideGuard.cs", "Assets/Editor/QualityBlockRenderedRepetitionDiagnostics.cs", "Assets/Editor/QualityBlockRenderedLightLeakDiagnostics.cs", "Assets/Editor/QualityBlockCameraEvidencePurityQA.cs", "Assets/Editor/QualityBlockCinematicImageUpgrade.cs", "Assets/QA/reflection_render_state_coherence_contract.json", "Assets/QA/rendered_repetition_diagnostics_contract.json", "Assets/QA/rendered_light_leak_diagnostics_contract.json", "Assets/QA/camera_evidence_purity_contract.json"]
     },
     {
       "id": "multi_angle_capture_manifest",
@@ -98,29 +98,29 @@
   ],
   "blockers": ["unity_compile_verification"],
   "latestRun": {
-    "startHead": "3d0eb49a1391c7b5fb53f7fa0969f95a2029e4be",
-    "substantiveWorkHead": "0e2d5099887a802d7ffbcbc198223e5ce8b26812",
+    "startHead": "a13186c9cda0cad514902e9ec92c9b8bddbce0e0",
+    "substantiveWorkHead": "fc2e397fef1ffb533bfb60f6eb10a2db5682db06",
     "substantiveCommits": [
-      "f9343601980f5f34d494b1fee54c7a49bba29c34",
-      "5a147764011a00040a10e4e4261028699bac0281",
-      "213186f1e04184a0ad9b01b863adce127562af99",
-      "ad25bdfcfa7b2748754b8a1e83b9e646b4bebe3c",
-      "030b7bbc21a6796fcc58fe1f754c3aa7349895ff",
-      "0e2d5099887a802d7ffbcbc198223e5ce8b26812"
+      "c149e13e79c938325568508b547ae798718bf485",
+      "8df69c3add5a50ba8d8a39b9d7f8d4e51230fb7e",
+      "a45eb08a6dfc912a14b728903a9bb86b51dc00e9",
+      "253bbdfbc1529d11b1c2eeb8f95d6e8057839ea8",
+      "9bff6da2247c16b25b0e389c73bfb45d758a4c4b",
+      "26d739d5b855393dbdffcf43c75c9ccd50a52ed2",
+      "fc2e397fef1ffb533bfb60f6eb10a2db5682db06"
     ],
-    "verification": "GitHub/source review only; no Unity runtime or native capture was available. The prior async reflection waiter already proved one physical SummerSun/sky/ambient/shadow SHA-256 across request, every observed Editor poll, completion and immediate pre-still, but that proof did not bind active renderer transforms, meshes, current material serialization or texture bindings. Added reflection-render-state-v1 SHA-256 over the persisted benchmark scene dependency hash, deterministic active renderer hierarchy/type, world transforms/bounds and render state, mesh asset/runtime invariants, current material serialization and common PBR/detail texture dependency/sampling state. The outer reflection-lighting-state-v2 hash now folds this render-state hash into the existing waiter, so the existing request/poll/completion/pre-still equality checks fail closed on either lighting or renderable-state drift. Source material/texture/texel/albedo/metadata/primitive validators are required before a changed render state is accepted as a new baseline. Renderer MaterialPropertyBlock overrides are currently rejected rather than partially fingerprinted, because they can override per-renderer or per-material shader values without changing shared Material state. Unity 6 API documentation was checked for the Renderer/Mesh/Texture APIs used, but no compile/runtime assertion is made.",
+    "verification": "GitHub/source review only; no Unity runtime or native capture was available. Added a formal-camera evidence-purity contract and InitializeOnLoad guard for canonical QA4K_/QAPreparedTemporal_ 3840x2160 targets. The guard requires the persisted QualityCamera tagged MainCamera, Built-in explicit Forward perspective rendering, full viewport, HDR/MSAA permission, disabled dynamic resolution, physical Skybox clear, exact restrained QualityBlockFilmicTonemap settings, no additional enabled OnRenderImage handler, and no camera-attached CommandBuffer. It SHA-256 fingerprints camera pose/projection/render/output/quality/filmic/target state at pre-cull and requires the identical state at pre-render/post-render. It also revalidates the accepted asynchronous reflection wait proof at pre-cull and post-render so physical lighting plus renderer/mesh/material/texture state remains bound to the cubemap for every formal frame. Self-audit caught an initial incorrect assumption that the camera GameObject was named MainCamera; BuildQualityBlock1990s actually creates QualityCamera tagged MainCamera, so the source guard and machine-readable contract were corrected. Cinematic Apply now explicitly writes Forward/perspective/full viewport/Skybox clear. Unity 6 Camera callback/CommandBuffer API documentation was checked, but no compile/runtime assertion is made.",
     "expectedVisualScoreImpact": [
-      "Material/PBR: prevents stale reflection evidence after shared material/shader/texture changes; cannot award points without actual angular-response pixels.",
-      "Lighting/shadows/reflections: extends cubemap/still coherence from physical illumination alone to reflected renderable scene/material state.",
-      "Texture/microdetail: binds common PBR/detail texture assignment, dependency and sampling state across the async reflection boundary.",
-      "Geometry & construction: binds active renderer transforms/bounds and mesh invariants, reducing stale cubemap reuse after object movement/replacement.",
-      "Weathering and Cinematic image: prevents a stable SummerSun hash from masking a changed residue/material state before still evidence.",
-      "Critical defects: hidden MaterialPropertyBlock overrides are fail-closed until explicitly fingerprinted; hash equality still cannot clear baked highlights, impossible physics, repetition, geometry intersection or light leak without pixel review.",
+      "Cinematic image: reduces evidence contamination from undeclared bloom/sharpen/local-contrast/replacement image effects, camera CommandBuffer compositing, viewport cropping and implicit rendering-path drift. No points without actual pixels.",
+      "Lighting/shadows/reflections: every formal frame re-proves the accepted reflection-lighting-state-v2 at pre-cull and post-render, improving cubemap/still/temporal coherence without claiming observed lighting quality.",
+      "Material/PBR and Texture/microdetail: a formal frame cannot proceed if the accepted bound renderer/mesh/material/texture state no longer matches the realtime reflection evidence.",
+      "Temporal/LOD/aliasing: prepared temporal frames are guarded against camera/output configuration drift across pre-cull/pre-render/post-render; actual shimmer and LOD pop still require 100% pixel review.",
+      "Critical defects: hidden camera beautification is fail-closed, but no critical defect is cleared by source/callback state alone.",
       "Automatic Visual Fidelity impact: 0 points. No actual render exists."
     ],
     "visualFidelityPointsAwarded": 0,
-    "nextBlocker": "Unity 6000.3.0f1 compile/runtime. At first Runner availability stop speculative expansion and run Prepare Complete Native 4K Review Packet. Verify reflection-lighting-state-v2 stays identical across request/every observed poll/completion/pre-still within the 30 second probe wait. If the MaterialPropertyBlock guard fails, fingerprint the exact intentional override payload before permitting it rather than disabling the guard. Then inspect sealed native 3840x2160 hero/oblique/grazing pixels and 100% crops before any Visual Fidelity scoring.",
-    "recordingNote": "Readiness remains 93/100 because this run strengthens evidence-state coherence but does not provide the missing 7-point Unity compile/runtime verification. Detailed record: Assets/QA/autonomous_run_2026-09-11_reflection_render_state_coherence.json"
+    "nextBlocker": "Unity 6000.3.0f1 compile/runtime. At first Runner availability stop speculative expansion and run Prepare Complete Native 4K Review Packet. Verify the camera-purity callbacks observe every QA4K_/QAPreparedTemporal_ render without false positives and reflection-lighting-state-v2 stays coherent through each frame, then inspect sealed native 3840x2160 hero/oblique/grazing pixels and 100% crops before any Visual Fidelity scoring.",
+    "recordingNote": "Readiness remains 93/100 because this run strengthens evidence purity but does not provide the missing 7-point Unity compile/runtime verification. Detailed record: Assets/QA/autonomous_run_2026-09-11_camera_evidence_purity.json"
   },
   "note": "Implementation Readiness measures source/pipeline coverage only. Visual Fidelity is unscored and cannot pass until real 3840x2160 Unity render evidence is captured and reviewed."
 }

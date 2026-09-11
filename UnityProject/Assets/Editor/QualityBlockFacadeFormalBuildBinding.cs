@@ -13,9 +13,10 @@ using UnityEngine;
 /// baseline before those passes exist, otherwise scoreable pixels can silently fall back to the opaque
 /// MainBlock / repeated-window state even though higher-fidelity source work is present in the repo.
 ///
-/// The first formal reflection fingerprint may repair only a genuinely missing generated pass. Once a
-/// pass exists, drift is fail-closed: it is validated rather than silently rebuilt. Authored danchi art
-/// remains authoritative. This integration layer awards zero Visual Fidelity points.
+/// A new facade-optics preparation epoch may create genuinely missing generated passes before the first
+/// formal reflection fingerprint. After that baseline is armed, every repeated reflection poll is
+/// report-free and fail-closed: deletion/drift aborts rather than mutating the scene while a probe is in
+/// flight. Authored danchi art remains authoritative. This integration layer awards zero Visual Fidelity points.
 /// </summary>
 public static class QualityBlockFacadeFormalBuildBinding
 {
@@ -25,6 +26,15 @@ public static class QualityBlockFacadeFormalBuildBinding
     private const string OpticsRootName = "DanchiFacadeOptics";
     private const string ApertureRootName = "DanchiFacadeApertureShell";
     private const string OccupancyRootName = "FacadeOccupancyVariation";
+    private const string MainBlockName = "MainBlock";
+    private const int ExpectedFacadeCellParts = 120;
+    private const int ExpectedSealParts = 120;
+    private const int ExpectedApartmentGlassPanes = 60;
+
+    private static bool baselineArmed;
+    private static int armedOpticsInstanceId;
+    private static int armedApertureInstanceId;
+    private static int armedOccupancyInstanceId;
 
     private static readonly string[] CanonicalCriticalRisks =
     {
@@ -79,8 +89,9 @@ public static class QualityBlockFacadeFormalBuildBinding
     }
 
     /// <summary>
-    /// Called before a formal reflection baseline. Missing generated passes are built once, in physical
-    /// dependency order. Existing passes are never auto-repaired here: validation must expose drift.
+    /// Called from the formal reflection fingerprint. The first call for a new DanchiFacadeOptics
+    /// instance may build missing facade passes. Subsequent calls for that same optics instance are
+    /// strictly report-free and must not mutate evidence while ReflectionProbe.RenderProbe is in flight.
     /// </summary>
     public static void EnsurePreparedForFormalEvidence()
     {
@@ -93,20 +104,37 @@ public static class QualityBlockFacadeFormalBuildBinding
             return;
         }
 
-        if (FindSceneObject(OpticsRootName) == null)
+        GameObject optics = FindSceneObject(OpticsRootName);
+        if (optics == null)
             throw new InvalidOperationException(
                 "DanchiFacadeOptics is missing before formal facade binding. The binding must run after facade optics, never synthesize around a missing optical baseline.");
 
-        bool apertureWasMissing = FindSceneObject(ApertureRootName) == null;
-        if (apertureWasMissing)
+        if (baselineArmed && armedOpticsInstanceId == optics.GetInstanceID())
+        {
+            GameObject aperture = FindSceneObject(ApertureRootName);
+            GameObject occupancy = FindSceneObject(OccupancyRootName);
+            if (aperture == null || occupancy == null ||
+                aperture.GetInstanceID() != armedApertureInstanceId ||
+                occupancy.GetInstanceID() != armedOccupancyInstanceId)
+                throw new InvalidOperationException(
+                    "Facade formal evidence state changed after the reflection baseline was armed. In-flight evidence may not auto-repair missing/replaced facade roots.");
+
+            ValidatePreparedSceneReportFree();
+            return;
+        }
+
+        // New optics instance == new formal preparation epoch. Building is allowed only before the
+        // reflection baseline is armed for this epoch.
+        GameObject existingAperture = FindSceneObject(ApertureRootName);
+        if (existingAperture == null)
         {
             QualityBlockFacadeApertureConstructionQA.ApplyAndPersist();
             QualityBlockFacadeAperturePhysicalUvQA.ApplyAndPersist();
         }
         else
         {
-            // Existing geometry is evidence state. Do not silently rewrite it when a contract/UV drift
-            // should instead abort the formal packet.
+            // Full aperture validation writes its source-side runtime report; this is permitted exactly
+            // here, before RenderProbe(), but never on subsequent in-flight polls.
             QualityBlockFacadeApertureConstructionQA.ValidateOpenScene();
             QualityBlockFacadeAperturePhysicalUvQA.ValidateOpenScene();
         }
@@ -114,7 +142,10 @@ public static class QualityBlockFacadeFormalBuildBinding
         if (FindSceneObject(OccupancyRootName) == null)
             QualityBlockFacadeOccupancyVariationUpgrade.BuildAndApply();
 
+        // First-epoch full validation is still pre-probe. It proves all dependent passes (including the
+        // sceneSaving-bound glass thickness) exist before we freeze instance identities.
         ValidatePreparedScene();
+        ArmCurrentEpoch(optics);
     }
 
     [MenuItem("NewTown/QA/Validate Prepared Facade Formal Build State")]
@@ -126,16 +157,64 @@ public static class QualityBlockFacadeFormalBuildBinding
         if (IsAuthoredDanchiActive())
             return;
 
-        foreach (string rootName in new[] { OpticsRootName, ApertureRootName, OccupancyRootName })
-            if (FindSceneObject(rootName) == null)
-                throw new InvalidOperationException("Formal facade build state is incomplete; missing root: " + rootName);
-
+        RequirePreparedRoots();
         QualityBlockFacadeApertureConstructionQA.ValidateOpenScene();
         QualityBlockFacadeAperturePhysicalUvQA.ValidateOpenScene();
         QualityBlockFacadeOccupancyVariationUpgrade.ValidateOpenScene();
         // The glass-thickness pass is bound to sceneSaving. Aperture/UV/occupancy persistence above
         // crosses that save boundary before reflection capture, so validate the resulting 65 edge shells.
         QualityBlockFacadeGlassThicknessUpgrade.ValidateOpenScene();
+    }
+
+    private static void ValidatePreparedSceneReportFree()
+    {
+        ValidateContractConfigOnly();
+        RequirePreparedRoots();
+
+        GameObject mainBlock = FindSceneObject(MainBlockName);
+        Renderer mainRenderer = mainBlock != null ? mainBlock.GetComponent<Renderer>() : null;
+        if (mainRenderer == null || mainRenderer.enabled)
+            throw new InvalidOperationException(
+                "MainBlock opaque fallback renderer must remain disabled after the formal facade baseline is armed.");
+
+        GameObject aperture = FindSceneObject(ApertureRootName);
+        int cellParts = aperture.GetComponentsInChildren<Renderer>(true)
+            .Count(x => x != null && x.gameObject.name.StartsWith("FA_FacadeCell_", StringComparison.Ordinal));
+        int sealParts = aperture.GetComponentsInChildren<Renderer>(true)
+            .Count(x => x != null && x.gameObject.name.StartsWith("FA_WindowSeal_", StringComparison.Ordinal));
+        int apartmentPanes = Resources.FindObjectsOfTypeAll<GameObject>()
+            .Count(x => x != null && x.scene.IsValid() &&
+                        string.Equals(x.scene.path, ScenePath, StringComparison.Ordinal) &&
+                        x.name.StartsWith("FO_Glass_", StringComparison.Ordinal));
+        if (cellParts != ExpectedFacadeCellParts || sealParts != ExpectedSealParts || apartmentPanes != ExpectedApartmentGlassPanes)
+            throw new InvalidOperationException(
+                $"Report-free facade construction fingerprint drifted: cells={cellParts}/{ExpectedFacadeCellParts}, seals={sealParts}/{ExpectedSealParts}, apartmentPanes={apartmentPanes}/{ExpectedApartmentGlassPanes}.");
+
+        // These validators do not emit mutable runtime reports. They can therefore be reused on every
+        // Editor poll to freeze physical UVs, deterministic occupancy layout and glass-edge construction.
+        QualityBlockFacadeAperturePhysicalUvQA.ValidateOpenScene();
+        QualityBlockFacadeOccupancyVariationUpgrade.ValidateOpenScene();
+        QualityBlockFacadeGlassThicknessUpgrade.ValidateOpenScene();
+    }
+
+    private static void ArmCurrentEpoch(GameObject optics)
+    {
+        GameObject aperture = FindSceneObject(ApertureRootName);
+        GameObject occupancy = FindSceneObject(OccupancyRootName);
+        if (optics == null || aperture == null || occupancy == null)
+            throw new InvalidOperationException("Cannot arm facade formal baseline with incomplete prepared roots.");
+
+        armedOpticsInstanceId = optics.GetInstanceID();
+        armedApertureInstanceId = aperture.GetInstanceID();
+        armedOccupancyInstanceId = occupancy.GetInstanceID();
+        baselineArmed = true;
+    }
+
+    private static void RequirePreparedRoots()
+    {
+        foreach (string rootName in new[] { OpticsRootName, ApertureRootName, OccupancyRootName })
+            if (FindSceneObject(rootName) == null)
+                throw new InvalidOperationException("Formal facade build state is incomplete; missing root: " + rootName);
     }
 
     private static bool IsAuthoredDanchiActive()

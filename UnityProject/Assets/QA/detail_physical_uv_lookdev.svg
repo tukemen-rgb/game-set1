@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900">
+  <rect width="1600" height="900" fill="#11151a"/>
+  <text x="70" y="70" fill="#f2f4f7" font-family="sans-serif" font-size="34" font-weight="700">Danchi Detail — Metric UV / Manufacture Phase Lookdev</text>
+  <text x="70" y="108" fill="#aab4bf" font-family="sans-serif" font-size="18">Diagram only — not render evidence, not eligible for Visual Fidelity points.</text>
+
+  <g transform="translate(70 155)">
+    <rect width="700" height="300" rx="18" fill="#1b222a" stroke="#46515d"/>
+    <text x="30" y="42" fill="#f2f4f7" font-family="sans-serif" font-size="24" font-weight="700">Extruded aluminum sash / rail</text>
+    <rect x="55" y="105" width="570" height="76" rx="8" fill="#8d9497" stroke="#c7ced2"/>
+    <g stroke="#626b6e" stroke-width="2" opacity="0.8">
+      <line x1="85" y1="112" x2="85" y2="174"/><line x1="102" y1="112" x2="102" y2="174"/><line x1="119" y1="112" x2="119" y2="174"/>
+      <line x1="136" y1="112" x2="136" y2="174"/><line x1="153" y1="112" x2="153" y2="174"/><line x1="170" y1="112" x2="170" y2="174"/>
+    </g>
+    <line x1="55" y1="215" x2="625" y2="215" stroke="#d7dee5" stroke-width="2"/>
+    <line x1="55" y1="207" x2="55" y2="223" stroke="#d7dee5" stroke-width="2"/><line x1="625" y1="207" x2="625" y2="223" stroke="#d7dee5" stroke-width="2"/>
+    <text x="290" y="243" fill="#d7dee5" font-family="monospace" font-size="17">physical metres</text>
+    <text x="30" y="278" fill="#aab4bf" font-family="sans-serif" font-size="16">V axis follows the longest manufactured member. 14 repeats/m; texture phase starts from a deterministic stock-cut origin.</text>
+  </g>
+
+  <g transform="translate(830 155)">
+    <rect width="700" height="300" rx="18" fill="#1b222a" stroke="#46515d"/>
+    <text x="30" y="42" fill="#f2f4f7" font-family="sans-serif" font-size="24" font-weight="700">PVC drain hose / cylindrical wrap</text>
+    <path d="M80 150 C190 80 310 220 430 145 S610 95 650 135" fill="none" stroke="#6e706b" stroke-width="42" stroke-linecap="round"/>
+    <g stroke="#9da099" stroke-width="4" opacity="0.9">
+      <line x1="122" y1="121" x2="135" y2="153"/><line x1="150" y1="112" x2="163" y2="146"/><line x1="181" y1="112" x2="188" y2="148"/>
+      <line x1="470" y1="126" x2="480" y2="165"/><line x1="500" y1="116" x2="510" y2="156"/><line x1="530" y1="109" x2="540" y2="149"/>
+    </g>
+    <text x="30" y="237" fill="#d7dee5" font-family="monospace" font-size="17">axial V = metres  |  U ≈ circumference metres</text>
+    <text x="30" y="278" fill="#aab4bf" font-family="sans-serif" font-size="16">7 repeats/m. Circumference is rounded to a whole texture repeat so the tangent-space normal seam closes.</text>
+  </g>
+
+  <g transform="translate(70 500)">
+    <rect width="1460" height="315" rx="18" fill="#1b222a" stroke="#46515d"/>
+    <text x="30" y="42" fill="#f2f4f7" font-family="sans-serif" font-size="24" font-weight="700">Repeated apartment modules: same manufacture, different cut-origin phase</text>
+    <g font-family="monospace" font-size="15" fill="#d7dee5">
+      <rect x="45" y="82" width="390" height="105" fill="#28313a" stroke="#596674"/><text x="65" y="112">Bay A  phase (1,6)</text>
+      <rect x="535" y="82" width="390" height="105" fill="#28313a" stroke="#596674"/><text x="555" y="112">Bay B  phase (5,2)</text>
+      <rect x="1025" y="82" width="390" height="105" fill="#28313a" stroke="#596674"/><text x="1045" y="112">Bay C  phase (3,7)</text>
+    </g>
+    <g stroke="#7d8995" stroke-width="2">
+      <path d="M70 150 C130 118 190 178 250 140 S370 120 410 155" fill="none"/>
+      <path d="M560 150 C620 174 680 112 740 148 S860 175 900 135" fill="none"/>
+      <path d="M1050 150 C1110 125 1170 164 1230 132 S1350 118 1390 154" fill="none"/>
+    </g>
+    <text x="30" y="235" fill="#aab4bf" font-family="sans-serif" font-size="17">Phase is deterministic (FNV-1a hierarchy path), 8×8 bins at 17 mm increments. Separate extrusions, brackets, bolts, seals and service parts do not restart an identical texture patch.</text>
+    <text x="30" y="270" fill="#aab4bf" font-family="sans-serif" font-size="17">Native 4K review must still reject: visible phase synchronization, wrong grain direction, scale drift, cylinder seams, bevel stretching, moiré or temporal shimmer.</text>
+  </g>
+</svg>

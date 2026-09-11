@@ -235,7 +235,7 @@ public static class QualityBlockVisualGateIntegrityQA
                     $"{canonical.weight}/{canonical.hardMinimum}, got {rule.weight}/{rule.hardMinimum}.");
             if (rule.hardMinimum < 0 || rule.hardMinimum > rule.weight)
                 throw new InvalidOperationException(
-                    $"{label} has invalid bounds for {canonical.id}: minimum={rule.hardMinimum}, weight={canonical.weight}.");
+                    $"{label} has invalid bounds for {canonical.id}: minimum={rule.hardMinimum}, weight={rule.weight}.");
         }
 
         int total = categories.Sum(x => x.weight);

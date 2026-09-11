@@ -15,12 +15,24 @@ public static class QualityBlockBalconyDrainageWaterproofingUpgrade
     public const string RootName = "BalconyDrainageWaterproofing";
     public const string GeneratedRoot = "Assets/Art/GeneratedBalconyDrainage";
     public const string WaterproofMeshPath = GeneratedRoot + "/GM_BalconyWaterproofingAssembly.asset";
+    public const string FloorFallMeshPath = GeneratedRoot + "/GM_BalconyFloorFall.asset";
     public const string DrainMeshPath = GeneratedRoot + "/GM_BalconyDrainGrate.asset";
     public const string WaterproofMaterialPath = GeneratedRoot + "/MAT_BalconyWaterproofingDry.mat";
     public const string DrainMaterialPath = GeneratedRoot + "/MAT_BalconyDrainCoatedCast.mat";
     public const float ChannelZ = 0.43f;
     public const float DrainOffsetX = 1.45f;
     public const float UpstandHeight = 0.10f;
+
+    // Main walking field reconstructed as a physical fall to the terminal channel. The sloped top starts
+    // immediately beyond the rear threshold turn and finishes immediately before the 85 mm channel liner.
+    // 1:50 (2%) is a conservative benchmark drainage assumption, not a claim about an original drawing.
+    public const float FloorFallRearZ = -0.46f;
+    public const float FloorFallFrontZ = 0.38f;
+    public const float FloorFallWidth = 3.45f;
+    public const float FloorFallRatio = 50f;
+    public const float FloorFallBottomY = 0.0005f;
+    public const float FloorFallFrontTopY = 0.0015f;
+    public const float FloorFallRearTopY = FloorFallFrontTopY + (FloorFallFrontZ - FloorFallRearZ) / FloorFallRatio;
 
     private static bool saving;
 
@@ -59,13 +71,6 @@ public static class QualityBlockBalconyDrainageWaterproofingUpgrade
             throw new InvalidOperationException("Benchmark scene must be open.");
         if (IsAuthoredDanchiActive(scene)) return;
 
-        GameObject existing = FindSceneObject(scene, RootName);
-        if (existing != null)
-        {
-            QualityBlockBalconyDrainageWaterproofingQA.ValidateOpenScene();
-            return;
-        }
-
         GameObject danchi = FindSceneObject(scene, "Danchi");
         if (danchi == null) throw new InvalidOperationException("Danchi fallback root not found.");
         for (int f = 0; f < 5; f++)
@@ -74,28 +79,48 @@ public static class QualityBlockBalconyDrainageWaterproofingUpgrade
 
         Directory.CreateDirectory(GeneratedRoot);
         Mesh waterproofMesh = GetWaterproofMesh();
+        Mesh floorFallMesh = GetFloorFallMesh();
         Mesh drainMesh = GetDrainMesh();
         Material waterproof = GetMaterial(WaterproofMaterialPath, "MAT_BalconyWaterproofingDry",
             new Color(0.245f, 0.255f, 0.245f, 1f), 0.28f);
         Material drain = GetMaterial(DrainMaterialPath, "MAT_BalconyDrainCoatedCast",
             new Color(0.20f, 0.22f, 0.20f, 1f), 0.34f);
 
-        GameObject root = new GameObject(RootName);
-        root.transform.SetParent(danchi.transform, false);
-        for (int f = 0; f < 5; f++)
-        for (int b = 0; b < 6; b++)
+        GameObject root = FindSceneObject(scene, RootName);
+        if (root == null)
         {
-            Renderer slab = RequireSlab(scene, f, b);
-            Bounds sb = slab.bounds;
-            GameObject bay = new GameObject($"BalconyDW_{f}_{b}");
-            bay.transform.SetParent(root.transform, true);
-            bay.transform.position = new Vector3(sb.center.x, sb.max.y, sb.center.z);
-            bay.transform.rotation = Quaternion.identity;
-            bay.transform.localScale = Vector3.one;
-            AddRenderer("WaterproofingAssembly", bay.transform, waterproofMesh, waterproof, Vector3.zero);
-            float side = b % 2 == 0 ? -1f : 1f;
-            AddRenderer("DrainGrate", bay.transform, drainMesh, drain,
-                new Vector3(side * DrainOffsetX, 0f, ChannelZ));
+            root = new GameObject(RootName);
+            root.transform.SetParent(danchi.transform, false);
+            for (int f = 0; f < 5; f++)
+            for (int b = 0; b < 6; b++)
+            {
+                Renderer slab = RequireSlab(scene, f, b);
+                Bounds sb = slab.bounds;
+                GameObject bay = new GameObject($"BalconyDW_{f}_{b}");
+                bay.transform.SetParent(root.transform, true);
+                bay.transform.position = new Vector3(sb.center.x, sb.max.y, sb.center.z);
+                bay.transform.rotation = Quaternion.identity;
+                bay.transform.localScale = Vector3.one;
+                AddRenderer("WaterproofingAssembly", bay.transform, waterproofMesh, waterproof, Vector3.zero);
+                AddRenderer("FloorFallSurface", bay.transform, floorFallMesh, waterproof, Vector3.zero);
+                float side = b % 2 == 0 ? -1f : 1f;
+                AddRenderer("DrainGrate", bay.transform, drainMesh, drain,
+                    new Vector3(side * DrainOffsetX, 0f, ChannelZ));
+            }
+        }
+        else
+        {
+            // Migration path from the earlier terminal-interface-only assembly. Only the newly introduced
+            // physical floor-fall surface is repaired automatically; any unrelated drift remains fail-closed
+            // in ValidateOpenScene rather than being silently normalised during a formal evidence lifecycle.
+            for (int f = 0; f < 5; f++)
+            for (int b = 0; b < 6; b++)
+            {
+                Transform bay = root.transform.Find($"BalconyDW_{f}_{b}");
+                if (bay == null) continue;
+                if (bay.Find("FloorFallSurface") == null)
+                    AddRenderer("FloorFallSurface", bay, floorFallMesh, waterproof, Vector3.zero);
+            }
         }
 
         AssetDatabase.SaveAssets();
@@ -115,6 +140,71 @@ public static class QualityBlockBalconyDrainageWaterproofingUpgrade
             new BoxPart(new Vector3(3.45f, 0.003f, 0.085f), new Vector3(0f, 0.0015f, ChannelZ), 0.0005f)
         };
         return Combine("GM_BalconyWaterproofingAssembly", WaterproofMeshPath, parts);
+    }
+
+    private static Mesh GetFloorFallMesh()
+    {
+        Mesh existing = AssetDatabase.LoadAssetAtPath<Mesh>(FloorFallMeshPath);
+        if (existing != null) return existing;
+
+        float half = FloorFallWidth * 0.5f;
+        float zr = FloorFallRearZ;
+        float zf = FloorFallFrontZ;
+        float yb = FloorFallBottomY;
+        float yr = FloorFallRearTopY;
+        float yf = FloorFallFrontTopY;
+
+        var vertices = new List<Vector3>(24);
+        var uvs = new List<Vector2>(24);
+        var triangles = new List<int>(36);
+
+        // Each face owns vertices so RecalculateNormals produces construction-hard edges rather than a
+        // falsely rounded slab. UVs are metric-like and deterministic even though the current dry material
+        // is untextured; future microstructure maps can therefore use manufacture-scale coordinates.
+        AddQuad(vertices, uvs, triangles,
+            new Vector3(-half, yr, zr), new Vector3(-half, yf, zf),
+            new Vector3( half, yf, zf), new Vector3( half, yr, zr),
+            new Vector2(0f, 0f), new Vector2(0f, zf-zr), new Vector2(FloorFallWidth, zf-zr), new Vector2(FloorFallWidth, 0f));
+        AddQuad(vertices, uvs, triangles,
+            new Vector3(-half, yb, zr), new Vector3( half, yb, zr),
+            new Vector3( half, yb, zf), new Vector3(-half, yb, zf),
+            new Vector2(0f,0f), new Vector2(FloorFallWidth,0f), new Vector2(FloorFallWidth,zf-zr), new Vector2(0f,zf-zr));
+        AddQuad(vertices, uvs, triangles,
+            new Vector3(-half, yb, zr), new Vector3(-half, yr, zr),
+            new Vector3( half, yr, zr), new Vector3( half, yb, zr),
+            new Vector2(0f,0f), new Vector2(0f,yr-yb), new Vector2(FloorFallWidth,yr-yb), new Vector2(FloorFallWidth,0f));
+        AddQuad(vertices, uvs, triangles,
+            new Vector3(-half, yb, zf), new Vector3( half, yb, zf),
+            new Vector3( half, yf, zf), new Vector3(-half, yf, zf),
+            new Vector2(0f,0f), new Vector2(FloorFallWidth,0f), new Vector2(FloorFallWidth,yf-yb), new Vector2(0f,yf-yb));
+        AddQuad(vertices, uvs, triangles,
+            new Vector3(-half, yb, zr), new Vector3(-half, yb, zf),
+            new Vector3(-half, yf, zf), new Vector3(-half, yr, zr),
+            new Vector2(0f,0f), new Vector2(zf-zr,0f), new Vector2(zf-zr,yf-yb), new Vector2(0f,yr-yb));
+        AddQuad(vertices, uvs, triangles,
+            new Vector3(half, yb, zr), new Vector3(half, yr, zr),
+            new Vector3(half, yf, zf), new Vector3(half, yb, zf),
+            new Vector2(0f,0f), new Vector2(0f,yr-yb), new Vector2(zf-zr,yf-yb), new Vector2(zf-zr,0f));
+
+        Mesh mesh = new Mesh { name = "GM_BalconyFloorFall" };
+        mesh.SetVertices(vertices);
+        mesh.SetUVs(0, uvs);
+        mesh.SetTriangles(triangles, 0, true);
+        mesh.RecalculateBounds();
+        mesh.RecalculateNormals();
+        mesh.RecalculateTangents();
+        AssetDatabase.CreateAsset(mesh, FloorFallMeshPath);
+        return mesh;
+    }
+
+    private static void AddQuad(List<Vector3> vertices, List<Vector2> uvs, List<int> triangles,
+        Vector3 a, Vector3 b, Vector3 c, Vector3 d, Vector2 ua, Vector2 ub, Vector2 uc, Vector2 ud)
+    {
+        int start = vertices.Count;
+        vertices.Add(a); vertices.Add(b); vertices.Add(c); vertices.Add(d);
+        uvs.Add(ua); uvs.Add(ub); uvs.Add(uc); uvs.Add(ud);
+        triangles.Add(start); triangles.Add(start + 1); triangles.Add(start + 2);
+        triangles.Add(start); triangles.Add(start + 2); triangles.Add(start + 3);
     }
 
     private static Mesh GetDrainMesh()

@@ -6,8 +6,9 @@ using UnityEngine;
 /// Formal-render binding for the generated facade glass-thickness construction.
 /// Reflection/environment preparation saves the scene after the facade optics rebuild; the companion
 /// upgrade's sceneSaving hook materializes the 4 mm edge shells at that boundary. This guard then
-/// revalidates the persisted construction before every benchmark MainCamera cull so deletion, material
-/// substitution or transform drift cannot produce scoreable-looking evidence.
+/// revalidates both the persisted construction and the complete material/manufacture metadata before
+/// every benchmark MainCamera cull so deletion, material substitution, metadata weakening or transform
+/// drift cannot produce scoreable-looking evidence.
 ///
 /// Passing this guard is implementation/evidence-integrity proof only. It awards zero Visual Fidelity points.
 /// </summary>
@@ -25,10 +26,11 @@ public static class QualityBlockFacadeGlassThicknessFormalQA
     [MenuItem("NewTown/QA/Validate Facade Glass Thickness Formal Binding")]
     public static void ValidateOpenScene()
     {
+        QualityBlockFacadeGlassThicknessContractQA.ValidateContract();
         QualityBlockFacadeGlassThicknessUpgrade.ValidateOpenScene();
         Debug.Log(
-            "Facade glass-thickness formal binding passed. This is source/scene implementation evidence only; " +
-            "actual native-4K oblique/grazing pixels and temporal review remain required, and Visual Fidelity is UNSCORED.");
+            "Facade glass-thickness formal binding passed, including full material/manufacture metadata. " +
+            "This is source/scene implementation evidence only; actual native-4K oblique/grazing pixels and temporal review remain required, and Visual Fidelity is UNSCORED.");
     }
 
     private static void ValidateBeforeBenchmarkCameraCull(Camera camera)
@@ -42,12 +44,14 @@ public static class QualityBlockFacadeGlassThicknessFormalQA
 
         try
         {
+            QualityBlockFacadeGlassThicknessContractQA.ValidateContract();
             QualityBlockFacadeGlassThicknessUpgrade.ValidateOpenScene();
         }
         catch (Exception ex)
         {
             // Fail closed before the authoritative camera renders. In particular, do not allow the
-            // old broad optical plane by itself to masquerade as verified 4 mm construction.
+            // old broad optical plane by itself, or a weakened construction/material contract, to
+            // masquerade as verified 4 mm construction.
             throw new InvalidOperationException(
                 "Formal benchmark render blocked by facade glass-thickness construction QA: " + ex.Message, ex);
         }

@@ -39,22 +39,26 @@ public static class QualityBlockBalconyDrainageWaterproofingQA
             throw new InvalidOperationException("Balcony drainage detail must not introduce colliders.");
 
         Mesh waterproofMesh = AssetDatabase.LoadAssetAtPath<Mesh>(QualityBlockBalconyDrainageWaterproofingUpgrade.WaterproofMeshPath);
+        Mesh floorFallMesh = AssetDatabase.LoadAssetAtPath<Mesh>(QualityBlockBalconyDrainageWaterproofingUpgrade.FloorFallMeshPath);
         Mesh drainMesh = AssetDatabase.LoadAssetAtPath<Mesh>(QualityBlockBalconyDrainageWaterproofingUpgrade.DrainMeshPath);
         Material waterproofMat = AssetDatabase.LoadAssetAtPath<Material>(QualityBlockBalconyDrainageWaterproofingUpgrade.WaterproofMaterialPath);
         Material drainMat = AssetDatabase.LoadAssetAtPath<Material>(QualityBlockBalconyDrainageWaterproofingUpgrade.DrainMaterialPath);
-        if (waterproofMesh == null || drainMesh == null || waterproofMat == null || drainMat == null)
+        if (waterproofMesh == null || floorFallMesh == null || drainMesh == null || waterproofMat == null || drainMat == null)
             throw new InvalidOperationException("Generated balcony drainage assets are incomplete.");
         if (waterproofMesh.vertexCount < 300 || !waterproofMesh.name.StartsWith("GM_BalconyWaterproofingAssembly", StringComparison.Ordinal))
             throw new InvalidOperationException("Waterproofing assembly is not the combined chamfered construction mesh.");
+        if (floorFallMesh.vertexCount != 24 || !floorFallMesh.name.StartsWith("GM_BalconyFloorFall", StringComparison.Ordinal))
+            throw new InvalidOperationException("Balcony floor fall is not the canonical six-face sloped construction mesh.");
         if (drainMesh.vertexCount < 800 || !drainMesh.name.StartsWith("GM_BalconyDrainGrate", StringComparison.Ordinal))
             throw new InvalidOperationException("Drain grate is not the combined manufactured frame/slat mesh.");
 
+        ValidateFloorFallMesh(floorFallMesh);
         ValidateMaterial(waterproofMat, "MAT_BalconyWaterproofingDry", new Color(0.245f,0.255f,0.245f,1f), 0.28f);
         ValidateMaterial(drainMat, "MAT_BalconyDrainCoatedCast", new Color(0.20f,0.22f,0.20f,1f), 0.34f);
 
         MeshRenderer[] renderers = root.GetComponentsInChildren<MeshRenderer>(true);
-        if (renderers.Length != 60)
-            throw new InvalidOperationException($"Expected exactly 60 combined renderers (2 x 30 bays), got {renderers.Length}.");
+        if (renderers.Length != 90)
+            throw new InvalidOperationException($"Expected exactly 90 combined renderers (3 x 30 bays), got {renderers.Length}.");
         if (root.transform.childCount != 30)
             throw new InvalidOperationException($"Expected 30 balcony drainage bay assemblies, got {root.transform.childCount}.");
 
@@ -73,10 +77,13 @@ public static class QualityBlockBalconyDrainageWaterproofingQA
                 throw new InvalidOperationException($"BalconyDW_{f}_{b} rotation drifted.");
 
             Transform waterproof = bay.Find("WaterproofingAssembly");
+            Transform floorFall = bay.Find("FloorFallSurface");
             Transform drain = bay.Find("DrainGrate");
             ValidateBinding(waterproof, waterproofMesh, waterproofMat, $"BalconyDW_{f}_{b}/WaterproofingAssembly");
+            ValidateBinding(floorFall, floorFallMesh, waterproofMat, $"BalconyDW_{f}_{b}/FloorFallSurface");
             ValidateBinding(drain, drainMesh, drainMat, $"BalconyDW_{f}_{b}/DrainGrate");
             RequireNear(waterproof.localPosition, Vector3.zero, 0.0005f, $"BalconyDW_{f}_{b} waterproof local position");
+            RequireNear(floorFall.localPosition, Vector3.zero, 0.0005f, $"BalconyDW_{f}_{b} floor-fall local position");
             float side = b % 2 == 0 ? -1f : 1f;
             RequireNear(drain.localPosition,
                 new Vector3(side * QualityBlockBalconyDrainageWaterproofingUpgrade.DrainOffsetX, 0f,
@@ -96,6 +103,20 @@ public static class QualityBlockBalconyDrainageWaterproofingQA
             float upstand = wb.max.y - sb.max.y;
             if (upstand < 0.09f || upstand > 0.11f)
                 throw new InvalidOperationException($"BalconyDW_{f}_{b} upstand is {upstand:F4} m; expected the 0.10 m benchmark reconstruction assumption.");
+
+            Bounds fb = floorFall.GetComponent<Renderer>().bounds;
+            if (fb.min.x < sb.min.x - 0.002f || fb.max.x > sb.max.x + 0.002f ||
+                fb.min.z < sb.min.z - 0.002f || fb.max.z > sb.max.z + 0.002f)
+                throw new InvalidOperationException($"BalconyDW_{f}_{b} floor fall leaves the slab footprint.");
+            float minAboveSlab = fb.min.y - sb.max.y;
+            float maxAboveSlab = fb.max.y - sb.max.y;
+            if (minAboveSlab < 0.0002f || minAboveSlab > 0.0010f ||
+                maxAboveSlab < 0.0175f || maxAboveSlab > 0.0192f)
+                throw new InvalidOperationException(
+                    $"BalconyDW_{f}_{b} floor fall elevation drifted: min={minAboveSlab:F4} m max={maxAboveSlab:F4} m.");
+            float expectedFrontWorldZ = bay.position.z + QualityBlockBalconyDrainageWaterproofingUpgrade.FloorFallFrontZ;
+            if (Mathf.Abs(fb.max.z - expectedFrontWorldZ) > 0.003f)
+                throw new InvalidOperationException($"BalconyDW_{f}_{b} floor fall does not terminate at the intended channel interface.");
         }
 
         Debug.Log("Balcony drainage/waterproofing QA passed as implementation evidence only. Native 4K visual scoring remains pending.");
@@ -106,9 +127,12 @@ public static class QualityBlockBalconyDrainageWaterproofingQA
         if (!File.Exists(ContractPath)) throw new InvalidOperationException("Missing contract: " + ContractPath);
         string json = File.ReadAllText(ContractPath);
         foreach (string token in new[] {
-            "\"schemaVersion\": \"1.0\"", "\"bayCount\": 30", "\"nominalOutletDiameterM\": 0.05",
+            "\"schemaVersion\": \"1.1\"", "\"bayCount\": 30", "\"nominalOutletDiameterM\": 0.05",
             "\"channelWidthM\": 0.085", "\"drainGrateOuterSizeM\": 0.11", "\"waterproofUpstandHeightM\": 0.10",
-            "\"waterproofMembraneNominalBuildUpM\": 0.003", "\"visibleUnityPrimitiveMeshesForbidden\": true",
+            "\"waterproofMembraneNominalBuildUpM\": 0.003", "\"floorFallRatio\": \"1:50\"",
+            "\"floorFallRenderedRunM\": 0.84", "\"floorFallRenderedDropM\": 0.0168",
+            "\"floorFallIsGeometryNotPaintedNormal\": true", "\"visibleUnityPrimitiveMeshesForbidden\": true",
+            "\"expectedFloorFallRenderers\": 30", "\"rendererBudgetMaximum\": 90",
             "\"wetnessMustRemainZero\": true", "\"automaticVisualPoints\": 0", "\"actualTemporalVerificationRequired\": true",
             "\"visible_primitive_placeholder_geometry\"", "\"obviously_painted_baked_highlights\"",
             "\"materially_impossible_metallic_specular_values\"", "\"obvious_repetition\"",
@@ -118,6 +142,26 @@ public static class QualityBlockBalconyDrainageWaterproofingQA
             "\"claiming_render_quality_without_actual_render\"" })
             if (json.IndexOf(token, StringComparison.Ordinal) < 0)
                 throw new InvalidOperationException("Balcony drainage contract missing required token: " + token);
+    }
+
+    private static void ValidateFloorFallMesh(Mesh mesh)
+    {
+        Vector3[] vertices = mesh.vertices;
+        if (vertices.Length != 24 || mesh.normals.Length != vertices.Length || mesh.tangents.Length != vertices.Length || mesh.uv.Length != vertices.Length)
+            throw new InvalidOperationException("Floor-fall mesh must retain complete vertices/normals/tangents/UV0 evidence.");
+
+        float rearZ = QualityBlockBalconyDrainageWaterproofingUpgrade.FloorFallRearZ;
+        float frontZ = QualityBlockBalconyDrainageWaterproofingUpgrade.FloorFallFrontZ;
+        float rearTop = vertices.Where(v => Mathf.Abs(v.z - rearZ) < 0.0001f).Max(v => v.y);
+        float frontTop = vertices.Where(v => Mathf.Abs(v.z - frontZ) < 0.0001f).Max(v => v.y);
+        float run = frontZ - rearZ;
+        float drop = rearTop - frontTop;
+        float slope = drop / run;
+        if (Mathf.Abs(run - 0.84f) > 0.0002f || Mathf.Abs(drop - 0.0168f) > 0.0002f || Mathf.Abs(slope - 0.02f) > 0.0003f)
+            throw new InvalidOperationException($"Floor-fall mesh must preserve the benchmark 1:50 fall: run={run:F4}, drop={drop:F4}, slope={slope:F5}.");
+        if (Mathf.Abs(rearTop - QualityBlockBalconyDrainageWaterproofingUpgrade.FloorFallRearTopY) > 0.0002f ||
+            Mathf.Abs(frontTop - QualityBlockBalconyDrainageWaterproofingUpgrade.FloorFallFrontTopY) > 0.0002f)
+            throw new InvalidOperationException("Floor-fall top elevations drifted from construction metadata.");
     }
 
     private static void ValidateBinding(Transform t, Mesh mesh, Material mat, string label)

@@ -8,6 +8,7 @@ using System.Text;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
+using UnityEngine.Rendering;
 
 /// <summary>
 /// Validates and fingerprints the exact realtime ReflectionProbe configuration used by formal 4K evidence.

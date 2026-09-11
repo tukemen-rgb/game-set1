@@ -7,9 +7,9 @@ using UnityEngine;
 
 /// <summary>
 /// Fail-closed bridge between the authored construction/material lookdev registry and the actual Unity
-/// Material assets used by active benchmark renderers. The registry can describe physically plausible
-/// ranges while a generated/bound Material silently drifts outside them; this QA prevents such a state
-/// from entering formal native-4K evidence.
+/// Material assets used by active benchmark renderers. Scalar-only validation is insufficient when the
+/// Standard shader is driven by metallic/smoothness textures, so mapped channel ranges are decoded from
+/// the source texture and validated as ranges before formal native-4K evidence may render.
 ///
 /// This is implementation/evidence preflight only. It awards zero Visual Fidelity points and cannot clear
 /// impossible-material, baked-highlight, or metadata critical defects without sealed rendered pixels.
@@ -47,6 +47,9 @@ public static class QualityBlockRegisteredMaterialAssetPhysicalityQA
         "baked_or_painted_highlights"
     };
 
+    private static readonly Dictionary<string, SampledChannelRange> SourceChannelRangeCache =
+        new Dictionary<string, SampledChannelRange>(StringComparer.Ordinal);
+
     private static bool validatingFormalFrame;
 
     static QualityBlockRegisteredMaterialAssetPhysicalityQA()
@@ -59,8 +62,8 @@ public static class QualityBlockRegisteredMaterialAssetPhysicalityQA
     public static void ValidateContractConfigOnly()
     {
         MaterialAssetContract contract = LoadJson<MaterialAssetContract>(ContractPath);
-        if (contract == null || !string.Equals(contract.schemaVersion, "1.0", StringComparison.Ordinal))
-            throw new InvalidOperationException("Registered material asset physicality contract is null/unparseable or not schema 1.0.");
+        if (contract == null || !string.Equals(contract.schemaVersion, "1.1", StringComparison.Ordinal))
+            throw new InvalidOperationException("Registered material asset physicality contract is null/unparseable or not schema 1.1.");
         if (!string.Equals(contract.scenePath, ScenePath, StringComparison.Ordinal) ||
             !string.Equals(contract.registryPath, RegistryPath, StringComparison.Ordinal) ||
             !string.Equals(contract.reportPath, ReportPath, StringComparison.Ordinal))
@@ -77,6 +80,12 @@ public static class QualityBlockRegisteredMaterialAssetPhysicalityQA
             !r.requireMaterialAssetBeforeFormalRender ||
             !r.requireInspectableMetallicScalar ||
             !r.requireInspectableRoughnessOrSmoothnessScalar ||
+            !r.requireTextureAwareMetallicEvaluation ||
+            !r.requireTextureAwareRoughnessEvaluation ||
+            !r.requireStandardMapChannelSemanticsForMappedStandardMaterials ||
+            !r.requireSourceTextureChannelInspectable ||
+            !r.requireFullMappedRangeInsideDeclaredRange ||
+            !r.cacheSourceTextureRangesByDependencyHash ||
             !r.requireMetallicInsideDeclaredRange ||
             !r.requireRoughnessInsideDeclaredRange ||
             !r.requireFiniteOpaqueBaseColor ||
@@ -99,8 +108,8 @@ public static class QualityBlockRegisteredMaterialAssetPhysicalityQA
         ValidationReport report = ValidateRegisteredMaterialAssetsInternal(writeReport: true);
         Debug.Log(
             $"Registered material asset physicality valid: {report.materials.Length} registry materials are present, " +
-            "inside declared metallic/roughness ranges, opaque/non-emissive, and bound by active benchmark renderers. " +
-            "This is source/runtime preflight only and awards 0 Visual Fidelity points.");
+            "their effective metallic/roughness scalar-or-map ranges remain inside the authored ranges, they are opaque/non-emissive, " +
+            "and each is bound by active benchmark renderers. This is source/runtime preflight only and awards 0 Visual Fidelity points.");
     }
 
     /// <summary>
@@ -178,7 +187,8 @@ public static class QualityBlockRegisteredMaterialAssetPhysicalityQA
             visualFidelityPointsAwarded = 0,
             note =
                 "Actual Unity Material assets were checked against the authored registry and active renderer bindings. " +
-                "Texture-modulated BRDF response and final angular appearance remain unverified until sealed native-4K grazing pixels are reviewed."
+                "For Standard materials with an active metallic/smoothness map, source texture R/alpha channel extrema and smoothness scale were evaluated instead of pretending the scale scalar was the final BRDF value. " +
+                "Filtered/mipped texture response and final Fresnel/angular appearance remain unverified until sealed native-4K grazing pixels are reviewed."
         };
 
         if (writeReport)
@@ -219,21 +229,38 @@ public static class QualityBlockRegisteredMaterialAssetPhysicalityQA
             return;
         }
 
-        if (!TryReadMetallic(material, out float metallic, out bool metallicMapAssigned))
+        bool metallicMapAssigned;
+        bool metallicMapActive;
+        string metallicSource;
+        string metallicError;
+        float metallicMin;
+        float metallicMax;
+        if (!TryReadMetallicRange(material, out metallicMin, out metallicMax, out metallicSource,
+                out metallicMapAssigned, out metallicMapActive, out metallicError))
         {
-            errors.Add(label + " has no inspectable metallic scalar property: " + spec.assetPath);
+            errors.Add(label + " metallic evaluation failed: " + metallicError);
             return;
         }
-        if (!Finite(metallic) || metallic < spec.metallicMin - RangeTolerance || metallic > spec.metallicMax + RangeTolerance)
-            errors.Add($"{label} actual metallic={metallic:0.###} is outside declared [{spec.metallicMin:0.###}, {spec.metallicMax:0.###}] (tol {RangeTolerance:0.##}).");
+        if (!RangeInsideDeclared(metallicMin, metallicMax, spec.metallicMin, spec.metallicMax))
+            errors.Add(
+                $"{label} effective metallic range [{metallicMin:0.###}, {metallicMax:0.###}] ({metallicSource}) is outside declared " +
+                $"[{spec.metallicMin:0.###}, {spec.metallicMax:0.###}] (tol {RangeTolerance:0.##}).");
 
-        if (!TryReadRoughness(material, metallicMapAssigned, out float roughness, out string roughnessSource))
+        string roughnessSource;
+        string roughnessError;
+        bool roughnessTextureDriven;
+        float roughnessMin;
+        float roughnessMax;
+        if (!TryReadRoughnessRange(material, metallicMapActive, out roughnessMin, out roughnessMax,
+                out roughnessSource, out roughnessTextureDriven, out roughnessError))
         {
-            errors.Add(label + " has no inspectable roughness/smoothness scalar property: " + spec.assetPath);
+            errors.Add(label + " roughness evaluation failed: " + roughnessError);
             return;
         }
-        if (!Finite(roughness) || roughness < spec.roughnessMin - RangeTolerance || roughness > spec.roughnessMax + RangeTolerance)
-            errors.Add($"{label} actual roughness={roughness:0.###} ({roughnessSource}) is outside declared [{spec.roughnessMin:0.###}, {spec.roughnessMax:0.###}] (tol {RangeTolerance:0.##}).");
+        if (!RangeInsideDeclared(roughnessMin, roughnessMax, spec.roughnessMin, spec.roughnessMax))
+            errors.Add(
+                $"{label} effective roughness range [{roughnessMin:0.###}, {roughnessMax:0.###}] ({roughnessSource}) is outside declared " +
+                $"[{spec.roughnessMin:0.###}, {spec.roughnessMax:0.###}] (tol {RangeTolerance:0.##}).");
 
         if (!material.HasProperty("_Color"))
         {
@@ -276,67 +303,283 @@ public static class QualityBlockRegisteredMaterialAssetPhysicalityQA
             id = spec.id,
             assetPath = spec.assetPath,
             shader = material.shader.name,
-            actualMetallic = metallic,
-            actualRoughness = roughness,
+            actualMetallic = (metallicMin + metallicMax) * 0.5f,
+            actualMetallicMin = metallicMin,
+            actualMetallicMax = metallicMax,
+            metallicSource = metallicSource,
+            actualRoughness = (roughnessMin + roughnessMax) * 0.5f,
+            actualRoughnessMin = roughnessMin,
+            actualRoughnessMax = roughnessMax,
             roughnessSource = roughnessSource,
             metallicMapAssigned = metallicMapAssigned,
+            metallicMapActive = metallicMapActive,
+            roughnessTextureDriven = roughnessTextureDriven,
             activeRendererBindings = bindingCount,
             renderQueue = material.renderQueue,
             emissionMax = emissionMax
         });
     }
 
-    private static bool TryReadMetallic(Material material, out float metallic, out bool metallicMapAssigned)
+    private static bool TryReadMetallicRange(Material material, out float min, out float max, out string source,
+        out bool mapAssigned, out bool mapActive, out string error)
     {
-        metallic = 0f;
-        metallicMapAssigned = material.HasProperty("_MetallicGlossMap") && material.GetTexture("_MetallicGlossMap") != null;
-        if (!material.HasProperty("_Metallic")) return false;
-        metallic = material.GetFloat("_Metallic");
-        return true;
-    }
-
-    private static bool TryReadRoughness(Material material, bool metallicMapAssigned,
-        out float roughness, out string source)
-    {
-        roughness = 0f;
+        min = max = 0f;
         source = null;
+        error = null;
+        mapAssigned = material.HasProperty("_MetallicGlossMap") && material.GetTexture("_MetallicGlossMap") != null;
+        mapActive = mapAssigned && material.IsKeywordEnabled("_METALLICGLOSSMAP");
 
-        if (material.HasProperty("_Roughness"))
+        if (mapActive)
         {
-            roughness = material.GetFloat("_Roughness");
-            source = "_Roughness";
+            if (!string.Equals(material.shader.name, "Standard", StringComparison.Ordinal))
+            {
+                error = "active _MetallicGlossMap uses a non-Standard shader; map channel semantics are not proven: " + material.shader.name;
+                return false;
+            }
+
+            Texture texture = material.GetTexture("_MetallicGlossMap");
+            string texturePath;
+            if (!TryReadSourceTextureChannelRange(texture, 0, out min, out max, out texturePath, out error))
+                return false;
+            source = "Standard _MetallicGlossMap.r source-range @ " + texturePath;
             return true;
         }
 
-        if (metallicMapAssigned && material.HasProperty("_GlossMapScale"))
+        if (!material.HasProperty("_Metallic"))
         {
-            roughness = 1f - material.GetFloat("_GlossMapScale");
-            source = "1-_GlossMapScale (metallic/smoothness map assigned)";
+            error = "no inspectable _Metallic scalar and no active Standard metallic map";
+            return false;
+        }
+
+        float metallic = material.GetFloat("_Metallic");
+        if (!Finite(metallic))
+        {
+            error = "_Metallic is non-finite";
+            return false;
+        }
+        min = max = metallic;
+        source = mapAssigned ? "_Metallic scalar (metallic map assigned but keyword inactive)" : "_Metallic scalar";
+        return true;
+    }
+
+    private static bool TryReadRoughnessRange(Material material, bool metallicMapActive,
+        out float min, out float max, out string source, out bool textureDriven, out string error)
+    {
+        min = max = 0f;
+        source = null;
+        error = null;
+        textureDriven = false;
+
+        if (metallicMapActive)
+        {
+            if (!string.Equals(material.shader.name, "Standard", StringComparison.Ordinal))
+            {
+                error = "active metallic/smoothness map uses a non-Standard shader; smoothness channel semantics are not proven";
+                return false;
+            }
+            if (!material.HasProperty("_GlossMapScale"))
+            {
+                error = "Standard mapped material is missing _GlossMapScale";
+                return false;
+            }
+
+            float scale = material.GetFloat("_GlossMapScale");
+            if (!Finite(scale) || scale < 0f || scale > 1f)
+            {
+                error = $"_GlossMapScale={scale} is outside finite 0..1";
+                return false;
+            }
+
+            bool useAlbedoAlpha = material.HasProperty("_SmoothnessTextureChannel") &&
+                                  material.GetFloat("_SmoothnessTextureChannel") > 0.5f;
+            Texture texture = useAlbedoAlpha
+                ? (material.HasProperty("_MainTex") ? material.GetTexture("_MainTex") : null)
+                : material.GetTexture("_MetallicGlossMap");
+            if (texture == null)
+            {
+                error = useAlbedoAlpha
+                    ? "_SmoothnessTextureChannel selects albedo alpha but _MainTex is missing"
+                    : "metallic alpha smoothness was selected but _MetallicGlossMap is missing";
+                return false;
+            }
+
+            float alphaMin;
+            float alphaMax;
+            string texturePath;
+            if (!TryReadSourceTextureChannelRange(texture, 3, out alphaMin, out alphaMax, out texturePath, out error))
+                return false;
+
+            float smoothnessMin = Mathf.Clamp01(alphaMin * scale);
+            float smoothnessMax = Mathf.Clamp01(alphaMax * scale);
+            min = 1f - smoothnessMax;
+            max = 1f - smoothnessMin;
+            textureDriven = true;
+            source = (useAlbedoAlpha ? "Standard _MainTex.a" : "Standard _MetallicGlossMap.a") +
+                     $" source-range * _GlossMapScale({scale:0.###}) @ {texturePath}";
+            return true;
+        }
+
+        if (material.HasProperty("_Roughness"))
+        {
+            float roughness = material.GetFloat("_Roughness");
+            if (!Finite(roughness))
+            {
+                error = "_Roughness is non-finite";
+                return false;
+            }
+            min = max = roughness;
+            source = "_Roughness scalar";
             return true;
         }
 
         if (material.HasProperty("_Glossiness"))
         {
-            roughness = 1f - material.GetFloat("_Glossiness");
-            source = "1-_Glossiness";
+            float smoothness = material.GetFloat("_Glossiness");
+            if (!Finite(smoothness))
+            {
+                error = "_Glossiness is non-finite";
+                return false;
+            }
+            min = max = 1f - smoothness;
+            source = "1-_Glossiness scalar";
             return true;
         }
 
         if (material.HasProperty("_Smoothness"))
         {
-            roughness = 1f - material.GetFloat("_Smoothness");
-            source = "1-_Smoothness";
+            float smoothness = material.GetFloat("_Smoothness");
+            if (!Finite(smoothness))
+            {
+                error = "_Smoothness is non-finite";
+                return false;
+            }
+            min = max = 1f - smoothness;
+            source = "1-_Smoothness scalar";
             return true;
         }
 
         if (material.HasProperty("_GlossMapScale"))
         {
-            roughness = 1f - material.GetFloat("_GlossMapScale");
-            source = "1-_GlossMapScale";
+            float smoothness = material.GetFloat("_GlossMapScale");
+            if (!Finite(smoothness))
+            {
+                error = "_GlossMapScale is non-finite";
+                return false;
+            }
+            min = max = 1f - smoothness;
+            source = "1-_GlossMapScale scalar (no active smoothness map)";
             return true;
         }
 
+        error = "no inspectable roughness/smoothness scalar and no active Standard smoothness map";
         return false;
+    }
+
+    private static bool TryReadSourceTextureChannelRange(Texture texture, int channel,
+        out float min, out float max, out string assetPath, out string error)
+    {
+        min = max = 0f;
+        assetPath = null;
+        error = null;
+        if (texture == null)
+        {
+            error = "texture is null";
+            return false;
+        }
+        if (channel != 0 && channel != 3)
+        {
+            error = "only red(0) and alpha(3) source channels are supported";
+            return false;
+        }
+
+        assetPath = AssetDatabase.GetAssetPath(texture);
+        if (string.IsNullOrWhiteSpace(assetPath))
+        {
+            error = "texture has no AssetDatabase source path";
+            return false;
+        }
+
+        string extension = Path.GetExtension(assetPath)?.ToLowerInvariant();
+        if (extension != ".png" && extension != ".jpg" && extension != ".jpeg")
+        {
+            error = "source-channel inspection is fail-closed to PNG/JPG/JPEG assets; unsupported path: " + assetPath;
+            return false;
+        }
+
+        string absolute = AbsolutePath(assetPath);
+        if (!File.Exists(absolute))
+        {
+            error = "texture source file does not exist: " + assetPath;
+            return false;
+        }
+
+        string dependencyHash = AssetDatabase.GetAssetDependencyHash(assetPath).ToString();
+        FileInfo info = new FileInfo(absolute);
+        string cacheKey = assetPath + "|" + dependencyHash + "|" + info.Length + "|" + info.LastWriteTimeUtc.Ticks + "|" + channel;
+        SampledChannelRange cached;
+        if (SourceChannelRangeCache.TryGetValue(cacheKey, out cached))
+        {
+            min = cached.min;
+            max = cached.max;
+            return true;
+        }
+
+        byte[] bytes;
+        try
+        {
+            bytes = File.ReadAllBytes(absolute);
+        }
+        catch (Exception ex)
+        {
+            error = "could not read source texture bytes: " + ex.Message;
+            return false;
+        }
+
+        Texture2D decoded = new Texture2D(2, 2, TextureFormat.RGBA32, false, true);
+        try
+        {
+            if (!ImageConversion.LoadImage(decoded, bytes, false))
+            {
+                error = "ImageConversion.LoadImage could not decode: " + assetPath;
+                return false;
+            }
+
+            Color32[] pixels = decoded.GetPixels32();
+            if (pixels == null || pixels.Length == 0)
+            {
+                error = "decoded source texture has no pixels: " + assetPath;
+                return false;
+            }
+
+            int minByte = 255;
+            int maxByte = 0;
+            for (int i = 0; i < pixels.Length; i++)
+            {
+                int value = channel == 0 ? pixels[i].r : pixels[i].a;
+                if (value < minByte) minByte = value;
+                if (value > maxByte) maxByte = value;
+            }
+
+            min = minByte / 255f;
+            max = maxByte / 255f;
+            SourceChannelRangeCache[cacheKey] = new SampledChannelRange { min = min, max = max };
+            return true;
+        }
+        catch (Exception ex)
+        {
+            error = "source texture channel inspection failed: " + ex.Message;
+            return false;
+        }
+        finally
+        {
+            UnityEngine.Object.DestroyImmediate(decoded);
+        }
+    }
+
+    private static bool RangeInsideDeclared(float actualMin, float actualMax, float declaredMin, float declaredMax)
+    {
+        return Finite(actualMin) && Finite(actualMax) && actualMin <= actualMax &&
+               actualMin >= declaredMin - RangeTolerance && actualMax <= declaredMax + RangeTolerance;
     }
 
     private static void ValidateDeclaredRange(float min, float max, string label, List<string> errors)
@@ -413,6 +656,12 @@ public static class QualityBlockRegisteredMaterialAssetPhysicalityQA
         public bool requireMaterialAssetBeforeFormalRender;
         public bool requireInspectableMetallicScalar;
         public bool requireInspectableRoughnessOrSmoothnessScalar;
+        public bool requireTextureAwareMetallicEvaluation;
+        public bool requireTextureAwareRoughnessEvaluation;
+        public bool requireStandardMapChannelSemanticsForMappedStandardMaterials;
+        public bool requireSourceTextureChannelInspectable;
+        public bool requireFullMappedRangeInsideDeclaredRange;
+        public bool cacheSourceTextureRangesByDependencyHash;
         public bool requireMetallicInsideDeclaredRange;
         public bool requireRoughnessInsideDeclaredRange;
         public bool requireFiniteOpaqueBaseColor;
@@ -461,11 +710,24 @@ public static class QualityBlockRegisteredMaterialAssetPhysicalityQA
         public string assetPath;
         public string shader;
         public float actualMetallic;
+        public float actualMetallicMin;
+        public float actualMetallicMax;
+        public string metallicSource;
         public float actualRoughness;
+        public float actualRoughnessMin;
+        public float actualRoughnessMax;
         public string roughnessSource;
         public bool metallicMapAssigned;
+        public bool metallicMapActive;
+        public bool roughnessTextureDriven;
         public int activeRendererBindings;
         public int renderQueue;
         public float emissionMax;
+    }
+
+    private sealed class SampledChannelRange
+    {
+        public float min;
+        public float max;
     }
 }

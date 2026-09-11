@@ -10,7 +10,9 @@ using UnityEngine.Rendering;
 
 /// <summary>
 /// Produces a deterministic SHA-256 fingerprint of the physical lighting state that is allowed to
-/// illuminate realtime reflection probes and native-4K benchmark stills. This is evidence-integrity
+/// illuminate realtime reflection probes and native-4K benchmark stills. The payload also folds in
+/// a separately validated renderable-scene/material fingerprint so cubemaps cannot be accepted from
+/// one material/geometry state and then reused for a still from another. This is evidence-integrity
 /// infrastructure only: matching hashes prove configuration coherence, not visual quality.
 /// </summary>
 public static class QualityBlockReflectionLightingStateFingerprint
@@ -20,9 +22,9 @@ public static class QualityBlockReflectionLightingStateFingerprint
 
     /// <summary>
     /// Validates the complete solar/sky/reflection contract first, then hashes the exact scene lighting
-    /// state. The hash intentionally includes ambient SH coefficients because DynamicGI.UpdateEnvironment
-    /// can change diffuse sky fill after the sky material was assigned; a probe refresh that straddles
-    /// such a change is not coherent evidence.
+    /// state plus the independently validated renderable scene/material fingerprint. The hash intentionally
+    /// includes ambient SH coefficients because DynamicGI.UpdateEnvironment can change diffuse sky fill
+    /// after the sky material was assigned; a probe refresh that straddles such a change is not coherent evidence.
     /// </summary>
     public static string BuildCurrentSha256()
     {
@@ -44,9 +46,17 @@ public static class QualityBlockReflectionLightingStateFingerprint
             throw new InvalidOperationException("Lighting fingerprint requires the physical benchmark sky material.");
 
         var sb = new StringBuilder(4096);
-        Append(sb, "schema", "reflection-lighting-state-v1");
+        Append(sb, "schema", "reflection-lighting-state-v2");
         Append(sb, "scene", EditorSceneManager.GetActiveScene().path);
         Append(sb, "unityVersion", Application.unityVersion);
+
+        // Reflection coherence is not only a lighting problem. A realtime cubemap rendered before a
+        // material/texture/renderer/mesh change is invalid evidence even if SummerSun and the sky stayed
+        // identical. Fold the source-validated renderable-state SHA-256 into every existing request/poll/
+        // completion/pre-still lighting check so the established async waiter enforces both invariants.
+        string renderStateSha256 = QualityBlockReflectionRenderStateFingerprint.BuildValidatedCurrentSha256();
+        Append(sb, "renderState.algorithm", QualityBlockReflectionRenderStateFingerprint.Algorithm);
+        Append(sb, "renderState.sha256", renderStateSha256);
 
         Append(sb, "sun.name", sun.name);
         Append(sb, "sun.type", sun.type.ToString());
@@ -133,7 +143,7 @@ public static class QualityBlockReflectionLightingStateFingerprint
         string current = BuildCurrentSha256();
         if (!string.Equals(current, expectedSha256, StringComparison.OrdinalIgnoreCase))
             throw new InvalidOperationException(
-                $"Physical lighting state drifted before {phase}: expected {expectedSha256}, current {current}. Reflection evidence is invalid and capture must abort.");
+                $"Physical lighting or renderable scene/material state drifted before {phase}: expected {expectedSha256}, current {current}. Reflection evidence is invalid and capture must abort.");
     }
 
     private static void AppendMaterialFloat(StringBuilder sb, Material material, string property)

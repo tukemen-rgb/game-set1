@@ -1,7 +1,8 @@
 {
   "schemaVersion": "1.0",
   "scenePath": "Assets/Scenes/QualityBlock1990s.unity",
-  "authoritativeCameraName": "MainCamera",
+  "authoritativeCameraObjectName": "QualityCamera",
+  "authoritativeCameraTag": "MainCamera",
   "width": 3840,
   "height": 2160,
   "formalTargetPrefixes": [
@@ -36,5 +37,5 @@
   },
   "runtimeRenderVerified": false,
   "visualFidelityPointsAwarded": 0,
-  "note": "Evidence-purity contract only. Formal native-4K camera renders must not gain hidden bloom, sharpening, local contrast, replacement post effects, command-buffer compositing, camera-state drift, or stale reflection/render-state between the accepted probe proof and the rendered frame. Passing this contract never awards Visual Fidelity points and never clears a critical defect without actual pixels."
+  "note": "Evidence-purity contract only. QualityCamera is the scene object tagged MainCamera and returned by Camera.main. Formal native-4K renders must not gain hidden bloom, sharpening, local contrast, replacement post effects, command-buffer compositing, camera-state drift, or stale reflection/render-state between the accepted probe proof and the rendered frame. Passing this contract never awards Visual Fidelity points and never clears a critical defect without actual pixels."
 }

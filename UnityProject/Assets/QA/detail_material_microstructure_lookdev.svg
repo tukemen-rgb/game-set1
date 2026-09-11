@@ -1,0 +1,88 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1440" height="1024" viewBox="0 0 1440 1024">
+  <defs>
+    <linearGradient id="front" x1="0" x2="1"><stop offset="0" stop-color="#d7e3ed"/><stop offset="1" stop-color="#faf4dd"/></linearGradient>
+    <linearGradient id="grazing" x1="0" y1="1" x2="1" y2="0"><stop offset="0" stop-color="#303238"/><stop offset="0.72" stop-color="#777b80"/><stop offset="1" stop-color="#fbf2ce"/></linearGradient>
+    <pattern id="grain" width="18" height="18" patternUnits="userSpaceOnUse"><path d="M1 0v18M7 0v18M14 0v18" stroke="#ffffff" stroke-opacity=".12" stroke-width="1"/></pattern>
+    <pattern id="mottle" width="28" height="24" patternUnits="userSpaceOnUse"><circle cx="7" cy="7" r="4" fill="#fff" fill-opacity=".10"/><circle cx="21" cy="15" r="6" fill="#000" fill-opacity=".08"/></pattern>
+    <pattern id="fine" width="16" height="16" patternUnits="userSpaceOnUse"><circle cx="4" cy="5" r="1.4" fill="#fff" fill-opacity=".10"/><circle cx="12" cy="11" r="1.2" fill="#000" fill-opacity=".10"/></pattern>
+    <pattern id="seam" width="42" height="42" patternUnits="userSpaceOnUse"><path d="M-10 42L42-10M10 52L52 10" stroke="#fff" stroke-opacity=".12" stroke-width="2"/></pattern>
+    <pattern id="rib" width="28" height="20" patternUnits="userSpaceOnUse"><path d="M0 4h28M0 14h28" stroke="#fff" stroke-opacity=".13" stroke-width="2"/></pattern>
+    <style>
+      .title{font:700 34px system-ui,sans-serif;fill:#f4f4f4}.h2{font:700 21px system-ui,sans-serif;fill:#f4f4f4}.body{font:16px system-ui,sans-serif;fill:#d8d8d8}.small{font:13px system-ui,sans-serif;fill:#bababa}.chip{font:700 13px system-ui,sans-serif;fill:#101114}.line{stroke:#d7d7d7;stroke-width:2;fill:none}.dim{stroke:#9aa3ad;stroke-width:1.5;fill:none;stroke-dasharray:5 5}
+    </style>
+  </defs>
+  <rect width="1440" height="1024" fill="#16181c"/>
+  <text x="56" y="62" class="title">Generated facade detail material lookdev — microstructure intent</text>
+  <text x="56" y="92" class="body">Diagram only — not Unity rendered evidence. Highlights are schematic; formal score comes only from native 3840×2160 frames and 100% crops.</text>
+
+  <g transform="translate(56 128)">
+    <rect width="1328" height="112" rx="12" fill="#24272d"/>
+    <text x="24" y="34" class="h2">Physical separation of responsibilities</text>
+    <text x="24" y="64" class="body">Geometry: extrusions, seals, pipe bends, collars, hose routing, fasteners, gaps.  Material: manufacture-scale relief + metallic/roughness response.</text>
+    <text x="24" y="91" class="body">Weathering remains cause-based and separate. No sun-facing streak, edge glow, cast shadow or bright rim is encoded into albedo.</text>
+  </g>
+
+  <g transform="translate(56 266)">
+    <text x="0" y="0" class="h2">Front / sky-fill intent</text>
+    <text x="674" y="0" class="h2">Grazing midsummer sun intent</text>
+    <rect x="0" y="20" width="632" height="278" rx="14" fill="url(#front)"/>
+    <rect x="674" y="20" width="654" height="278" rx="14" fill="url(#grazing)"/>
+    <path d="M90 46v222M220 46v222M350 46v222M480 46v222" class="dim"/>
+    <path d="M764 46v222M894 46v222M1024 46v222M1154 46v222" class="dim"/>
+    <text x="18" y="286" class="small" fill="#25282d">Broad diffuse separation; no material should self-light.</text>
+    <text x="692" y="286" class="small">Angular response comes from BRDF + normal field. Metal can lift strongly; dielectrics stay broad.</text>
+  </g>
+
+  <g transform="translate(56 602)">
+    <g transform="translate(0 0)">
+      <rect width="202" height="210" rx="12" fill="#303438"/>
+      <rect x="18" y="18" width="166" height="82" rx="6" fill="#8c918f"/><rect x="18" y="18" width="166" height="82" rx="6" fill="url(#grain)"/>
+      <text x="18" y="126" class="h2" font-size="17">Anodized Al</text>
+      <text x="18" y="151" class="small">M 0.82–0.94</text><text x="18" y="171" class="small">R 0.43–0.55</text>
+      <text x="18" y="193" class="small">fine extrusion grain</text>
+    </g>
+    <g transform="translate(222 0)">
+      <rect width="202" height="210" rx="12" fill="#303438"/>
+      <rect x="18" y="18" width="166" height="82" rx="6" fill="#4d504e"/><rect x="18" y="18" width="166" height="82" rx="6" fill="url(#mottle)"/>
+      <text x="18" y="126" class="h2" font-size="17">Galvanized steel</text>
+      <text x="18" y="151" class="small">M 0.82–0.94</text><text x="18" y="171" class="small">R 0.54–0.70</text>
+      <text x="18" y="193" class="small">oxidized zinc mottle</text>
+    </g>
+    <g transform="translate(444 0)">
+      <rect width="202" height="210" rx="12" fill="#303438"/>
+      <rect x="18" y="18" width="166" height="82" rx="6" fill="#161817"/><rect x="18" y="18" width="166" height="82" rx="6" fill="url(#fine)"/>
+      <text x="18" y="126" class="h2" font-size="17">EPDM seal</text>
+      <text x="18" y="151" class="small">M 0</text><text x="18" y="171" class="small">R 0.82–0.92</text>
+      <text x="18" y="193" class="small">fine matte elastomer</text>
+    </g>
+    <g transform="translate(666 0)">
+      <rect width="202" height="210" rx="12" fill="#303438"/>
+      <rect x="18" y="18" width="166" height="82" rx="6" fill="#b7b3a8"/><rect x="18" y="18" width="166" height="82" rx="6" fill="url(#fine)"/>
+      <text x="18" y="126" class="h2" font-size="17">Aged ABS</text>
+      <text x="18" y="151" class="small">M 0</text><text x="18" y="171" class="small">R 0.63–0.76</text>
+      <text x="18" y="193" class="small">mould orange peel</text>
+    </g>
+    <g transform="translate(888 0)">
+      <rect width="202" height="210" rx="12" fill="#303438"/>
+      <rect x="18" y="18" width="166" height="82" rx="6" fill="#aaa49a"/><rect x="18" y="18" width="166" height="82" rx="6" fill="url(#seam)"/>
+      <text x="18" y="126" class="h2" font-size="17">Pipe wrap</text>
+      <text x="18" y="151" class="small">M 0</text><text x="18" y="171" class="small">R 0.76–0.88</text>
+      <text x="18" y="193" class="small">shallow wrap seam</text>
+    </g>
+    <g transform="translate(1110 0)">
+      <rect width="218" height="210" rx="12" fill="#303438"/>
+      <rect x="18" y="18" width="182" height="82" rx="6" fill="#5c5c54"/><rect x="18" y="18" width="182" height="82" rx="6" fill="url(#rib)"/>
+      <text x="18" y="126" class="h2" font-size="17">PVC drain hose</text>
+      <text x="18" y="151" class="small">M 0</text><text x="18" y="171" class="small">R 0.73–0.86</text>
+      <text x="18" y="193" class="small">circumferential ribbing</text>
+    </g>
+  </g>
+
+  <g transform="translate(56 842)">
+    <rect width="1328" height="126" rx="12" fill="#24272d"/>
+    <text x="24" y="34" class="h2">Native-4K acceptance questions</text>
+    <text x="24" y="62" class="body">1. grazing/material_grazing — do metals stay aged rather than chrome, and do plastics/rubber remain dielectric?</text>
+    <text x="24" y="86" class="body">2. grazing/sash_rail_response — is extrusion response plausible without obvious synchronized tiling or wrong-direction grain?</text>
+    <text x="24" y="110" class="body">3. oblique/balcony_services — do pipe wrap and hose read at 100% without UV stretch, moiré, shimmer or painted highlights?</text>
+  </g>
+</svg>

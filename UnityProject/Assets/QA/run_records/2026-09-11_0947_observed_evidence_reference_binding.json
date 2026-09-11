@@ -1,0 +1,94 @@
+{
+  "schemaVersion": "1.0",
+  "runDateLocal": "2026-09-11",
+  "focus": "observed_evidence_reference_binding",
+  "branch": "gpt/unity-migration",
+  "startHead": "2936b4fa6d2473dd477ce9cbf1f968cdb7ab31c3",
+  "recordedHeadBeforeRecordCommit": "52ffb1feff9d5da39650dcddb4fd31a45107eaa2",
+  "constraintsPreserved": {
+    "godotUntouched": true,
+    "baseMerged": false,
+    "forbiddenDisasterThemeIntroduced": false,
+    "newVisualFidelityPointsClaimed": 0
+  },
+  "problem": {
+    "summary": "The numeric gate validated reviewer-entered observed references against an allowed vocabulary, while still-render provenance separately validated sealed files. The allowed vocabulary itself was not machine-bound to the canonical 4K manifest view/crop identities and temporal probe identities. A future configuration drift could therefore leave stale or aliased review references that looked valid syntactically but no longer named the canonical evidence objects.",
+    "riskToGate": [
+      "A stale allowedCropRefs entry could survive a capture-manifest change.",
+      "A manifest crop id could silently point at a differently named canonical file without the review vocabulary detecting the identity drift.",
+      "A temporal review reference could drift from the actual temporal-stability probe set.",
+      "Category or critical-defect requirements could retain orphan references after a vocabulary edit."
+    ]
+  },
+  "implementation": [
+    {
+      "path": "Assets/Editor/QualityBlockObservedEvidenceReferenceBindingQA.cs",
+      "change": "Added fail-closed set equality between observability allowedViews and manifest viewIds; exact equality between allowedCropRefs and manifest viewId/cropId pairs; canonical dimension-bearing crop-path derivation; resampled=false enforcement; exact equality between allowedTemporalRefs and temporal probe ids; and orphan/duplicate requirement rejection."
+    },
+    {
+      "path": "Assets/QA/observed_evidence_reference_binding_contract.json",
+      "change": "Added machine-readable non-weakenable policy defining exact view/crop/probe identity binding. It explicitly awards zero Visual Fidelity points and cannot clear critical defects."
+    },
+    {
+      "path": "Assets/Editor/QualityBlockVisualGateIntegrityQA.cs",
+      "change": "Integrated reference binding into the core gate-integrity entry point already invoked by direct numeric-gate evaluation, CLI/reflection paths and the native 4K packet."
+    }
+  ],
+  "selfAudit": {
+    "issuesFoundAndCorrected": [
+      {
+        "issue": "The first canonical crop-path formatter omitted the existing _1280x720 dimension segment and would have rejected the valid current manifest.",
+        "correction": "Changed canonical path derivation to Assets/QA/Captures4K/{viewId}_crop_{cropId}_{width}x{height}_100pct.png, added positive crop-dimension checks, and aligned the machine-readable contract."
+      }
+    ],
+    "sourceDataChecks": [
+      "Current observability allowedViews matches manifest viewIds: hero, oblique, grazing.",
+      "Current observability allowedCropRefs matches all 11 manifest viewId/cropId identities.",
+      "All 11 manifest crop paths follow the dimension-bearing canonical path convention and are marked resampled=false.",
+      "Current allowedTemporalRefs matches temporal probe ids: subpixel_grazing and lod_walk_oblique.",
+      "Temporal requiredProbeRefsForTemporalCategory is the complete two-probe set.",
+      "Category and critical-defect required view/crop/temporal references are subsets of the bound vocabularies."
+    ]
+  },
+  "commits": [
+    "5d7169df36cee69379d3034067eb600b04259341",
+    "e1a73ffc6814375f598c1ff466872078c8da674a",
+    "3cb16928d53976fd9d77225bc5164f9f32c7b562",
+    "ee84d02a399a7d690ee96fde857306b170a845e4",
+    "52ffb1feff9d5da39650dcddb4fd31a45107eaa2"
+  ],
+  "repositoryVerification": {
+    "aheadOfStartHead": 5,
+    "behindStartHead": 0,
+    "mergeBaseEqualsStartHead": true,
+    "changedPathsBeforeRecordCommit": [
+      "UnityProject/Assets/Editor/QualityBlockObservedEvidenceReferenceBindingQA.cs",
+      "UnityProject/Assets/Editor/QualityBlockVisualGateIntegrityQA.cs",
+      "UnityProject/Assets/QA/observed_evidence_reference_binding_contract.json"
+    ],
+    "githubCommitStatusContextsAtRecordedHead": 0,
+    "githubWorkflowRunsAtRecordedHead": 0,
+    "unityCompileExecuted": false,
+    "unityRuntimeExecuted": false,
+    "native3840x2160RenderExecuted": false
+  },
+  "scores": {
+    "implementationReadiness": 93,
+    "implementationReadinessPossible": 100,
+    "visualFidelityStatus": "UNSCORED",
+    "visualFidelityPointsAwardedThisRun": 0,
+    "visualFidelityPassClaimed": false
+  },
+  "expectedVisualScoreImpact": {
+    "directPoints": 0,
+    "expectedEffectAfterRealRender": "No image-quality point is earned by this change. It raises evidence integrity across all nine categories and all critical-defect reviews by preventing reviewer references from drifting away from the canonical sealed still/temporal evidence identities."
+  },
+  "nextBlocker": "No Unity 6000.3.0f1 runner, compile result, workflow run, commit status or actual 3840x2160 screenshots are available on the branch. The new C# validator therefore remains compile/runtime verification pending and Visual Fidelity must remain UNSCORED.",
+  "runnerPriorityWhenAvailable": [
+    "Stop speculative expansion.",
+    "Compile/import the branch in Unity 6000.3.0f1.",
+    "Run Prepare Complete Native 4K Review Packet.",
+    "Verify the runtime-written manifest still preserves the exact bound view/crop identity set and canonical crop paths.",
+    "Validate sealed still/temporal provenance, then review hero, oblique and grazing captures plus 100% crops before assigning any category points or clearing any critical defect."
+  ]
+}

@@ -2,7 +2,7 @@
   "runDate": "2026-09-11",
   "topic": "registered_material_asset_physicality",
   "branch": "gpt/unity-migration",
-  "startHead": "230860b2ebf720befa78a9920739bc6816ff8bb8",
+  "startHead": "f54a1ae33ca2d12c9161cb6c8ba14dff4b22be88",
   "substantiveWorkHead": "18b9d7501036e83186567bd647e8fcf3aeabc2b5",
   "substantiveCommits": [
     "56f1b7be8645200c18da537248c85d9a8e1cc46d",
@@ -27,7 +27,8 @@
   "selfAudit": [
     "The initial validator draft used an interpolated expression containing GetFloat(\"_Mode\") directly and referenced RenderQueue.GeometryLast. Before treating that draft as final, it was rewritten to read _Mode into a local finite scalar and to use the explicit opaque queue ceiling 2500, reducing C# lexer/API compatibility risk in Unity 6000.3.0f1.",
     "The registry's PBR_DanchiConcrete.mat path is not present in the repository at source-review time. This is consistent with the existing generated-material workflow, so the new guard intentionally evaluates actual asset existence after Unity scene/material generation, on each formal evidence pre-cull, rather than claiming source-only existence.",
-    "A scalar pass cannot prove texture-modulated BRDF response or Fresnel appearance. The guard therefore does not clear impossible_material_physics or baked_or_painted_highlights and awards no Visual Fidelity points; grazing-light native pixels remain authoritative."
+    "A scalar pass cannot prove texture-modulated BRDF response or Fresnel appearance. The guard therefore does not clear impossible_material_physics or baked_or_painted_highlights and awards no Visual Fidelity points; grazing-light native pixels remain authoritative.",
+    "The run-start SHA was re-derived from the parent of the first substantive commit and corrected to f54a1ae33ca2d12c9161cb6c8ba14dff4b22be88; no merge/rebase was performed."
   ],
   "verification": {
     "unity6000_3_0f1CompileRuntime": "PENDING_NO_RUNNER",

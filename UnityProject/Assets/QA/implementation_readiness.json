@@ -1,5 +1,5 @@
 {
-  "generatedUtc": "2026-09-11T02:45:00Z",
+  "generatedUtc": "2026-09-11T07:41:00Z",
   "readinessScore": 93,
   "possibleScore": 100,
   "visualFidelityStatus": "UNSCORED_UNTIL_REAL_4K_RENDER",
@@ -57,8 +57,8 @@
       "id": "physical_solar_context",
       "weight": 5,
       "passed": true,
-      "evidence": "One deterministic midsummer SummerSun/procedural-sky/shadow state is guarded before culling and SHA-256-bound across realtime reflection synchronization and still capture, with all scene-Light CommandBuffer injection and contradictory active artificial lighting rejected at observed reflection/camera boundaries.",
-      "assetPaths": ["Assets/Scripts/Art/QualityBlockEnvironmentContext.cs", "Assets/Editor/QualityBlockSolarShadowCaptureCoherenceQA.cs", "Assets/Editor/QualityBlockReflectionLightingStateFingerprint.cs", "Assets/Editor/QualityBlockReflectionProbeAwaiter.cs", "Assets/Editor/QualityBlockLightEvidencePurityQA.cs", "Assets/QA/light_evidence_purity_contract.json"]
+      "evidence": "One deterministic midsummer SummerSun/procedural-sky/shadow state is guarded before culling and SHA-256-bound across realtime reflection synchronization and still capture. The reflection identity now also includes legal-but-render-changing SummerSun render-mode/bounce energy, subtractive shadow color, pixel-light budget and shadowmask mode, while all scene-Light CommandBuffer injection and contradictory active artificial lighting remain rejected.",
+      "assetPaths": ["Assets/Scripts/Art/QualityBlockEnvironmentContext.cs", "Assets/Editor/QualityBlockSolarShadowCaptureCoherenceQA.cs", "Assets/Editor/QualityBlockReflectionLightingStateFingerprint.cs", "Assets/Editor/QualityBlockReflectionLightingCoverageQA.cs", "Assets/Editor/QualityBlockReflectionProbeAwaiter.cs", "Assets/Editor/QualityBlockLightEvidencePurityQA.cs", "Assets/QA/reflection_probe_capture_sync_contract.json", "Assets/QA/light_evidence_purity_contract.json"]
     },
     {
       "id": "replacement_art_slots",
@@ -78,8 +78,8 @@
       "id": "native_4k_capture_pipeline",
       "weight": 8,
       "passed": true,
-      "evidence": "The native 3840x2160 hero/oblique/grazing packet includes pixel-exact crops, async reflection synchronization, physical-lighting plus renderable scene/material/texture SHA-256 coherence, hidden MaterialPropertyBlock rejection, HDR-to-LDR telemetry, construction preflight, temporal sealing, post-tonemap repetition/light-leak triage, a fail-closed formal-camera purity guard, and an independent formal-light purity guard that rejects every Light-attached CommandBuffer (including on disabled lights), contradictory active lights and mid-frame light/global-shadow drift while also participating in reflection request/poll/completion/pre-still validation.",
-      "assetPaths": ["Assets/Editor/QualityBlock4KCapture.cs", "Assets/Editor/QualityBlockNative4KReviewPacket.cs", "Assets/Editor/QualityBlockRenderEvidenceProvenanceQA.cs", "Assets/Editor/QualityBlockReflectionLightingStateFingerprint.cs", "Assets/Editor/QualityBlockReflectionRenderStateFingerprint.cs", "Assets/Editor/QualityBlockReflectionMaterialOverrideGuard.cs", "Assets/Editor/QualityBlockRenderedRepetitionDiagnostics.cs", "Assets/Editor/QualityBlockRenderedLightLeakDiagnostics.cs", "Assets/Editor/QualityBlockCameraEvidencePurityQA.cs", "Assets/Editor/QualityBlockLightEvidencePurityQA.cs", "Assets/Editor/QualityBlockCinematicImageUpgrade.cs", "Assets/QA/reflection_render_state_coherence_contract.json", "Assets/QA/rendered_repetition_diagnostics_contract.json", "Assets/QA/rendered_light_leak_diagnostics_contract.json", "Assets/QA/camera_evidence_purity_contract.json", "Assets/QA/light_evidence_purity_contract.json"]
+      "evidence": "The native 3840x2160 hero/oblique/grazing packet includes pixel-exact crops, async reflection synchronization, physical-lighting plus renderable scene/material/texture SHA-256 coherence, hidden MaterialPropertyBlock rejection, HDR-to-LDR telemetry, construction preflight, temporal sealing, post-tonemap repetition/light-leak triage, fail-closed formal-camera and formal-light purity guards, and a reflection lighting coverage contract that rejects stale critical-defect aliases and legal request-to-still policy drift.",
+      "assetPaths": ["Assets/Editor/QualityBlock4KCapture.cs", "Assets/Editor/QualityBlockNative4KReviewPacket.cs", "Assets/Editor/QualityBlockRenderEvidenceProvenanceQA.cs", "Assets/Editor/QualityBlockReflectionLightingStateFingerprint.cs", "Assets/Editor/QualityBlockReflectionLightingCoverageQA.cs", "Assets/Editor/QualityBlockReflectionRenderStateFingerprint.cs", "Assets/Editor/QualityBlockReflectionMaterialOverrideGuard.cs", "Assets/Editor/QualityBlockRenderedRepetitionDiagnostics.cs", "Assets/Editor/QualityBlockRenderedLightLeakDiagnostics.cs", "Assets/Editor/QualityBlockCameraEvidencePurityQA.cs", "Assets/Editor/QualityBlockLightEvidencePurityQA.cs", "Assets/Editor/QualityBlockCinematicImageUpgrade.cs", "Assets/QA/reflection_probe_capture_sync_contract.json", "Assets/QA/reflection_render_state_coherence_contract.json", "Assets/QA/rendered_repetition_diagnostics_contract.json", "Assets/QA/rendered_light_leak_diagnostics_contract.json", "Assets/QA/camera_evidence_purity_contract.json", "Assets/QA/light_evidence_purity_contract.json"]
     },
     {
       "id": "multi_angle_capture_manifest",
@@ -98,25 +98,25 @@
   ],
   "blockers": ["unity_compile_verification"],
   "latestRun": {
-    "startHead": "2381a90a735043a6d4fd0a6d3b961f3bf4c50768",
-    "substantiveWorkHead": "3ac89cf74d2c2f50205e8be4b6218282aa8c6b40",
+    "startHead": "7979a46b21db57380773a7fcad9e0108b6832cdd",
+    "substantiveWorkHead": "a97965a272688f70c0785fcc880d3005cd4e6524",
     "substantiveCommits": [
-      "804d5323aa3fe70c2924d01e29dce7ed9ecb93de",
-      "fcf50de7264721185eed4b9e38b3dbb7eadf8bdf",
-      "3ac89cf74d2c2f50205e8be4b6218282aa8c6b40"
+      "1a51a04efdb2c3a533c61da33e2dac50734815c7",
+      "63bf3aa3723e243eda2841d83c2f9c45310eb2d0",
+      "8904ce205420f98dc40d81f43db4600737459af7",
+      "a97965a272688f70c0785fcc880d3005cd4e6524"
     ],
-    "verification": "GitHub/source review only; no Unity runtime or native capture was available. Added a machine-readable Light evidence-purity contract and InitializeOnLoad guard for canonical QA4K_/QAPreparedTemporal_ 3840x2160 frames. The guard audits every scene Light, including disabled lights, cross-checks all LightEvent GetCommandBuffers counts against Light.commandBufferCount, requires zero attached buffers, exactly one active emitting directional SummerSun bound to RenderSettings.sun, and no other active emitting lights. It SHA-256-locks per-light active/enabled/type/intensity/color/shadow/transform/cookie state plus global shadow/fog state from pre-cull through pre-render/post-render. The existing reflection-lighting-state-v2 path now invokes this validator on its request/poll/completion/pre-still checks, closing the camera-only CommandBuffer gap for observed realtime-reflection synchronization boundaries. Canonical source builder audit confirms the only non-SummerSun Light is the park lamp Point Light at intensity 0. Unity 6 documentation confirms Light.commandBufferCount/GetCommandBuffers/LightEvent APIs, but no Unity 6000.3.0f1 compile/runtime assertion is made.",
+    "verification": "GitHub/source review only; no Unity runtime or native capture was available. Audited the reflection synchronization contract against the canonical Visual Fidelity Gate and found stale noncanonical critical-defect aliases. Replaced them with exact gate IDs and added a fail-closed ReflectionLightingCoverageQA that requires exact mapping plus explicit request/poll/completion/pre-still coverage for SummerSun renderMode/bounceIntensity, RenderSettings.subtractiveShadowColor, QualitySettings.pixelLightCount and QualitySettings.shadowmaskMode. The reflection-lighting fingerprint was advanced to reflection-lighting-state-v3 and hashes those rendering-affecting fields in addition to the existing sun/sky/ambient/shadow/LOD/render-state payload. Core gate integrity transitively validates the new coverage contract through the existing reflection pre-probe binding. No Unity 6000.3.0f1 compile/runtime assertion is made.",
     "expectedVisualScoreImpact": [
-      "Lighting/shadows/reflections: reduces evidence contamination from hidden LightEvent shadow-map/screenspace-shadow injection and contradictory active lights. No points without actual pixels.",
-      "Material/PBR: keeps realtime reflection cubemaps and final material response from being silently altered through a Light-attached CommandBuffer route at observed synchronization/render boundaries.",
-      "Cinematic image: a formally clean camera is no longer sufficient if a scene Light injects undeclared rendering work; such evidence now fails closed.",
-      "Temporal/LOD/aliasing: every formal temporal frame must preserve one light/global-shadow state through pre-cull/pre-render/post-render; actual shimmer and LOD pop still require 100% pixel review.",
-      "Critical defects: inconsistent sun/shadow direction and major light leak remain actual-pixel decisions; zero Light CommandBuffers cannot auto-clear them.",
+      "Lighting/shadows/reflections: closes a coherence hole where the cubemap request and still could each satisfy existing light-purity rules yet use different legal render-mode/bounce/pixel-light/shadowmask/subtractive-shadow policy. No points without actual pixels.",
+      "Material/PBR: makes final angular/Fresnel review less vulnerable to a reflection cubemap produced under a different legal lighting policy from the still.",
+      "Cinematic image: prevents exposure/highlight review from relying on specular energy produced under a policy state that drifted after probe capture.",
+      "Critical-defect integrity: reflection synchronization now maps exactly to sun_shadow_inconsistency, major_light_leak and unverified_render_claim; stale aliases are rejected rather than silently becoming nonbinding documentation.",
       "Automatic Visual Fidelity impact: 0 points. No actual render exists."
     ],
     "visualFidelityPointsAwarded": 0,
-    "nextBlocker": "Unity 6000.3.0f1 compile/runtime. At first Runner availability stop speculative expansion and run Prepare Complete Native 4K Review Packet. Verify LightEvidencePurity remains clean through realtime reflection request/polls and every QA4K_/QAPreparedTemporal_ render callback, then inspect sealed native 3840x2160 hero/oblique/grazing pixels and 100% crops before any Visual Fidelity scoring.",
-    "recordingNote": "Readiness remains 93/100 because this run strengthens evidence purity but does not provide the missing 7-point Unity compile/runtime verification. Detailed record: Assets/QA/autonomous_run_2026-09-11_light_evidence_purity.json"
+    "nextBlocker": "Unity 6000.3.0f1 compile/runtime. At first Runner availability stop speculative expansion and run Prepare Complete Native 4K Review Packet. Verify reflection-lighting-state-v3 remains invariant from pre-RenderProbe request through every Editor poll, completion and immediate pre-still validation, then inspect sealed native 3840x2160 hero/oblique/grazing pixels and 100% crops before any Visual Fidelity scoring.",
+    "recordingNote": "Readiness remains 93/100 because this run strengthens evidence coherence and canonical gate binding but does not provide the missing 7-point Unity compile/runtime verification. Detailed record: Assets/QA/autonomous_run_2026-09-11_reflection_lighting_coverage.json"
   },
   "note": "Implementation Readiness measures source/pipeline coverage only. Visual Fidelity is unscored and cannot pass until real 3840x2160 Unity render evidence is captured and reviewed."
 }

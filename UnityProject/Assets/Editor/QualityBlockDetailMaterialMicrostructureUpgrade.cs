@@ -164,11 +164,15 @@ public static class QualityBlockDetailMaterialMicrostructureUpgrade
             if (material.IsKeywordEnabled("_EMISSION") || material.GetColor("_EmissionColor").maxColorComponent > Epsilon)
                 throw new InvalidOperationException($"{profile.materialName} must not use emissive energy to fake highlights.");
 
+            // With Standard's _METALLICGLOSSMAP keyword active, source R/A texture channels are the
+            // authoritative metallic/smoothness values. The legacy danchi builder still writes the ignored
+            // scalar fallback fields after this bootstrap, so requiring those scalars to remain inside the
+            // registry range would create a false failure. They must nevertheless remain finite normalized
+            // values so disabling the map cannot expose NaN/Inf or an impossible scalar state.
             float fallbackMetallic = material.GetFloat("_Metallic");
-            float fallbackRoughness = 1f - material.GetFloat("_Glossiness");
-            if (fallbackMetallic < profile.metallicMin - Epsilon || fallbackMetallic > profile.metallicMax + Epsilon ||
-                fallbackRoughness < profile.roughnessMin - Epsilon || fallbackRoughness > profile.roughnessMax + Epsilon)
-                throw new InvalidOperationException($"{profile.materialName} fallback scalars are outside the same physically plausible range as its maps.");
+            float fallbackSmoothness = material.GetFloat("_Glossiness");
+            if (!IsFiniteUnit(fallbackMetallic) || !IsFiniteUnit(fallbackSmoothness))
+                throw new InvalidOperationException($"{profile.materialName} fallback metallic/smoothness scalars must remain finite values in [0,1].");
 
             ValidateImporter(normalPath, true);
             ValidateImporter(maskPath, false);
@@ -402,6 +406,11 @@ public static class QualityBlockDetailMaterialMicrostructureUpgrade
         if (importer.textureType != expected || importer.sRGBTexture || !importer.mipmapEnabled ||
             importer.wrapMode != TextureWrapMode.Repeat || importer.filterMode != FilterMode.Trilinear || importer.anisoLevel < 8)
             throw new InvalidOperationException($"Generated microstructure importer drifted from the anti-aliasing contract: {path}");
+    }
+
+    private static bool IsFiniteUnit(float value)
+    {
+        return !float.IsNaN(value) && !float.IsInfinity(value) && value >= 0f && value <= 1f;
     }
 
     private static string MaterialPath(Profile p) => $"{Root}/{p.materialName}.mat";

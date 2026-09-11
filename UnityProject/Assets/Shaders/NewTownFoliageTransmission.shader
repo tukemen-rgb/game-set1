@@ -14,7 +14,48 @@ Shader "NewTown/FoliageTransmission"
         _NormalScale ("Leaf Normal Scale", Range(0,2)) = 0.72
         _ExposureBias ("Canopy Exposure Bias", Range(-0.2,0.2)) = 0
         _LeafVariation ("Leaf Value Variation", Range(-0.2,0.2)) = 0
+        _LeafEdgeInset ("Leaf Margin Inset", Range(0,0.12)) = 0.055
+        _LeafSerration ("Leaf Margin Serration", Range(0,0.05)) = 0.020
+        _LeafEdgeAAScale ("Leaf Edge Derivative AA", Range(0.5,3)) = 1.35
     }
+
+    CGINCLUDE
+    #include "UnityCG.cginc"
+
+    half _LeafEdgeInset;
+    half _LeafSerration;
+    half _LeafEdgeAAScale;
+    half _LeafVariation;
+
+    // Canonical leaf UVs are independent from the tiled PBR texture UVs. The generated spray mesh
+    // maps tip/right/base/left to (0.5,1)/(1,0.5)/(0.5,0)/(0,0.5). We keep that manufacturing-like
+    // lamina domain for the macro margin and use the tiled textures only for cellular/vein microdetail.
+    // This avoids painting a highlight or silhouette into albedo and keeps the same physical edge in
+    // the forward and shadow-caster passes.
+    half LeafEdgeCoverage(float2 rawUv, half variation)
+    {
+        half2 p = rawUv * 2.0h - 1.0h;
+        half ay = saturate(abs(p.y));
+        half diamondHalfWidth = saturate(1.0h - ay);
+
+        // The source quad is a straight-edged diamond. A mild shoulder inset plus small deterministic
+        // margin undulation breaks the ruler-straight card silhouette without inventing damage, holes
+        // or torn leaves. Cluster variation changes phase but not physical width limits.
+        half shoulder = lerp(0.90h, 1.0h, saturate(1.0h - ay * 1.55h));
+        half phase = variation * 23.0h;
+        half serration = sin((p.y * 0.5h + 0.5h) * 75.3982237h + phase) *
+                          _LeafSerration * diamondHalfWidth;
+        half centerSkew = sin(p.y * 3.14159265h + phase * 0.23h) * 0.018h;
+        half halfWidth = max(0.0h,
+            diamondHalfWidth * shoulder - _LeafEdgeInset * diamondHalfWidth + serration);
+        half signedDistance = halfWidth - abs(p.x - centerSkew);
+
+        // Screen-space derivative antialiasing feeds alpha-to-coverage on MSAA targets while clip()
+        // still gives deterministic binary coverage on non-MSAA and shadow-map targets.
+        half aa = max(fwidth(signedDistance) * _LeafEdgeAAScale, 0.0001h);
+        return saturate(signedDistance / aa + 0.5h);
+    }
+    ENDCG
 
     SubShader
     {
@@ -26,13 +67,14 @@ Shader "NewTown/FoliageTransmission"
         {
             Name "FORWARD"
             Tags { "LightMode"="ForwardBase" }
+            ZWrite On
+            AlphaToMask On
 
             CGPROGRAM
             #pragma target 3.0
             #pragma vertex vert
             #pragma fragment frag
             #pragma multi_compile_fwdbase
-            #include "UnityCG.cginc"
             #include "Lighting.cginc"
             #include "AutoLight.cginc"
 
@@ -48,7 +90,6 @@ Shader "NewTown/FoliageTransmission"
             half _DielectricF0;
             half _NormalScale;
             half _ExposureBias;
-            half _LeafVariation;
 
             struct appdata
             {
@@ -66,7 +107,8 @@ Shader "NewTown/FoliageTransmission"
                 half3 worldTangent : TEXCOORD2;
                 half3 worldBitangent : TEXCOORD3;
                 half3 worldNormal : TEXCOORD4;
-                SHADOW_COORDS(5)
+                float2 rawLeafUv : TEXCOORD5;
+                SHADOW_COORDS(6)
             };
 
             v2f vert(appdata v)
@@ -74,6 +116,7 @@ Shader "NewTown/FoliageTransmission"
                 v2f o;
                 o.pos = UnityObjectToClipPos(v.vertex);
                 o.uv = TRANSFORM_TEX(v.uv, _MainTex);
+                o.rawLeafUv = v.uv;
                 o.worldPos = mul(unity_ObjectToWorld, v.vertex).xyz;
                 o.worldNormal = UnityObjectToWorldNormal(v.normal);
                 o.worldTangent = UnityObjectToWorldDir(v.tangent.xyz);
@@ -124,6 +167,9 @@ Shader "NewTown/FoliageTransmission"
 
             fixed4 frag(v2f i, fixed facing : VFACE) : SV_Target
             {
+                half edgeCoverage = LeafEdgeCoverage(i.rawLeafUv, _LeafVariation);
+                clip(edgeCoverage - 0.01h);
+
                 fixed4 tex = tex2D(_MainTex, i.uv) * _Color;
                 half3 tangentNormal = ScaleTangentNormal(UnpackNormal(tex2D(_BumpMap, i.uv)), _NormalScale);
                 half3 normalWS = normalize(
@@ -178,7 +224,7 @@ Shader "NewTown/FoliageTransmission"
                 half specularTerm = GgxDirectSpecular(noL, noV, noH, voH, perceptualRoughness, f0);
                 half3 specular = _LightColor0.rgb * specularTerm * attenuation;
 
-                return fixed4(albedo * ambient + direct + transmission + specular, 1.0h);
+                return fixed4(albedo * ambient + direct + transmission + specular, edgeCoverage);
             }
             ENDCG
         }
@@ -196,22 +242,27 @@ Shader "NewTown/FoliageTransmission"
             #pragma vertex vertShadow
             #pragma fragment fragShadow
             #pragma multi_compile_shadowcaster
-            #include "UnityCG.cginc"
 
             struct v2fShadow
             {
                 V2F_SHADOW_CASTER;
+                float2 rawLeafUv : TEXCOORD1;
             };
 
             v2fShadow vertShadow(appdata_base v)
             {
                 v2fShadow o;
                 TRANSFER_SHADOW_CASTER_NORMALOFFSET(o)
+                o.rawLeafUv = v.texcoord.xy;
                 return o;
             }
 
             float4 fragShadow(v2fShadow i) : SV_Target
             {
+                // Use exactly the same analytic margin as the visible pass. A stricter binary
+                // threshold keeps the shadow map temporally stable while preventing diamond-card
+                // silhouettes from reappearing only in dappled shadows.
+                clip(LeafEdgeCoverage(i.rawLeafUv, _LeafVariation) - 0.5h);
                 SHADOW_CASTER_FRAGMENT(i)
             }
             ENDCG

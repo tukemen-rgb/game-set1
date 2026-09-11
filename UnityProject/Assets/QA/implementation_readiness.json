@@ -1,5 +1,5 @@
 {
-  "generatedUtc": "2026-09-10T23:50:00Z",
+  "generatedUtc": "2026-09-11T01:10:00Z",
   "readinessScore": 93,
   "possibleScore": 100,
   "visualFidelityStatus": "UNSCORED_UNTIL_REAL_4K_RENDER",
@@ -78,14 +78,14 @@
       "id": "native_4k_capture_pipeline",
       "weight": 8,
       "passed": true,
-      "evidence": "The native 3840x2160 hero/oblique/grazing packet includes pixel-exact crops, reflection/lighting synchronization, HDR-to-LDR telemetry, construction preflight, temporal sealing and post-tonemap repetition plus major-light-leak triage bound to exact manifest/crop bytes.",
-      "assetPaths": ["Assets/Editor/QualityBlock4KCapture.cs", "Assets/Editor/QualityBlockNative4KReviewPacket.cs", "Assets/Editor/QualityBlockRenderEvidenceProvenanceQA.cs", "Assets/Editor/QualityBlockRenderedRepetitionDiagnostics.cs", "Assets/Editor/QualityBlockRenderedLightLeakDiagnostics.cs", "Assets/QA/rendered_repetition_diagnostics_contract.json", "Assets/QA/rendered_light_leak_diagnostics_contract.json"]
+      "evidence": "The native 3840x2160 hero/oblique/grazing packet includes pixel-exact crops, async reflection synchronization, physical-lighting plus renderable scene/material/texture SHA-256 coherence, hidden MaterialPropertyBlock rejection, HDR-to-LDR telemetry, construction preflight, temporal sealing and post-tonemap repetition plus major-light-leak triage.",
+      "assetPaths": ["Assets/Editor/QualityBlock4KCapture.cs", "Assets/Editor/QualityBlockNative4KReviewPacket.cs", "Assets/Editor/QualityBlockRenderEvidenceProvenanceQA.cs", "Assets/Editor/QualityBlockReflectionLightingStateFingerprint.cs", "Assets/Editor/QualityBlockReflectionRenderStateFingerprint.cs", "Assets/Editor/QualityBlockReflectionMaterialOverrideGuard.cs", "Assets/Editor/QualityBlockRenderedRepetitionDiagnostics.cs", "Assets/Editor/QualityBlockRenderedLightLeakDiagnostics.cs", "Assets/QA/reflection_render_state_coherence_contract.json", "Assets/QA/rendered_repetition_diagnostics_contract.json", "Assets/QA/rendered_light_leak_diagnostics_contract.json"]
     },
     {
       "id": "multi_angle_capture_manifest",
       "weight": 5,
       "passed": true,
-      "evidence": "Capture/evidence contracts require hero, oblique and grazing stills plus exact 100% crops and temporal evidence; major-light-leak clearance now requires direct review of the same five canonical crops used by current SHA-256-bound light-leak triage.",
+      "evidence": "Capture/evidence contracts require hero, oblique and grazing stills plus exact 100% crops and temporal evidence; major-light-leak clearance requires direct review of the same five canonical crops used by current SHA-256-bound light-leak triage.",
       "assetPaths": ["Assets/QA/4k_capture_manifest.json", "Assets/QA/visual_evidence_observability_contract.json", "Assets/QA/reviewed_visual_evidence_integrity_contract.json", "Assets/QA/scene_repetition_contract.json"]
     },
     {
@@ -98,28 +98,29 @@
   ],
   "blockers": ["unity_compile_verification"],
   "latestRun": {
-    "startHead": "084f0563430616b4b59d09f00ddb0853280bc65a",
-    "substantiveWorkHead": "643b32a0ed01118bcb8190fbd1b08e9cd2607d02",
+    "startHead": "3d0eb49a1391c7b5fb53f7fa0969f95a2029e4be",
+    "substantiveWorkHead": "0e2d5099887a802d7ffbcbc198223e5ce8b26812",
     "substantiveCommits": [
-      "0c92f495285c7e20fbf2396d7b3199de73153f6e",
-      "730139712d4895ff408793f59073ff5594527dbb",
-      "690a626c82277517d8c055de62b313d09a3a92a5",
-      "cd88b08f122ed8e6fdcb3f78688452f60f9ad65b",
-      "b8fc5b7934e521bb7bee405655042e341159a1e4",
-      "fab31263951bc357c4bf2b040729156f68bc8974",
-      "643b32a0ed01118bcb8190fbd1b08e9cd2607d02"
+      "f9343601980f5f34d494b1fee54c7a49bba29c34",
+      "5a147764011a00040a10e4e4261028699bac0281",
+      "213186f1e04184a0ad9b01b863adce127562af99",
+      "ad25bdfcfa7b2748754b8a1e83b9e646b4bebe3c",
+      "030b7bbc21a6796fcc58fe1f754c3aa7349895ff",
+      "0e2d5099887a802d7ffbcbc198223e5ce8b26812"
     ],
-    "verification": "GitHub/source review only; no Unity runtime or native capture was available. This run identified that major_light_leak was a hard automatic-fail defect with human crop references but no current pixel-domain triage precondition comparable to obvious_repetition. Added warning-only bright-on-dark diagnostics over five canonical 100% crops. A sampled pixel qualifies only when it is bright, strongly exceeds a dark surrounding annulus, and most annulus samples remain dark; candidates are clustered into 32 px blocks to de-emphasize isolated sparkle. The runtime report binds the current 4K manifest SHA-256 and each crop SHA-256 and cannot award points, clear the defect or assert it automatically. Native4KReviewPacket now validates the contract before preparation and generates the report after sealed still/temporal evidence. Reviewed-evidence integrity schema 1.2 requires a current light-leak report before the core Visual Fidelity evaluator can score. The observability contract also requires direct human major_light_leak review of all five diagnostic crops, including ground contact, service interfaces and grazing material response. During editing, an accidental source typo was introduced in an intermediate reviewed-evidence-validator commit and corrected immediately in b8fc5b7; the final affected region was re-fetched and verified source-restored. No Unity compile/runtime assertions are made.",
+    "verification": "GitHub/source review only; no Unity runtime or native capture was available. The prior async reflection waiter already proved one physical SummerSun/sky/ambient/shadow SHA-256 across request, every observed Editor poll, completion and immediate pre-still, but that proof did not bind active renderer transforms, meshes, current material serialization or texture bindings. Added reflection-render-state-v1 SHA-256 over the persisted benchmark scene dependency hash, deterministic active renderer hierarchy/type, world transforms/bounds and render state, mesh asset/runtime invariants, current material serialization and common PBR/detail texture dependency/sampling state. The outer reflection-lighting-state-v2 hash now folds this render-state hash into the existing waiter, so the existing request/poll/completion/pre-still equality checks fail closed on either lighting or renderable-state drift. Source material/texture/texel/albedo/metadata/primitive validators are required before a changed render state is accepted as a new baseline. Renderer MaterialPropertyBlock overrides are currently rejected rather than partially fingerprinted, because they can override per-renderer or per-material shader values without changing shared Material state. Unity 6 API documentation was checked for the Renderer/Mesh/Texture APIs used, but no compile/runtime assertion is made.",
     "expectedVisualScoreImpact": [
-      "Critical major light leak: improves the probability that spatially persistent bright seams/holes in final post-tonemap pixels are surfaced before scoring, while requiring the reviewer to inspect all five leak-sensitive crops; the metric itself cannot fail or clear the defect.",
-      "Lighting/shadows/reflections: prioritizes inspection of anomalous bright-on-dark discontinuities that source-only sun/shadow coherence cannot prove absent.",
-      "Geometry & construction: expands direct leak review from facade/construction-depth only to ground-contact and balcony/service interfaces where closure errors can appear.",
-      "Material/PBR and Cinematic image: adds grazing material evidence while keeping exposure/specular false positives visible to human review rather than treating the heuristic as truth.",
+      "Material/PBR: prevents stale reflection evidence after shared material/shader/texture changes; cannot award points without actual angular-response pixels.",
+      "Lighting/shadows/reflections: extends cubemap/still coherence from physical illumination alone to reflected renderable scene/material state.",
+      "Texture/microdetail: binds common PBR/detail texture assignment, dependency and sampling state across the async reflection boundary.",
+      "Geometry & construction: binds active renderer transforms/bounds and mesh invariants, reducing stale cubemap reuse after object movement/replacement.",
+      "Weathering and Cinematic image: prevents a stable SummerSun hash from masking a changed residue/material state before still evidence.",
+      "Critical defects: hidden MaterialPropertyBlock overrides are fail-closed until explicitly fingerprinted; hash equality still cannot clear baked highlights, impossible physics, repetition, geometry intersection or light leak without pixel review.",
       "Automatic Visual Fidelity impact: 0 points. No actual render exists."
     ],
     "visualFidelityPointsAwarded": 0,
-    "nextBlocker": "Unity 6000.3.0f1 compile/runtime. At first Runner availability stop speculative expansion and run Prepare Complete Native 4K Review Packet. Confirm the new diagnostics compile and produce a SHA-256-bound report for hero/facade_center, hero/ground_contact, oblique/construction_depth, oblique/balcony_services and grazing/material_grazing. Inspect every warning cluster at 100% for real shell gaps, light leaks, depth artifacts, transparent sorting or legitimate sun/specular edges; zero warnings must not be treated as clearance.",
-    "recordingNote": "Readiness remains 93/100 because this run improves render-evidence triage/integrity but does not provide the missing 7-point Unity compile/runtime verification."
+    "nextBlocker": "Unity 6000.3.0f1 compile/runtime. At first Runner availability stop speculative expansion and run Prepare Complete Native 4K Review Packet. Verify reflection-lighting-state-v2 stays identical across request/every observed poll/completion/pre-still within the 30 second probe wait. If the MaterialPropertyBlock guard fails, fingerprint the exact intentional override payload before permitting it rather than disabling the guard. Then inspect sealed native 3840x2160 hero/oblique/grazing pixels and 100% crops before any Visual Fidelity scoring.",
+    "recordingNote": "Readiness remains 93/100 because this run strengthens evidence-state coherence but does not provide the missing 7-point Unity compile/runtime verification. Detailed record: Assets/QA/autonomous_run_2026-09-11_reflection_render_state_coherence.json"
   },
   "note": "Implementation Readiness measures source/pipeline coverage only. Visual Fidelity is unscored and cannot pass until real 3840x2160 Unity render evidence is captured and reviewed."
 }

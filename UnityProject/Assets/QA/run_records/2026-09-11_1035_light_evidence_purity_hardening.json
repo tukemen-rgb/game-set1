@@ -1,0 +1,111 @@
+{
+  "schemaVersion": "1.0",
+  "runDateLocal": "2026-09-11",
+  "focus": "light_evidence_purity_hardening",
+  "branch": "gpt/unity-migration",
+  "startHead": "db3abd9a64530870c32ffc2dd1436701fd58ed0e",
+  "recordedHeadBeforeRecordCommit": "a4395f598410ac35c4cfbffdc98c4782d93fe608",
+  "constraintsPreserved": {
+    "godotUntouched": true,
+    "baseMerged": false,
+    "forbiddenDisasterThemeIntroduced": false,
+    "newVisualFidelityPointsClaimed": 0
+  },
+  "problem": {
+    "summary": "A light-side formal-evidence guard already existed, but its critical-fail mapping used aliases that did not match the canonical Visual Fidelity Gate IDs, it was not explicitly bound into the core gate-integrity entry point, and it still allowed stable-but-artificial sun-side state such as a cookie, flare, ForceVertex render mode or selective layer mask. Camera-side purity alone cannot exclude those lighting/shadow injection paths.",
+    "riskToGate": [
+      "Alias critical IDs could let the light-purity policy drift away from the exact 12-defect gate vocabulary.",
+      "Light command buffers are already forbidden, but a directional cookie or flare could still alter formal pixels without changing camera post-processing state.",
+      "A ForceVertex key or selective directional culling mask could produce materially inconsistent lighting while remaining stable from pre-cull to post-render.",
+      "If light-purity validation were only callback-driven, reflection-probe baselines could be requested before the MainCamera callbacks ever run."
+    ]
+  },
+  "implementation": [
+    {
+      "path": "Assets/QA/light_evidence_purity_contract.json",
+      "change": "Raised the contract to schema 1.1, replaced alias critical mappings with the exact canonical gate IDs, and made sun cookie, flare, ForceVertex lighting and reduced culling masks explicitly forbidden."
+    },
+    {
+      "path": "Assets/Editor/QualityBlockLightEvidencePurityQA.cs",
+      "change": "Requires exact-set equality for the canonical critical IDs; rejects SummerSun cookie, flare, ForceVertex mode, selective culling and shadow disablement; and expands the formal-light-state hash to include subtractive shadow color, pixelLightCount, shadowmaskMode, renderMode, cookieSize and flare identity/dependency state."
+    },
+    {
+      "path": "Assets/Editor/QualityBlockVisualGateIntegrityQA.cs",
+      "change": "Binds the light-purity contract into the core Visual Fidelity Gate integrity entry point, so direct gate/packet paths cannot accept a weakened or alias-mapped light policy."
+    },
+    {
+      "path": "Assets/Editor/QualityBlockNative4KReviewPacket.cs",
+      "change": "Adds explicit light-purity contract preflight and scene validation immediately before reflection synchronization, before native still capture, and again before prepared temporal capture. Per-frame pre-cull/pre-render/post-render callbacks remain the runtime guard."
+    }
+  ],
+  "selfAudit": {
+    "issuesFoundAndCorrected": [
+      {
+        "issue": "The existing light contract used inconsistent_sun_shadow_direction, severe_aliasing_or_shimmering and claiming_render_quality_without_actual_render, while the canonical gate uses sun_shadow_inconsistency, severe_aliasing_or_shimmer and unverified_render_claim.",
+        "correction": "Changed the contract and validator to exact canonical IDs and exact-set equality instead of loose Contains checks."
+      },
+      {
+        "issue": "The next planned work item was initially described as adding a Light command-buffer audit, but source inspection showed that audit already existed.",
+        "correction": "Avoided duplicating the existing implementation and instead hardened its uncovered state channels and gate integration."
+      }
+    ],
+    "sourceDataChecks": [
+      "BuildQualityBlock1990s creates one SummerSun directional light and a park-lamp Point Light whose intensity is 0, so the intended daytime scene model is compatible with the active-emitter rule.",
+      "The existing guard already audits every scene Light, including disabled lights, across all LightEvent command-buffer attachment points.",
+      "The existing formal target vocabulary remains QA4K_ and QAPreparedTemporal_ at native 3840x2160.",
+      "The new contract awards zero Visual Fidelity points and retains UNSCORED_REVIEW_REQUIRED until actual pixels exist.",
+      "Unity 6 API documentation was checked for LightEvent/commandBufferCount, pixelLightCount, shadowmaskMode and Light cookie/culling/flare/renderMode properties; compile/runtime verification is still pending."
+    ]
+  },
+  "commits": [
+    "ae755352c3349c014b310b47083c16b3eccd0906",
+    "95b514f7a651f85bd3bd79a5144baae865b9b4fc",
+    "3d6ac05627175802bf17fc83d19dc7e00d51a37c",
+    "a4395f598410ac35c4cfbffdc98c4782d93fe608"
+  ],
+  "repositoryVerification": {
+    "aheadOfStartHeadBeforeRecordCommit": 4,
+    "behindStartHeadBeforeRecordCommit": 0,
+    "mergeBaseEqualsStartHead": true,
+    "changedPathsBeforeRecordCommit": [
+      "UnityProject/Assets/Editor/QualityBlockLightEvidencePurityQA.cs",
+      "UnityProject/Assets/Editor/QualityBlockNative4KReviewPacket.cs",
+      "UnityProject/Assets/Editor/QualityBlockVisualGateIntegrityQA.cs",
+      "UnityProject/Assets/QA/light_evidence_purity_contract.json"
+    ],
+    "godotPathsChanged": 0,
+    "unityCompileExecuted": false,
+    "unityRuntimeExecuted": false,
+    "native3840x2160RenderExecuted": false
+  },
+  "scores": {
+    "implementationReadiness": 93,
+    "implementationReadinessPossible": 100,
+    "visualFidelityStatus": "UNSCORED",
+    "visualFidelityPointsAwardedThisRun": 0,
+    "visualFidelityPassClaimed": false
+  },
+  "expectedVisualScoreImpact": {
+    "directPoints": 0,
+    "categoriesProtected": [
+      "lighting_shadows_reflections",
+      "cinematic_image",
+      "temporal_lod_aliasing"
+    ],
+    "criticalDefectsProtected": [
+      "sun_shadow_inconsistency",
+      "major_light_leak",
+      "severe_aliasing_or_shimmer",
+      "unverified_render_claim"
+    ],
+    "expectedEffectAfterRealRender": "No visual point is earned by this evidence-integrity change. It reduces the chance that formal 4K/temporal evidence is accepted after hidden light-side injection or after the light QA vocabulary drifts away from the canonical gate."
+  },
+  "nextBlocker": "No Unity 6000.3.0f1 runner, compile result or actual native 3840x2160 screenshots are available. The new C# paths therefore remain compile/runtime verification pending and Visual Fidelity must remain UNSCORED.",
+  "runnerPriorityWhenAvailable": [
+    "Stop speculative expansion.",
+    "Compile/import gpt/unity-migration in Unity 6000.3.0f1.",
+    "Run Prepare Complete Native 4K Review Packet.",
+    "Verify light-purity preflight passes before reflection synchronization and every QA4K_/QAPreparedTemporal_ frame completes the pre-cull/pre-render/post-render lifecycle without state-hash drift.",
+    "Review actual hero, oblique and grazing 3840x2160 captures plus 100% crops before assigning any category score or clearing any critical defect."
+  ]
+}

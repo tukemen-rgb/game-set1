@@ -1,9 +1,10 @@
 {
   "schemaVersion": "1.0",
   "status": "IMPLEMENTATION_READY_RENDER_PENDING",
-  "purpose": "Upgrade scalar-only generated apartment-detail materials with deterministic lighting-neutral normal and Standard metallic-smoothness microstructure while preserving fail-closed native-4K review. This contract does not award Visual Fidelity points.",
+  "purpose": "Upgrade scalar-only generated apartment-detail materials with deterministic lighting-neutral normal and Standard metallic-smoothness microstructure while preserving fail-closed native-4K review. Manufacturing-scale placement and per-piece phase are now supplied by the separate bound physical-UV pass; this contract does not award Visual Fidelity points.",
   "generator": "Assets/Editor/QualityBlockDetailMaterialMicrostructureUpgrade.cs",
   "registry": "Assets/QA/material_construction_lookdev.json",
+  "physicalUvContract": "Assets/QA/detail_physical_uv_contract.json",
   "target": {
     "engine": "Unity",
     "renderPipeline": "Built-in / Standard shader",
@@ -114,9 +115,9 @@
     "severe_aliasing_or_shimmer"
   ],
   "limitations": [
-    "The generated fallback currently uses normalized procedural primitive UVs; this pass does not claim exact millimetre-scale microstructure on every differently scaled part. Existing physical-texel-density QA and actual native-4K pixels remain authoritative.",
-    "The same canonical material is reused across repeated assemblies. High-frequency manufacture microstructure is intentionally subtle, but only rendered repetition diagnostics and human 100% review can determine whether synchronization is visible.",
-    "Source maps and importer settings cannot prove final filtered BRDF/Fresnel response, compression behaviour, or temporal stability on the target GPU.",
+    "Manufacturing-scale placement now depends on detail_physical_uv_contract.json and its scene manifest. The microstructure generator alone does not prove correct physical scale or orientation; formal scene QA fails closed if the metric UV pass is absent or drifted.",
+    "Canonical materials are intentionally reused across repeated assemblies, but deterministic per-piece metric UV phases now decorrelate their cut origins. Rendered repetition diagnostics and human 100% review still decide whether any synchronization remains visible.",
+    "Source maps, metric UVs and importer settings cannot prove final filtered BRDF/Fresnel response, compression behaviour, or temporal stability on the target GPU.",
     "Legacy scalar _Metallic/_Glossiness fields can be overwritten by the older detail builder; while _METALLICGLOSSMAP is active the formal material guard evaluates the Standard texture channels. The mapped source range, not an ignored fallback scalar, is the visual contract."
   ],
   "expectedVisualScoreImpactIfRenderedAndObserved": {

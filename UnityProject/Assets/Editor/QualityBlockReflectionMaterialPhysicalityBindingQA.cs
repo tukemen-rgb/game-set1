@@ -62,6 +62,10 @@ public static class QualityBlockReflectionMaterialPhysicalityBindingQA
         // sibling reflection-lighting coverage contract here as well so a direct numeric-gate integrity path
         // cannot retain stale critical-defect aliases or omit legal-but-render-changing light policy state.
         QualityBlockReflectionLightingCoverageQA.ValidateContractConfigOnly();
+        // The same core integrity path must also freeze the exact canonical ReflectionProbe configuration.
+        // Otherwise a weakened influence/capture-volume contract could remain dormant until runtime and the
+        // source-side 92-point gate integrity check would not notice it.
+        QualityBlockReflectionProbeStateCoherenceQA.ValidateContractConfigOnly();
     }
 
     /// <summary>

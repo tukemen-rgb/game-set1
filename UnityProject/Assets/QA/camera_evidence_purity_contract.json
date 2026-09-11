@@ -1,0 +1,40 @@
+{
+  "schemaVersion": "1.0",
+  "scenePath": "Assets/Scenes/QualityBlock1990s.unity",
+  "authoritativeCameraName": "MainCamera",
+  "width": 3840,
+  "height": 2160,
+  "formalTargetPrefixes": [
+    "QA4K_",
+    "QAPreparedTemporal_"
+  ],
+  "displayTransform": {
+    "componentType": "QualityBlockFilmicTonemap",
+    "shaderName": "Hidden/NewTown/FilmicTonemap",
+    "exposureEV": -0.45,
+    "contrast": 1.03,
+    "saturation": 0.97,
+    "shadowSoftening": 0.025
+  },
+  "requirements": {
+    "builtInRenderPipelineOnly": true,
+    "perspectiveCameraRequired": true,
+    "forwardRenderingRequired": true,
+    "hdrRequired": true,
+    "msaaPermissionRequired": true,
+    "dynamicResolutionForbidden": true,
+    "skyboxClearRequired": true,
+    "fullViewportRequired": true,
+    "nativeTargetRequired": true,
+    "linearSrgbTargetRequired": true,
+    "singleApprovedImageEffectOnly": true,
+    "cameraCommandBuffersForbidden": true,
+    "validateAtPreCullPreRenderAndPostRender": true,
+    "requireReflectionStateMatchAtPreCullAndPostRender": true,
+    "actualRenderRequiredForVisualPoints": true,
+    "manualPixelReviewRequired": true
+  },
+  "runtimeRenderVerified": false,
+  "visualFidelityPointsAwarded": 0,
+  "note": "Evidence-purity contract only. Formal native-4K camera renders must not gain hidden bloom, sharpening, local contrast, replacement post effects, command-buffer compositing, camera-state drift, or stale reflection/render-state between the accepted probe proof and the rendered frame. Passing this contract never awards Visual Fidelity points and never clears a critical defect without actual pixels."
+}

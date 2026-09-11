@@ -1,0 +1,133 @@
+{
+  "schemaVersion": "1.0",
+  "runId": "2026-09-12-balcony-floor-fall",
+  "branch": "gpt/unity-migration",
+  "startHead": "4eb9f6a3e3862f1db5a4f56f85dee66d75f9aa4c",
+  "implementationHeadBeforeRunRecord": "544e1140ec82724fdae0aa17650be643d900ae88",
+  "scope": "Replace the previous terminal-drain-only balcony condition with an actual geometry-based floor fall that carries water from the rear threshold zone to the terminal channel, and bind that construction to formal reflection evidence.",
+  "constraints": {
+    "godotPreserved": true,
+    "baseMerged": false,
+    "earthquakeDisasterReconstructionThemesExcluded": true,
+    "visualFidelityPassClaimed": false,
+    "automaticVisualPointsAwarded": 0
+  },
+  "commits": [
+    {
+      "sha": "66a25b66bbc0fcc5e09bb638efbb17b0d31839c8",
+      "message": "feat: model balcony floor drainage fall",
+      "purpose": "Adds one deterministic purpose-built sloped floor mesh per balcony bay, a migration path from the previous two-renderer assembly, metric-like UV0, hard construction normals and coherent sky/local-probe usage."
+    },
+    {
+      "sha": "a7f06fada0d157c3f0c6e0af440518749dfe86a3",
+      "message": "qa: enforce balcony floor fall geometry",
+      "purpose": "Formal QA requires 30 floor-fall renderers, exact 0.84 m run / 16.8 mm drop / 2 percent slope, complete UV0/normal/tangent evidence, slab attachment and channel termination."
+    },
+    {
+      "sha": "5e7f71746ba2841e997c0cc6fbd9ff9fabe139be",
+      "message": "docs: define physical balcony floor fall contract",
+      "purpose": "Records manufacture/installation, dimensions, interfaces, orientation, dry exposure, cause-based aging, PBR material behavior, shared-all-LOD-state policy and precise lookdev generation brief."
+    },
+    {
+      "sha": "544e1140ec82724fdae0aa17650be643d900ae88",
+      "message": "qa: bind balcony fall to reflection evidence",
+      "purpose": "Runs balcony construction QA inside the existing formal reflection-lighting fingerprint lifecycle so the cubemap cannot be sealed against a stale flat/no-fall balcony state."
+    }
+  ],
+  "researchBasis": [
+    {
+      "source": "Kaneso balcony/roof drain product families already recorded in the balcony drainage contract",
+      "use": "Drain/strainer and terminal channel plausibility."
+    },
+    {
+      "source": "Japanese balcony drainage practice summary: https://www.jp-wat.com/column/biz/kankyo/balcony/",
+      "use": "1:50 fall adopted only as a conservative benchmark reconstruction assumption, not as proof of the original building detail."
+    }
+  ],
+  "manufactureAndInstallation": {
+    "components": "Existing rear upstands + threshold turn + new formed walking-field fall + terminal channel + coated drain grate.",
+    "floorFall": {
+      "widthM": 3.45,
+      "runM": 0.84,
+      "dropM": 0.0168,
+      "ratio": "1:50",
+      "frontTopAboveSlabM": 0.0015,
+      "rearTopAboveSlabM": 0.0183,
+      "mounting": "formed/bonded over the slab between rear threshold turn and terminal channel",
+      "orientation": "falls in +Z toward the terminal channel",
+      "exposure": "dry midsummer exterior foot/rain/UV exposure",
+      "geometryVsMaterial": "macro fall is geometry; fine membrane orange-peel/chalking is material-scale only"
+    },
+    "material": {
+      "id": "MAT_BalconyWaterproofingDry",
+      "albedoSrgb": [0.245, 0.255, 0.245],
+      "roughness": 0.72,
+      "metallic": 0.0,
+      "dielectricF0Approx": 0.04,
+      "normalScale": 0.0,
+      "microstructure": "fine orange-peel/chalk micro-roughness",
+      "wetness": 0.0,
+      "uvAging": "subtle desaturation/chalking only",
+      "angularFresnel": "ordinary dielectric Fresnel; no painted edge highlight"
+    }
+  },
+  "sourceVerification": {
+    "floorFallMath": "PASS_SOURCE_MATH: rearZ=-0.46, frontZ=0.38 => run=0.84 m; 0.84/50=0.0168 m drop; front top 0.0015 m => rear top 0.0183 m; slope=0.02.",
+    "meshTopology": "IMPLEMENTED_NOT_EXECUTED: six independent quad faces, 24 vertices, 36 indices, UV0 + recalculated normals/tangents; no Unity primitive mesh is used.",
+    "migration": "IMPLEMENTED_NOT_EXECUTED: existing 30-bay drainage roots gain only missing FloorFallSurface children; unrelated drift remains fail-closed under QA.",
+    "sceneQA": "IMPLEMENTED_NOT_EXECUTED: requires 90 renderers total (30 waterproof assemblies + 30 floor falls + 30 drain grates), exact canonical bindings and floor/channel/slab relationships.",
+    "formalMainCameraQA": "IMPLEMENTED_NOT_EXECUTED: existing MainCamera pre-cull guard now rejects missing/drifted floor-fall state.",
+    "formalReflectionQA": "IMPLEMENTED_NOT_EXECUTED: existing reflection-lighting fingerprint now invokes balcony drainage/floor-fall QA before request, during poll/completion and before still sealing through the central material-physicality binding.",
+    "githubActionsRunsAtImplementationHead": 0,
+    "commitStatusContextsAtImplementationHead": 0,
+    "unityCompile": "PENDING_UNITY_6000_3_0F1_RUNNER",
+    "unitySceneMigration": "PENDING_UNITY_6000_3_0F1_RUNNER",
+    "native3840x2160Render": "NOT_AVAILABLE",
+    "pixelReview": "NOT_AVAILABLE"
+  },
+  "selfAudit": {
+    "fixedFindings": [
+      "The prior balcony contract explicitly withheld visual credit for broad floor fall because no sloped surface existed. This run removes that implementation gap by making the 1:50 fall actual geometry and by QA-binding the exact drop/run rather than relying on a normal-map or painted cue.",
+      "ReflectionProbe.RenderProbe bypasses MainCamera pre-cull. Balcony construction QA is therefore chained into the existing reflection-lighting fingerprint so cubemap and still evidence cannot silently use different balcony generations."
+    ],
+    "knownLimitations": [
+      "The 1:50 fall is a conservative benchmark reconstruction assumption, not verified original-building documentation.",
+      "The lower face uses a 0.5 mm render epsilon above the slab datum to avoid coplanar depth fighting; this is treated as the concealed bonded interface, not a modeled air cavity. A visible hairline gap in real pixels would be a defect and must be corrected.",
+      "The waterproof material currently has no normal texture; normalScale remains 0.0 rather than inventing unsupported micro-normal response.",
+      "The shared-all-LOD-state assembly is deliberately not switched by DanchiHighDetail LODGroup; temporal evidence must still check grate/edge shimmer and any apparent pop caused by surrounding geometry transitions.",
+      "No native Unity compile, scene migration, ReflectionProbe execution or rendered pixels are available at this head."
+    ]
+  },
+  "implementationReadiness": {
+    "score": 93,
+    "scale": 100,
+    "status": "IMPLEMENTATION_ONLY_RENDER_VERIFICATION_PENDING",
+    "reason": "Source/data/QA coverage increased, but the principal blocker remains unavailable Unity 6000.3.0f1 runtime and actual native-4K evidence; readiness is not inflated for source-only additions."
+  },
+  "visualFidelityGate": {
+    "status": "UNSCORED_UNTIL_REAL_4K_RENDER",
+    "passThreshold": 92,
+    "categoryHardMinimums": {
+      "geometry_and_construction_fidelity": "18/20",
+      "material_pbr_physical_plausibility": "18/20",
+      "lighting_shadows_reflections": "13/15",
+      "texture_microdetail_texel_fidelity": "9/10",
+      "weathering_context_causality": "9/10",
+      "vegetation_natural_complexity": "7/8",
+      "period_accuracy_scene_authenticity": "6/7",
+      "cinematic_image_quality": "4/5",
+      "temporal_lod_aliasing_stability": "4/5"
+    },
+    "criticalDefectsMustAllBeFalse": true,
+    "visualPointsAddedThisRun": 0
+  },
+  "expectedVisualScoreImpact": {
+    "geometry_and_construction_fidelity": "DIRECT_POSITIVE_CANDIDATE: water now has an actual 16.8 mm gravity fall from threshold zone to channel rather than a flat slab with terminal hardware only.",
+    "material_pbr_physical_plausibility": "SUPPORTING_CANDIDATE: the sloped waterproof surface uses the same constrained dry dielectric material; no painted fall/highlight is introduced.",
+    "lighting_shadows_reflections": "SUPPORTING_CANDIDATE: true slope changes grazing angle and reflected sky response; reflection lifecycle now fails closed on missing/drifted slope state.",
+    "weathering_context_causality": "DIRECT_POSITIVE_CANDIDATE: future residue has a physical gravity path to the channel/drain instead of arbitrary floor staining.",
+    "period_accuracy_scene_authenticity": "SUPPORTING_CANDIDATE: ordinary drainage construction reads more credibly, but exact historical product/specification is not claimed.",
+    "temporal_lod_aliasing_stability": "RISK_ONLY_UNTIL_RENDER: the broad slope itself is stable across LOD states, but millimetric front edge and grate require temporal pixel review."
+  },
+  "nextBlocker": "Unity 6000.3.0f1 Runner or screenshots. On first availability, stop speculative expansion and verify compile -> scene migration to 90 balcony renderers -> 24-vertex floor-fall asset -> reflection fingerprint -> 3840x2160 hero/oblique/grazing + 100 percent balcony crops + temporal subpixel/LOD cases. Reject any visible floor seam, hairline gap, exaggerated slope, grate shimmer, reflection mismatch or repeated synthetic pattern."
+}

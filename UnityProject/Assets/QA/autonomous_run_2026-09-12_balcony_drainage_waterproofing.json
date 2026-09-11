@@ -1,9 +1,10 @@
 {
-  "schemaVersion": "1.0",
+  "schemaVersion": "1.1",
   "runId": "2026-09-12-balcony-drainage-waterproofing",
   "branch": "gpt/unity-migration",
   "startHead": "7579efce95fd7f9361bc9534ac6a108b271ee448",
   "implementationHeadBeforeRunRecord": "bf2f9222f2ccb42ca39da72bbee857ca2ae096f7",
+  "implementationHeadAfterSelfAudit": "b7c98440b5d940db6c00d20aa48fd3abf8d4dd68",
   "scope": "Close a high-value construction/causality gap: the generated fallback's 30 balcony slabs had rails and facade weathering but no physical terminal drainage or waterproofing interfaces.",
   "constraints": {
     "godotPreserved": true,
@@ -32,6 +33,16 @@
       "sha": "bf2f9222f2ccb42ca39da72bbee857ca2ae096f7",
       "message": "docs: add balcony drainage waterproofing lookdev",
       "purpose": "Non-render construction lookdev for rear upstand, threshold turn, channel and drain placement."
+    },
+    {
+      "sha": "79bc1101fec77af8c05d4b94c6627ff137218869",
+      "message": "fix: align balcony detail reflection policy",
+      "purpose": "Self-audit fix: new drainage renderers are created during the environment save boundary, after the environment pass has already assigned probe blending to existing renderers. Set the generated detail explicitly to BlendProbesAndSkybox so it cannot diverge from the midsummer sky/local-probe policy."
+    },
+    {
+      "sha": "b7c98440b5d940db6c00d20aa48fd3abf8d4dd68",
+      "message": "qa: bind balcony detail to skybox reflection policy",
+      "purpose": "Fail closed if either drainage renderer loses exact LightProbeUsage.BlendProbes or ReflectionProbeUsage.BlendProbesAndSkybox state."
     }
   ],
   "researchBasis": [
@@ -56,6 +67,7 @@
     "geometry": "Combined meshes are assembled from QualityBlockSurfaceMeshLibrary dimension-baked chamfered boxes; visible Unity primitive meshes are forbidden.",
     "weatherState": "Dry midsummer. No wet sheen and no disaster/failure state.",
     "broadFloorFall": "Not separately displaced in this change and receives no visual-fidelity credit. Only the terminal drainage interface is implemented.",
+    "reflectionPolicy": "LightProbeUsage.BlendProbes plus ReflectionProbeUsage.BlendProbesAndSkybox is mandatory for every new renderer so local reflections blend coherently to the same physical midsummer sky used by the benchmark.",
     "materials": [
       {
         "id": "MAT_BalconyWaterproofingDry",
@@ -82,6 +94,7 @@
     "contractSourceQA": "IMPLEMENTED_NOT_EXECUTED: exact construction/material/evidence tokens are checked by QualityBlockBalconyDrainageWaterproofingQA.",
     "sceneQA": "IMPLEMENTED_NOT_EXECUTED: 30 bays, 60 renderers, canonical mesh/material binding, drain-in-slab bounds, 100 mm benchmark upstand, no colliders and coherent probe/shadow participation are checked.",
     "formalPreCullQA": "IMPLEMENTED_NOT_EXECUTED: MainCamera render fails closed if generated-fallback drainage construction is missing or drifted.",
+    "reflectionPolicySelfAudit": "PASS_SOURCE_REVIEW: environment BuildAndApply assigns BlendProbesAndSkybox before SaveOpenScenes; the new save-bound drainage renderers now assign the same policy explicitly and QA requires it.",
     "githubActionsRunsAtImplementationHead": 0,
     "commitStatusContextsAtImplementationHead": 0,
     "unityCompile": "PENDING_UNITY_6000_3_0F1_RUNNER",
@@ -90,6 +103,9 @@
     "pixelReview": "NOT_AVAILABLE"
   },
   "selfAudit": {
+    "fixedFindings": [
+      "Initial implementation used ReflectionProbeUsage.BlendProbes. Because the environment pass creates/updates the sky and sets existing renderers to BlendProbesAndSkybox before SaveOpenScenes triggers this new assembly, the newly created renderers could have missed skybox fallback. Corrected to BlendProbesAndSkybox and made exact probe usage a formal QA invariant."
+    ],
     "knownLimitations": [
       "The 100 mm upstand is explicitly a conservative benchmark reconstruction assumption, not an asserted legal minimum or proof of the original building detail.",
       "The broad balcony floor fall is not geometry-displaced by this change and must not receive visual credit.",
@@ -117,6 +133,7 @@
   "expectedVisualScoreImpact": {
     "geometry_and_construction_fidelity": "DIRECT_POSITIVE_CANDIDATE: missing drain/channel/waterproof interfaces are now represented as actual construction geometry.",
     "material_pbr_physical_plausibility": "DIRECT_POSITIVE_CANDIDATE: dry membrane and coated grate are constrained to dielectric, non-emissive responses.",
+    "lighting_shadows_reflections": "SUPPORTING_CANDIDATE: new renderers explicitly share the benchmark BlendProbesAndSkybox policy; actual reflected response still requires pixels.",
     "weathering_context_causality": "DIRECT_POSITIVE_CANDIDATE: future drainage residue now has a physical terminal source/catchment instead of a bare slab.",
     "period_accuracy_scene_authenticity": "SUPPORTING_CANDIDATE: ordinary balcony service construction improves scene plausibility, but exact historic product identity is not claimed.",
     "temporal_lod_aliasing_stability": "RISK_ONLY_UNTIL_RENDER: retained through LOD hierarchy, but grate slats and shallow channel edges may shimmer and require pixel evidence."

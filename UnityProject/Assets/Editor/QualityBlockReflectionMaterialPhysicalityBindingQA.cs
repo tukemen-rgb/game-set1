@@ -10,6 +10,8 @@ using UnityEngine;
 /// QualityBlockReflectionProbeAwaiter evaluates that fingerprint before RenderProbe(), on every observed
 /// Editor poll, at completion and immediately before still capture; therefore a material-registry drift
 /// cannot enter or survive the formal cubemap baseline merely because MainCamera pre-cull has not run yet.
+/// The same entrypoint also chains the manufacturing-scale detail-UV binding, closing the equivalent
+/// ReflectionProbe blind spot for normalized/stale UV meshes and repeated microtexture phase state.
 ///
 /// This is evidence-integrity infrastructure only. It awards zero Visual Fidelity points and cannot clear
 /// any critical defect without sealed native-4K rendered evidence.
@@ -66,10 +68,13 @@ public static class QualityBlockReflectionMaterialPhysicalityBindingQA
         // Otherwise a weakened influence/capture-volume contract could remain dormant until runtime and the
         // source-side 92-point gate integrity check would not notice it.
         QualityBlockReflectionProbeStateCoherenceQA.ValidateContractConfigOnly();
+        // ReflectionProbe.RenderProbe does not invoke MainCamera pre-cull. Keep manufacture-scale UV and
+        // phase-diversity policy bound to this already-central pre-probe integrity entrypoint as well.
+        QualityBlockReflectionDetailPhysicalUvBindingQA.ValidateContractConfigOnly();
     }
 
     /// <summary>
-    /// Called from every formal reflection-lighting fingerprint evaluation. The delegated validation is
+    /// Called from every formal reflection-lighting fingerprint evaluation. The delegated validations are
     /// deliberately report-free so repeated Editor-poll checks do not mutate evidence files while probes
     /// are in flight.
     /// </summary>
@@ -77,6 +82,7 @@ public static class QualityBlockReflectionMaterialPhysicalityBindingQA
     {
         ValidateContractConfigOnly();
         QualityBlockRegisteredMaterialAssetPhysicalityQA.ValidateForFormalEvidence();
+        QualityBlockReflectionDetailPhysicalUvBindingQA.ValidateOpenScene();
     }
 
     private static void RequireExactSet(string[] actual, string[] expected, string label)

@@ -1,0 +1,52 @@
+{
+  "schemaVersion": "1.0",
+  "purpose": "Guarantee that scoreable reflection/still evidence uses the already-developed physical facade rough openings, world-aligned aperture UVs, deterministic apartment occupancy variation and physical glass-edge thickness, rather than silently rendering the lower-fidelity facade-optics-only state.",
+  "scenePath": "Assets/Scenes/QualityBlock1990s.unity",
+  "requirements": {
+    "mustRunAfterFacadeOptics": true,
+    "mustPrepareBeforeReflectionProbeBaseline": true,
+    "apertureConstructionRequired": true,
+    "aperturePhysicalUvRequired": true,
+    "occupancyVariationRequired": true,
+    "glassThicknessRequired": true,
+    "authoredDanchiRemainsAuthoritative": true,
+    "existingPassDriftMustFailClosed": true,
+    "actualRenderRequiredForVisualPoints": true,
+    "visualFidelityPointsAwarded": 0
+  },
+  "formalPreparationOrder": [
+    "QualityBlockFacadeOpticsUpgrade.BuildAndApply",
+    "DanchiFacadeApertureShell physical rough-opening construction",
+    "world-aligned metric facade-aperture UV bake",
+    "FacadeOccupancyVariation deterministic curtain/track assembly",
+    "sceneSaving-bound 4 mm glass perimeter edge construction",
+    "registered material + physical UV + facade formal-build validation",
+    "reflection probe baseline",
+    "native 3840x2160 hero/oblique/grazing evidence"
+  ],
+  "criticalDefectRisksReduced": [
+    "visible_primitive_placeholder",
+    "obvious_repetition",
+    "hero_geometry_intersection",
+    "major_light_leak",
+    "missing_construction_material_metadata"
+  ],
+  "requiredEvidence": [
+    "hero/facade_center at 3840x2160 plus 100% review for repeated occupancy modules, opaque fallback intrusion and window construction seating",
+    "oblique/construction_depth at 3840x2160 plus 100% crop for 0.22 m RC rough-opening depth, perimeter seals, glazing/curtain ordering and light leaks",
+    "grazing/sash_rail_response at 3840x2160 plus 100% crop for physical UV scale, sash/seal/glass interfaces and non-painted grazing response",
+    "grazing/material_grazing and temporal pixels at 100% for concrete repetition, curtain/track LOD changes, thin glass-edge shimmer and reflection continuity"
+  ],
+  "limitations": [
+    "This binding proves only that the higher-fidelity source passes are present and validated before formal reflection evidence; it does not prove their pixels are photorealistic.",
+    "Source-side geometry/metadata validation cannot clear obvious_repetition, major_light_leak, hero_geometry_intersection or any other visual critical defect without actual native render evidence.",
+    "Unity 6000.3.0f1 compilation, scene serialization order, reflection-probe execution and 3840x2160 rendered output remain runtime verification pending until a Runner is available.",
+    "Existing generated passes are validated rather than silently regenerated so evidence-state drift fails closed instead of being hidden during a formal packet."
+  ],
+  "forbiddenThemes": [
+    "earthquake",
+    "disaster",
+    "reconstruction"
+  ],
+  "visualFidelityStatus": "UNSCORED_UNTIL_REAL_4K_RENDER"
+}

@@ -10,8 +10,9 @@ using UnityEngine;
 /// QualityBlockReflectionProbeAwaiter evaluates that fingerprint before RenderProbe(), on every observed
 /// Editor poll, at completion and immediately before still capture; therefore a material-registry drift
 /// cannot enter or survive the formal cubemap baseline merely because MainCamera pre-cull has not run yet.
-/// The same entrypoint also chains the manufacturing-scale detail-UV binding, closing the equivalent
-/// ReflectionProbe blind spot for normalized/stale UV meshes and repeated microtexture phase state.
+/// The same entrypoint also chains the manufacturing-scale detail-UV binding and the facade formal-build
+/// binding, closing equivalent ReflectionProbe blind spots for normalized/stale UV meshes, missing
+/// aperture construction and missing occupancy variation.
 ///
 /// This is evidence-integrity infrastructure only. It awards zero Visual Fidelity points and cannot clear
 /// any critical defect without sealed native-4K rendered evidence.
@@ -71,16 +72,21 @@ public static class QualityBlockReflectionMaterialPhysicalityBindingQA
         // ReflectionProbe.RenderProbe does not invoke MainCamera pre-cull. Keep manufacture-scale UV and
         // phase-diversity policy bound to this already-central pre-probe integrity entrypoint as well.
         QualityBlockReflectionDetailPhysicalUvBindingQA.ValidateContractConfigOnly();
+        // The same formal reflection boundary must not accept the facade-optics-only fallback when higher-
+        // fidelity rough-opening, metric-UV and occupancy passes are present in source but absent from scene.
+        QualityBlockFacadeFormalBuildBinding.ValidateContractConfigOnly();
     }
 
     /// <summary>
     /// Called from every formal reflection-lighting fingerprint evaluation. The delegated validations are
-    /// deliberately report-free so repeated Editor-poll checks do not mutate evidence files while probes
-    /// are in flight.
+    /// deliberately report-free during the in-flight probe stage. The facade binding may create missing
+    /// generated passes only on the first pre-RenderProbe evaluation; once present, it validates/fails
+    /// closed rather than silently rebuilding drift during subsequent polls.
     /// </summary>
     public static void ValidateOpenScene()
     {
         ValidateContractConfigOnly();
+        QualityBlockFacadeFormalBuildBinding.EnsurePreparedForFormalEvidence();
         QualityBlockRegisteredMaterialAssetPhysicalityQA.ValidateForFormalEvidence();
         QualityBlockReflectionDetailPhysicalUvBindingQA.ValidateOpenScene();
     }

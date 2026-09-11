@@ -1,0 +1,71 @@
+{
+  "schemaVersion": "1.0",
+  "status": "PENDING_REAL_UNITY_4K_RENDER",
+  "purpose": "Bind the renderable scene/material state used by realtime reflection probes to the exact state used by native-4K still capture. This is evidence-integrity infrastructure only: matching hashes do not prove image quality and award zero Visual Fidelity points.",
+  "fingerprintAlgorithm": "SHA-256",
+  "scenePath": "Assets/Scenes/QualityBlock1990s.unity",
+  "visualFidelityPointsAwarded": 0,
+  "runtimeRenderVerified": false,
+  "requirements": {
+    "requirePersistedBenchmarkScene": true,
+    "requireSourcePhysicalityValidationBeforeFirstAcceptedHash": true,
+    "includeSceneAssetDependencyHash": true,
+    "includeActiveRendererIdentityAndHierarchy": true,
+    "includeRendererTransforms": true,
+    "includeRendererShadowProbeAndSortingState": true,
+    "includeMeshIdentityCountsBoundsAndAssetDependencyHash": true,
+    "includeCurrentSerializedMaterialState": true,
+    "includeMaterialAssetDependencyHash": true,
+    "includeTextureBindingsSamplingAndDependencyHash": true,
+    "requireSameHashAtReflectionRequestEveryObservedPollCompletionAndPreStill": true,
+    "actualRenderRequiredForVisualPoints": true
+  },
+  "sourceValidators": [
+    "QualityBlockSceneMaterialPhysicalityUpgrade.ValidateOpenScene",
+    "QualityBlockTextureSamplingUpgrade.ValidateOpenScene",
+    "QualityBlockPhysicalTexelDensityQA.ValidateOpenScene",
+    "QualityBlockAlbedoLightingNeutralityQA.ValidateGeneratedBaseAlbedos",
+    "QualityBlockSceneMetadataCoverageQA.ValidateOpenScene",
+    "QualityBlockBenchmarkPrimitiveExposureQA.ValidateOpenScene"
+  ],
+  "scope": {
+    "rendererSelection": "Active and enabled Renderer components belonging to Assets/Scenes/QualityBlock1990s.unity, sorted by deterministic hierarchy path and component type.",
+    "transformState": "World position, world rotation and lossy scale for every active renderer.",
+    "rendererState": "Layer, static editor flags, shadow casting, receive shadows, light-probe usage, reflection-probe usage, sorting layer/order and world bounds.",
+    "meshState": "Shared mesh name, asset path/GUID/dependency hash when authored, vertex/submesh counts, topology/index counts and bounds. Runtime procedural meshes additionally retain identity/count/bounds checks; subtle in-place vertex mutations that preserve all recorded invariants still require actual-pixel review.",
+    "materialState": "Ordered shared material slots, current Editor-serialized material state, shader identity/keywords/render queue/GI/instancing flags and dependency hash for authored material assets.",
+    "textureState": "Common PBR/detail texture bindings plus asset path/GUID/dependency hash, dimensions, mip count, filter mode, wrap mode, anisotropy, scale and offset.",
+    "exclusions": "This fingerprint is not a substitute for pixel review, does not infer Fresnel correctness from metadata, and does not claim to cryptographically cover arbitrary native-plugin or shader-global state outside the recorded scene/material/texture scope."
+  },
+  "criticalDefectRisksReduced": [
+    "baked_or_painted_highlights",
+    "impossible_material_physics",
+    "obvious_repetition",
+    "hero_geometry_intersection",
+    "major_light_leak",
+    "unverified_render_claim"
+  ],
+  "categoryImpact": [
+    "geometry_construction",
+    "material_pbr",
+    "lighting_shadows_reflections",
+    "texture_microdetail",
+    "weathering_causality",
+    "cinematic_image"
+  ],
+  "hardRules": [
+    "The first accepted render-state hash must be taken only after source physicality/texture/metadata/primitive validators pass.",
+    "The render-state hash must be folded into the existing reflection lighting fingerprint so the existing request/poll/completion/pre-still equality checks cover both lighting and renderable scene state.",
+    "A hash mismatch aborts evidence generation; it must never be normalized away or converted into a Visual Fidelity deduction.",
+    "Hash equality awards zero points and cannot clear any critical defect.",
+    "Actual sealed 3840x2160 pixels and 100% crops remain mandatory for every Visual Fidelity judgment."
+  ],
+  "verification": {
+    "sourceImplemented": true,
+    "unityCompileVerified": false,
+    "runtimeHashObserved": false,
+    "native4kRenderVerified": false,
+    "visualFidelityPointsAwarded": 0,
+    "visualFidelityStatus": "UNSCORED"
+  }
+}

@@ -9,10 +9,10 @@ using UnityEngine;
 /// Fail-closed identity binding between the vocabulary used by human Visual Fidelity reviews and the
 /// canonical still/temporal evidence that the Unity capture pipeline actually produces.
 ///
-/// This validator awards no visual points. It prevents a configuration-drift failure mode where an
-/// observability contract could continue to accept plausible-looking view/crop/probe references after
-/// the canonical capture manifest changed, or where a crop id could silently point at a differently
-/// named file. Actual pixel quality still requires sealed Unity renders and direct review.
+/// This validator awards no visual points. It prevents configuration drift where an observability
+/// contract could accept plausible-looking references after the canonical capture manifest changed,
+/// or where a crop id could silently point at a differently named file. Actual pixel quality still
+/// requires sealed Unity renders and direct review.
 /// </summary>
 public static class QualityBlockObservedEvidenceReferenceBindingQA
 {
@@ -41,9 +41,8 @@ public static class QualityBlockObservedEvidenceReferenceBindingQA
     }
 
     /// <summary>
-    /// Scoring-time variant. The same identity checks are rerun against the runtime-written manifest,
-    /// and template/unrendered manifests are rejected. Render byte provenance remains the responsibility
-    /// of QualityBlockRenderEvidenceProvenanceQA and is deliberately not duplicated here.
+    /// Scoring-time convenience variant. The core Visual Fidelity evaluator already performs sealed
+    /// byte provenance independently; this method additionally rejects the source template state.
     /// </summary>
     public static void ValidateForScoring()
     {
@@ -88,14 +87,10 @@ public static class QualityBlockObservedEvidenceReferenceBindingQA
         Require(observability.allowedCropRefs != null, "Observability contract is missing allowedCropRefs.");
         Require(manifest.captures != null, "4K capture manifest is missing captures.");
 
-        string[] allowedViews = observability.allowedViews;
-        RequireNoDuplicates(allowedViews, "observability allowedViews");
-
-        string[] manifestViews = manifest.captures
-            .Select(x => RequireCaptureAndReturnViewId(x))
-            .ToArray();
+        RequireNoDuplicates(observability.allowedViews, "observability allowedViews");
+        string[] manifestViews = manifest.captures.Select(RequireCaptureAndReturnViewId).ToArray();
         RequireNoDuplicates(manifestViews, "manifest capture viewId");
-        Require(SetEquals(allowedViews, manifestViews),
+        Require(SetEquals(observability.allowedViews, manifestViews),
             "Observability allowedViews are not exactly the canonical 4K manifest view set.");
 
         var manifestCropRefs = new List<string>();
@@ -113,11 +108,14 @@ public static class QualityBlockObservedEvidenceReferenceBindingQA
                     $"Canonical manifest view '{capture.viewId}' contains a crop with no id.");
                 Require(cropIds.Add(crop.id),
                     $"Canonical manifest view '{capture.viewId}' contains duplicate crop id '{crop.id}'.");
+                Require(crop.width > 0 && crop.height > 0,
+                    $"Canonical crop '{capture.viewId}/{crop.id}' has invalid dimensions {crop.width}x{crop.height}.");
 
                 string cropRef = capture.viewId + "/" + crop.id;
                 manifestCropRefs.Add(cropRef);
 
-                string expectedPath = $"Assets/QA/Captures4K/{capture.viewId}_crop_{crop.id}_100pct.png";
+                string expectedPath =
+                    $"Assets/QA/Captures4K/{capture.viewId}_crop_{crop.id}_{crop.width}x{crop.height}_100pct.png";
                 Require(string.Equals(crop.assetPath, expectedPath, StringComparison.Ordinal),
                     $"Canonical crop identity/path mismatch for '{cropRef}': expected '{expectedPath}', got '{crop.assetPath}'.");
                 Require(manifestCropPaths.Add(crop.assetPath),
@@ -154,6 +152,8 @@ public static class QualityBlockObservedEvidenceReferenceBindingQA
 
         Require(temporal.requiredProbeRefsForTemporalCategory != null,
             "Temporal stability contract is missing requiredProbeRefsForTemporalCategory.");
+        RequireNoDuplicates(temporal.requiredProbeRefsForTemporalCategory,
+            "temporal requiredProbeRefsForTemporalCategory");
         Require(SetEquals(temporal.requiredProbeRefsForTemporalCategory, probeIds),
             "Temporal category-required probe refs must remain the complete canonical temporal probe set.");
     }
@@ -203,8 +203,7 @@ public static class QualityBlockObservedEvidenceReferenceBindingQA
 
     private static bool SetEquals(string[] a, string[] b)
     {
-        return new HashSet<string>(a ?? new string[0], StringComparer.Ordinal)
-            .SetEquals(b ?? new string[0]);
+        return new HashSet<string>(a ?? new string[0], StringComparer.Ordinal).SetEquals(b ?? new string[0]);
     }
 
     private static void RequireNoDuplicates(string[] values, string label)
@@ -303,6 +302,8 @@ public static class QualityBlockObservedEvidenceReferenceBindingQA
     {
         public string id;
         public string assetPath;
+        public int width;
+        public int height;
         public bool resampled;
     }
 

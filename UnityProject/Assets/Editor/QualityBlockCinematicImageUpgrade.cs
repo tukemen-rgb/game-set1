@@ -63,9 +63,16 @@ public static class QualityBlockCinematicImageUpgrade
         tonemap.Configure(shader, ExposureEV, Contrast, Saturation, ShadowSoftening);
         tonemap.enabled = true;
 
+        // Formal evidence owns one explicit Built-in Forward perspective camera. Leaving renderingPath
+        // at UsePlayerSettings would allow a project-level setting to switch the benchmark path without
+        // changing this scene pass; a partial viewport could likewise hide edge defects outside the crop.
+        camera.renderingPath = RenderingPath.Forward;
+        camera.orthographic = false;
+        camera.rect = new Rect(0f, 0f, 1f, 1f);
         camera.allowHDR = true;
         camera.allowMSAA = true;
         camera.allowDynamicResolution = false;
+        camera.clearFlags = CameraClearFlags.Skybox;
 
         // Texture-angle clarity is a large 4K readability contributor, especially paving, walls and
         // grazing-angle ground. Force anisotropic sampling globally; do not add post sharpening.
@@ -93,12 +100,21 @@ public static class QualityBlockCinematicImageUpgrade
         Camera camera = Camera.main;
         if (camera == null)
             throw new InvalidOperationException("MainCamera missing from cinematic-image QA.");
+        if (camera.renderingPath != RenderingPath.Forward)
+            throw new InvalidOperationException("MainCamera renderingPath must remain explicitly Forward for benchmark evidence.");
+        if (camera.orthographic)
+            throw new InvalidOperationException("MainCamera must remain perspective for benchmark evidence.");
+        if (Mathf.Abs(camera.rect.x) > 0.0001f || Mathf.Abs(camera.rect.y) > 0.0001f ||
+            Mathf.Abs(camera.rect.width - 1f) > 0.0001f || Mathf.Abs(camera.rect.height - 1f) > 0.0001f)
+            throw new InvalidOperationException("MainCamera viewport must remain the full 0,0,1,1 frame for benchmark evidence.");
         if (!camera.allowHDR)
             throw new InvalidOperationException("HDR camera path is required before filmic highlight compression.");
         if (!camera.allowMSAA)
             throw new InvalidOperationException("MainCamera MSAA permission is disabled.");
         if (camera.allowDynamicResolution)
             throw new InvalidOperationException("Dynamic resolution is forbidden for benchmark evidence because it breaks pixel-exact 4K comparison.");
+        if (camera.clearFlags != CameraClearFlags.Skybox)
+            throw new InvalidOperationException("MainCamera must clear from the coherent physical skybox for benchmark evidence.");
         if (QualitySettings.anisotropicFiltering != AnisotropicFiltering.ForceEnable)
             throw new InvalidOperationException("Anisotropic filtering must be forced for grazing-angle 4K material fidelity.");
 
@@ -122,7 +138,7 @@ public static class QualityBlockCinematicImageUpgrade
         QualityBlockCameraEvidencePurityQA.ValidateOpenScene();
         QualityBlockShadowStabilityUpgrade.ValidateOpenScene();
 
-        Debug.Log("Cinematic image QA valid: linear-light project, HDR camera, fixed exposure, deterministic filmic shoulder/toe, forced anisotropy, no hidden camera post effect/command buffer, no dynamic resolution, and shadow/edge stability contract enforced.");
+        Debug.Log("Cinematic image QA valid: Built-in Forward perspective camera, full viewport, physical sky clear, linear-light project, HDR camera, fixed exposure, deterministic filmic shoulder/toe, forced anisotropy, no hidden camera post effect/command buffer, no dynamic resolution, and shadow/edge stability contract enforced.");
     }
 
     private static void EnsureSceneOpen()

@@ -77,11 +77,16 @@ public static class QualityBlockVisualGateIntegrityQA
         // The runtime guard is InitializeOnLoad and executes per formal frame, but validating its contract
         // here prevents the numeric gate/packet from accepting a weakened or alias-mapped light policy.
         QualityBlockLightEvidencePurityQA.ValidateContractConfigOnly();
+        // Reflection probes bypass MainCamera pre-cull. Keep the registry-to-actual-material physicality
+        // binding part of core gate integrity so the cubemap baseline cannot be generated under an invalid
+        // material state while the later still-frame camera guard remains nominally strict.
+        QualityBlockReflectionMaterialPhysicalityBindingQA.ValidateContractConfigOnly();
 
         Debug.Log(
             "Visual Fidelity Gate integrity valid: exact 92/100 threshold, immutable per-category weights/minima, " +
             "exact 12 critical defects, native 3840x2160 hero/oblique/grazing evidence, 100% crops, reviewed-evidence " +
-            "schema hardening, canonical still/temporal reference binding, and canonical light-evidence purity mappings are preserved. " +
+            "schema hardening, canonical still/temporal reference binding, canonical light-evidence purity mappings, " +
+            "and reflection-time registered-material physicality binding are preserved. " +
             "This is source-side gate integrity only and awards 0 Visual Fidelity points.");
     }
 
@@ -230,7 +235,7 @@ public static class QualityBlockVisualGateIntegrityQA
                     $"{canonical.weight}/{canonical.hardMinimum}, got {rule.weight}/{rule.hardMinimum}.");
             if (rule.hardMinimum < 0 || rule.hardMinimum > rule.weight)
                 throw new InvalidOperationException(
-                    $"{label} has invalid bounds for {canonical.id}: minimum={rule.hardMinimum}, weight={rule.weight}.");
+                    $"{label} has invalid bounds for {canonical.id}: minimum={rule.hardMinimum}, weight={canonical.weight}.");
         }
 
         int total = categories.Sum(x => x.weight);

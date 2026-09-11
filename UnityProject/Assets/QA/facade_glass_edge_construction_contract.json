@@ -29,6 +29,7 @@
   "materialPhysicality": {
     "materialId": "clear_float_glass",
     "shader": "Standard",
+    "albedoTintProxyRgba": [0.72, 0.81, 0.84, 0.18],
     "iorReference": 1.52,
     "specularF0Reference": 0.043,
     "metallic": 0.0,

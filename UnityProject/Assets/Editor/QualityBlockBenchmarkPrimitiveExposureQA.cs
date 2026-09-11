@@ -8,9 +8,15 @@ using UnityEngine.SceneManagement;
 
 /// <summary>
 /// Source-side fail-closed screening for the critical defect "visible primitive-placeholder geometry".
-/// The gate projects every actively rendered Unity stock solid primitive under the final quality-block
-/// root into the exact hero/oblique/grazing benchmark framing. Large projected stock solids block the
+/// The gate projects every actively rendered Unity stock primitive under the final quality-block root
+/// into the exact hero/oblique/grazing benchmark framing. Large projected stock primitives block the
 /// authoritative review packet before reflection rendering or Camera.Render work begins.
+///
+/// Planar topology itself is not forbidden: a physically justified decal, fabric, leaf, glazing sheet or
+/// other thin surface may be planar. The prohibition is specifically on visibly significant untouched
+/// Unity stock Plane/Quad meshes (as well as the other stock primitives) surviving in benchmark framing.
+/// Purpose-built authored/generated planar meshes remain eligible and are governed by their construction
+/// and material metadata plus actual native-4K pixel review.
 ///
 /// This is deliberately not a visual scorer: a PASS only removes an obvious source-side risk. Actual
 /// native 3840x2160 pixels and 100% crops still decide whether the critical visual defect is present.
@@ -31,9 +37,9 @@ public static class QualityBlockBenchmarkPrimitiveExposureQA
     private const float MinimumVisibleArea = 1200f;
     private const float LargeAreaFailure = 4096f;
 
-    private static readonly HashSet<string> StockSolidMeshNames = new HashSet<string>(StringComparer.Ordinal)
+    private static readonly HashSet<string> StockPrimitiveMeshNames = new HashSet<string>(StringComparer.Ordinal)
     {
-        "Cube", "Cylinder", "Sphere", "Capsule"
+        "Cube", "Cylinder", "Sphere", "Capsule", "Plane", "Quad"
     };
 
     // These must remain byte-for-byte coordinated with QualityBlock4KCapture. ValidateContractConfigOnly
@@ -54,11 +60,13 @@ public static class QualityBlockBenchmarkPrimitiveExposureQA
         string json = File.ReadAllText(ContractPath);
         string[] requiredContractTokens =
         {
-            "\"criticalDefectRiskReduced\": \"visible_primitive_placeholder_geometry\"",
+            "\"schemaVersion\": \"1.1\"",
+            "\"criticalDefectRiskReduced\": \"visible_primitive_placeholder\"",
             "\"authoritativeViewSource\": \"QualityBlock4KCapture.Views; source-token lock must match exact 3840x2160 hero/oblique/grazing positions, targets and FOV before projection QA can run\"",
             "\"requiredViews\": [\"hero\", \"oblique\", \"grazing\"]",
             "\"nativeResolution\": [3840, 2160]",
-            "\"solidBuiltInMeshes\": [\"Cube\", \"Cylinder\", \"Sphere\", \"Capsule\"]",
+            "\"builtInMeshes\": [\"Cube\", \"Cylinder\", \"Sphere\", \"Capsule\", \"Plane\", \"Quad\"]",
+            "\"screenStockPlaneAndQuad\": true",
             "\"minimumVisibleWidthPixels\": 48",
             "\"minimumVisibleHeightPixels\": 18",
             "\"minimumVisibleAreaPixels\": 1200",
@@ -98,7 +106,9 @@ public static class QualityBlockBenchmarkPrimitiveExposureQA
                     $"Benchmark primitive exposure framing no longer matches QualityBlock4KCapture; missing authoritative token: {token}. " +
                     "Update the gate and contract intentionally rather than evaluating a stale camera projection.");
 
-        Debug.Log("Benchmark primitive exposure contract valid: exact hero/oblique/grazing source framing, fail-closed stock-solid thresholds, automatic Visual Fidelity points=0.");
+        Debug.Log(
+            "Benchmark primitive exposure contract valid: exact hero/oblique/grazing source framing, " +
+            "fail-closed Cube/Cylinder/Sphere/Capsule/Plane/Quad thresholds, automatic Visual Fidelity points=0.");
     }
 
     [MenuItem("NewTown/QA/Validate Benchmark Primitive Exposure")]
@@ -115,13 +125,13 @@ public static class QualityBlockBenchmarkPrimitiveExposureQA
         if (root == null)
             throw new InvalidOperationException($"Benchmark primitive exposure QA could not find scene root {RootName}.");
 
-        MeshFilter[] stockSolidFilters = root.GetComponentsInChildren<MeshFilter>(true)
+        MeshFilter[] stockPrimitiveFilters = root.GetComponentsInChildren<MeshFilter>(true)
             .Where(IsActivelyRendered)
-            .Where(x => x.sharedMesh != null && StockSolidMeshNames.Contains(x.sharedMesh.name))
+            .Where(x => x.sharedMesh != null && StockPrimitiveMeshNames.Contains(x.sharedMesh.name))
             .ToArray();
 
         var violations = new List<PrimitiveViolation>();
-        foreach (MeshFilter filter in stockSolidFilters)
+        foreach (MeshFilter filter in stockPrimitiveFilters)
         {
             Renderer renderer = filter.GetComponent<Renderer>();
             foreach (ViewRequirement view in Views)
@@ -147,25 +157,26 @@ public static class QualityBlockBenchmarkPrimitiveExposureQA
                     visibleAreaPixels = projection.visibleAreaPixels,
                     crossesCameraPlane = projection.crossesCameraPlane,
                     correctiveAction =
-                        "Reconstruct the real manufactured/installed assembly with dimensioned physical geometry or authored art. " +
+                        "Reconstruct the real manufactured/installed assembly with dimensioned physical geometry or authored/generated art. " +
+                        "For a legitimately planar carrier, use a purpose-built mesh with applicable construction/material metadata rather than the untouched Unity stock Plane/Quad. " +
                         "Do not rename, hide, shrink or threshold-exempt a required visible component."
                 });
             }
         }
 
-        WriteRuntimeReport(stockSolidFilters.Length, violations.ToArray());
+        WriteRuntimeReport(stockPrimitiveFilters.Length, violations.ToArray());
 
         if (violations.Count > 0)
         {
             string summary = string.Join(", ", violations.Take(20).Select(v =>
                 $"{v.viewId}:{v.hierarchyPath}[{v.meshName}]={v.visibleWidthPixels:F0}x{v.visibleHeightPixels:F0}px/{v.visibleAreaPixels:F0}px2"));
             throw new InvalidOperationException(
-                $"Critical primitive-placeholder source risk: {violations.Count} benchmark projection(s) expose a visibly significant Unity stock solid. " +
-                summary + ". Source preflight cannot clear the critical defect; replace the physical geometry, then render and inspect native 4K evidence.");
+                $"Critical primitive-placeholder source risk: {violations.Count} benchmark projection(s) expose a visibly significant Unity stock primitive. " +
+                summary + ". Source preflight cannot clear the critical defect; reconstruct/replace the physical or planar carrier geometry, then render and inspect native 4K evidence.");
         }
 
         Debug.Log(
-            $"Benchmark primitive exposure source preflight passed: active stock solid renderers inspected={stockSolidFilters.Length}, " +
+            $"Benchmark primitive exposure source preflight passed: active stock primitive renderers inspected={stockPrimitiveFilters.Length}, " +
             "visibly significant hero/oblique/grazing exposures=0. Visual Fidelity remains UNSCORED and native-4K pixel review is still mandatory.");
     }
 
@@ -256,15 +267,15 @@ public static class QualityBlockBenchmarkPrimitiveExposureQA
         return string.Join("/", names);
     }
 
-    private static void WriteRuntimeReport(int inspectedStockSolidRendererCount, PrimitiveViolation[] violations)
+    private static void WriteRuntimeReport(int inspectedStockPrimitiveRendererCount, PrimitiveViolation[] violations)
     {
         var report = new PrimitiveExposureReport
         {
-            schemaVersion = "1.0",
+            schemaVersion = "1.1",
             generatedUtc = DateTime.UtcNow.ToString("O"),
             scenePath = ScenePath,
             sourceResolution = $"{Width}x{Height}",
-            inspectedStockSolidRendererCount = inspectedStockSolidRendererCount,
+            inspectedStockPrimitiveRendererCount = inspectedStockPrimitiveRendererCount,
             violationCount = violations.Length,
             status = violations.Length == 0
                 ? "SOURCE_PREFLIGHT_PASS_NATIVE_4K_REVIEW_REQUIRED"
@@ -274,7 +285,8 @@ public static class QualityBlockBenchmarkPrimitiveExposureQA
             criticalDefectCleared = false,
             violations = violations,
             note =
-                "Projection is source-side risk screening only. Even an empty violation list cannot clear visible primitive-placeholder geometry without actual native 4K review."
+                "Projection is source-side risk screening only. Even an empty violation list cannot clear visible primitive-placeholder geometry without actual native 4K review. " +
+                "Planar topology is allowed only when represented by a purpose-built authored/generated mesh rather than a visibly significant untouched Unity stock Plane/Quad."
         };
 
         string absolute = AbsolutePath(RuntimeReportPath);
@@ -331,7 +343,7 @@ public static class QualityBlockBenchmarkPrimitiveExposureQA
         public string generatedUtc;
         public string scenePath;
         public string sourceResolution;
-        public int inspectedStockSolidRendererCount;
+        public int inspectedStockPrimitiveRendererCount;
         public int violationCount;
         public string status;
         public string visualFidelityStatus;

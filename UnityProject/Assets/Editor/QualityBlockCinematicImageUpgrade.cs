@@ -116,9 +116,13 @@ public static class QualityBlockCinematicImageUpgrade
             Mathf.Abs(effect.ShadowSoftening - ShadowSoftening) > 0.001f)
             throw new InvalidOperationException("Filmic display-transform parameters drifted from the benchmark contract.");
 
+        // Source preflight also proves there is no second enabled OnRenderImage effect or camera command
+        // buffer that could bloom/sharpen/composite defects after this deterministic filmic transform.
+        // The purity QA additionally watches every canonical 4K Camera.Render at pre-cull/pre-render/post-render.
+        QualityBlockCameraEvidencePurityQA.ValidateOpenScene();
         QualityBlockShadowStabilityUpgrade.ValidateOpenScene();
 
-        Debug.Log("Cinematic image QA valid: linear-light project, HDR camera, fixed exposure, deterministic filmic shoulder/toe, forced anisotropy, no dynamic resolution, and shadow/edge stability contract enforced.");
+        Debug.Log("Cinematic image QA valid: linear-light project, HDR camera, fixed exposure, deterministic filmic shoulder/toe, forced anisotropy, no hidden camera post effect/command buffer, no dynamic resolution, and shadow/edge stability contract enforced.");
     }
 
     private static void EnsureSceneOpen()

@@ -97,6 +97,11 @@
       "crown remains plausible as ordinary healthy midsummer vegetation"
     ]
   },
+  "lookdev": {
+    "illustration": "Assets/QA/lookdev/foliage_lamina_geometry_lookdev.svg",
+    "isRenderEvidence": false,
+    "intent": "Compare the rejected planar-card normal response with the required shallow midrib fold and record geometry-vs-material ownership; this diagram contributes zero Visual Fidelity points."
+  },
   "implementationReadinessScore": 93,
   "visualFidelityStatus": "UNSCORED_UNTIL_REAL_4K_RENDER",
   "runtimeRenderVerified": false,

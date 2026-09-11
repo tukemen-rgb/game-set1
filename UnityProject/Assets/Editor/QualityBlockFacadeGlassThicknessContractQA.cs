@@ -8,11 +8,13 @@ using UnityEngine;
 /// <summary>
 /// Strict machine-readable metadata validation for the generated 4 mm facade glazing construction.
 /// This complements scene/topology validation by freezing the material/manufacture/installation
-/// reasoning required by the visual-fidelity policy. It never awards visual points.
+/// reasoning required by the visual-fidelity policy and binding its numeric material metadata to the
+/// canonical fallback material asset. It never awards visual points.
 /// </summary>
 public static class QualityBlockFacadeGlassThicknessContractQA
 {
     private const string ContractPath = "Assets/QA/facade_glass_edge_construction_contract.json";
+    private const string GlassMaterialPath = "Assets/Art/GeneratedFacadeOptics/MAT_WindowClearGlass.mat";
 
     [MenuItem("NewTown/QA/Validate Facade Glass Full Material Metadata")]
     public static void ValidateContract()
@@ -68,6 +70,8 @@ public static class QualityBlockFacadeGlassThicknessContractQA
         RequireText(m.uvAging, "uvAging");
         RequireText(m.angularFresnelResponse, "angularFresnelResponse");
 
+        BindMetadataToMaterialAsset(m);
+
         AutomaticScoring scoring = contract.automaticScoring;
         if (scoring == null || scoring.visualFidelityPoints != 0 || !scoring.implementationOnly || string.IsNullOrWhiteSpace(scoring.note))
             throw new InvalidOperationException("Facade glass contract must explicitly award zero automatic Visual Fidelity points.");
@@ -90,8 +94,34 @@ public static class QualityBlockFacadeGlassThicknessContractQA
         RequireEvidenceToken(contract.requiredEvidence, "Temporal evidence");
 
         Debug.Log(
-            "Facade glass full construction/material metadata contract passed: dimensions, mounting/interfaces, exposure/aging, albedo/tint, roughness/smoothness, metallic/F0, normal scale, microstructure, wetness, UV aging, Fresnel, LOD and evidence policy are present. " +
+            "Facade glass full construction/material metadata contract passed and is bound to the canonical material asset: dimensions, mounting/interfaces, exposure/aging, albedo/tint, roughness/smoothness, metallic/F0, normal scale, microstructure, wetness, UV aging, Fresnel, LOD and evidence policy are present. " +
             "This is implementation evidence only and awards 0 Visual Fidelity points.");
+    }
+
+    private static void BindMetadataToMaterialAsset(MaterialPhysicality m)
+    {
+        Material glass = AssetDatabase.LoadAssetAtPath<Material>(GlassMaterialPath);
+        if (glass == null)
+            throw new InvalidOperationException($"Canonical facade glass material is missing: {GlassMaterialPath}");
+        if (glass.shader == null || !string.Equals(glass.shader.name, m.shader, StringComparison.Ordinal))
+            throw new InvalidOperationException(
+                $"Canonical facade glass shader does not match metadata: actual='{(glass.shader != null ? glass.shader.name : "<null>")}', expected='{m.shader}'.");
+
+        Color c = glass.color;
+        RequireNear(c.r, m.albedoTintProxyRgba[0], 0.001f, "material tint R binding");
+        RequireNear(c.g, m.albedoTintProxyRgba[1], 0.001f, "material tint G binding");
+        RequireNear(c.b, m.albedoTintProxyRgba[2], 0.001f, "material tint B binding");
+        RequireNear(c.a, m.albedoTintProxyRgba[3], 0.001f, "material tint alpha binding");
+        RequireNear(glass.GetFloat("_Metallic"), m.metallic, 0.0001f, "material metallic binding");
+
+        float smoothness = glass.GetFloat("_Glossiness");
+        if (smoothness < m.smoothnessProxyRange[0] - 0.0001f || smoothness > m.smoothnessProxyRange[1] + 0.0001f)
+            throw new InvalidOperationException(
+                $"Canonical facade glass smoothness {smoothness:F4} is outside metadata range [{m.smoothnessProxyRange[0]:F4}, {m.smoothnessProxyRange[1]:F4}].");
+        if (!glass.IsKeywordEnabled("_ALPHAPREMULTIPLY_ON") || glass.IsKeywordEnabled("_ALPHABLEND_ON") || glass.GetInt("_ZWrite") != 0)
+            throw new InvalidOperationException("Canonical facade glass must remain premultiplied transparent with ZWrite disabled.");
+        if (glass.IsKeywordEnabled("_EMISSION") || glass.GetColor("_EmissionColor").maxColorComponent > 0.001f)
+            throw new InvalidOperationException("Canonical facade glass cannot contain emissive/baked light response.");
     }
 
     private static void RequireReasoning(string[] values, int minimumCount, string label)

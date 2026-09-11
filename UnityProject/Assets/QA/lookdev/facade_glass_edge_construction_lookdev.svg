@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900">
+  <rect width="1600" height="900" fill="#f3f1eb"/>
+  <text x="70" y="72" font-family="sans-serif" font-size="34" fill="#20252b">Facade clear-glass construction lookdev — implementation guide, NOT render evidence</text>
+  <text x="70" y="112" font-family="sans-serif" font-size="20" fill="#505861">late-1990s / circa-2000 Japanese new-town fallback • dry midsummer benchmark • nominal 4 mm clear float glass</text>
+
+  <rect x="70" y="155" width="690" height="650" rx="18" fill="#ffffff" stroke="#b8bdc3" stroke-width="3"/>
+  <text x="105" y="205" font-family="sans-serif" font-size="27" fill="#20252b">SECTION — real manufacture / installation logic</text>
+  <rect x="150" y="300" width="470" height="315" fill="#d7d9da" stroke="#777f87" stroke-width="12"/>
+  <rect x="205" y="350" width="360" height="220" fill="#c9e3ec" fill-opacity="0.34" stroke="#6b8fa0" stroke-width="3"/>
+  <path d="M205 350 L565 350 L565 570 L205 570 Z" fill="none" stroke="#2e7893" stroke-width="7"/>
+  <path d="M565 350 l22 18 v220 l-22 -18z" fill="#83b4c5" fill-opacity="0.55" stroke="#2e7893" stroke-width="2"/>
+  <line x1="573" y1="455" x2="690" y2="455" stroke="#2e7893" stroke-width="3"/>
+  <text x="698" y="462" font-family="sans-serif" font-size="21" fill="#20252b">4 mm physical edge</text>
+  <text x="205" y="645" font-family="sans-serif" font-size="20" fill="#343a40">front optical plane remains broad transmission/Fresnel surface</text>
+  <text x="205" y="678" font-family="sans-serif" font-size="20" fill="#343a40">edge shell = four perimeter quads only; no duplicate broad rear sheet</text>
+  <text x="205" y="711" font-family="sans-serif" font-size="20" fill="#343a40">aluminum sash retains pane; glass remains render-only, no collider</text>
+  <text x="205" y="744" font-family="sans-serif" font-size="20" fill="#343a40">apartment sliding leaves preserve 14 mm depth separation</text>
+
+  <rect x="810" y="155" width="720" height="650" rx="18" fill="#ffffff" stroke="#b8bdc3" stroke-width="3"/>
+  <text x="845" y="205" font-family="sans-serif" font-size="27" fill="#20252b">GRAZING RESPONSE — what must be geometry vs material</text>
+  <line x1="900" y1="340" x2="1310" y2="340" stroke="#2e7893" stroke-width="8"/>
+  <line x1="1310" y1="340" x2="1310" y2="420" stroke="#2e7893" stroke-width="18"/>
+  <line x1="930" y1="570" x2="1370" y2="275" stroke="#d8a229" stroke-width="6"/>
+  <polygon points="930,570 955,555 944,584" fill="#d8a229"/>
+  <text x="880" y="610" font-family="sans-serif" font-size="20" fill="#7b5a15">midsummer directional light</text>
+  <text x="900" y="380" font-family="sans-serif" font-size="21" fill="#20252b">broad face: same dielectric BRDF / transparent proxy</text>
+  <text x="1330" y="390" font-family="sans-serif" font-size="21" fill="#20252b">edge orientation</text>
+  <text x="1330" y="420" font-family="sans-serif" font-size="21" fill="#20252b">changes actual</text>
+  <text x="1330" y="450" font-family="sans-serif" font-size="21" fill="#20252b">light response</text>
+
+  <text x="855" y="520" font-family="sans-serif" font-size="21" fill="#343a40">GEOMETRY owns:</text>
+  <text x="880" y="554" font-family="sans-serif" font-size="19" fill="#505861">• 4 mm thickness • perimeter orientation • sash seating cue</text>
+  <text x="855" y="615" font-family="sans-serif" font-size="21" fill="#343a40">MATERIAL owns:</text>
+  <text x="880" y="649" font-family="sans-serif" font-size="19" fill="#505861">• nonmetallic dielectric response • smoothness • angular Fresnel</text>
+  <text x="855" y="710" font-family="sans-serif" font-size="21" fill="#9c2f2f">FORBIDDEN:</text>
+  <text x="880" y="744" font-family="sans-serif" font-size="19" fill="#7e4545">painted bright borders • metallic glass • duplicate broad transparent layer • fake wet highlight</text>
+
+  <text x="70" y="855" font-family="sans-serif" font-size="20" fill="#505861">Final judgment must use sealed 3840×2160 oblique/construction_depth + grazing/sash_rail_response + material_grazing 100% crops and temporal pixels.</text>
+</svg>

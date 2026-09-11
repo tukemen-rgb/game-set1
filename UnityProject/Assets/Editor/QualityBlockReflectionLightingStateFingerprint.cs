@@ -37,6 +37,11 @@ public static class QualityBlockReflectionLightingStateFingerprint
         // light here as part of the request/poll/completion/pre-still fingerprint path so a shadow-map or
         // screenspace-shadow injection cannot contaminate realtime cubemaps while the camera itself remains clean.
         QualityBlockLightEvidencePurityQA.ValidateOpenScene();
+        // MainCamera pre-cull does not run for ReflectionProbe.RenderProbe(). Bind the registered-material
+        // physicality guard directly to this fingerprint path so every request/poll/completion/pre-still
+        // check also proves that active Unity materials still match the authored physical ranges and bindings.
+        // The delegated validation is report-free and awards no Visual Fidelity points.
+        QualityBlockReflectionMaterialPhysicalityBindingQA.ValidateOpenScene();
 
         Light[] directionals = Resources.FindObjectsOfTypeAll<Light>()
             .Where(x => x.gameObject.scene.IsValid() && x.enabled && x.gameObject.activeInHierarchy && x.type == LightType.Directional)

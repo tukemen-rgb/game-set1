@@ -1,0 +1,54 @@
+{
+  "schemaVersion": "1.0",
+  "status": "implementation_only_render_verification_pending",
+  "scenePath": "Assets/Scenes/QualityBlock1990s.unity",
+  "detailRootName": "DanchiHighDetail",
+  "authoritativeGuard": "QualityBlockTemporalLodRuntimeStateQA",
+  "fingerprintAlgorithm": "temporal-lod-runtime-state-v1",
+  "requirements": {
+    "requireQualityLodCrossFadeEnabled": true,
+    "requireMaximumLodLevelZero": true,
+    "minimumLodBias": 1.0,
+    "requirePositiveCrossFadeAnimationDuration": true,
+    "requireFourLods": true,
+    "requiredFadeMode": "CrossFade",
+    "requireAnimatedCrossFading": true,
+    "requiredTransitionHeights": [
+      0.18,
+      0.08,
+      0.03,
+      0.008
+    ],
+    "requireStrictRendererCountReduction": true,
+    "bindQualityLevelIdentity": true,
+    "bindQualityLodCrossFadeEnabled": true,
+    "bindLodBias": true,
+    "bindMaximumLodLevel": true,
+    "bindCrossFadeAnimationDuration": true,
+    "bindLodGroupSizeAndReferencePoint": true,
+    "bindLodRendererCountsAndAssignments": true,
+    "bindRootWorldTransform": true,
+    "requireSameStateBeforeEveryTemporalMainCameraCull": true,
+    "actualRenderRequiredForVisualPoints": true,
+    "manualPixelReviewRequired": true,
+    "automaticVisualPoints": 0
+  },
+  "criticalDefectRisksReduced": [
+    "severe_aliasing_or_shimmer",
+    "visible_lod_pop"
+  ],
+  "verificationViews": [
+    "grazing/sash_rail_response",
+    "oblique/balcony_services",
+    "temporal/grazing_sequence",
+    "temporal/oblique_sequence"
+  ],
+  "notes": [
+    "This contract governs formal prepared temporal evidence only; it does not award Visual Fidelity points.",
+    "Unity 6 exposes QualitySettings.enableLODCrossFade as the global LOD cross-fade enable and QualitySettings.lodBias/maximumLODLevel as global LOD selection controls. Formal temporal evidence must not be captured with cross-fade disabled, LOD0 globally skipped, or lodBias below the authored baseline.",
+    "LODGroup.crossFadeAnimationDuration is global for animated LOD cross-fading and must be positive. The contract intentionally does not claim that any particular positive duration is visually sufficient; actual temporal pixels remain authoritative.",
+    "The runtime fingerprint binds the current quality-level identity, global LOD controls, global cross-fade duration, DanchiHighDetail LODGroup topology, transition heights, renderer assignments, reference point/size, and root world transform before every guarded MainCamera cull.",
+    "The existing detail LOD physical-UV QA remains responsible for mesh/material/physical-UV continuity across LOD0/1/2/3; this contract closes the separate global/runtime selection-state gap.",
+    "A stable runtime fingerprint is evidence provenance, not proof that LOD transitions are invisible. Native 3840x2160 temporal sequences and 100% pixel review are still mandatory before scoring Temporal/LOD/aliasing stability."
+  ]
+}

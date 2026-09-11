@@ -1,6 +1,6 @@
 {
-  "schemaVersion": "1.0",
-  "purpose": "Bind the machine-readable construction/material registry to the actual Unity Material assets used by the benchmark before any formal native-4K evidence frame is rendered. This is source/runtime preflight only and awards no Visual Fidelity points.",
+  "schemaVersion": "1.1",
+  "purpose": "Bind the machine-readable construction/material registry to the actual Unity Material assets used by the benchmark before any formal native-4K evidence frame is rendered. For Standard materials whose BRDF is texture-driven, validate the effective source-channel metallic and roughness ranges instead of treating control scalars as final material values. This is source/runtime preflight only and awards no Visual Fidelity points.",
   "scenePath": "Assets/Scenes/QualityBlock1990s.unity",
   "registryPath": "Assets/QA/material_construction_lookdev.json",
   "reportPath": "Assets/QA/registered_material_asset_physicality_report.json",
@@ -20,6 +20,12 @@
     "requireMaterialAssetBeforeFormalRender": true,
     "requireInspectableMetallicScalar": true,
     "requireInspectableRoughnessOrSmoothnessScalar": true,
+    "requireTextureAwareMetallicEvaluation": true,
+    "requireTextureAwareRoughnessEvaluation": true,
+    "requireStandardMapChannelSemanticsForMappedStandardMaterials": true,
+    "requireSourceTextureChannelInspectable": true,
+    "requireFullMappedRangeInsideDeclaredRange": true,
+    "cacheSourceTextureRangesByDependencyHash": true,
     "requireMetallicInsideDeclaredRange": true,
     "requireRoughnessInsideDeclaredRange": true,
     "requireFiniteOpaqueBaseColor": true,
@@ -36,7 +42,9 @@
     "baked_or_painted_highlights"
   ],
   "limitations": [
-    "Scalar metallic/roughness validation does not prove the final angular response of texture-modulated or custom BRDF materials; sealed grazing-light pixels remain authoritative.",
+    "For active Standard _MetallicGlossMap materials, metallic is evaluated from the source red-channel range and roughness from one minus the selected source alpha-channel range multiplied by _GlossMapScale. This prevents the control scale from being misidentified as the final roughness.",
+    "Source-channel inspection is fail-closed to PNG/JPG/JPEG texture assets and is cached by dependency hash plus file size/time. Unsupported or runtime-only mapped textures must gain an explicit, reviewable inspection path before formal evidence is allowed.",
+    "Source texture extrema do not prove the final filtered, compressed, mipmapped or anisotropic BRDF response; sealed native-4K grazing-light pixels remain authoritative.",
     "A passing registry binding cannot clear impossible_material_physics or baked_or_painted_highlights without direct review of the canonical native-4K grazing crops.",
     "This guard intentionally rejects a registered material asset that is no longer bound by any active benchmark renderer; stale metadata must be updated rather than silently accepted."
   ],

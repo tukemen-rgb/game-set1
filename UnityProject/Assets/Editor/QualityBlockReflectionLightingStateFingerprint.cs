@@ -33,6 +33,10 @@ public static class QualityBlockReflectionLightingStateFingerprint
 
         QualityBlockSolarShadowCaptureCoherenceQA.ValidateOpenScene();
         QualityBlockEnvironmentLightingUpgrade.ValidateOpenScene();
+        // Camera-side command-buffer purity does not cover Light.AddCommandBuffer. Validate every scene
+        // light here as part of the request/poll/completion/pre-still fingerprint path so a shadow-map or
+        // screenspace-shadow injection cannot contaminate realtime cubemaps while the camera itself remains clean.
+        QualityBlockLightEvidencePurityQA.ValidateOpenScene();
 
         Light[] directionals = Resources.FindObjectsOfTypeAll<Light>()
             .Where(x => x.gameObject.scene.IsValid() && x.enabled && x.gameObject.activeInHierarchy && x.type == LightType.Directional)

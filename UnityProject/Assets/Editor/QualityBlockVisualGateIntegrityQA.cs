@@ -68,11 +68,16 @@ public static class QualityBlockVisualGateIntegrityQA
         ValidateCanonicalIntegrityContract(integrity);
         ValidateCrossFileAgreement(gate, integrity);
         QualityBlockReviewedVisualEvidenceIntegrityQA.ValidateContractConfigOnly();
+        // Keep the review vocabulary cryptographically/procedurally meaningful: every allowed
+        // view/crop/probe reference must resolve to the canonical capture identity that the sealed
+        // Unity evidence pipeline actually owns. This runs from the core integrity entrypoint so
+        // direct CLI/reflection calls cannot validate a drifted observability vocabulary.
+        QualityBlockObservedEvidenceReferenceBindingQA.ValidateContractConfigOnly();
 
         Debug.Log(
             "Visual Fidelity Gate integrity valid: exact 92/100 threshold, immutable per-category weights/minima, " +
-            "exact 12 critical defects, native 3840x2160 hero/oblique/grazing evidence, 100% crops, and reviewed-evidence " +
-            "schema hardening are preserved. This is source-side gate integrity only and awards 0 Visual Fidelity points.");
+            "exact 12 critical defects, native 3840x2160 hero/oblique/grazing evidence, 100% crops, reviewed-evidence " +
+            "schema hardening, and canonical still/temporal reference binding are preserved. This is source-side gate integrity only and awards 0 Visual Fidelity points.");
     }
 
     // The legacy unbound evaluator already has a validator in QualityBlockRenderEvidenceProvenanceQA

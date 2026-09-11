@@ -1,0 +1,96 @@
+{
+  "schemaVersion": "1.0",
+  "contractId": "balcony-waterproof-microstructure-v1",
+  "scope": "Dry balcony waterproof/topcoat microsurface used by the 30-bay generated fallback after the physical 1:50 floor fall is built.",
+  "intent": "Remove the broad perfectly uniform CG surface response without baking lighting, stains or false macro relief into the material. Macro drainage fall, upstands, threshold turns and channel geometry remain geometric construction; this contract only governs sub-centimetre coating response.",
+  "constructionBasis": {
+    "assembly": "formed balcony substrate/fall with bonded liquid-applied waterproof layer and protective topcoat",
+    "externalReference": {
+      "manufacturer": "Tajima Roofing",
+      "reference": "Oltac Ace balcony/veranda liquid-applied urethane waterproof systems",
+      "url": "https://bousui.tajima.jp/category/coating/oltac_ace/",
+      "use": "Confirms a conventional multi-coat balcony/veranda urethane waterproof build-up with protective topcoat. Exact historic product, colour and surface profile are not claimed for the benchmark building."
+    },
+    "components": [
+      "concrete balcony slab/substrate",
+      "formed 1:50 fall/screed represented by geometry",
+      "bonded waterproof layer",
+      "dry protective topcoat represented by material response"
+    ],
+    "mounting": "continuous bonded coating over the formed substrate with no floating air gap",
+    "interfaces": "continuous across the floor fall, threshold turn and terminal channel liner where the existing drainage contract places the coating",
+    "orientation": "horizontal/sloped walking field plus local returned interfaces; no arbitrary directional brushed grain",
+    "exposure": "dry midsummer exterior UV/rain/foot-traffic exposure",
+    "aging": "subtle chalking/dulling only; stains remain a separate source-attributed weathering layer",
+    "geometryVsMaterial": "1:50 fall, lips, returns and channel are geometry. Fine orange-peel/topcoat relief and roughness variation are material-scale only."
+  },
+  "material": {
+    "materialId": "MAT_BalconyWaterproofingDry",
+    "shader": "Standard",
+    "albedoSrgb": [0.245, 0.255, 0.245],
+    "albedoTexturePolicy": "none: base colour remains uniform so highlights, runoff and grime cannot be painted into albedo",
+    "metallic": 0.0,
+    "dielectricF0Approx": 0.04,
+    "baseRoughness": 0.72,
+    "baseSmoothness": 0.28,
+    "smoothnessRange": [0.22, 0.34],
+    "runtimeNormalScale": 0.18,
+    "microstructure": "deterministic isotropic low-amplitude orange-peel/topcoat relief; no directional runoff signal",
+    "wetness": 0.0,
+    "uvAging": "minor desaturation/chalking belongs to contextual material/weathering refinement, not baked illumination",
+    "angularFresnel": "ordinary dielectric Fresnel only; no painted rim or baked grazing highlight"
+  },
+  "sampling": {
+    "normalTexturePath": "Assets/Art/GeneratedBalconyDrainage/TX_BalconyWaterproofing_MicroNormal.png",
+    "metallicSmoothnessTexturePath": "Assets/Art/GeneratedBalconyDrainage/TX_BalconyWaterproofing_MetallicSmoothness.png",
+    "textureSize": 1024,
+    "metricUvInputRequired": true,
+    "worldPeriodM": 0.50,
+    "uvScaleForMeterBasedUv": 2.0,
+    "tileablePeriodicGeneration": true,
+    "mipmapsRequired": true,
+    "trilinearRequired": true,
+    "minimumAnisotropy": 8,
+    "normalMapImporterRequired": true,
+    "linearDataRequired": true,
+    "metallicChannelMustRemainZero": true,
+    "materialPropertyBlockOverridesForbidden": true
+  },
+  "repetitionPolicy": {
+    "microtextureIsNotAllowedToCarryMacroFeatures": true,
+    "causeBasedWeatheringRemainsSeparate": true,
+    "actual4kReviewRequiredForVisibleTiling": true,
+    "criticalDefectIfImmediatelyObvious": "obvious_repetition",
+    "note": "The 0.5 m seamless tile contains only low-amplitude stochastic microsurface variation. It is not credited until real 4K crops show that periodicity is not perceptible."
+  },
+  "lodPolicy": {
+    "sharedMaterialAcrossLod0Lod1Lod2Lod3": true,
+    "constructionAssemblyNotRemovedByDanchiLodGroup": true,
+    "actualTemporalVerificationRequired": true
+  },
+  "formalEvidencePolicy": {
+    "nativeResolutionRequired": [3840, 2160],
+    "views": ["hero", "oblique", "grazing"],
+    "required100PercentCrops": ["oblique/balcony_services", "oblique/construction_depth", "grazing/material_grazing"],
+    "temporalCases": ["temporal/subpixel_grazing", "temporal/lod_transition"],
+    "automaticVisualPoints": 0,
+    "runtimeRenderVerified": false,
+    "renderVerificationStatus": "pending_real_unity_runtime"
+  },
+  "visualFidelityRelevance": {
+    "material_pbr": "direct",
+    "texture_microdetail": "direct",
+    "lighting_shadows_reflections": "supporting through microsurface response",
+    "temporal_lod_aliasing": "risk-only until actual motion pixels"
+  },
+  "criticalDefects": [
+    "baked_or_painted_highlights",
+    "impossible_material_physics",
+    "obvious_repetition",
+    "severe_aliasing_or_shimmer",
+    "visible_lod_pop",
+    "missing_construction_material_metadata",
+    "unverified_render_claim"
+  ],
+  "lookdevGenerationBrief": "Native-resolution oblique and grazing close-up of one dry ordinary Japanese apartment balcony. Keep the 1:50 macro slope physically geometric. The coating should read as a matte aged waterproof topcoat with only subtle micro-normal breakup and small roughness variation under midsummer sun/sky; no wet sheen, no painted brightness, no large procedural blobs, no directional runoff baked into the generic material. Include a 100 percent crop that can reveal 0.5 m periodic tiling, mip shimmer or over-strong normal sparkle if present."
+}

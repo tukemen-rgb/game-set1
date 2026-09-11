@@ -25,12 +25,17 @@ public static class QualityBlockReflectionLightingStateFingerprint
     /// state plus the independently validated renderable scene/material fingerprint. The hash intentionally
     /// includes ambient SH coefficients because DynamicGI.UpdateEnvironment can change diffuse sky fill
     /// after the sky material was assigned; a probe refresh that straddles such a change is not coherent evidence.
+    /// It also includes rendering-policy values that can remain individually valid while changing the output,
+    /// preventing a legal probe-request state from drifting to a different legal still-capture state.
     /// </summary>
     public static string BuildCurrentSha256()
     {
         if (!EditorSceneManager.GetActiveScene().IsValid() || EditorSceneManager.GetActiveScene().path != ScenePath)
             throw new InvalidOperationException($"Lighting fingerprint requires the persisted benchmark scene: {ScenePath}");
 
+        // Keep the machine-readable reflection-sync contract bound to the canonical gate vocabulary and
+        // require explicit coverage of legal-but-render-changing lighting policy before computing any hash.
+        QualityBlockReflectionLightingCoverageQA.ValidateContractConfigOnly();
         QualityBlockSolarShadowCaptureCoherenceQA.ValidateOpenScene();
         QualityBlockEnvironmentLightingUpgrade.ValidateOpenScene();
         // Camera-side command-buffer purity does not cover Light.AddCommandBuffer. Validate every scene
@@ -54,8 +59,8 @@ public static class QualityBlockReflectionLightingStateFingerprint
         if (sky == null || sky.shader == null)
             throw new InvalidOperationException("Lighting fingerprint requires the physical benchmark sky material.");
 
-        var sb = new StringBuilder(4096);
-        Append(sb, "schema", "reflection-lighting-state-v2");
+        var sb = new StringBuilder(6144);
+        Append(sb, "schema", "reflection-lighting-state-v3");
         Append(sb, "scene", EditorSceneManager.GetActiveScene().path);
         Append(sb, "unityVersion", Application.unityVersion);
 
@@ -74,6 +79,8 @@ public static class QualityBlockReflectionLightingStateFingerprint
         Append(sb, "sun.type", sun.type.ToString());
         Append(sb, "sun.enabled", sun.enabled);
         Append(sb, "sun.active", sun.gameObject.activeInHierarchy);
+        Append(sb, "sun.renderMode", sun.renderMode.ToString());
+        Append(sb, "sun.bounceIntensity", sun.bounceIntensity);
         Quaternion q = sun.transform.rotation;
         Append(sb, "sun.rotation.x", q.x);
         Append(sb, "sun.rotation.y", q.y);
@@ -114,6 +121,7 @@ public static class QualityBlockReflectionLightingStateFingerprint
         Append(sb, "render.reflectionIntensity", RenderSettings.reflectionIntensity);
         Append(sb, "render.reflectionBounces", RenderSettings.reflectionBounces);
         Append(sb, "render.customReflectionAssigned", RenderSettings.customReflection != null);
+        AppendColor(sb, "render.subtractiveShadowColor", RenderSettings.subtractiveShadowColor);
         Append(sb, "render.fog", RenderSettings.fog);
         Append(sb, "render.fogMode", RenderSettings.fogMode.ToString());
         AppendColor(sb, "render.fogColor", RenderSettings.fogColor);
@@ -127,6 +135,8 @@ public static class QualityBlockReflectionLightingStateFingerprint
                 Append(sb, $"ambientSH.{rgb}.{coefficient}", ambient[rgb, coefficient]);
 
         Append(sb, "quality.realtimeReflectionProbes", QualitySettings.realtimeReflectionProbes);
+        Append(sb, "quality.pixelLightCount", QualitySettings.pixelLightCount);
+        Append(sb, "quality.shadowmaskMode", QualitySettings.shadowmaskMode.ToString());
         Append(sb, "quality.shadowProjection", QualitySettings.shadowProjection.ToString());
         Append(sb, "quality.shadows", QualitySettings.shadows.ToString());
         Append(sb, "quality.shadowResolution", QualitySettings.shadowResolution.ToString());

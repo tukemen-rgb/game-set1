@@ -1,0 +1,80 @@
+{
+  "schemaVersion": "1.0",
+  "runId": "2026-09-12_foliage_formal_evidence_binding",
+  "branch": "gpt/unity-migration",
+  "startHead": "60394498241cbd946a14541b91d3995b0d67655d",
+  "substantiveWorkHeadBeforeRecord": "d967d7a5aecbdf318c28694dfde3ec4579531848",
+  "substantiveCommits": [
+    "2595f14bd9c62b1ea80660c3059932ea8cc2fd09",
+    "71172ceef0ac1eedff435a6ef2da5720c105308f",
+    "d967d7a5aecbdf318c28694dfde3ec4579531848"
+  ],
+  "goal": "Ensure that the recently developed foliage morphology diversity, folded lamina geometry, analytic visible/shadow silhouette and dry dielectric optical state are explicitly part of the authoritative reflection/still/temporal evidence state rather than relying only on MainCamera pre-cull guards.",
+  "sourceFinding": {
+    "problem": "The native-4K preparation chain rebuilds foliage optics and MainCamera formal renders have dedicated morphology/lamina/silhouette pre-cull guards, but ReflectionProbe.RenderProbe does not use MainCamera pre-cull. The central reflection fingerprint previously validated registered material physicality, detail physical UVs and facade formal state without explicitly validating the newer foliage state.",
+    "risk": "A stale or partially regenerated leaf mesh/material generation could enter realtime cubemaps before the still-camera guard noticed it, creating an evidence-state mismatch and weakening Vegetation, Lighting/Reflections and Temporal/LOD review integrity. The lamina save callback also intentionally logs rather than throws, so downstream formal validation must fail closed if convergence did not occur.",
+    "priorityDecision": "Close the authoritative evidence-path gap before adding more speculative foliage detail. Existing morphology/fold/silhouette work has little scoring value if the formal reflection baseline can represent a different foliage state."
+  },
+  "implementation": [
+    "Added foliage_formal_evidence_binding_contract.json with explicit reflection lifecycle, read-only in-flight validation, canonical critical-defect IDs, native 3840x2160/crop/temporal evidence requirements, zero automatic Visual Fidelity points and readiness fixed at 93/100.",
+    "Added QualityBlockFoliageFormalEvidenceBindingQA. It validates the existing morphology-diversity, lamina-geometry, silhouette-optics and optical-physicality contracts at the core integrity boundary.",
+    "Formal scene validation is read-only and requires the persisted benchmark scene to already be open. It checks deterministic morphology assignment/LOD identity, all base+derived folded lamina mesh assets, visible/shadow silhouette material state, coherent midsummer sun/soft shadows and dry dielectric foliage physicality.",
+    "Bound QualityBlockFoliageFormalEvidenceBindingQA into QualityBlockReflectionMaterialPhysicalityBindingQA, which is already called by QualityBlockReflectionLightingStateFingerprint before RenderProbe, through observed Editor polls, at completion and immediately before still capture.",
+    "Added source-token enforcement so the foliage binding contract fails if either its config or open-scene call is removed from the central reflection binding."
+  ],
+  "selfAudit": [
+    {
+      "finding": "The foliage lamina and silhouette QAs were primarily MainCamera pre-cull guards, while realtime ReflectionProbe capture bypasses that callback.",
+      "correction": "Moved foliage source-state proof into the existing reflection-lighting fingerprint path rather than creating a parallel probe lifecycle."
+    },
+    {
+      "finding": "QualityBlockFoliageOpticsUpgrade.ValidateOpenScene can open the benchmark scene if the wrong scene is active, which would violate the new contract's mutation-free in-flight policy if called without a precondition.",
+      "correction": "QualityBlockFoliageFormalEvidenceBindingQA first requires the already-open persisted benchmark scene and throws on mismatch; only then does it delegate to existing validation-only methods. No Apply/Build/save path is called during reflection polling."
+    },
+    {
+      "finding": "A standalone contract would not prove the central reflection fingerprint still invokes the foliage binding after future refactors.",
+      "correction": "Contract validation reads the central reflection binding source and requires both ValidateContractConfigOnly and ValidateOpenScene invocation tokens; removal fails source-side gate integrity."
+    }
+  ],
+  "verification": {
+    "level": "GitHub/source review only",
+    "unityVersionTarget": "6000.3.0f1",
+    "unityCompileExecuted": false,
+    "unityRuntimeExecuted": false,
+    "native3840x2160RenderProduced": false,
+    "visualFidelityScored": false,
+    "githubActionsRunsObservedAtSubstantiveHead": 0,
+    "commitStatusContextsObservedAtSubstantiveHead": 0,
+    "sourceAudit": [
+      "QualityBlock4KCapture.PrepareAndValidateScene rebuilds the ground chain, which calls QualityBlockFoliageOpticsUpgrade.BuildFoliageOptics before environment lighting.",
+      "QualityBlockFoliageOpticsUpgrade.BuildFoliageOptics rebuilds detailed trees, applies deterministic morphology variation, assigns foliage materials and persists the scene.",
+      "QualityBlockFoliageLaminaGeometryUpgrade is scene-save bound so regenerated base sprays are folded before morphology variants are derived; formal binding additionally validates all 3 base and 12 derived meshes.",
+      "QualityBlockReflectionLightingStateFingerprint calls QualityBlockReflectionMaterialPhysicalityBindingQA.ValidateOpenScene before hashing render/probe state, so the new foliage binding participates in the established async reflection evidence lifecycle."
+    ],
+    "sourceDiffBeforeRecord": "3 commits ahead / 0 behind startHead; merge-base remained startHead; three changed paths, all under UnityProject/."
+  },
+  "implementationReadiness": {
+    "score": 93,
+    "possible": 100,
+    "changeThisRun": 0,
+    "reason": "The foliage evidence path is materially stronger, but Unity 6000.3.0f1 has still not compiled or executed these calls. The remaining seven readiness points stay reserved for real editor/runtime/render verification."
+  },
+  "visualFidelity": {
+    "status": "UNSCORED_UNTIL_REAL_4K_RENDER",
+    "pointsAwardedThisRun": 0,
+    "passClaimed": false,
+    "expectedScoreImpactOnly": [
+      "Vegetation/natural complexity (8): positive candidate impact because scoreable evidence can no longer silently omit deterministic morphology, folded lamina and analytic leaf margins; actual naturalness and repetition remain unobserved.",
+      "Lighting/shadows/reflections (15): positive candidate impact because realtime probes are now rejected unless the same visible/shadow foliage optics and midsummer sun state validate; actual dapple balance/transmission/reflection quality remains unobserved.",
+      "Temporal/LOD/aliasing stability (5): positive evidence-integrity impact because morphology/lamina/silhouette state is constrained across the formal reflection lifecycle; actual leaf-edge shimmer and LOD invisibility remain unobserved.",
+      "Material/PBR physical plausibility (20): secondary candidate impact because dry dielectric leaf F0/normal/roughness/transmission validation now participates in the cubemap state boundary; no rendered points awarded."
+    ]
+  },
+  "constraintsPreserved": {
+    "godotModified": false,
+    "baseMerged": false,
+    "prohibitedThemeContentIntroduced": false,
+    "changesScopedToUnityProject": true
+  },
+  "nextBlocker": "Unity 6000.3.0f1 Runner/Editor compile and execution. At first Runner availability stop speculative expansion, run the complete native-4K review packet, verify foliage formal validation remains mutation-free across reflection request/polls/completion, then inspect hero/oblique/grazing 3840x2160 frames, vegetation_grounding and tree_shadow_contact 100% crops, and temporal/subpixel_grazing before assigning any Vegetation, Lighting or Temporal/LOD points."
+}

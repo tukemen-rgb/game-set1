@@ -60,6 +60,8 @@ public static class QualityBlockFoliageLaminaGeometryUpgrade
         QualityBlockFoliageMorphologyVariationUpgrade.ApplyToOpenScene();
         UpgradeGeneratedMeshLibrary(true, true);
         ValidateGeneratedMeshLibrary(true);
+        EditorSceneManager.MarkSceneDirty(EditorSceneManager.GetActiveScene());
+        EditorSceneManager.SaveOpenScenes();
         AssetDatabase.SaveAssets();
         AssetDatabase.Refresh();
         Debug.Log("Folded foliage lamina geometry built. Native 4K silhouette/shimmer review remains pending.");
@@ -192,9 +194,9 @@ public static class QualityBlockFoliageLaminaGeometryUpgrade
                 throw new InvalidOperationException($"Leaf {leaf} in {mesh.name} has an invalid tangent frame before lamina fold.");
 
             // A shallow V around the tip-to-base midrib breaks the perfectly planar card response.
-            // Fold amount is intentionally proportional to lamina half-width so morphology scaling
-            // remains plausible. The bounds correspond to roughly 4-18 mm edge drop on the current
-            // generated leaves before per-cluster transform, not a thick solid slab.
+            // Fold amount is proportional to lamina half-width so morphology scaling remains
+            // plausible. On the current generated leaves this is millimetre-order edge displacement,
+            // not a thick solid slab.
             float halfWidth = width * 0.5f;
             float foldFraction = Mathf.Lerp(0.085f, 0.155f, Hash01(meshSeed, leaf, 401));
             float foldDepth = halfWidth * foldFraction;

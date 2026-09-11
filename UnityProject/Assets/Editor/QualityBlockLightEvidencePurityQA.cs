@@ -52,8 +52,8 @@ public static class QualityBlockLightEvidencePurityQA
             throw new FileNotFoundException("Light evidence purity contract missing: " + ContractPath);
 
         LightPurityContract contract = JsonUtility.FromJson<LightPurityContract>(File.ReadAllText(ContractPath));
-        if (contract == null || !string.Equals(contract.schemaVersion, "1.0", StringComparison.Ordinal))
-            throw new InvalidOperationException("Light evidence purity contract is null/unparseable or not schema 1.0.");
+        if (contract == null || !string.Equals(contract.schemaVersion, "1.1", StringComparison.Ordinal))
+            throw new InvalidOperationException("Light evidence purity contract is null/unparseable or not schema 1.1.");
         if (!string.Equals(contract.status, "PENDING_REAL_UNITY_4K_RENDER", StringComparison.Ordinal) ||
             !string.Equals(contract.scenePath, ScenePath, StringComparison.Ordinal) ||
             !string.Equals(contract.authoritativeSunName, SunName, StringComparison.Ordinal) ||
@@ -72,6 +72,10 @@ public static class QualityBlockLightEvidencePurityQA
             !r.activeArtificialLightsForbidden ||
             !r.lightCommandBuffersForbidden ||
             !r.includeDisabledLightsInCommandBufferAudit ||
+            !r.authoritativeSunCookieForbidden ||
+            !r.authoritativeSunFlareForbidden ||
+            !r.authoritativeSunVertexLightingForbidden ||
+            !r.authoritativeSunMustLightAllLayers ||
             !r.validateAtPreCullPreRenderAndPostRender ||
             !r.lightStateMustRemainStableAcrossFrame ||
             !r.actualRenderRequiredForVisualPoints ||
@@ -80,14 +84,18 @@ public static class QualityBlockLightEvidencePurityQA
 
         string[] requiredCritical =
         {
-            "inconsistent_sun_shadow_direction",
+            "sun_shadow_inconsistency",
             "major_light_leak",
-            "severe_aliasing_or_shimmering",
-            "claiming_render_quality_without_actual_render"
+            "severe_aliasing_or_shimmer",
+            "unverified_render_claim"
         };
-        foreach (string id in requiredCritical)
-            if (contract.criticalFailMappings == null || !contract.criticalFailMappings.Contains(id))
-                throw new InvalidOperationException("Light evidence purity contract missing critical-fail mapping: " + id);
+        if (contract.criticalFailMappings == null ||
+            contract.criticalFailMappings.Any(string.IsNullOrWhiteSpace) ||
+            contract.criticalFailMappings.Distinct(StringComparer.Ordinal).Count() != contract.criticalFailMappings.Length ||
+            !new HashSet<string>(contract.criticalFailMappings, StringComparer.Ordinal).SetEquals(requiredCritical))
+            throw new InvalidOperationException(
+                "Light evidence purity critical-fail mappings must exactly match the canonical gate IDs: " +
+                string.Join(", ", requiredCritical));
 
         if (contract.runtimeRenderVerified || contract.visualFidelityPointsAwarded != 0 ||
             !string.Equals(contract.visualFidelityStatus, "UNSCORED_REVIEW_REQUIRED", StringComparison.Ordinal))
@@ -220,6 +228,16 @@ public static class QualityBlockLightEvidencePurityQA
         Light sun = activeDirectionals[0];
         if (RenderSettings.sun != sun)
             throw new InvalidOperationException(phase + ": RenderSettings.sun is not the sole active SummerSun directional light.");
+        if (sun.cookie != null)
+            throw new InvalidOperationException(phase + ": SummerSun must not use a cookie; patterned shadow/highlight modulation is forbidden in formal evidence.");
+        if (sun.flare != null)
+            throw new InvalidOperationException(phase + ": SummerSun must not use a Lens Flare asset in formal evidence.");
+        if (sun.renderMode == LightRenderMode.ForceVertex)
+            throw new InvalidOperationException(phase + ": SummerSun may not use ForceVertex lighting for the native-4K benchmark.");
+        if (sun.cullingMask != -1)
+            throw new InvalidOperationException(phase + ": SummerSun must illuminate the full benchmark layer mask; selective light culling is forbidden.");
+        if (sun.shadows == LightShadows.None)
+            throw new InvalidOperationException(phase + ": SummerSun must cast shadows in formal evidence.");
 
         Light[] artificial = activeEmitting.Where(x => x != sun).ToArray();
         if (artificial.Length != 0)
@@ -255,19 +273,21 @@ public static class QualityBlockLightEvidencePurityQA
     private static string BuildLightStateSha256()
     {
         var sb = new StringBuilder(8192);
-        Append(sb, "schema", "formal-light-state-v1");
+        Append(sb, "schema", "formal-light-state-v2");
         Append(sb, "scene", EditorSceneManager.GetActiveScene().path);
         Append(sb, "pipeline", GraphicsSettings.currentRenderPipeline == null ? "BuiltIn" : GraphicsSettings.currentRenderPipeline.name);
         Append(sb, "renderSettings.sun", RenderSettings.sun != null ? HierarchyPath(RenderSettings.sun.transform) : string.Empty);
         Append(sb, "renderSettings.ambientMode", RenderSettings.ambientMode.ToString());
         Append(sb, "renderSettings.ambientIntensity", RenderSettings.ambientIntensity);
         Append(sb, "renderSettings.reflectionIntensity", RenderSettings.reflectionIntensity);
+        AppendColor(sb, "renderSettings.subtractiveShadowColor", RenderSettings.subtractiveShadowColor);
         Append(sb, "renderSettings.fog", RenderSettings.fog);
         Append(sb, "renderSettings.fogMode", RenderSettings.fogMode.ToString());
         AppendColor(sb, "renderSettings.fogColor", RenderSettings.fogColor);
         Append(sb, "renderSettings.fogStartDistance", RenderSettings.fogStartDistance);
         Append(sb, "renderSettings.fogEndDistance", RenderSettings.fogEndDistance);
 
+        Append(sb, "quality.pixelLightCount", QualitySettings.pixelLightCount);
         Append(sb, "quality.shadows", QualitySettings.shadows.ToString());
         Append(sb, "quality.shadowResolution", QualitySettings.shadowResolution.ToString());
         Append(sb, "quality.shadowProjection", QualitySettings.shadowProjection.ToString());
@@ -276,6 +296,7 @@ public static class QualityBlockLightEvidencePurityQA
         Append(sb, "quality.shadowCascade2Split", QualitySettings.shadowCascade2Split);
         AppendVector3(sb, "quality.shadowCascade4Split", QualitySettings.shadowCascade4Split);
         Append(sb, "quality.shadowNearPlaneOffset", QualitySettings.shadowNearPlaneOffset);
+        Append(sb, "quality.shadowmaskMode", QualitySettings.shadowmaskMode.ToString());
 
         Light[] lights = SceneLights();
         Append(sb, "light.count", lights.Length);
@@ -288,11 +309,13 @@ public static class QualityBlockLightEvidencePurityQA
             Append(sb, p + "activeInHierarchy", light.gameObject.activeInHierarchy);
             Append(sb, p + "enabled", light.enabled);
             Append(sb, p + "type", light.type.ToString());
+            Append(sb, p + "renderMode", light.renderMode.ToString());
             Append(sb, p + "intensity", light.intensity);
             Append(sb, p + "bounceIntensity", light.bounceIntensity);
             AppendColor(sb, p + "color", light.color);
             Append(sb, p + "range", light.range);
             Append(sb, p + "spotAngle", light.spotAngle);
+            Append(sb, p + "cookieSize", light.cookieSize);
             Append(sb, p + "cullingMask", light.cullingMask);
             Append(sb, p + "shadows", light.shadows.ToString());
             Append(sb, p + "shadowStrength", light.shadowStrength);
@@ -310,6 +333,13 @@ public static class QualityBlockLightEvidencePurityQA
             Append(sb, p + "cookieInstanceId", cookie != null ? cookie.GetInstanceID() : 0);
             if (!string.IsNullOrEmpty(cookiePath))
                 Append(sb, p + "cookieDependencyHash", AssetDatabase.GetAssetDependencyHash(cookiePath).ToString());
+
+            Flare flare = light.flare;
+            string flarePath = flare != null ? AssetDatabase.GetAssetPath(flare) : string.Empty;
+            Append(sb, p + "flarePath", flarePath);
+            Append(sb, p + "flareInstanceId", flare != null ? flare.GetInstanceID() : 0);
+            if (!string.IsNullOrEmpty(flarePath))
+                Append(sb, p + "flareDependencyHash", AssetDatabase.GetAssetDependencyHash(flarePath).ToString());
         }
 
         using (SHA256 sha = SHA256.Create())
@@ -402,6 +432,10 @@ public static class QualityBlockLightEvidencePurityQA
         public bool activeArtificialLightsForbidden;
         public bool lightCommandBuffersForbidden;
         public bool includeDisabledLightsInCommandBufferAudit;
+        public bool authoritativeSunCookieForbidden;
+        public bool authoritativeSunFlareForbidden;
+        public bool authoritativeSunVertexLightingForbidden;
+        public bool authoritativeSunMustLightAllLayers;
         public bool validateAtPreCullPreRenderAndPostRender;
         public bool lightStateMustRemainStableAcrossFrame;
         public bool actualRenderRequiredForVisualPoints;

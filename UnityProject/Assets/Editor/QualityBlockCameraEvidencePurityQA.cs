@@ -16,8 +16,9 @@ using UnityEngine.Rendering;
 ///
 /// Source-side cinematic QA proves the intended filmic transform is configured, but that alone cannot
 /// exclude a second OnRenderImage effect, a camera command buffer, or camera/target state changing after
-/// preflight. This guard validates the persisted MainCamera configuration and automatically watches the
-/// canonical QA4K_/QAPreparedTemporal_ render targets at Camera.onPreCull/onPreRender/onPostRender.
+/// preflight. This guard validates the persisted QualityCamera (tagged MainCamera) configuration and
+/// automatically watches canonical QA4K_/QAPreparedTemporal_ render targets at
+/// Camera.onPreCull/onPreRender/onPostRender.
 ///
 /// For each formal frame it also revalidates the accepted asynchronous reflection wait proof before
 /// culling and after scene rendering, preventing a render callback from silently changing the scene,
@@ -29,7 +30,8 @@ public static class QualityBlockCameraEvidencePurityQA
 {
     private const string ScenePath = "Assets/Scenes/QualityBlock1990s.unity";
     private const string ContractPath = "Assets/QA/camera_evidence_purity_contract.json";
-    private const string CameraName = "MainCamera";
+    private const string CameraObjectName = "QualityCamera";
+    private const string CameraTag = "MainCamera";
     private const string FilmicShaderName = "Hidden/NewTown/FilmicTonemap";
     private const int Width = 3840;
     private const int Height = 2160;
@@ -62,7 +64,8 @@ public static class QualityBlockCameraEvidencePurityQA
         if (contract == null || !string.Equals(contract.schemaVersion, "1.0", StringComparison.Ordinal))
             throw new InvalidOperationException("Camera evidence purity contract is null/unparseable or not schema 1.0.");
         if (!string.Equals(contract.scenePath, ScenePath, StringComparison.Ordinal) ||
-            !string.Equals(contract.authoritativeCameraName, CameraName, StringComparison.Ordinal) ||
+            !string.Equals(contract.authoritativeCameraObjectName, CameraObjectName, StringComparison.Ordinal) ||
+            !string.Equals(contract.authoritativeCameraTag, CameraTag, StringComparison.Ordinal) ||
             contract.width != Width || contract.height != Height)
             throw new InvalidOperationException("Camera evidence purity contract scene/camera/native dimensions drifted.");
 
@@ -113,7 +116,7 @@ public static class QualityBlockCameraEvidencePurityQA
 
         Camera camera = Camera.main;
         if (camera == null)
-            throw new InvalidOperationException("Camera evidence purity QA cannot find MainCamera.");
+            throw new InvalidOperationException("Camera evidence purity QA cannot find the camera tagged MainCamera.");
         ValidateCameraCore(camera, null, false, "source preflight");
     }
 
@@ -210,8 +213,9 @@ public static class QualityBlockCameraEvidencePurityQA
 
     private static void ValidateCameraCore(Camera camera, RenderTexture target, bool requireFormalTarget, string phase)
     {
-        if (camera == null || camera.gameObject.name != CameraName || camera != Camera.main)
-            throw new InvalidOperationException($"{phase}: authoritative camera identity drifted from {CameraName}.");
+        if (camera == null || camera.gameObject.name != CameraObjectName || !camera.CompareTag(CameraTag) || camera != Camera.main)
+            throw new InvalidOperationException(
+                $"{phase}: authoritative camera identity drifted; expected scene object {CameraObjectName} tagged {CameraTag} and returned by Camera.main.");
         if (GraphicsSettings.currentRenderPipeline != null)
             throw new InvalidOperationException($"{phase}: formal benchmark camera requires the Built-in Render Pipeline.");
         if (camera.cameraType != CameraType.Game)
@@ -219,18 +223,18 @@ public static class QualityBlockCameraEvidencePurityQA
         if (camera.orthographic)
             throw new InvalidOperationException($"{phase}: benchmark evidence must use a perspective camera.");
         if (camera.renderingPath != RenderingPath.Forward || camera.actualRenderingPath != RenderingPath.Forward)
-            throw new InvalidOperationException($"{phase}: MainCamera must remain explicit Forward rendering.");
+            throw new InvalidOperationException($"{phase}: MainCamera-tagged QualityCamera must remain explicit Forward rendering.");
         if (!camera.allowHDR || !camera.allowMSAA || camera.allowDynamicResolution)
-            throw new InvalidOperationException($"{phase}: MainCamera must remain HDR + MSAA-permitted with dynamic resolution disabled.");
+            throw new InvalidOperationException($"{phase}: QualityCamera must remain HDR + MSAA-permitted with dynamic resolution disabled.");
         if (camera.clearFlags != CameraClearFlags.Skybox)
-            throw new InvalidOperationException($"{phase}: MainCamera must clear from the physical skybox.");
+            throw new InvalidOperationException($"{phase}: QualityCamera must clear from the physical skybox.");
         if (!Approximately(camera.rect.x, 0f) || !Approximately(camera.rect.y, 0f) ||
             !Approximately(camera.rect.width, 1f) || !Approximately(camera.rect.height, 1f))
-            throw new InvalidOperationException($"{phase}: MainCamera viewport rect must remain full-frame 0,0,1,1.");
+            throw new InvalidOperationException($"{phase}: QualityCamera viewport rect must remain full-frame 0,0,1,1.");
         if (!IsFinite(camera.nearClipPlane) || !IsFinite(camera.farClipPlane) ||
             camera.nearClipPlane < 0.01f || camera.nearClipPlane > 0.5f || camera.farClipPlane < 150f ||
             camera.farClipPlane <= camera.nearClipPlane)
-            throw new InvalidOperationException($"{phase}: MainCamera clip planes are incompatible with the benchmark depth range (near={camera.nearClipPlane}, far={camera.farClipPlane}).");
+            throw new InvalidOperationException($"{phase}: QualityCamera clip planes are incompatible with the benchmark depth range (near={camera.nearClipPlane}, far={camera.farClipPlane}).");
 
         QualityBlockFilmicTonemap[] tonemaps = camera.GetComponents<QualityBlockFilmicTonemap>();
         if (tonemaps.Length != 1 || tonemaps[0] == null || !tonemaps[0].enabled)
@@ -260,7 +264,7 @@ public static class QualityBlockCameraEvidencePurityQA
         foreach (CameraEvent evt in Enum.GetValues(typeof(CameraEvent)).Cast<CameraEvent>().Distinct())
             commandBufferCount += camera.GetCommandBuffers(evt).Length;
         if (commandBufferCount != 0)
-            throw new InvalidOperationException($"{phase}: MainCamera has {commandBufferCount} command buffer attachment(s); formal evidence forbids hidden camera compositing/injection.");
+            throw new InvalidOperationException($"{phase}: QualityCamera has {commandBufferCount} command buffer attachment(s); formal evidence forbids hidden camera compositing/injection.");
 
         if (!requireFormalTarget)
             return;
@@ -299,6 +303,7 @@ public static class QualityBlockCameraEvidencePurityQA
         Append(sb, "schema", "formal-camera-state-v1");
         Append(sb, "scene", camera.gameObject.scene.path);
         Append(sb, "camera.name", camera.name);
+        Append(sb, "camera.tag", camera.tag);
         Append(sb, "camera.instanceId", camera.GetInstanceID());
         AppendVector3(sb, "camera.position", camera.transform.position);
         AppendQuaternion(sb, "camera.rotation", camera.transform.rotation);
@@ -395,7 +400,8 @@ public static class QualityBlockCameraEvidencePurityQA
     {
         public string schemaVersion;
         public string scenePath;
-        public string authoritativeCameraName;
+        public string authoritativeCameraObjectName;
+        public string authoritativeCameraTag;
         public int width;
         public int height;
         public string[] formalTargetPrefixes;

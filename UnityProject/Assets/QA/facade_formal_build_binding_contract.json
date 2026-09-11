@@ -11,6 +11,8 @@
     "glassThicknessRequired": true,
     "authoredDanchiRemainsAuthoritative": true,
     "existingPassDriftMustFailClosed": true,
+    "reflectionPollValidationMustBeReportFree": true,
+    "inFlightRootReplacementMustAbort": true,
     "actualRenderRequiredForVisualPoints": true,
     "visualFidelityPointsAwarded": 0
   },
@@ -24,6 +26,12 @@
     "reflection probe baseline",
     "native 3840x2160 hero/oblique/grazing evidence"
   ],
+  "reflectionLifecyclePolicy": {
+    "newPreparationEpochIdentity": "DanchiFacadeOptics Unity instance ID",
+    "firstPreProbeFingerprint": "May build a missing generated pass, then performs full source-side validation and freezes optics/aperture/occupancy instance IDs.",
+    "subsequentEditorPolls": "Must not write runtime reports or rebuild scene state. They revalidate physical UVs, occupancy, glass thickness and a report-free aperture construction fingerprint.",
+    "inFlightMutation": "Missing or replaced aperture/occupancy root under the same optics instance is a hard failure; no automatic repair is permitted while reflection evidence may be in flight."
+  },
   "criticalDefectRisksReduced": [
     "visible_primitive_placeholder",
     "obvious_repetition",

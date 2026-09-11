@@ -1,0 +1,76 @@
+{
+  "schemaVersion": "1.0",
+  "assemblyId": "facade_clear_float_glazing_thickness",
+  "scope": "Generated fallback facade glazing only; authored danchi art remains authoritative.",
+  "expectedPaneCount": 65,
+  "nominalThicknessMm": 4.0,
+  "edgeQuadsPerPane": 4,
+  "forbidBroadBackSurface": true,
+  "renderOnlyNoCollider": true,
+  "requireSameGlassMaterialAsFrontSurface": true,
+  "manufactureInstallation": [
+    "Component reconstruction: each clear float-glass leaf consists of the existing broad front optical surface plus four cut perimeter edges; this pass intentionally does not add a second broad rear transparent surface because that would double the fallback transmission/reflection layer and create sorting artifacts rather than credible 4 mm construction.",
+    "Apartment sliding leaves are 1030 x 1460 mm each; stair glazing is 1120 x 1180 mm; nominal clear float glass thickness is 4 mm; the two apartment sliding leaves retain their existing 14 mm front/back installation offset.",
+    "The thickness shell is generated as four independent edge quads with 16 vertices / 8 triangles and spans exactly from the existing optical front plane inward by 4 mm.",
+    "The pane remains retained by the existing aluminum sash construction. The edge geometry is a construction cue at oblique/grazing incidence, not a free-standing glass plate and not gameplay collision."
+  ],
+  "mountingInterfaces": [
+    "Edge geometry is a child of the exact optical pane transform with zero local translation, identity rotation and unit local scale, so its front perimeter is coincident with the existing optical surface perimeter while thickness extends toward the interior.",
+    "Apartment panes remain physically separated by 14 mm in depth. This pass does not collapse the sliding leaves into one coplanar sheet.",
+    "The surrounding aluminum sash, seals and construction gaps remain owned by the existing high-detail facade assembly; this pass must not fabricate painted gasket lines or shadow bands in glass textures.",
+    "No MeshCollider, BoxCollider or other gameplay collider may be attached to the glass edge geometry."
+  ],
+  "orientationExposureAging": [
+    "Generated fallback facade outward direction is +Z; the glass edge extends 4 mm inward along local -Z from the established front optical surface.",
+    "Benchmark state is dry midsummer Japanese daylight. Baseline glass wetness is zero; rain-film highlights are not allowed in the dry benchmark.",
+    "Bulk clear glass remains nonmetallic and does not receive painted directional highlights. UV exposure may alter adjacent seals/coatings over time but must not be faked as a baked specular streak in the clear glass body.",
+    "Any accumulated residue belongs to the separate cause-based weathering system and must remain spatially attributable; it is not encoded into this clean construction shell."
+  ],
+  "materialPhysicality": {
+    "materialId": "clear_float_glass",
+    "shader": "Standard",
+    "iorReference": 1.52,
+    "specularF0Reference": 0.043,
+    "metallic": 0.0,
+    "dryRoughnessRange": [0.06, 0.18],
+    "smoothnessProxyRange": [0.82, 0.94],
+    "frontSurfaceAlphaProxy": 0.18,
+    "normalScale": 0.0,
+    "microstructure": "No invented orange-peel or brushed micro-normal on clean float glass; construction edge visibility comes from physical edge orientation/path length and the same dielectric BRDF as the front optical surface.",
+    "wetness": 0.0,
+    "uvAging": "No baked UV-aging highlight. Age-related dirt/mineral residue is delegated to cause-based weathering.",
+    "angularFresnelResponse": "Dielectric reflectance must strengthen with grazing angle through the shader/light/reflection state, never through albedo-painted highlights."
+  },
+  "geometryVsMaterialDetail": [
+    "Geometry owns the 4 mm pane thickness and the four perimeter orientation changes that become visible at oblique/grazing angles.",
+    "Material owns dielectric color/transmission proxy, smoothness and angular reflection response; it must not fake thickness with painted borders.",
+    "The broad rear face is intentionally omitted in this real-time fallback to avoid a second coplanar transparent layer; the contract therefore requires edge-only thickness geometry rather than a closed transparent box.",
+    "The 4 mm edge shell adds only 8 triangles per pane (520 triangles for 65 panes), so preserving it avoids a visible construction pop at negligible real-time cost."
+  ],
+  "lodPolicy": [
+    "LOD0 uses the physical 4 mm perimeter shell generated from the canonical edge mesh.",
+    "LOD1, LOD2 and LOD3 preserve the same edge shell rather than substituting a flat primitive or deleting the pane thickness; the total 520-triangle cost is intentionally retained to avoid grazing-angle LOD pops.",
+    "Any future authored replacement may provide its own LOD0/1/2/3 glazing construction, but generated fallback evidence must never silently mix authored and fallback glass geometry.",
+    "Actual temporal pixels remain mandatory to clear visible_lod_pop or severe_aliasing_or_shimmer; this source policy does not auto-clear either defect."
+  ],
+  "requiredEvidence": [
+    "oblique/construction_depth at native 3840x2160 plus 100% crop: verify the pane reads as physically seated in sash depth and the 4 mm edge is not floating or over-thick.",
+    "grazing/sash_rail_response at native 3840x2160 plus 100% crop: verify physical edge/Fresnel response without a painted border or duplicate transparent sheet.",
+    "grazing/material_grazing at native 3840x2160 plus 100% crop: verify nonmetallic glass, reflection balance, sorting and highlight continuity.",
+    "hero/facade_center at native 3840x2160 plus 100% crop: verify the added edge geometry does not become an obvious repeated outline at normal viewing distance.",
+    "Temporal evidence at native resolution: inspect thin-edge shimmer and any silhouette/sorting instability."
+  ],
+  "automaticScoring": {
+    "visualFidelityPoints": 0,
+    "implementationOnly": true,
+    "note": "Construction metadata, topology checks and source QA cannot establish filmic render quality. Actual sealed Unity pixels are required before any Visual Fidelity score is awarded."
+  },
+  "criticalDefectIds": [
+    "visible_primitive_placeholder",
+    "impossible_material_physics",
+    "hero_geometry_intersection",
+    "severe_aliasing_or_shimmer",
+    "missing_construction_material_metadata",
+    "unverified_render_claim"
+  ]
+}

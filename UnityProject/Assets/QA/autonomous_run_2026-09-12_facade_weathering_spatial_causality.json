@@ -1,0 +1,93 @@
+{
+  "runDate": "2026-09-12",
+  "scope": "facade weathering spatial causality hardening",
+  "startHead": "f587d35085a4ecaccab95f55a1a5c7671bb76f13",
+  "headBeforeRunRecord": "d68014725822d5394c498abc50244acbf2277c8b",
+  "implementationCommits": [
+    {
+      "sha": "d714b3f220cae0e3c9e820093479d4a900a84dbf",
+      "message": "qa: bind facade weathering to physical sources"
+    },
+    {
+      "sha": "f3d77a0c3076df414ade76c64d4e6462a6b11b88",
+      "message": "docs: diagram weathering source catchments"
+    },
+    {
+      "sha": "d68014725822d5394c498abc50244acbf2277c8b",
+      "message": "qa: verify weathering source catchments at render time"
+    }
+  ],
+  "runRecordCommit": "This file is committed immediately after headBeforeRunRecord; use branch history for its self-referential commit SHA.",
+  "problem": "Existing facade weathering was generated from construction-aware sources, but persisted residue meshes were not independently proven to remain spatially attributable to those modeled sources at formal render time. A later mesh edit could therefore detach a stain from its physical cause while source-count and material QA still passed.",
+  "implementation": {
+    "contract": "Assets/QA/facade_weathering_spatial_causality_contract.json",
+    "lookdev": "Assets/QA/Lookdev/facade_weathering_spatial_causality.svg",
+    "runtimeQa": "Assets/Editor/QualityBlockFacadeWeatheringSpatialCausalityQA.cs",
+    "sourceCatchments": [
+      "30 modeled window-sill/drip noses",
+      "installed full-height rainwater downpipe",
+      "30 modeled balcony slab lips",
+      "210 modeled rail base fixings with deliberately sparse active oxide sources",
+      "15 modeled AC drain-hose terminations",
+      "grade/facade splash interface with a stronger upper envelope near concentrated downpipe discharge"
+    ],
+    "enforcement": [
+      "all persisted weathering vertices must resolve to a permitted physical-source catchment",
+      "all mandatory sources must retain minimum witness geometry",
+      "canonical source counts are checked",
+      "grade splash must preserve a measurable drainage-side height response",
+      "rail oxide runoff must remain sparse rather than activating every repeated fixing",
+      "MainCamera pre-cull validation is fail-closed in the benchmark scene",
+      "contract references canonical Visual Fidelity critical-defect IDs",
+      "lookdev is explicitly non-render evidence and cannot award points"
+    ]
+  },
+  "verification": {
+    "githubCompareBeforeRunRecord": {
+      "status": "ahead",
+      "aheadBy": 3,
+      "behindBy": 0,
+      "mergeBase": "f587d35085a4ecaccab95f55a1a5c7671bb76f13",
+      "changedPaths": [
+        "UnityProject/Assets/Editor/QualityBlockFacadeWeatheringSpatialCausalityQA.cs",
+        "UnityProject/Assets/QA/Lookdev/facade_weathering_spatial_causality.svg",
+        "UnityProject/Assets/QA/facade_weathering_spatial_causality_contract.json"
+      ]
+    },
+    "runnerAtRunStart": "UNAVAILABLE",
+    "githubActionsRunsAtRunStart": 0,
+    "commitStatusContextsAtRunStart": 0,
+    "unity6000_3_0f1Compile": "PENDING_RUNNER",
+    "sceneCatchmentRuntimeExecution": "PENDING_RUNNER",
+    "native3840x2160Render": "PENDING_RUNNER",
+    "100PercentCropReview": "PENDING_RUNNER"
+  },
+  "scores": {
+    "implementationReadiness": 93,
+    "visualFidelity": "UNSCORED_UNTIL_REAL_4K_RENDER",
+    "visualFidelityPointsAwardedThisRun": 0,
+    "visualFidelityPassClaimed": false
+  },
+  "expectedVisualScoreImpact": {
+    "weathering_context_causality": "HIGH_POSITIVE_IF_NATIVE_PIXELS_CONFIRM_THE_CAUSAL_READ",
+    "geometry_construction_fidelity": "SECONDARY_POSITIVE_FROM_SOURCE_TO_RESIDUE_CONSISTENCY",
+    "texture_microdetail": "SECONDARY_POSITIVE_FROM_LOCALIZED_NON_GENERIC_RESIDUE",
+    "automaticScoreImpact": 0
+  },
+  "manualRenderChecksWhenRunnerAppears": [
+    "hero/facade_center and hero/facade_right: grade splash must decay upward and strengthen near drainage without reading as a horizontal painted band",
+    "100% window_sill_runoff crop: streaks must originate beneath plausible sill low points and remain gravity-aligned",
+    "100% balcony_drip_edge crop: drip residue must relate to the slab edge rather than float on the wall",
+    "100% rail_fixing_rust crop: oxide runoff must remain sparse, non-repeating and localized to actual fixings",
+    "100% ac_drain_termination crop: residue must remain a dry local deposit at the real hose termination",
+    "grazing/material_grazing: causal geometry must not create z-fighting, interpenetration or implausible glossy residue"
+  ],
+  "nextBlocker": "Unity 6000.3.0f1 Runner/runtime. On first real Runner/screenshots, stop speculative expansion, compile and execute the catchment QA, then render and review sealed native 4K evidence before assigning any Visual Fidelity points.",
+  "constraints": {
+    "godotPreserved": true,
+    "baseMerged": false,
+    "earthquakeDisasterReconstructionThemesAdded": false,
+    "newCommitsAllowedThrough": "2026-09-18",
+    "renderQualityClaimWithoutActualRender": false
+  }
+}

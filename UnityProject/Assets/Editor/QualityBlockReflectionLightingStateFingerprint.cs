@@ -54,6 +54,9 @@ public static class QualityBlockReflectionLightingStateFingerprint
         // material/texture/renderer/mesh change is invalid evidence even if SummerSun and the sky stayed
         // identical. Fold the source-validated renderable-state SHA-256 into every existing request/poll/
         // completion/pre-still lighting check so the established async waiter enforces both invariants.
+        // Per-renderer MaterialPropertyBlock overrides are rejected until their arbitrary payload can be
+        // fingerprinted explicitly; otherwise shared-material hashing would leave a hidden override route.
+        QualityBlockReflectionMaterialOverrideGuard.ValidateOpenScene();
         string renderStateSha256 = QualityBlockReflectionRenderStateFingerprint.BuildValidatedCurrentSha256();
         Append(sb, "renderState.algorithm", QualityBlockReflectionRenderStateFingerprint.Algorithm);
         Append(sb, "renderState.sha256", renderStateSha256);

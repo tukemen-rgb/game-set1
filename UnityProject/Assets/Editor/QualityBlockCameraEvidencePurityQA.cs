@@ -139,7 +139,6 @@ public static class QualityBlockCameraEvidencePurityQA
 
         ActiveFrames.Add(key, new FrameTrace
         {
-            targetName = target.name,
             preCullStateSha256 = BuildCameraStateSha256(camera, target),
             preRenderSeen = false
         });
@@ -228,7 +227,7 @@ public static class QualityBlockCameraEvidencePurityQA
         if (!Approximately(camera.rect.x, 0f) || !Approximately(camera.rect.y, 0f) ||
             !Approximately(camera.rect.width, 1f) || !Approximately(camera.rect.height, 1f))
             throw new InvalidOperationException($"{phase}: MainCamera viewport rect must remain full-frame 0,0,1,1.");
-        if (!float.IsFinite(camera.nearClipPlane) || !float.IsFinite(camera.farClipPlane) ||
+        if (!IsFinite(camera.nearClipPlane) || !IsFinite(camera.farClipPlane) ||
             camera.nearClipPlane < 0.01f || camera.nearClipPlane > 0.5f || camera.farClipPlane < 150f ||
             camera.farClipPlane <= camera.nearClipPlane)
             throw new InvalidOperationException($"{phase}: MainCamera clip planes are incompatible with the benchmark depth range (near={camera.nearClipPlane}, far={camera.farClipPlane}).");
@@ -276,7 +275,7 @@ public static class QualityBlockCameraEvidencePurityQA
             throw new InvalidOperationException($"{phase}: unexpected formal target MSAA sample count {target.antiAliasing}.");
         if (!Approximately(camera.aspect, Width / (float)Height))
             throw new InvalidOperationException($"{phase}: formal camera aspect must remain exact 16:9 native-frame aspect; got {camera.aspect:R}.");
-        if (!float.IsFinite(camera.fieldOfView) || camera.fieldOfView < 30f || camera.fieldOfView > 60f)
+        if (!IsFinite(camera.fieldOfView) || camera.fieldOfView < 30f || camera.fieldOfView > 60f)
             throw new InvalidOperationException($"{phase}: formal perspective FOV {camera.fieldOfView:R} is outside the locked benchmark-safe range 30..60 degrees.");
     }
 
@@ -355,6 +354,7 @@ public static class QualityBlockCameraEvidencePurityQA
         }
     }
 
+    private static bool IsFinite(float value) => !float.IsNaN(value) && !float.IsInfinity(value);
     private static bool Approximately(float a, float b) => Mathf.Abs(a - b) <= 0.0001f;
 
     private static void AppendVector3(StringBuilder sb, string key, Vector3 value)
@@ -386,7 +386,6 @@ public static class QualityBlockCameraEvidencePurityQA
 
     private sealed class FrameTrace
     {
-        public string targetName;
         public string preCullStateSha256;
         public bool preRenderSeen;
     }

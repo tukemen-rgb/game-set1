@@ -88,6 +88,13 @@ public static class QualityBlockFoliageLaminaGeometryQA
         if (formal.reviewFor == null || formal.reviewFor.Length < 8 || formal.reviewFor.Any(string.IsNullOrWhiteSpace))
             throw new InvalidOperationException("Foliage lamina rendered-review checklist is incomplete.");
 
+        Lookdev lookdev = contract.lookdev;
+        if (lookdev == null || string.IsNullOrWhiteSpace(lookdev.illustration) || lookdev.isRenderEvidence ||
+            string.IsNullOrWhiteSpace(lookdev.intent))
+            throw new InvalidOperationException("Foliage lamina lookdev must be explicit and non-render evidence.");
+        if (!File.Exists(ToAbsolutePath(lookdev.illustration)))
+            throw new FileNotFoundException("Foliage lamina lookdev illustration is missing: " + lookdev.illustration);
+
         if (contract.hardFailRules == null || contract.hardFailRules.Length < 11 || contract.hardFailRules.Any(string.IsNullOrWhiteSpace) ||
             contract.limitations == null || contract.limitations.Length < 4 || contract.limitations.Any(string.IsNullOrWhiteSpace))
             throw new InvalidOperationException("Foliage lamina hard-fail/limitation metadata is incomplete.");
@@ -154,13 +161,18 @@ public static class QualityBlockFoliageLaminaGeometryQA
 
     private static T LoadJson<T>(string assetPath)
     {
-        string absolute = Path.GetFullPath(Path.Combine(Directory.GetParent(Application.dataPath).FullName, assetPath));
+        string absolute = ToAbsolutePath(assetPath);
         if (!File.Exists(absolute))
             throw new FileNotFoundException("Required QA file not found: " + assetPath);
         T value = JsonUtility.FromJson<T>(File.ReadAllText(absolute));
         if (value == null)
             throw new InvalidOperationException("Could not parse QA JSON: " + assetPath);
         return value;
+    }
+
+    private static string ToAbsolutePath(string assetPath)
+    {
+        return Path.GetFullPath(Path.Combine(Directory.GetParent(Application.dataPath).FullName, assetPath));
     }
 
     [Serializable]
@@ -176,6 +188,7 @@ public static class QualityBlockFoliageLaminaGeometryQA
         public string[] criticalDefectRisksReduced;
         public string[] hardFailRules;
         public FormalEvidence formalEvidenceRequirements;
+        public Lookdev lookdev;
         public int implementationReadinessScore;
         public string visualFidelityStatus;
         public bool runtimeRenderVerified;
@@ -227,6 +240,14 @@ public static class QualityBlockFoliageLaminaGeometryQA
         public bool humanReviewRequired;
         public bool actualRenderRequiredForVisualPoints;
         public string[] reviewFor;
+    }
+
+    [Serializable]
+    private sealed class Lookdev
+    {
+        public string illustration;
+        public bool isRenderEvidence;
+        public string intent;
     }
 
     [Serializable]

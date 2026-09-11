@@ -34,6 +34,7 @@ public static class QualityBlockFoliageOpticsUpgrade
     {
         QualityBlockTreeDetailUpgrade.BuildDetailedTrees();
         EditorSceneManager.OpenScene(ScenePath, OpenSceneMode.Single);
+        QualityBlockFoliageMorphologyVariationUpgrade.ApplyToOpenScene();
         EnsureMaterials(out Material dark, out Material mid);
         ApplyToOpenScene(dark, mid);
         ValidateOpenScene();
@@ -41,7 +42,7 @@ public static class QualityBlockFoliageOpticsUpgrade
         EditorSceneManager.SaveOpenScenes();
         AssetDatabase.SaveAssets();
         AssetDatabase.Refresh();
-        Debug.Log("Tree foliage optics pass built. Actual transmitted-light balance, dapple density and shadow softness still require Unity render inspection.");
+        Debug.Log("Tree foliage optics + morphology-diversity pass built. Actual transmitted-light balance, dapple density, silhouette repetition and shadow softness still require Unity render inspection.");
     }
 
     [MenuItem("NewTown/Lighting/Apply Tree Foliage Optics Only")]
@@ -49,6 +50,7 @@ public static class QualityBlockFoliageOpticsUpgrade
     {
         if (!EditorSceneManager.GetActiveScene().IsValid() || EditorSceneManager.GetActiveScene().path != ScenePath)
             EditorSceneManager.OpenScene(ScenePath, OpenSceneMode.Single);
+        QualityBlockFoliageMorphologyVariationUpgrade.ApplyToOpenScene();
         EnsureMaterials(out Material dark, out Material mid);
         ApplyToOpenScene(dark, mid);
         EditorSceneManager.MarkSceneDirty(EditorSceneManager.GetActiveScene());
@@ -59,6 +61,9 @@ public static class QualityBlockFoliageOpticsUpgrade
     {
         if (!EditorSceneManager.GetActiveScene().IsValid() || EditorSceneManager.GetActiveScene().path != ScenePath)
             EditorSceneManager.OpenScene(ScenePath, OpenSceneMode.Single);
+
+        QualityBlockFoliageMorphologyDiversityQA.ValidateContractConfigOnly();
+        QualityBlockFoliageMorphologyVariationUpgrade.ValidateCurrentScene(false);
 
         Shader shader = Shader.Find(ShaderName);
         if (shader == null)
@@ -137,7 +142,7 @@ public static class QualityBlockFoliageOpticsUpgrade
         if (validatedTrees == 0)
             Debug.Log("All tree slots use authored replacements; generated foliage-optics validation was not applicable.");
         else
-            Debug.Log($"Foliage optical structure validated for {validatedTrees} generated trees: deterministic sun alignment, two-sided transmission materials, per-cluster exposure variation and explicit soft-shadow casters are present. Unity render verification remains pending.");
+            Debug.Log($"Foliage optical structure validated for {validatedTrees} generated trees: deterministic sun alignment, two-sided transmission materials, morphology diversity, per-cluster exposure variation and explicit soft-shadow casters are present. Unity render verification remains pending.");
     }
 
     private static void ApplyToOpenScene(Material dark, Material mid)

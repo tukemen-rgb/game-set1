@@ -170,15 +170,16 @@ public static class QualityBlockBalconySurfaceMicrostructureUpgrade
     }
 
     /// <summary>
-    /// Seamless integer-frequency field. It intentionally avoids directional streaks: runoff/staining is
-    /// cause-based weathering and must not be baked into a generic waterproof material.
+    /// Seamless integer-frequency field. All frequencies are intentionally above 30 cycles per 0.5 m tile,
+    /// keeping dominant features at roughly 2.8-16 mm instead of introducing non-causal 5-10 cm blobs.
+    /// Directional runoff/staining remains a separate cause-based weathering layer.
     /// </summary>
     private static float PeriodicMicroHeight(float u, float v, int seed)
     {
         float phase = (seed % 997) * 0.0173f;
         float sum = 0f;
         float weight = 0f;
-        int[] frequencies = { 7, 11, 19, 31, 47, 71 };
+        int[] frequencies = { 31, 47, 71, 97, 127, 181 };
         for (int i = 0; i < frequencies.Length; i++)
         {
             int f = frequencies[i];

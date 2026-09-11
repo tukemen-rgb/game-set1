@@ -1,5 +1,5 @@
 {
-  "generatedUtc": "2026-09-11T08:50:00Z",
+  "generatedUtc": "2026-09-11T13:39:16Z",
   "readinessScore": 93,
   "possibleScore": 100,
   "visualFidelityStatus": "UNSCORED_UNTIL_REAL_4K_RENDER",
@@ -22,8 +22,8 @@
       "id": "danchi_lod0_lod3",
       "weight": 8,
       "passed": true,
-      "evidence": "Danchi and high-value facade/balcony assemblies have explicit construction-preserving LOD staging with cross-fade policies.",
-      "assetPaths": ["Assets/Editor/QualityBlockDanchiLodUpgrade.cs", "Assets/Editor/QualityBlockFacadeOccupancyVariationUpgrade.cs", "Assets/Editor/QualityBlockFutonBalconyDrapeQA.cs"]
+      "evidence": "Danchi and high-value facade/balcony assemblies have explicit construction-preserving LOD staging with cross-fade policies. Formal prepared temporal evidence now also has a source-side runtime-state guard that pins global cross-fade enable, quality LOD selection controls, animated cross-fade duration, Danchi LOD topology/assignments and metric-UV continuity before every guarded MainCamera cull.",
+      "assetPaths": ["Assets/Editor/QualityBlockDanchiLodUpgrade.cs", "Assets/Editor/QualityBlockDetailLodPhysicalUvBindingQA.cs", "Assets/Editor/QualityBlockTemporalLodRuntimeStateQA.cs", "Assets/QA/detail_lod_physical_uv_binding_contract.json", "Assets/QA/temporal_lod_runtime_state_contract.json", "Assets/Editor/QualityBlockFacadeOccupancyVariationUpgrade.cs", "Assets/Editor/QualityBlockFutonBalconyDrapeQA.cs"]
     },
     {
       "id": "tree_physical_hierarchy",
@@ -78,8 +78,8 @@
       "id": "native_4k_capture_pipeline",
       "weight": 8,
       "passed": true,
-      "evidence": "The native 3840x2160 hero/oblique/grazing packet includes pixel-exact crops, async reflection synchronization, physical-lighting plus renderable scene/material/texture and exact ReflectionProbe-state SHA-256 coherence, hidden MaterialPropertyBlock rejection, HDR-to-LDR telemetry, construction preflight, temporal sealing, post-tonemap repetition/light-leak triage, and fail-closed formal-camera/light purity guards.",
-      "assetPaths": ["Assets/Editor/QualityBlock4KCapture.cs", "Assets/Editor/QualityBlockNative4KReviewPacket.cs", "Assets/Editor/QualityBlockRenderEvidenceProvenanceQA.cs", "Assets/Editor/QualityBlockReflectionLightingStateFingerprint.cs", "Assets/Editor/QualityBlockReflectionProbeStateCoherenceQA.cs", "Assets/Editor/QualityBlockReflectionRenderStateFingerprint.cs", "Assets/Editor/QualityBlockReflectionMaterialOverrideGuard.cs", "Assets/Editor/QualityBlockRenderedRepetitionDiagnostics.cs", "Assets/Editor/QualityBlockRenderedLightLeakDiagnostics.cs", "Assets/Editor/QualityBlockCameraEvidencePurityQA.cs", "Assets/Editor/QualityBlockLightEvidencePurityQA.cs", "Assets/Editor/QualityBlockCinematicImageUpgrade.cs", "Assets/QA/reflection_probe_capture_sync_contract.json", "Assets/QA/reflection_probe_state_coherence_contract.json", "Assets/QA/reflection_render_state_coherence_contract.json", "Assets/QA/rendered_repetition_diagnostics_contract.json", "Assets/QA/rendered_light_leak_diagnostics_contract.json", "Assets/QA/camera_evidence_purity_contract.json", "Assets/QA/light_evidence_purity_contract.json"]
+      "evidence": "The native 3840x2160 hero/oblique/grazing packet includes pixel-exact crops, async reflection synchronization, physical-lighting plus renderable scene/material/texture and exact ReflectionProbe-state SHA-256 coherence, hidden MaterialPropertyBlock rejection, HDR-to-LDR telemetry, construction preflight, temporal sealing, post-tonemap repetition/light-leak triage, fail-closed formal-camera/light purity guards, and a formal-temporal pre-cull LOD runtime-state guard. That LOD guard pins quality-level identity, enableLODCrossFade, lodBias, maximumLODLevel, global animated cross-fade duration, Danchi LODGroup transition/assignment state and the previous physical-UV continuity contract while the authoritative temporal runtime guard is armed.",
+      "assetPaths": ["Assets/Editor/QualityBlock4KCapture.cs", "Assets/Editor/QualityBlockNative4KReviewPacket.cs", "Assets/Editor/QualityBlockRenderEvidenceProvenanceQA.cs", "Assets/Editor/QualityBlockReflectionLightingStateFingerprint.cs", "Assets/Editor/QualityBlockReflectionProbeStateCoherenceQA.cs", "Assets/Editor/QualityBlockReflectionRenderStateFingerprint.cs", "Assets/Editor/QualityBlockReflectionMaterialOverrideGuard.cs", "Assets/Editor/QualityBlockRenderedRepetitionDiagnostics.cs", "Assets/Editor/QualityBlockRenderedLightLeakDiagnostics.cs", "Assets/Editor/QualityBlockCameraEvidencePurityQA.cs", "Assets/Editor/QualityBlockLightEvidencePurityQA.cs", "Assets/Editor/QualityBlockCinematicImageUpgrade.cs", "Assets/Editor/QualityBlockTemporalRuntimeEvidenceGuard.cs", "Assets/Editor/QualityBlockTemporalLodRuntimeStateQA.cs", "Assets/QA/temporal_lod_runtime_state_contract.json", "Assets/QA/reflection_probe_capture_sync_contract.json", "Assets/QA/reflection_probe_state_coherence_contract.json", "Assets/QA/reflection_render_state_coherence_contract.json", "Assets/QA/rendered_repetition_diagnostics_contract.json", "Assets/QA/rendered_light_leak_diagnostics_contract.json", "Assets/QA/camera_evidence_purity_contract.json", "Assets/QA/light_evidence_purity_contract.json"]
     },
     {
       "id": "multi_angle_capture_manifest",
@@ -98,28 +98,24 @@
   ],
   "blockers": ["unity_compile_verification"],
   "latestRun": {
-    "startHead": "e86650ef4d2d71442bd4669001b6f53798e08cb1",
-    "substantiveWorkHead": "b1f6e1c9b70fea8162fcc56bbe8340c822c29431",
+    "startHead": "77a540a1e54b3c74eb4a9d7e237187910ebc140b",
+    "substantiveWorkHead": "63c75e8aa8f9030776775f8e340d52f5f730fe4f",
     "substantiveCommits": [
-      "03e353d2c42b6d3d7ee1eeccf6dac6a71ab6cf67",
-      "48cda23a2173bd6c275eaf3b6ffb38cd06819db6",
-      "0b09b29daf587e28e84047c7c23c4107fbf5579a",
-      "f27bccde75b4cedd3b6bf7c8cfc3626b191c578e",
-      "4b71b15ac5c10f182e69807d69398cbd81ed92fe",
-      "cb8e12b9a6d127477afc2660f4ff777ec301d2cc",
-      "b1f6e1c9b70fea8162fcc56bbe8340c822c29431"
+      "122194d15e438a5d981cd2810eaf2598bd7e6c1a",
+      "10470dcf3057e7ba4b693ab49135d859564448d3",
+      "009116f218ffe7166daff0692f0484ddec145204",
+      "63c75e8aa8f9030776775f8e340d52f5f730fe4f"
     ],
-    "verification": "GitHub/source review only; no Unity runtime or native capture was available. Audited the reflection path and found that cubemap freshness plus lighting/material coherence still did not identity-bind the ReflectionProbe configuration itself. Added a canonical two-probe state contract and SHA-256 fingerprint covering world transform, capture/influence volume, blend, box projection, HDR/resolution, intensity/importance, clipping/shadow distance, culling, sky clear policy, fallback background state and realtime refresh policy. Folded that digest into reflection-lighting-state-v4, so the existing async waiter compares it at pre-RenderProbe request, every observed Editor poll, completion and immediate pre-still validation. Core Visual Gate integrity transitively validates the new contract. Source self-audit fixed the UnityEngine.Rendering namespace and removed an overstrict canonical-black background requirement because Skybox clear makes that RGB irrelevant; the finite value remains fingerprinted for unexplained drift. No Unity 6000.3.0f1 compile/runtime assertion is made.",
+    "verification": "GitHub/source review only; no Unity runtime or native capture was available. Audited the formal temporal path after the previous LOD mesh/material/physical-UV continuity work and found a separate runtime-selection gap: QualitySettings.enableLODCrossFade, lodBias, maximumLODLevel, global LODGroup.crossFadeAnimationDuration, quality-level identity and live Danchi LOD renderer assignments were not pinned across the temporal sequence. Added temporal-lod-runtime-state-v1 plus an InitializeOnLoad MainCamera pre-cull guard that runs only while the existing authoritative temporal runtime guard is armed, validates canonical global/runtime LOD policy, establishes a SHA-256 baseline over the live selector/topology state, and requires that exact digest before every formal temporal cull. Existing Detail LOD Physical UV QA is required at sequence entry. If validation fails, the guard also disables the required filmic tonemap so the existing temporal HDR-to-LDR telemetry cannot later seal a formally valid runtime receipt even if an engine callback exception does not immediately abort Camera.Render. Static source/API self-audit only; no Unity 6000.3.0f1 compile/runtime assertion is made.",
     "expectedVisualScoreImpact": [
-      "Lighting/shadows/reflections: prevents a fresh cubemap from being accepted if probe placement, capture volume, clipping, culling or intensity differs from the authored/still state. No points without actual pixels.",
-      "Material/PBR: makes metal/glass/Fresnel review correspond to the exact local reflection field intended by the authored scene rather than merely a recently rendered cubemap.",
-      "Cinematic image: prevents highlight/exposure review from depending on a reflection probe whose capture center or intensity changed after synchronization.",
-      "Critical-defect evidence: reduces risk around impossible_material_physics, sun_shadow_inconsistency and unverified_render_claim without auto-clearing any defect.",
+      "Temporal/LOD/aliasing stability: prevents formally reviewed temporal evidence from silently using disabled global cross-fade, globally skipped LOD0, altered lodBias, changed cross-fade duration or different live LOD assignments. No points without actual motion pixels.",
+      "Texture/microdetail and Material/PBR: keeps the previously implemented metric-UV, phase and shared-material continuity tied to one stable runtime LOD selector throughout the formal temporal sequence.",
+      "Critical-defect evidence: reduces provenance risk for visible_lod_pop and severe_aliasing_or_shimmer without auto-clearing either defect.",
       "Automatic Visual Fidelity impact: 0 points. No actual render exists."
     ],
     "visualFidelityPointsAwarded": 0,
-    "nextBlocker": "Unity 6000.3.0f1 compile/runtime. At first Runner availability stop speculative expansion and run Prepare Complete Native 4K Review Packet. Verify reflection-lighting-state-v4 and its nested reflection-probe-state-v1 digest remain invariant from pre-RenderProbe request through every Editor poll, completion and immediate pre-still validation, then inspect sealed native 3840x2160 hero/oblique/grazing pixels and 100% crops before any Visual Fidelity scoring.",
-    "recordingNote": "Readiness remains 93/100 because this run strengthens reflection evidence configuration coherence but does not provide the missing 7-point Unity compile/runtime verification. Detailed record: Assets/QA/autonomous_run_2026-09-11_reflection_probe_state_coherence.json"
+    "nextBlocker": "Unity 6000.3.0f1 compile/runtime. At first Runner availability stop speculative expansion, compile the new guard, validate enableLODCrossFade/maximumLODLevel/lodBias/crossFadeAnimationDuration plus DanchiHighDetail runtime fingerprint on the prepared scene, run the authoritative native-4K packet, then review grazing/sash_rail_response, oblique/balcony_services and both temporal sequences at 100% for phase snap, visible LOD pop, shimmer and aliasing before any Visual Fidelity scoring.",
+    "recordingNote": "Readiness remains 93/100 because this run strengthens source-side formal temporal LOD provenance but does not provide the missing 7-point Unity compile/runtime verification. Detailed record: Assets/QA/autonomous_run_2026-09-11_temporal_lod_runtime_state.json"
   },
   "note": "Implementation Readiness measures source/pipeline coverage only. Visual Fidelity is unscored and cannot pass until real 3840x2160 Unity render evidence is captured and reviewed."
 }

@@ -173,7 +173,8 @@ public static class QualityBlockBalconyDrainageWaterproofingUpgrade
         MeshFilter mf = go.AddComponent<MeshFilter>(); mf.sharedMesh = mesh;
         MeshRenderer mr = go.AddComponent<MeshRenderer>(); mr.sharedMaterial = mat;
         mr.shadowCastingMode = ShadowCastingMode.On; mr.receiveShadows = true;
-        mr.lightProbeUsage = LightProbeUsage.BlendProbes; mr.reflectionProbeUsage = ReflectionProbeUsage.BlendProbes;
+        mr.lightProbeUsage = LightProbeUsage.BlendProbes;
+        mr.reflectionProbeUsage = ReflectionProbeUsage.BlendProbesAndSkybox;
         GameObjectUtility.SetStaticEditorFlags(go, StaticEditorFlags.BatchingStatic);
     }
 

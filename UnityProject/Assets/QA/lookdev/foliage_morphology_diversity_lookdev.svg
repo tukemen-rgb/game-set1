@@ -1,0 +1,67 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900">
+  <rect width="1600" height="900" fill="#eef0e8"/>
+  <text x="70" y="72" font-family="sans-serif" font-size="34" font-weight="700" fill="#20251f">Generated foliage morphology diversity — lookdev / not render evidence</text>
+  <text x="70" y="112" font-family="sans-serif" font-size="20" fill="#4e574c">Midsummer Japanese new-town trees. Geometry diversity only; thin-dielectric PBR and cause-based lighting stay authoritative elsewhere.</text>
+
+  <g transform="translate(80 180)" font-family="sans-serif">
+    <text x="0" y="0" font-size="24" font-weight="700" fill="#2b3329">Source risk</text>
+    <g transform="translate(0 35)" fill="none" stroke="#496348" stroke-width="7" stroke-linecap="round">
+      <path d="M100 250 C120 175 145 95 160 20"/>
+      <path d="M100 250 C75 175 40 110 20 55"/>
+      <path d="M100 250 C170 190 225 125 250 55"/>
+    </g>
+    <g transform="translate(0 35)" fill="#789b58" stroke="#3f5c37" stroke-width="2">
+      <ellipse cx="42" cy="95" rx="28" ry="12" transform="rotate(-20 42 95)"/>
+      <ellipse cx="73" cy="135" rx="28" ry="12" transform="rotate(-20 73 135)"/>
+      <ellipse cx="203" cy="95" rx="28" ry="12" transform="rotate(-20 203 95)"/>
+      <ellipse cx="174" cy="135" rx="28" ry="12" transform="rotate(-20 174 135)"/>
+      <ellipse cx="137" cy="80" rx="28" ry="12" transform="rotate(-20 137 80)"/>
+      <ellipse cx="127" cy="125" rx="28" ry="12" transform="rotate(-20 127 125)"/>
+    </g>
+    <text x="0" y="355" font-size="18" fill="#4e574c">Few exact spray silhouettes can read as stamped cards</text>
+    <text x="0" y="380" font-size="18" fill="#4e574c">when neighboring clusters repeat at native 4K.</text>
+  </g>
+
+  <g transform="translate(575 180)" font-family="sans-serif">
+    <text x="0" y="0" font-size="24" font-weight="700" fill="#2b3329">12 deterministic source morphologies</text>
+    <g transform="translate(0 45)">
+      <g fill="#799a58" stroke="#405f38" stroke-width="2">
+        <ellipse cx="55" cy="55" rx="31" ry="12" transform="rotate(-31 55 55)"/><ellipse cx="112" cy="76" rx="26" ry="11" transform="rotate(9 112 76)"/><ellipse cx="162" cy="48" rx="29" ry="13" transform="rotate(34 162 48)"/>
+        <ellipse cx="55" cy="145" rx="27" ry="13" transform="rotate(-8 55 145)"/><ellipse cx="112" cy="166" rx="31" ry="11" transform="rotate(25 112 166)"/><ellipse cx="162" cy="137" rx="25" ry="12" transform="rotate(-39 162 137)"/>
+        <ellipse cx="55" cy="235" rx="29" ry="11" transform="rotate(41 55 235)"/><ellipse cx="112" cy="253" rx="25" ry="13" transform="rotate(-23 112 253)"/><ellipse cx="162" cy="228" rx="32" ry="12" transform="rotate(7 162 228)"/>
+        <ellipse cx="255" cy="55" rx="25" ry="12" transform="rotate(16 255 55)"/><ellipse cx="312" cy="76" rx="30" ry="13" transform="rotate(-36 312 76)"/><ellipse cx="362" cy="48" rx="27" ry="11" transform="rotate(29 362 48)"/>
+      </g>
+      <g font-family="monospace" font-size="16" fill="#4e574c">
+        <text x="30" y="305">00 01 02 03 04 05 06 07 08 09 10 11</text>
+      </g>
+    </g>
+    <text x="0" y="385" font-size="18" fill="#4e574c">Per-lamina ±size, small pitch/yaw/roll and centimeter-order center offsets.</text>
+    <text x="0" y="410" font-size="18" fill="#4e574c">UV topology persists; normals/tangents are recalculated. No runtime randomness.</text>
+  </g>
+
+  <g transform="translate(1080 180)" font-family="sans-serif">
+    <text x="0" y="0" font-size="24" font-weight="700" fill="#2b3329">LOD identity rule</text>
+    <g transform="translate(10 45)">
+      <rect x="0" y="0" width="390" height="270" rx="18" fill="#f7f8f3" stroke="#9ba492" stroke-width="2"/>
+      <text x="22" y="42" font-size="19" fill="#2b3329">LeafCluster ordinal 17</text>
+      <text x="22" y="83" font-size="18" fill="#4e574c">LOD0  → Morph_05</text>
+      <text x="22" y="118" font-size="18" fill="#4e574c">LOD1  → Morph_05</text>
+      <text x="22" y="153" font-size="18" fill="#4e574c">LOD2  → Morph_05 (if retained)</text>
+      <text x="22" y="188" font-size="18" fill="#4e574c">LOD3  → Morph_05 (if retained)</text>
+      <text x="22" y="234" font-size="17" fill="#6b4036">Never swap morphology during cross-fade.</text>
+    </g>
+    <text x="0" y="355" font-size="18" fill="#4e574c">LOD may remove small clusters by physical scale, but</text>
+    <text x="0" y="380" font-size="18" fill="#4e574c">retained ordinals keep the exact same mesh asset.</text>
+  </g>
+
+  <g transform="translate(80 665)" font-family="sans-serif">
+    <text x="0" y="0" font-size="24" font-weight="700" fill="#2b3329">Native 4K review targets</text>
+    <text x="0" y="38" font-size="18" fill="#4e574c">hero: crown silhouette / clone recognition  •  oblique vegetation_grounding 100%: cluster attachment  •  grazing tree_shadow_contact 100%: leaf angular response</text>
+    <text x="0" y="72" font-size="18" fill="#4e574c">temporal subpixel_grazing: leaf-edge shimmer + LOD cross-fade morphology stability. Source checks cannot clear these defects.</text>
+  </g>
+
+  <g transform="translate(80 795)" font-family="sans-serif">
+    <rect x="0" y="0" width="1440" height="60" rx="12" fill="#f1e5d7" stroke="#b78a64" stroke-width="2"/>
+    <text x="24" y="38" font-size="19" fill="#623f2a">Constraints: no painted highlights • no metallic/emissive leaves • no storm/damage/disaster cues • no collider/tree-placement mutation • Visual Fidelity remains UNSCORED until actual Unity render evidence.</text>
+  </g>
+</svg>

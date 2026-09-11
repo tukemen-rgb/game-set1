@@ -2,7 +2,7 @@
   "runDate": "2026-09-12",
   "scope": "facade weathering spatial causality hardening",
   "startHead": "f587d35085a4ecaccab95f55a1a5c7671bb76f13",
-  "headBeforeRunRecord": "d68014725822d5394c498abc50244acbf2277c8b",
+  "headBeforeFinalRunRecordUpdate": "c1e58619364af89fc3ad86873cfd9fdab0436738",
   "implementationCommits": [
     {
       "sha": "d714b3f220cae0e3c9e820093479d4a900a84dbf",
@@ -15,14 +15,19 @@
     {
       "sha": "d68014725822d5394c498abc50244acbf2277c8b",
       "message": "qa: verify weathering source catchments at render time"
+    },
+    {
+      "sha": "c1e58619364af89fc3ad86873cfd9fdab0436738",
+      "message": "qa: fail closed when facade weathering is absent"
     }
   ],
-  "runRecordCommit": "This file is committed immediately after headBeforeRunRecord; use branch history for its self-referential commit SHA.",
+  "runRecordCommits": "The run record itself was created and then updated after self-audit; use branch history for those self-referential commit SHAs.",
   "problem": "Existing facade weathering was generated from construction-aware sources, but persisted residue meshes were not independently proven to remain spatially attributable to those modeled sources at formal render time. A later mesh edit could therefore detach a stain from its physical cause while source-count and material QA still passed.",
   "implementation": {
     "contract": "Assets/QA/facade_weathering_spatial_causality_contract.json",
     "lookdev": "Assets/QA/Lookdev/facade_weathering_spatial_causality.svg",
     "runtimeQa": "Assets/Editor/QualityBlockFacadeWeatheringSpatialCausalityQA.cs",
+    "formalPresenceGuard": "Assets/Editor/QualityBlockFacadeWeatheringFormalPresenceGuardQA.cs",
     "sourceCatchments": [
       "30 modeled window-sill/drip noses",
       "installed full-height rainwater downpipe",
@@ -38,21 +43,24 @@
       "grade splash must preserve a measurable drainage-side height response",
       "rail oxide runoff must remain sparse rather than activating every repeated fixing",
       "MainCamera pre-cull validation is fail-closed in the benchmark scene",
+      "an independent formal-presence guard blocks rendering when FacadeWeatheringDetail is absent entirely",
       "contract references canonical Visual Fidelity critical-defect IDs",
       "lookdev is explicitly non-render evidence and cannot award points"
     ]
   },
+  "selfAudit": {
+    "finding": "The first spatial-causality pre-cull callback returned early when FacadeWeatheringDetail was absent. That contradicted the fail-closed contract because total root deletion could bypass the detailed validator.",
+    "correctiveAction": "Added QualityBlockFacadeWeatheringFormalPresenceGuardQA as an independent MainCamera pre-cull guard. The missing-root state now throws before formal benchmark rendering, while the detailed validator continues to own per-group/per-vertex source attribution once the root exists.",
+    "visualFidelityPointsAwardedForFix": 0
+  },
   "verification": {
-    "githubCompareBeforeRunRecord": {
-      "status": "ahead",
-      "aheadBy": 3,
-      "behindBy": 0,
-      "mergeBase": "f587d35085a4ecaccab95f55a1a5c7671bb76f13",
-      "changedPaths": [
-        "UnityProject/Assets/Editor/QualityBlockFacadeWeatheringSpatialCausalityQA.cs",
-        "UnityProject/Assets/QA/Lookdev/facade_weathering_spatial_causality.svg",
-        "UnityProject/Assets/QA/facade_weathering_spatial_causality_contract.json"
-      ]
+    "sourceMathAudit": {
+      "windowSillCatchment": "covers generator lateral offset, width, drift and 0.94 m top offset through maximum generated ribbon length",
+      "downpipeCatchment": "covers both generated full-height runoff ribbons",
+      "balconyCatchment": "covers generated ±1.25 m drip origins plus ribbon width/drift and generated 0.10-0.31 m lengths",
+      "railCatchment": "covers generated local drift/width and 0.07-0.19 m oxide lengths",
+      "acCatchment": "covers generated 0.055-0.095 m x-radius and 0.035-0.070 m z-radius at renderer-bounds termination",
+      "gradeDrainageGradient": "generator analysis yields a comfortably larger near-downpipe upper envelope than the 0.04 m contract floor; runtime scene execution remains pending"
     },
     "runnerAtRunStart": "UNAVAILABLE",
     "githubActionsRunsAtRunStart": 0,
@@ -82,7 +90,7 @@
     "100% ac_drain_termination crop: residue must remain a dry local deposit at the real hose termination",
     "grazing/material_grazing: causal geometry must not create z-fighting, interpenetration or implausible glossy residue"
   ],
-  "nextBlocker": "Unity 6000.3.0f1 Runner/runtime. On first real Runner/screenshots, stop speculative expansion, compile and execute the catchment QA, then render and review sealed native 4K evidence before assigning any Visual Fidelity points.",
+  "nextBlocker": "Unity 6000.3.0f1 Runner/runtime. On first real Runner/screenshots, stop speculative expansion, compile and execute the catchment/presence QA, then render and review sealed native 4K evidence before assigning any Visual Fidelity points.",
   "constraints": {
     "godotPreserved": true,
     "baseMerged": false,

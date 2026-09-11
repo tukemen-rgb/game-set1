@@ -23,6 +23,7 @@ public static class QualityBlockRegisteredMaterialAssetPhysicalityQA
     private const string ReportPath = "Assets/QA/registered_material_asset_physicality_report.json";
     private const int Width = 3840;
     private const int Height = 2160;
+    private const int MaximumOpaqueRenderQueue = 2500;
     private const float RangeTolerance = 0.02f;
     private const float OpaqueAlphaMinimum = 0.98f;
     private const float MaximumEmission = 0.01f;
@@ -103,7 +104,7 @@ public static class QualityBlockRegisteredMaterialAssetPhysicalityQA
     }
 
     /// <summary>
-    /// Used by other fail-closed packet/integrity entry points without mutating report files.
+    /// Used by formal-evidence guards without mutating report files during Camera.Render.
     /// </summary>
     public static void ValidateForFormalEvidence()
     {
@@ -247,10 +248,14 @@ public static class QualityBlockRegisteredMaterialAssetPhysicalityQA
                 errors.Add($"{label} has invalid/non-opaque base color {c}: {spec.assetPath}");
         }
 
-        if (material.renderQueue > (int)UnityEngine.Rendering.RenderQueue.GeometryLast)
+        if (material.renderQueue > MaximumOpaqueRenderQueue)
             errors.Add($"{label} is unexpectedly transparent/late-queued (renderQueue={material.renderQueue}): {spec.assetPath}");
-        if (material.HasProperty("_Mode") && material.GetFloat("_Mode") > 0.1f)
-            errors.Add($"{label} Standard _Mode={material.GetFloat("_Mode"):0.###} is not opaque: {spec.assetPath}");
+        if (material.HasProperty("_Mode"))
+        {
+            float mode = material.GetFloat("_Mode");
+            if (!Finite(mode) || mode > 0.1f)
+                errors.Add($"{label} Standard _Mode={mode:0.###} is not opaque: {spec.assetPath}");
+        }
 
         float emissionMax = 0f;
         if (material.HasProperty("_EmissionColor"))

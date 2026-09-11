@@ -1,0 +1,103 @@
+{
+  "schemaVersion": "1.0",
+  "status": "IMPLEMENTATION_READY_RENDER_PENDING",
+  "purpose": "Bind high-detail danchi manufacture microstructure to metric UV0 coordinates and deterministic per-piece cut-origin phase diversity without awarding Visual Fidelity points before native render evidence.",
+  "upgrade": "Assets/Editor/QualityBlockDetailPhysicalUvUpgrade.cs",
+  "scenePath": "Assets/Scenes/QualityBlock1990s.unity",
+  "detailRootName": "DanchiHighDetail",
+  "generatedMeshRoot": "Assets/Art/GeneratedDetailPhysicalUvMeshes",
+  "uvPolicy": {
+    "units": "meters",
+    "boxProjection": "Per-face orthonormal tangent projection in local manufactured dimensions; V follows the longest available component axis so directional extrusion grain runs along the member rather than across it.",
+    "cylinderProjection": "Axial coordinate is physical local-Y metres. Circumference is mapped near-metrically and adjusted to the nearest whole texture repeat so the wrap seam closes without a phase jump; planar end caps remain metric local-X/Z.",
+    "phaseSource": "Deterministic FNV-1a hash of the source renderer hierarchy path.",
+    "phaseStepMeters": 0.017,
+    "phaseBinsPerAxis": 8,
+    "phaseReasoning": "Repeated balcony/window/fastener parts are separate manufactured pieces cut from stock or formed independently; a deterministic cut-origin phase prevents every apartment module from restarting the same microscopic patch while remaining stable across rebuilds.",
+    "materialPropertyBlocksForbidden": true,
+    "normalAndMaskSharePrimaryMetricTransform": true
+  },
+  "materials": [
+    {
+      "materialName": "MAT_AgedAluminum",
+      "materialId": "anodized_aluminum",
+      "repeatsPerMeter": 14.0,
+      "tileMeters": 0.0714286,
+      "physicalInterpretation": "Extrusion-scale normal grain becomes sub-millimetre-to-millimetre response within a roughly 71 mm repeat field; phase differs by manufactured member while the long-axis direction is preserved."
+    },
+    {
+      "materialName": "MAT_DarkGalvanizedSteel",
+      "materialId": "galvanized_steel",
+      "repeatsPerMeter": 11.0,
+      "tileMeters": 0.0909091,
+      "physicalInterpretation": "Broad zinc/oxidation mottling repeats on roughly 91 mm fields while bolts and brackets retain individually phased stock origins."
+    },
+    {
+      "materialName": "MAT_WindowRubber",
+      "materialId": "epdm_rubber",
+      "repeatsPerMeter": 18.0,
+      "tileMeters": 0.0555556,
+      "physicalInterpretation": "Fine dielectric EPDM grain uses a roughly 56 mm repeat field; gasket length remains geometry while only surface grain is tiled."
+    },
+    {
+      "materialName": "MAT_AgedACPlastic",
+      "materialId": "aged_abs_ac",
+      "repeatsPerMeter": 12.0,
+      "tileMeters": 0.0833333,
+      "physicalInterpretation": "Injection-mould orange peel uses a roughly 83 mm repeat field; casing form and panel breaks remain geometry."
+    },
+    {
+      "materialName": "MAT_PipeInsulation",
+      "materialId": "pipe_insulation_cover",
+      "repeatsPerMeter": 8.0,
+      "tileMeters": 0.125,
+      "physicalInterpretation": "Wrap-skin relief uses a 125 mm repeat field while pipe routing, bends and collars remain modeled geometry."
+    },
+    {
+      "materialName": "MAT_DrainHose",
+      "materialId": "pvc_drain_hose",
+      "repeatsPerMeter": 7.0,
+      "tileMeters": 0.1428571,
+      "physicalInterpretation": "Axial hose rib signal resolves to approximately 5 mm cadence inside a roughly 143 mm texture repeat; circumference wrap is closed to an integer repeat to avoid a normal-map seam."
+    }
+  ],
+  "qa": {
+    "minimumSourceRenderers": 400,
+    "minimumDistinctPhasePairs": 16,
+    "requiredCanonicalMaterials": 6,
+    "boxMetricEdgeErrorFractionMax": 0.04,
+    "requiredTextureProperties": ["_MainTex", "_BumpMap", "_MetallicGlossMap"],
+    "requiredTextureOffset": [0.0, 0.0],
+    "automaticVisualPoints": 0,
+    "renderVerificationPending": true
+  },
+  "formalEvidence": {
+    "required100PercentCrops": [
+      "grazing/material_grazing",
+      "grazing/sash_rail_response",
+      "oblique/balcony_services"
+    ],
+    "reviewFor": [
+      "obvious synchronized phase across repeated apartment modules",
+      "wrong aluminum extrusion-grain direction",
+      "texture scale changing with component dimensions",
+      "cylindrical normal-map seam",
+      "UV stretching on bevels/end caps",
+      "moire, shimmer or unstable grazing highlights"
+    ],
+    "actualRenderRequiredForVisualPoints": true
+  },
+  "criticalDefectRisksReduced": [
+    "obvious_repetition",
+    "severe_aliasing_or_shimmer"
+  ],
+  "limitations": [
+    "Metric UVs and deterministic phase diversity are source/runtime geometry properties; they cannot prove that repeated patterns are visually imperceptible in the final camera framing.",
+    "Small cylindrical hardware may deviate from exact circumferential texel density because seam closure deliberately rounds the circumference to a whole texture repeat; the maximum error is bounded by half one texture repeat and must be judged in native pixels.",
+    "The generated maps remain procedural approximations of manufacture microstructure rather than scanned material measurements; actual BRDF/Fresnel response remains a native-render judgment.",
+    "No Visual Fidelity score is awarded until the 3840x2160 hero/oblique/grazing frames and 100% crops exist and pass the canonical gate."
+  ],
+  "implementationReadinessScore": 93,
+  "visualFidelityStatus": "UNSCORED_UNTIL_REAL_4K_RENDER",
+  "runtimeRenderVerified": false
+}

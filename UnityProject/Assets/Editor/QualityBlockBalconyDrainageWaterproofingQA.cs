@@ -131,8 +131,9 @@ public static class QualityBlockBalconyDrainageWaterproofingQA
             throw new InvalidOperationException(label + " distorts its dimension-baked mesh by transform scale/rotation.");
         if (mr.shadowCastingMode == ShadowCastingMode.Off || !mr.receiveShadows)
             throw new InvalidOperationException(label + " is excluded from coherent contact/shadow response.");
-        if (mr.lightProbeUsage == LightProbeUsage.Off || mr.reflectionProbeUsage == ReflectionProbeUsage.Off)
-            throw new InvalidOperationException(label + " is excluded from scene lighting/reflection probes.");
+        if (mr.lightProbeUsage != LightProbeUsage.BlendProbes ||
+            mr.reflectionProbeUsage != ReflectionProbeUsage.BlendProbesAndSkybox)
+            throw new InvalidOperationException(label + " must match the benchmark's physical sky + local probe blending policy.");
     }
 
     private static void ValidateMaterial(Material m, string name, Color color, float gloss)

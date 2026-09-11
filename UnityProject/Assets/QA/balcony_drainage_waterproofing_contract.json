@@ -20,6 +20,12 @@
       "reference": "Japanese balcony drainage practice summary",
       "url": "https://www.jp-wat.com/column/biz/kankyo/balcony/",
       "usedFor": "1:50 balcony floor fall as a conservative benchmark drainage reconstruction. This is used as a modeling assumption only, not as proof of the original building detail."
+    },
+    {
+      "manufacturer": "Tajima Roofing",
+      "reference": "Oltac Ace balcony/veranda liquid-applied urethane waterproof systems",
+      "url": "https://bousui.tajima.jp/category/coating/oltac_ace/",
+      "usedFor": "Conventional multi-coat balcony/veranda urethane waterproof layer plus protective topcoat as the material-system basis. Exact historic product, colour and microsurface are not claimed."
     }
   ],
   "benchmarkAssumptions": {
@@ -51,14 +57,14 @@
     "components": [
       {
         "id": "rear_waterproof_upstands",
-        "construction": "Dry sheet/coating waterproof layer returned up the rear wall at both sides of the sliding opening, with a thin rendered termination build-up.",
+        "construction": "Dry liquid-applied waterproof layer/protective topcoat returned up the rear wall at both sides of the sliding opening, with a thin rendered termination build-up.",
         "dimensions": "100 mm visible upstand; nominal waterproof build-up 3 mm; rendered termination depth 8 mm to remain geometrically legible at 4K.",
         "mounting": "Bonded/terminated to the concrete substrate behind the balcony finish; no floating gap.",
         "interfaces": "Meets rear wall and floor plane; does not cover the sliding opening itself.",
         "orientation": "Vertical rear-wall returns, exterior-facing balcony side.",
         "exposure": "Rain and UV exposed but dry in the benchmark capture.",
         "aging": "Minor UV/chalking belongs to roughness/albedo microvariation only; no peeling, failure, disaster or reconstruction state.",
-        "geometryVsMaterial": "Upstand/termination thickness is geometry. Chalking and fine orange-peel response are material-scale only."
+        "geometryVsMaterial": "Upstand/termination thickness is geometry. Chalking and fine topcoat relief are material-scale only."
       },
       {
         "id": "threshold_waterproof_turn",
@@ -80,7 +86,7 @@
         "orientation": "Broad plane falls in +Z from the facade side toward the terminal drainage channel; no lateral random tilt.",
         "exposure": "Foot traffic, UV and rain exposed, but fully dry for the midsummer benchmark capture.",
         "aging": "Fine chalking/soil belongs to material-scale response and future cause-based weathering; no ponding stain is invented without rendered evidence.",
-        "geometryVsMaterial": "The 1:50 macro fall and edge thickness are geometry. Fine membrane orange-peel, chalking and Fresnel response remain material-scale."
+        "geometryVsMaterial": "The 1:50 macro fall and edge thickness are geometry. Fine topcoat micro-normal, roughness breakup, chalking and Fresnel response remain material-scale."
       },
       {
         "id": "terminal_drainage_channel",
@@ -109,13 +115,15 @@
   },
   "materials": {
     "MAT_BalconyWaterproofingDry": {
-      "surface": "aged dry exterior waterproof membrane/termination coating over the formed balcony substrate",
+      "surface": "aged dry exterior urethane waterproof/protective topcoat over the formed balcony substrate",
       "albedoSrgb": [0.245, 0.255, 0.245],
       "roughnessTarget": 0.72,
+      "smoothnessRange": [0.22, 0.34],
       "metallic": 0.0,
       "dielectricF0Approx": 0.04,
-      "normalScale": 0.0,
-      "microstructure": "fine orange-peel/chalk micro-roughness; no baked highlight",
+      "normalScale": 0.18,
+      "microstructure": "1024 px deterministic tileable isotropic micro-normal + bounded smoothness breakup at a 0.50 m sampling period; no macro runoff signal and no baked highlight",
+      "microstructureContract": "Assets/QA/balcony_surface_microstructure_contract.json",
       "wetness": 0.0,
       "uvAging": "subtle desaturation/chalking only; no catastrophic failure",
       "angularFresnel": "ordinary dielectric Fresnel; no painted edge highlight"
@@ -147,7 +155,7 @@
   },
   "lodPolicy": {
     "policy": "Construction-critical drainage/waterproofing uses one low-cost canonical assembly shared across every Danchi LOD state rather than being switched by the DanchiHighDetail renderer-subset LODGroup.",
-    "reason": "A stable shared assembly avoids a floor-profile or grate/channel disappearance during LOD transitions; actual temporal pixels must still verify that the millimetric grate and slope edges do not shimmer.",
+    "reason": "A stable shared assembly avoids a floor-profile or grate/channel disappearance during LOD transitions; actual temporal pixels must still verify that the millimetric grate, slope edges and micro-normal response do not shimmer.",
     "sharedAcrossLod0Lod1Lod2Lod3": true,
     "actualTemporalVerificationRequired": true
   },
@@ -158,7 +166,7 @@
     "futureDrainResidueRequiresDrainCatchmentAttribution": true,
     "disasterDamageForbidden": true
   },
-  "lookdevGenerationBrief": "Oblique 100 percent crop of one ordinary Japanese apartment balcony in dry midsummer light. Show the threshold turn at the facade, a subtly readable 1:50 floor fall across 0.84 m, the 85 mm terminal channel and one 110 mm coated drain grate. The macro fall must be visible only through true perspective, contact shadow and grazing reflection; do not exaggerate it, paint a gradient, add wet sheen, distress damage or disaster cues. Include a grazing-light variant specifically to judge whether the 16.8 mm drop reads as construction rather than a warped plane.",
+  "lookdevGenerationBrief": "Oblique 100 percent crop of one ordinary Japanese apartment balcony in dry midsummer light. Show the threshold turn at the facade, a subtly readable 1:50 floor fall across 0.84 m, the 85 mm terminal channel and one 110 mm coated drain grate. The macro fall must be visible only through true perspective, contact shadow and grazing reflection. The waterproof topcoat may show subtle isotropic micro-normal and roughness breakup, but no exaggerated texture, painted gradient, wet sheen, distress damage or disaster cues. Include a grazing-light variant specifically to judge whether the 16.8 mm drop and microsurface read as construction/material rather than a warped or procedurally noisy plane.",
   "formalEvidencePolicy": {
     "nativeResolutionRequired": [3840, 2160],
     "views": ["hero", "oblique", "grazing"],
@@ -170,7 +178,8 @@
   "visualFidelityRelevance": {
     "geometry_and_construction_fidelity": "direct",
     "material_pbr_physical_plausibility": "direct",
-    "lighting_shadows_reflections": "supporting because a true sloped plane changes grazing response and contact cues",
+    "texture_microdetail_texel_fidelity": "direct through the separate balcony microsurface contract",
+    "lighting_shadows_reflections": "supporting because a true sloped plane and physical micro-normal change grazing response",
     "weathering_context_causality": "direct because residue now has a physical gravity path to a terminal channel",
     "period_accuracy_scene_authenticity": "supporting",
     "temporal_lod_aliasing_stability": "risk_must_be_observed"

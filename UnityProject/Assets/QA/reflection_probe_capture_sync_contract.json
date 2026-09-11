@@ -1,7 +1,7 @@
 {
   "schemaVersion": "1.1",
   "status": "PENDING_REAL_UNITY_4K_RENDER",
-  "purpose": "Prevent native-4K benchmark evidence from being captured against stale, merely-requested, unfinished, or lighting-incoherent realtime reflection cubemaps. The exact physical sun/sky/ambient/shadow state must remain SHA-256-identical from probe request through every observed Editor polling boundary, completion and immediate pre-still validation. This contract is implementation/evidence integrity only and cannot award Visual Fidelity points.",
+  "purpose": "Prevent native-4K benchmark evidence from being captured against stale, merely-requested, unfinished, or lighting-incoherent realtime reflection cubemaps. The exact physical sun/sky/ambient/shadow state must remain SHA-256-identical from probe request through every observed Editor polling boundary, completion and immediate pre-still validation. The fingerprint also binds rendering-affecting light-mode, indirect-energy, subtractive-shadow, pixel-light and shadowmask state so values that remain individually legal cannot drift between cubemap and still. This contract is implementation/evidence integrity only and cannot award Visual Fidelity points.",
   "visualFidelityCategoryImpact": [
     "lighting_shadows_reflections",
     "material_pbr_physical_plausibility",
@@ -13,7 +13,8 @@
     "timeSlicing": "ReflectionProbeTimeSlicingMode.NoTimeSlicing renders the probe entirely in one frame; one frame is not treated as proof of same-call-stack completion.",
     "realtimeTexture": "ReflectionProbe.realtimeTexture is the realtime cubemap resource used by the probe.",
     "ambientProbe": "RenderSettings.ambientProbe is included in the lighting fingerprint so a DynamicGI sky-fill update cannot silently persist between reflection rendering and still capture.",
-    "solarGuard": "QualityBlockSolarShadowCaptureCoherenceQA validates the sole SummerSun, physical solar datum, global shadow state and pre-cull guard before lighting hashes are accepted."
+    "solarGuard": "QualityBlockSolarShadowCaptureCoherenceQA validates the sole SummerSun, physical solar datum, global shadow state and pre-cull guard before lighting hashes are accepted.",
+    "lightPurityOverlap": "The reflection fingerprint repeats rendering-affecting state already observed by QualityBlockLightEvidencePurityQA where that state can legally vary while remaining valid, preventing a legal request-state from silently differing from a legal still-state."
   },
   "requiredSceneState": {
     "probeRoot": "PhysicalReflectionEnvironment",
@@ -50,17 +51,20 @@
     "requireRequestCompletionMatch": true,
     "requireCompletionStillMatch": true,
     "includeSummerSunTransformAndPbrLightState": true,
+    "includeAuthoritativeSunRenderModeAndBounceState": true,
     "includeProceduralSkyMaterialState": true,
     "includeAmbientProbeCoefficients": true,
     "includeRenderSettingsReflectionAndFogState": true,
+    "includeSubtractiveShadowColor": true,
     "includeGlobalShadowAndLodSettings": true,
+    "includePixelLightAndShadowmaskState": true,
     "actualRenderRequiredForVisualPoints": true,
-    "reason": "A completed cubemap is still invalid evidence if its illumination differs from the still. The hash binds direct sun, physical sky, diffuse sky fill, reflection/fog policy and shadow/LOD settings across the asynchronous boundary and every observable Editor polling boundary while the RenderIDs are in flight."
+    "reason": "A completed cubemap is still invalid evidence if its illumination differs from the still. The hash binds direct sun, physical sky, diffuse sky fill, reflection/fog policy, subtractive shadow color, pixel-light/shadowmask policy and shadow/LOD settings across the asynchronous boundary and every observable Editor polling boundary while the RenderIDs are in flight."
   },
   "preCaptureAlgorithm": [
     "Build, save, reopen and validate the final benchmark scene before requesting any realtime probe refresh.",
     "Validate solar/shadow capture coherence and the physical sky/reflection environment.",
-    "Compute the request SHA-256 lighting-state fingerprint before RenderProbe, including SummerSun, procedural sky material, RenderSettings reflection/fog state, ambient SH coefficients and global shadow/LOD settings.",
+    "Compute the request SHA-256 lighting-state fingerprint before RenderProbe, including SummerSun transform/PBR/render-mode/bounce state, procedural sky material, RenderSettings reflection/fog/subtractive-shadow state, ambient SH coefficients and global pixel-light/shadowmask/shadow/LOD settings.",
     "Find and sort the two registered benchmark probes deterministically by name.",
     "Force NoTimeSlicing immediately before still capture.",
     "Call RenderProbe() for each probe and retain its returned RenderID; reject negative RenderIDs.",
@@ -146,9 +150,9 @@
       "scene_rebuilt_after_probe_sync_before_still_capture"
     ],
     "mapsToVisualGateCriticalDefects": [
-      "inconsistent_sun_shadow_direction",
+      "sun_shadow_inconsistency",
       "major_light_leak",
-      "claiming_render_quality_without_actual_render"
+      "unverified_render_claim"
     ],
     "reason": "A stale, unfinished or differently illuminated reflection cubemap can make glass, aluminum, painted steel and wetness response appear plausible while not corresponding to the current sky/sun/ambient/shadow state. Such pixels are not valid evidence for the lighting or material categories."
   },
@@ -164,8 +168,8 @@
     "Do not award Lighting, Material/PBR or Cinematic points until the actual sealed 3840x2160 frames and 100% crops are reviewed."
   ],
   "expectedVisualScoreImpactAfterRealRender": {
-    "lighting_shadows_reflections": "reduces risk that local reflections encode a different sun/sky/ambient state from the still; points remain reviewer-observed only",
-    "material_pbr": "makes angular/Fresnel review of glass and metal correspond to the exact physical environment used by the still",
+    "lighting_shadows_reflections": "reduces risk that local reflections encode a different sun/sky/ambient or legal-but-different global light/shadow policy from the still; points remain reviewer-observed only",
+    "material_pbr": "makes angular/Fresnel review of glass and metal correspond to the exact physical environment and light-policy state used by the still",
     "cinematic_image": "prevents exposure/color review from being contaminated by stale or differently illuminated specular energy",
     "automaticPoints": 0
   },

@@ -17,6 +17,7 @@
     "includeCurrentSerializedMaterialState": true,
     "includeMaterialAssetDependencyHash": true,
     "includeTextureBindingsSamplingAndDependencyHash": true,
+    "rejectUnfingerprintedMaterialPropertyBlocks": true,
     "requireSameHashAtReflectionRequestEveryObservedPollCompletionAndPreStill": true,
     "actualRenderRequiredForVisualPoints": true
   },
@@ -26,15 +27,17 @@
     "QualityBlockPhysicalTexelDensityQA.ValidateOpenScene",
     "QualityBlockAlbedoLightingNeutralityQA.ValidateGeneratedBaseAlbedos",
     "QualityBlockSceneMetadataCoverageQA.ValidateOpenScene",
-    "QualityBlockBenchmarkPrimitiveExposureQA.ValidateOpenScene"
+    "QualityBlockBenchmarkPrimitiveExposureQA.ValidateOpenScene",
+    "QualityBlockReflectionMaterialOverrideGuard.ValidateOpenScene"
   ],
   "scope": {
     "rendererSelection": "Active and enabled Renderer components belonging to Assets/Scenes/QualityBlock1990s.unity, sorted by deterministic hierarchy path and component type.",
     "transformState": "World position, world rotation and lossy scale for every active renderer.",
     "rendererState": "Layer, static editor flags, shadow casting, receive shadows, light-probe usage, reflection-probe usage, sorting layer/order and world bounds.",
-    "meshState": "Shared mesh name, asset path/GUID/dependency hash when authored, vertex/submesh counts, topology/index counts and bounds. Runtime procedural meshes additionally retain identity/count/bounds checks; subtle in-place vertex mutations that preserve all recorded invariants still require actual-pixel review.",
+    "meshState": "Shared mesh name, asset path/GUID/dependency hash when authored, vertex/submesh counts, topology/index counts and bounds. Runtime procedural meshes additionally retain identity/count/bounds checks and a bounded deterministic vertex sample; subtle in-place mutations outside that sample still require actual-pixel review.",
     "materialState": "Ordered shared material slots, current Editor-serialized material state, shader identity/keywords/render queue/GI/instancing flags and dependency hash for authored material assets.",
     "textureState": "Common PBR/detail texture bindings plus asset path/GUID/dependency hash, dimensions, mip count, filter mode, wrap mode, anisotropy, scale and offset.",
+    "materialPropertyBlocks": "Renderer MaterialPropertyBlock overrides are rejected from formal reflection/still evidence until their arbitrary per-renderer/per-material property payload can be fingerprinted explicitly. This prevents an untracked override channel from changing albedo, roughness, metallic, emission or texture binding between probe and still.",
     "exclusions": "This fingerprint is not a substitute for pixel review, does not infer Fresnel correctness from metadata, and does not claim to cryptographically cover arbitrary native-plugin or shader-global state outside the recorded scene/material/texture scope."
   },
   "criticalDefectRisksReduced": [
@@ -55,6 +58,7 @@
   ],
   "hardRules": [
     "The first accepted render-state hash must be taken only after source physicality/texture/metadata/primitive validators pass.",
+    "MaterialPropertyBlock overrides are not accepted into formal evidence until they are explicitly fingerprinted; the current pipeline fails closed if any active benchmark renderer has one.",
     "The render-state hash must be folded into the existing reflection lighting fingerprint so the existing request/poll/completion/pre-still equality checks cover both lighting and renderable scene state.",
     "A hash mismatch aborts evidence generation; it must never be normalized away or converted into a Visual Fidelity deduction.",
     "Hash equality awards zero points and cannot clear any critical defect.",

@@ -8,6 +8,7 @@ using UnityEngine;
 /// Converts the high-granularity danchi construction pass from Unity built-in primitive meshes to
 /// dimension-baked authored meshes. This keeps the existing assembly/layout logic reviewable while
 /// removing razor edges, primitive cylinder shading and round peg-like fasteners from the benchmark.
+/// The authored geometry is then rebound to manufacturing-scale phased UVs before any LOD proxies are made.
 /// </summary>
 public static class QualityBlockDetailBevelUpgrade
 {
@@ -25,7 +26,7 @@ public static class QualityBlockDetailBevelUpgrade
         EditorSceneManager.SaveOpenScenes();
         AssetDatabase.SaveAssets();
         AssetDatabase.Refresh();
-        Debug.Log("Beveled high-detail danchi built. Runtime Unity render verification remains pending.");
+        Debug.Log("Beveled high-detail danchi with metric phased manufacture UVs built. Runtime Unity render verification remains pending.");
     }
 
     [MenuItem("NewTown/Geometry/Apply Detail Bevel Pass Only")]
@@ -72,6 +73,10 @@ public static class QualityBlockDetailBevelUpgrade
         var manifest = root.AddComponent<QualityBlockDetailGeometryManifest>();
         manifest.Configure(boxes, cylinders, hexFasteners);
 
+        // This must run before DanchiLodUpgrade copies source renderers. LOD1-3 then inherit the same
+        // physically scaled/phase-diverse mesh assets rather than reintroducing normalized primitive UVs.
+        QualityBlockDetailPhysicalUvUpgrade.ApplyToOpenScene();
+
         EditorSceneManager.MarkSceneDirty(EditorSceneManager.GetActiveScene());
     }
 
@@ -102,10 +107,12 @@ public static class QualityBlockDetailBevelUpgrade
             throw new InvalidOperationException(
                 $"Expected every high-detail MeshFilter to use GM_HD authored geometry: authored={authoredCount}, total={filters.Length}.");
 
+        QualityBlockDetailPhysicalUvQA.ValidateOpenScene();
+
         Debug.Log(
             $"Beveled detail geometry validation passed structurally: chamferedBoxes={manifest.ChamferedBoxCount}, " +
-            $"beveledCylinders={manifest.BeveledCylinderCount}, hexFasteners={manifest.HexFastenerCount}, authoredMeshes={authoredCount}. " +
-            "Actual edge highlights, silhouette quality and LOD behavior still require Unity render inspection.");
+            $"beveledCylinders={manifest.BeveledCylinderCount}, hexFasteners={manifest.HexFastenerCount}, authoredMeshes={authoredCount}, metricPhysicalUv=validated. " +
+            "Actual edge highlights, microtexture repetition, seams and LOD behavior still require Unity render inspection.");
     }
 
     private static bool IsFastener(string objectName)

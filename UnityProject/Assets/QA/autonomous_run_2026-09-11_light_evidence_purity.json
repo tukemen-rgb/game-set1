@@ -1,0 +1,82 @@
+{
+  "schemaVersion": "1.0",
+  "generatedUtc": "2026-09-11T02:44:00Z",
+  "runId": "2026-09-11-light-evidence-purity",
+  "branch": "gpt/unity-migration",
+  "startHead": "2381a90a735043a6d4fd0a6d3b961f3bf4c50768",
+  "substantiveWorkHead": "3ac89cf74d2c2f50205e8be4b6218282aa8c6b40",
+  "substantiveCommits": [
+    "804d5323aa3fe70c2924d01e29dce7ed9ecb93de",
+    "fcf50de7264721185eed4b9e38b3dbb7eadf8bdf",
+    "3ac89cf74d2c2f50205e8be4b6218282aa8c6b40"
+  ],
+  "objective": "Close a formal-evidence gap left by camera-only CommandBuffer auditing: Built-in Render Pipeline lights can carry their own scheduled CommandBuffers around shadow-map/screenspace-shadow events and could contaminate reflection or final 4K evidence without appearing on the camera.",
+  "changes": [
+    {
+      "path": "Assets/QA/light_evidence_purity_contract.json",
+      "summary": "Added a fail-closed machine-readable contract for sole SummerSun lighting, no active artificial lights, no Light-attached CommandBuffers on any scene Light including disabled lights, pre-cull/pre-render/post-render state stability, actual-render-only visual scoring, and direct pixel review."
+    },
+    {
+      "path": "Assets/Editor/QualityBlockLightEvidencePurityQA.cs",
+      "summary": "Added an InitializeOnLoad formal-frame guard for QA4K_/QAPreparedTemporal_ native 3840x2160 targets. It audits all LightEvent attachment points, cross-checks Light.commandBufferCount, requires exactly one active emitting directional SummerSun bound to RenderSettings.sun, rejects active non-key lights, and SHA-256-locks light/global-shadow/fog/cookie state through the complete camera render lifecycle."
+    },
+    {
+      "path": "Assets/Editor/QualityBlockReflectionLightingStateFingerprint.cs",
+      "summary": "Integrated LightEvidencePurity validation into the existing reflection-lighting-state-v2 request/poll/completion/pre-still fingerprint path, so realtime reflection evidence also fails closed if Light-side injection or contradictory active lighting is present at any observed synchronization boundary."
+    }
+  ],
+  "sourceAudit": {
+    "canonicalBuilder": "Assets/Editor/BuildQualityBlock1990s.cs",
+    "findings": [
+      "The canonical environment creates one SummerSun directional light.",
+      "The park lamp creates a Point Light with intensity 0, so the new active-artificial-light prohibition does not conflict with the intended daytime benchmark builder state.",
+      "Existing CameraEvidencePurity already forbids Camera-attached CommandBuffers but did not cover Light.AddCommandBuffer/GetCommandBuffers."
+    ]
+  },
+  "verification": {
+    "level": "SOURCE_AND_GITHUB_ONLY",
+    "unityCompileVerified": false,
+    "unityRuntimeVerified": false,
+    "native4kRenderVerified": false,
+    "actualPixelReviewPerformed": false,
+    "githubWorkflowRunsObservedAtStart": 0,
+    "githubCommitStatusContextsObservedAtStart": 0,
+    "apiCompatibilityResearch": "Unity 6.0 scripting documentation exposes Light.commandBufferCount and Light.GetCommandBuffers, and LightEvent defines shadow/light render insertion points. No Unity 6000.3.0f1 compile claim is made until a Runner is available.",
+    "selfAudit": [
+      "Guard includes disabled Light components in CommandBuffer audit because a callback could enable a preconfigured light later in the frame.",
+      "Per-LightEvent counted buffers are cross-checked against Light.commandBufferCount; any nonzero attachment fails closed.",
+      "Reflection synchronization now invokes the same purity validation on every existing lighting-fingerprint request/poll/completion/pre-still check.",
+      "Formal camera callback hash uses all scene-light active/enabled/type/intensity/color/shadow/transform/cookie state plus global shadow/fog settings, so an observed mid-frame lighting mutation invalidates the frame rather than silently establishing a new baseline."
+    ]
+  },
+  "knownLimitations": [
+    "Source/GitHub inspection cannot prove the new C# compiles under Unity 6000.3.0f1; the missing Runner remains the blocker.",
+    "The guard cannot prove absence of transient Graphics.ExecuteCommandBuffer calls, native/plugin rendering injection, or a mutation that occurs entirely between all observed callbacks/poll boundaries; actual rendered evidence remains authoritative.",
+    "A zero-command-buffer state does not prove lighting quality, shadow quality, reflection quality, or absence of light leaks; it only removes one hidden injection route.",
+    "No Visual Fidelity category or critical defect is cleared from this source-side evidence."
+  ],
+  "implementationReadiness": {
+    "score": 93,
+    "possible": 100,
+    "status": "SOURCE_PIPELINE_READY_RUNTIME_PENDING",
+    "reasonNoIncrease": "The remaining 7 readiness points are reserved for actual Unity 6000.3.0f1 compile/runtime verification. This run strengthens evidence integrity only."
+  },
+  "visualFidelity": {
+    "status": "UNSCORED_UNTIL_REAL_4K_RENDER",
+    "pointsAwardedThisRun": 0,
+    "passClaimed": false,
+    "expectedScoreImpactAfterRealRender": [
+      "Lighting/shadows/reflections: reduces risk that custom LightEvent shadow or screenspace-mask injection invalidates the physical midsummer lighting evidence.",
+      "Material/PBR: keeps realtime reflection cubemaps and final material response from being silently altered through a hidden Light CommandBuffer route.",
+      "Cinematic image: prevents undeclared light-side render injection from beautifying or otherwise altering canonical still evidence while the camera itself remains clean.",
+      "Temporal/LOD/aliasing: every formal temporal frame must retain the same light/global-shadow state through its render lifecycle; actual shimmer and LOD pop still require pixel review.",
+      "Critical inconsistent_sun_shadow_direction and major_light_leak remain actual-pixel decisions; this run only strengthens their evidence provenance."
+    ]
+  },
+  "constraints": {
+    "godotModified": false,
+    "baseMerged": false,
+    "earthquakeDisasterReconstructionThemesAdded": false
+  },
+  "nextBlocker": "Unity 6000.3.0f1 Runner/Editor compile and runtime. When available, stop speculative expansion and run Prepare Complete Native 4K Review Packet. First verify LightEvidencePurity survives reflection request/polls and every QA4K_/QAPreparedTemporal_ pre-cull/pre-render/post-render callback with zero Light CommandBuffers and only SummerSun emitting, then inspect sealed 3840x2160 hero/oblique/grazing pixels plus 100% crops before any Visual Fidelity scoring."
+}

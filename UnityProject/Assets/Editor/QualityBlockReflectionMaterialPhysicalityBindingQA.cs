@@ -58,6 +58,10 @@ public static class QualityBlockReflectionMaterialPhysicalityBindingQA
 
         // Keep the upstream material contract itself fail-closed before declaring this binding valid.
         QualityBlockRegisteredMaterialAssetPhysicalityQA.ValidateContractConfigOnly();
+        // QualityBlockVisualGateIntegrityQA already invokes this reflection pre-probe binding. Validate the
+        // sibling reflection-lighting coverage contract here as well so a direct numeric-gate integrity path
+        // cannot retain stale critical-defect aliases or omit legal-but-render-changing light policy state.
+        QualityBlockReflectionLightingCoverageQA.ValidateContractConfigOnly();
     }
 
     /// <summary>

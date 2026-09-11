@@ -14,11 +14,11 @@
     "manifestPath": "Assets/QA/4k_capture_manifest.json",
     "observabilityPath": "Assets/QA/visual_evidence_observability_contract.json",
     "cropReferenceFormat": "viewId/cropId",
-    "canonicalCropPathFormat": "Assets/QA/Captures4K/{viewId}_crop_{cropId}_100pct.png",
+    "canonicalCropPathFormat": "Assets/QA/Captures4K/{viewId}_crop_{cropId}_{width}x{height}_100pct.png",
     "requireResampledFalse": true,
     "notes": [
       "The allowed review view set must equal the manifest viewId set; neither extra review aliases nor unreviewable manifest views are allowed.",
-      "The allowed review crop set must equal the manifest viewId/cropId set, and each id must resolve to exactly one canonical file path.",
+      "The allowed review crop set must equal the manifest viewId/cropId set, and each id must resolve to exactly one canonical dimension-bearing file path.",
       "Pixel-exact bytes, dimensions and SHA-256 sealing remain the responsibility of render-evidence provenance QA."
     ]
   },

@@ -64,6 +64,8 @@ public static class QualityBlockFacadeFormalBuildBinding
             !r.glassThicknessRequired ||
             !r.authoredDanchiRemainsAuthoritative ||
             !r.existingPassDriftMustFailClosed ||
+            !r.reflectionPollValidationMustBeReportFree ||
+            !r.inFlightRootReplacementMustAbort ||
             !r.actualRenderRequiredForVisualPoints)
             throw new InvalidOperationException("Facade formal-build binding requirements were weakened or are incomplete.");
         if (r.visualFidelityPointsAwarded != 0)
@@ -300,6 +302,8 @@ public static class QualityBlockFacadeFormalBuildBinding
         public bool glassThicknessRequired;
         public bool authoredDanchiRemainsAuthoritative;
         public bool existingPassDriftMustFailClosed;
+        public bool reflectionPollValidationMustBeReportFree;
+        public bool inFlightRootReplacementMustAbort;
         public bool actualRenderRequiredForVisualPoints;
         public int visualFidelityPointsAwarded;
     }

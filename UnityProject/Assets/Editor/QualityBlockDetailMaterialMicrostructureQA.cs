@@ -43,7 +43,7 @@ public static class QualityBlockDetailMaterialMicrostructureQA
     {
         "baked_or_painted_highlights",
         "impossible_material_physics",
-        "obvious_repeated_texture_or_module_pattern",
+        "obvious_repetition",
         "severe_aliasing_or_shimmer",
     };
 

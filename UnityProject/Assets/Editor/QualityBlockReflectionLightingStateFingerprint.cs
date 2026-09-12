@@ -147,6 +147,11 @@ public static class QualityBlockReflectionLightingStateFingerprint
         Append(sb, "render.fogStartDistance", RenderSettings.fogStartDistance);
         Append(sb, "render.fogEndDistance", RenderSettings.fogEndDistance);
 
+        // DynamicGI.indirectScale directly scales realtime and baked lightmap contribution. It is legal for
+        // the value to change while all sun, sky, renderer and lightmap identities remain otherwise valid,
+        // so bind the exact value across reflection request/poll/completion/pre-still boundaries.
+        Append(sb, "dynamicGI.indirectScale", DynamicGI.indirectScale);
+
         // Capture the actual sky-derived diffuse lighting, not just the settings that requested it.
         SphericalHarmonicsL2 ambient = RenderSettings.ambientProbe;
         for (int rgb = 0; rgb < 3; ++rgb)

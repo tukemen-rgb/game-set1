@@ -1,0 +1,175 @@
+{
+  "schemaVersion": "1.0",
+  "runId": "2026-09-12_facade_sill_drainage",
+  "branch": "gpt/unity-migration",
+  "startHead": "330981e9daf7404af03fce70bb143ae365be3869",
+  "preRecordHead": "aafbeb5f6a3b7dffcd0950b1f817e754e6dddba5",
+  "objective": "Increase the expected Geometry/Construction and Weathering/Context portions of the 100-point Visual Fidelity Gate by replacing the apartment facade's single slab-like window-sill/drip fallback with a manufactured, physically drained aluminum sill assembly, while keeping visual scoring locked until actual native-4K evidence exists.",
+  "priorityRationale": "The existing HD_WindowSillDrip was one rectangular aluminum block under each of 30 facade windows. In frontal/oblique/grazing benchmark views this can read as a primitive ledge rather than a manufactured sliding-sash lower-frame interface. Because visible primitive-placeholder geometry is a critical automatic FAIL and the lower-frame interface influences contact shadow, runoff logic, metal highlights and temporal silhouette stability, this was higher-value than adding unrelated decoration.",
+  "commitsBeforeRunRecord": [
+    {
+      "sha": "d90acb9ca8d5471ff08a74df04e86b05676caffc",
+      "message": "qa: define facade sill drainage construction contract"
+    },
+    {
+      "sha": "f8ae263ea7ed1f17bb3edc7aa6559faf9ce170f1",
+      "message": "docs: add facade sill drainage lookdev"
+    },
+    {
+      "sha": "aafbeb5f6a3b7dffcd0950b1f817e754e6dddba5",
+      "message": "feat: build physical facade sill drainage assemblies"
+    }
+  ],
+  "changedPathsBeforeRunRecord": [
+    "UnityProject/Assets/QA/facade_sill_drainage_contract.json",
+    "UnityProject/Assets/QA/lookdev/facade_sill_drainage_lookdev.svg",
+    "UnityProject/Assets/Editor/QualityBlockFacadeSillDrainageUpgrade.cs"
+  ],
+  "constructionReasoning": {
+    "components": [
+      "sloped closed aluminum sill tray",
+      "three-piece exterior skirt creating two true drainage openings",
+      "continuous projecting drip nose",
+      "existing lower sash frame retained as a separate assembly"
+    ],
+    "benchmarkDimensionalAssumptions": {
+      "sillWidthM": 2.46,
+      "trayDepthM": 0.195,
+      "trayThicknessM": 0.02,
+      "outwardFallM": 0.008,
+      "exteriorSkirtHeightM": 0.044,
+      "exteriorSkirtDepthM": 0.018,
+      "dripNoseHeightM": 0.012,
+      "dripNoseDepthM": 0.032,
+      "drainOpeningCount": 2,
+      "drainOpeningWidthM": 0.05,
+      "drainOpeningCenterXM": [
+        -0.62,
+        0.62
+      ],
+      "physicalRecessBehindOpeningM": 0.023,
+      "controlledFrameSeatM": 0.008
+    },
+    "dimensionClaimBoundary": "These dimensions are conservative benchmark reconstruction assumptions. They are not claimed as the dimensions of an identified historical commercial sash model.",
+    "mountingInterfaces": "The generated tray is seated into the existing lower sash-frame interface rather than floating below it. Its front edge sits behind the segmented exterior skirt so each 50 mm interruption exposes a real recessed drainage path. The drip nose projects farther outward than the skirt. Only the 30 legacy HD_WindowSillDrip renderers are disabled; other existing sash/glass/gasket/latch components remain independent.",
+    "orientationExposure": "Exterior is +Z. Upward tray surfaces are rain/sun exposed; the skirt and nose are rain/sun exposed. Drain recesses are intended to read darker from geometry/occlusion rather than painted darkness. Dry benchmark wetness remains zero.",
+    "geometryVsMaterial": "Tray fall, 20 mm section thickness, segmented skirt, 50 mm drainage gaps, recess depth and drip-nose projection are geometry. Fine anodized/extrusion microstructure, oxide response and micro-scratches remain material detail. No illumination is baked into albedo.",
+    "weatheringCausality": "RainLedge + DrainRunoff + UVExposure are attached to appropriate sill renderers. Aluminum itself receives no ferrous-rust source. Current wetness is zero."
+  },
+  "materialPolicy": {
+    "canonicalAsset": "Assets/Art/GeneratedDetailMaterials/MAT_AgedAluminum.mat",
+    "workflow": "Unity Standard metallic workflow with canonical generated microstructure maps when present",
+    "albedo": "approximately float RGB 0.55/0.57/0.56 before lighting; no painted highlight",
+    "metallicRange": [
+      0.82,
+      0.94
+    ],
+    "roughnessRange": [
+      0.43,
+      0.55
+    ],
+    "normalScale": "_BumpScale=1.0; canonical source profile normalStrength=0.52",
+    "microstructure": "fine anisotropy-like extrusion-oriented grain plus irregularity; metric UVs are cut into eight deterministic phase bins",
+    "wetness": 0.0,
+    "uvPhaseBins": 8,
+    "uvPhaseStepM": 0.017,
+    "angularResponse": "Metallic Fresnel/grazing response must arise from the Standard BRDF plus the coherent reflection environment; emission and painted rim/highlight energy are rejected."
+  },
+  "lodImplementation": {
+    "windowCount": 30,
+    "lod0RenderersPerWindow": 5,
+    "lod0RendererTotal": 150,
+    "lod1RendererTotal": 30,
+    "lod2RendererTotal": 30,
+    "lod3RendererTotal": 30,
+    "generatedRendererTotal": 240,
+    "transitions": [
+      0.055,
+      0.025,
+      0.01,
+      0.004
+    ],
+    "fadeMode": "CrossFade",
+    "animatedCrossFading": true,
+    "topologyPolicy": "LOD1/2/3 consolidate the same tray + three skirt segments + drip-nose topology into a single mesh. The two physical drainage openings are intentionally preserved through LOD3 instead of collapsing to a slab."
+  },
+  "qaImplementation": {
+    "machineReadableContract": "Assets/QA/facade_sill_drainage_contract.json",
+    "lookdevIllustration": "Assets/QA/lookdev/facade_sill_drainage_lookdev.svg",
+    "sceneSaveBinding": true,
+    "native4KPreCullValidation": true,
+    "temporalPreCullValidation": true,
+    "legacySillExpected": 30,
+    "legacySillMustBeDisabled": true,
+    "stockPrimitiveMeshNamesRejected": [
+      "Cube",
+      "Cylinder",
+      "Plane",
+      "Quad"
+    ],
+    "propertyBlockOverridesRejected": true,
+    "collidersForbidden": true,
+    "uvNormalsTangentsRequired": true,
+    "causeMetadataRequiredOnEveryRendition": true,
+    "geometricGapAndRecessChecks": true,
+    "automaticVisualPoints": 0
+  },
+  "reflectionEvidenceBinding": "No sill-specific reflection-probe mutation is performed during a probe request. The established reflection render-state fingerprint already hashes every active renderer identity/hierarchy, transform, mesh state, material state, texture state and scene dependency. Once this generated root exists in the persisted candidate, any sill geometry/material/render-state drift across reflection request/poll/completion/pre-still invalidates the shared fingerprint. This is evidence coherence only and is not a visual-quality claim.",
+  "sourceResearch": {
+    "reviewDate": "2026-09-12",
+    "functionalBasis": [
+      "YKK AP technical watertightness guidance documents lower-frame water-head / pressure-equalized sash water-management concepts and emphasizes water-tight frame/body interfaces.",
+      "LIXIL PRESEA-H documentation confirms RC-frame sliding-window systems with explicit water-tightness performance and aluminum exterior sash construction context."
+    ],
+    "claimLimit": "The sources support the functional need for a real lower-frame water-management path and interfaces. They do not establish the exact benchmark dimensions used here."
+  },
+  "verification": {
+    "githubStaticSourceReview": "PASS",
+    "contractAndSourceConsistencyReview": "PASS_BY_INSPECTION",
+    "branchLinearityFromStartHead": "PASS: compare reports 3 ahead / 0 behind before this run record and merge-base equals startHead",
+    "godotPreserved": "PASS: all substantive commits in this run are under UnityProject/Assets; no Godot path changed",
+    "baseMerged": false,
+    "excludedThemeContentAdded": false,
+    "unityTargetVersion": "6000.3.0f1",
+    "unityCompile": "PENDING_RUNNER",
+    "unityEditorRuntime": "PENDING_RUNNER",
+    "sceneSaveGeneratedCounts": "PENDING_RUNNER",
+    "reflectionProbeRefresh": "PENDING_RUNNER",
+    "native3840x2160Hero": "PENDING_RUNNER",
+    "native3840x2160Oblique": "PENDING_RUNNER",
+    "native3840x2160Grazing": "PENDING_RUNNER",
+    "pixelExact100PercentCrops": "PENDING_RUNNER",
+    "temporalLodWalk": "PENDING_RUNNER",
+    "renderedVisualReview": "PENDING_RUNNER"
+  },
+  "currentScores": {
+    "implementationReadiness": 93,
+    "implementationReadinessMax": 100,
+    "visualFidelity": null,
+    "visualFidelityStatus": "UNSCORED_UNTIL_REAL_4K_RENDER",
+    "visualPointsAwardedThisRun": 0,
+    "visualPassClaimed": false
+  },
+  "expectedVisualScoreImpactNotAwarded": {
+    "geometry_construction_fidelity": "high: replaces 30 slab-like sill placeholders with physical manufactured interfaces",
+    "material_pbr_physical_plausibility": "medium: canonical mapped aged aluminum plus real recess-driven response",
+    "lighting_shadows_reflections": "small-to-medium: introduces meaningful contact/recess/drip geometry for real shadow/reflection response",
+    "texture_microdetail_texel_fidelity": "small: eight metric-UV phase cuts reduce synchronized microstructure",
+    "weathering_context_causality": "medium: drainage and exposure now have actual geometric causes",
+    "vegetation_natural_complexity": "none",
+    "period_accuracy_scene_authenticity": "small conditional: manufactured sash-water-management detail is more plausible than a slab, but exact historical product identity is intentionally not claimed",
+    "cinematic_image_quality": "small conditional via more plausible highlight/contact response",
+    "temporal_lod_aliasing_stability": "medium conditional: drainage topology/silhouette is preserved through LOD3, but actual pop/shimmer must be observed"
+  },
+  "unresolvedRenderedRisks": [
+    "The custom tray cross-section currently has hard recalculated profile edges rather than an explicit millimetric edge roll. If the recessed tray edge still catches an implausibly razor-thin grazing highlight, add physical bevel geometry instead of compensating in the material.",
+    "The assumed 8 mm lower-frame seating must be checked in actual oblique pixels for both visible gaps and interpenetration with existing sash/gasket geometry.",
+    "The 50 mm drainage openings may be too visually large or too weak at the benchmark distance; only actual native-4K evidence can establish the right apparent scale.",
+    "Thirty product-identical sill assemblies are correct as manufactured repetition, but eight UV phase bins may still leave obvious synchronized appearance across the facade.",
+    "Anodized-aluminum highlight width and recess darkness must be checked under the actual midsummer sun/sky/reflection state; no source-side rule can prove filmic response.",
+    "LOD0 five-renderer to consolidated LOD1/2/3 transitions preserve geometry in source, but actual animated-crossfade dither/shimmer or highlight centroid movement remains unverified.",
+    "Unity 6000.3.0f1 compile and Editor callback behavior remain unverified because no Unity runner has executed this branch."
+  ],
+  "nextBlocker": "No Unity runner or newly produced Unity benchmark screenshots are available on the branch. The next authoritative step, once runtime exists, is to stop speculative expansion and execute Unity 6000.3.0f1 compile -> formal scene-save preparation -> verify exactly 30 sill LODGroups / 240 generated sill renderers and 30 disabled legacy slabs -> refresh coherent reflection probes -> capture fresh 3840x2160 hero/oblique/grazing stills with 100% crops -> run lod_walk_oblique temporal evidence -> review physical seating, drain-gap scale, aluminum grazing response, repetition and LOD shimmer -> then and only then enter Visual Fidelity category scores/deductions.",
+  "stopPolicy": "Continue safe source-side readiness work only while no runner/render exists and the date is no later than 2026-09-18. On runner/screenshots, prioritize actual render scoring/fixes. No new commits on or after 2026-09-19 without new instructions."
+}

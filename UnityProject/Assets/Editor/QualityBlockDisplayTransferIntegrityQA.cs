@@ -176,7 +176,7 @@ public static class QualityBlockDisplayTransferIntegrityQA
         foreach (string token in new[]
         {
             "[ImageEffectTransformsToLDR]",
-            "sceneLinear",
+            "private void OnRenderImage(RenderTexture source, RenderTexture destination)",
             "Graphics.Blit(source, destination, material, 0);",
             "LastSourceSrgb",
             "LastDestinationSrgb"
@@ -187,6 +187,12 @@ public static class QualityBlockDisplayTransferIntegrityQA
         }
 
         string shader = ReadRequiredSource(TonemapShaderPath);
+        foreach (string required in new[] { "float3 sceneLinear", "AcesApprox(sceneLinear * _ExposureMultiplier)" })
+        {
+            if (shader.IndexOf(required, StringComparison.Ordinal) < 0)
+                throw new InvalidOperationException("Filmic shader lost required scene-linear display-transform token: " + required);
+        }
+
         foreach (string forbidden in new[] { "LinearToGammaSpace", "GammaToLinearSpace", "pow(color,", "pow(color ," })
         {
             if (shader.IndexOf(forbidden, StringComparison.OrdinalIgnoreCase) >= 0)

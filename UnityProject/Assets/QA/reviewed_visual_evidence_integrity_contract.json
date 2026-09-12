@@ -1,6 +1,6 @@
 {
-  "schemaVersion": "1.2",
-  "purpose": "Fail-closed schema integrity for manually reviewed Visual Fidelity evidence. This contract does not award visual points; it prevents ambiguous, duplicated or incomplete review records from reaching the numeric gate and requires current runtime diagnostics for render-only repetition, major-light-leak and temporal risks.",
+  "schemaVersion": "1.3",
+  "purpose": "Fail-closed schema integrity for manually reviewed Visual Fidelity evidence. This contract does not award visual points; it prevents ambiguous, duplicated or incomplete review records from reaching the numeric gate and requires current runtime diagnostics for render-only repetition, major-light-leak and temporal risks, with temporal evidence bound to the same current visual candidate as the native-4K still packet.",
   "requiredViews": [
     "hero",
     "oblique",
@@ -48,7 +48,9 @@
     "requireCurrentRenderedRepetitionDiagnostics": true,
     "renderedRepetitionDiagnosticsCannotClearCriticalDefect": true,
     "requireCurrentRenderedLightLeakDiagnostics": true,
-    "renderedLightLeakDiagnosticsCannotDecideCriticalDefect": true
+    "renderedLightLeakDiagnosticsCannotDecideCriticalDefect": true,
+    "requireCurrentTemporalCandidateCoherence": true,
+    "temporalCandidateCoherenceCannotAwardPointsOrClearCriticalDefects": true
   },
   "runtimeDiagnosticPreconditions": {
     "renderedRepetition": {
@@ -75,9 +77,21 @@
       "requireSealedPerFrameLightingFingerprint": true,
       "requireFilmicHdrToLdrForEveryFrame": true,
       "requireZeroFallback": true
+    },
+    "temporalCandidateCoherence": {
+      "owner": "QualityBlockTemporalCandidateCoherenceQA.ValidateForScoring",
+      "contractPath": "Assets/QA/temporal_candidate_coherence_contract.json",
+      "requireCurrentStillCandidateFreshness": true,
+      "requireSameCandidateCombinedSha256": true,
+      "requireSameCandidateEpoch": true,
+      "requireSamePersistedSceneSha256": true,
+      "requireTemporalGeneratedAfterCandidateMutationAndLatestTrackedInput": true,
+      "automaticVisualPoints": 0,
+      "mayClearSevereAliasingOrShimmer": false,
+      "mayClearVisibleLodPop": false
     }
   },
   "visualScoreAwardedByThisQA": false,
   "runtimeRenderVerified": false,
-  "note": "Implementation Readiness and source-side validation remain separate from Visual Fidelity. Reviewed evidence must still pass render provenance, observability, current SHA-256-bound rendered repetition and light-leak triage, temporal sealing and the canonical 92/100 gate. Pixel diagnostics never substitute for direct review and cannot decide their associated critical defects by themselves."
+  "note": "Implementation Readiness and source-side validation remain separate from Visual Fidelity. Reviewed evidence must still pass render provenance, observability, current SHA-256-bound rendered repetition and light-leak triage, temporal runtime sealing, current temporal-to-still candidate coherence and the canonical 92/100 gate. Pixel/provenance diagnostics never substitute for direct review and cannot decide their associated critical defects by themselves."
 }

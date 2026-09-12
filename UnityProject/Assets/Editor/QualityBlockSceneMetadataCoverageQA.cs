@@ -10,12 +10,18 @@ using UnityEngine;
 /// Prevents a benchmark renderer from silently escaping the manufacture/installation/material
 /// reasoning required by the 4K Visual Fidelity gate. This is source/scene metadata QA only:
 /// passing it never awards visual points and never clears a rendered critical defect.
+///
+/// The named automatic-fail condition missing_construction_material_metadata is deliberately
+/// machine-bound here: a formal scene is not metadata-complete unless both the detailed material/
+/// construction registry and every active benchmark renderer's domain coverage validate.
 /// </summary>
 public static class QualityBlockSceneMetadataCoverageQA
 {
     private const string ScenePath = "Assets/Scenes/QualityBlock1990s.unity";
     private const string ContractPath = "Assets/QA/scene_metadata_coverage_contract.json";
+    private const string MaterialRegistryPath = "Assets/QA/material_construction_lookdev.json";
     private const string SceneRootName = "QualityBlock1990s";
+    private const string MetadataCriticalDefectId = "missing_construction_material_metadata";
 
     private static readonly string[] MandatoryMetadataFields =
     {
@@ -44,9 +50,14 @@ public static class QualityBlockSceneMetadataCoverageQA
             throw new InvalidOperationException(
                 "Scene metadata coverage contract FAILED:\n - " + string.Join("\n - ", errors));
 
+        // The domain contract is only half of the non-visual critical-defect proof. The detailed
+        // material/construction registry must remain structurally and physically plausible too.
+        QualityBlockMaterialConstructionQA.ValidateRegistry();
+
         Debug.Log(
             $"Scene metadata coverage contract valid: domains={contract.domains.Length}, " +
-            $"mode={contract.coverageMode}. This validates metadata coverage only, not rendered quality.");
+            $"mode={contract.coverageMode}, criticalBinding={contract.criticalDefectBinding.defectId}. " +
+            "This validates metadata coverage only, not rendered quality.");
     }
 
     [MenuItem("NewTown/QA/Validate Active Renderer Metadata Coverage")]
@@ -61,6 +72,11 @@ public static class QualityBlockSceneMetadataCoverageQA
         if (errors.Count > 0)
             throw new InvalidOperationException(
                 "Scene metadata coverage contract FAILED:\n - " + string.Join("\n - ", errors));
+
+        // Fail closed on the registry before accepting any renderer-domain coverage. A scene cannot
+        // claim to have construction/material metadata merely because each renderer sits under a named
+        // root if the referenced physical-material/manufacture registry itself is incomplete.
+        QualityBlockMaterialConstructionQA.ValidateRegistry();
 
         GameObject sceneRoot = FindSceneObject(SceneRootName);
         if (sceneRoot == null)
@@ -136,7 +152,7 @@ public static class QualityBlockSceneMetadataCoverageQA
 
         if (coverageErrors.Count > 0)
             throw new InvalidOperationException(
-                "Active renderer construction/material metadata coverage FAILED:\n - " +
+                $"CRITICAL AUTO-FAIL ({MetadataCriticalDefectId}): active renderer construction/material metadata coverage FAILED:\n - " +
                 string.Join("\n - ", coverageErrors));
 
         string counts = string.Join(", ", rendererCountByDomain
@@ -146,7 +162,7 @@ public static class QualityBlockSceneMetadataCoverageQA
 
         Debug.Log(
             $"Active renderer metadata coverage valid: renderers={renderers.Length}; {counts}. " +
-            "Every rendered object inherits a registered manufacture/installation/material scope. " +
+            "Every rendered object inherits a registered manufacture/installation/material scope and the detailed material registry passed. " +
             "Visual Fidelity remains unscored until real sealed Unity renders are reviewed.");
     }
 
@@ -171,6 +187,8 @@ public static class QualityBlockSceneMetadataCoverageQA
             errors.Add($"sceneRootName must be {SceneRootName}, got '{contract.sceneRootName}'.");
         if (contract.coverageMode != "all_active_renderers_in_benchmark")
             errors.Add("coverageMode must require all active benchmark renderers.");
+
+        ValidateCriticalDefectBinding(contract.criticalDefectBinding, errors);
 
         var requiredFields = new HashSet<string>(contract.requiredMetadataFields ?? Array.Empty<string>(), StringComparer.Ordinal);
         foreach (string field in MandatoryMetadataFields)
@@ -235,6 +253,84 @@ public static class QualityBlockSceneMetadataCoverageQA
                 errors.Add($"Mandatory base renderer domain is not required by metadata coverage: {root}");
 
         return errors;
+    }
+
+    private static void ValidateCriticalDefectBinding(CriticalDefectBinding binding, List<string> errors)
+    {
+        if (binding == null)
+        {
+            errors.Add("criticalDefectBinding is required so missing metadata cannot be cleared by visual review alone.");
+            return;
+        }
+
+        if (binding.defectId != MetadataCriticalDefectId)
+            errors.Add($"criticalDefectBinding.defectId must be '{MetadataCriticalDefectId}'.");
+        if (binding.materialRegistryPath != MaterialRegistryPath)
+            errors.Add($"criticalDefectBinding.materialRegistryPath must be '{MaterialRegistryPath}'.");
+        if (!binding.requireMaterialRegistryValidation)
+            errors.Add("criticalDefectBinding must require material/construction registry validation.");
+        if (!binding.requireActiveRendererCoverage)
+            errors.Add("criticalDefectBinding must require active-renderer metadata coverage.");
+        if (!binding.failClosedBeforeFormalRender)
+            errors.Add("criticalDefectBinding must fail closed before formal render evidence.");
+        if (!binding.failClosedBeforeVisualScoring)
+            errors.Add("criticalDefectBinding must fail closed before Visual Fidelity scoring.");
+        if (binding.sourcePassAwardsVisualPoints)
+            errors.Add("Metadata source/scene QA may not award Visual Fidelity points.");
+        if (binding.sourcePassClearsRenderedDefects)
+            errors.Add("Metadata source/scene QA may not clear rendered critical defects.");
+
+        RequireSourceToken(binding.formalRenderEntryPointPath, binding.requiredFormalRenderToken,
+            binding.minimumFormalRenderOccurrences, "formal render entry point", errors);
+        RequireSourceToken(binding.visualScoringEntryPointPath, binding.requiredVisualScoringToken,
+            binding.minimumVisualScoringOccurrences, "visual scoring entry point", errors);
+    }
+
+    private static void RequireSourceToken(string assetPath, string token, int minimumOccurrences, string label,
+        List<string> errors)
+    {
+        if (string.IsNullOrWhiteSpace(assetPath))
+        {
+            errors.Add($"criticalDefectBinding {label} path is required.");
+            return;
+        }
+        if (string.IsNullOrWhiteSpace(token))
+        {
+            errors.Add($"criticalDefectBinding {label} token is required.");
+            return;
+        }
+        if (minimumOccurrences < 1)
+        {
+            errors.Add($"criticalDefectBinding {label} minimum occurrence count must be >= 1.");
+            return;
+        }
+
+        string absolute = AbsolutePath(assetPath);
+        if (!File.Exists(absolute))
+        {
+            errors.Add($"criticalDefectBinding {label} source is missing: {assetPath}");
+            return;
+        }
+
+        string source = File.ReadAllText(absolute);
+        int count = CountOccurrences(source, token);
+        if (count < minimumOccurrences)
+            errors.Add(
+                $"criticalDefectBinding {label} is not fail-closed: token '{token}' occurs {count} time(s), expected >= {minimumOccurrences} in {assetPath}.");
+    }
+
+    private static int CountOccurrences(string source, string token)
+    {
+        int count = 0;
+        int offset = 0;
+        while (offset <= source.Length - token.Length)
+        {
+            int index = source.IndexOf(token, offset, StringComparison.Ordinal);
+            if (index < 0) break;
+            count++;
+            offset = index + token.Length;
+        }
+        return count;
     }
 
     private static CoverageContract LoadContract()
@@ -309,8 +405,28 @@ public static class QualityBlockSceneMetadataCoverageQA
         public string sceneRootName;
         public string coverageMode;
         public string policy;
+        public CriticalDefectBinding criticalDefectBinding;
         public string[] requiredMetadataFields;
         public DomainCoverage[] domains;
+    }
+
+    [Serializable]
+    private sealed class CriticalDefectBinding
+    {
+        public string defectId;
+        public string materialRegistryPath;
+        public bool requireMaterialRegistryValidation;
+        public bool requireActiveRendererCoverage;
+        public bool failClosedBeforeFormalRender;
+        public bool failClosedBeforeVisualScoring;
+        public bool sourcePassAwardsVisualPoints;
+        public bool sourcePassClearsRenderedDefects;
+        public string formalRenderEntryPointPath;
+        public string requiredFormalRenderToken;
+        public int minimumFormalRenderOccurrences;
+        public string visualScoringEntryPointPath;
+        public string requiredVisualScoringToken;
+        public int minimumVisualScoringOccurrences;
     }
 
     [Serializable]

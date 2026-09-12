@@ -1,9 +1,25 @@
 {
-  "schemaVersion": "1.0.3",
+  "schemaVersion": "1.1.0",
   "scenePath": "Assets/Scenes/QualityBlock1990s.unity",
   "sceneRootName": "QualityBlock1990s",
   "coverageMode": "all_active_renderers_in_benchmark",
   "policy": "Every active Renderer used by the benchmark must inherit one and only one registered scene-domain metadata scope. The scope must state manufacture/installation logic and link to detailed machine-readable contracts. A renderer parented outside these scopes is a metadata critical defect; source coverage never substitutes for rendered evidence.",
+  "criticalDefectBinding": {
+    "defectId": "missing_construction_material_metadata",
+    "materialRegistryPath": "Assets/QA/material_construction_lookdev.json",
+    "requireMaterialRegistryValidation": true,
+    "requireActiveRendererCoverage": true,
+    "failClosedBeforeFormalRender": true,
+    "failClosedBeforeVisualScoring": true,
+    "sourcePassAwardsVisualPoints": false,
+    "sourcePassClearsRenderedDefects": false,
+    "formalRenderEntryPointPath": "Assets/Editor/QualityBlockNative4KReviewPacket.cs",
+    "requiredFormalRenderToken": "QualityBlockSceneMetadataCoverageQA.ValidateOpenScene();",
+    "minimumFormalRenderOccurrences": 3,
+    "visualScoringEntryPointPath": "Assets/Editor/QualityBlockReviewedVisualEvidenceIntegrityQA.cs",
+    "requiredVisualScoringToken": "QualityBlockSceneMetadataCoverageQA.ValidateOpenScene();",
+    "minimumVisualScoringOccurrences": 1
+  },
   "requiredMetadataFields": [
     "manufacture",
     "dimensionsThickness",

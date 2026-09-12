@@ -76,6 +76,13 @@ public static class QualityBlockReviewedVisualEvidenceIntegrityQA
         ValidateCategoryEntries(evidence.categories);
         ValidateCriticalDefectEntries(evidence.criticalDefects);
 
+        // missing_construction_material_metadata is a named automatic FAIL but it is not something
+        // pixels can prove absent. Revalidate both the detailed material/construction registry and
+        // every active benchmark renderer's metadata domain here, inside the scoring path. Human
+        // observed references remain required by the review schema, but they cannot override this
+        // machine proof. This source/scene validation awards zero visual points.
+        QualityBlockSceneMetadataCoverageQA.ValidateOpenScene();
+
         // Static hierarchy signatures cannot clear the render-only obvious-repetition defect. Require
         // pixel-domain diagnostics generated from the current SHA-256-bound native 4K manifest/crop bytes
         // before scoring. The diagnostic is intentionally warning-only: its result cannot clear or assert
@@ -97,7 +104,8 @@ public static class QualityBlockReviewedVisualEvidenceIntegrityQA
         Debug.Log(
             "Reviewed Visual Fidelity evidence integrity valid: exact hero/oblique/grazing entries, exact nine categories, " +
             "exact twelve critical-defect reviews, no duplicates/unknown IDs, complete evidence/corrective-action text, " +
-            "current SHA-256-bound native-4K repetition and light-leak triage reports, and a sealed per-frame temporal lighting + filmic HDR->LDR runtime receipt. " +
+            "machine-revalidated construction/material metadata, current SHA-256-bound native-4K repetition and light-leak triage reports, " +
+            "and a sealed per-frame temporal lighting + filmic HDR->LDR runtime receipt. " +
             "Pixel diagnostics remain warning-only; this QA awards 0 Visual Fidelity points and human pixel review/provenance/numeric gate still decide scoring eligibility/PASS.");
     }
 

@@ -1,0 +1,128 @@
+{
+  "schema_version": "1.0",
+  "id": "vegetation_formal_build_integration",
+  "status": "RENDER_VERIFICATION_PENDING",
+  "purpose": "Require vegetation ecology and tree-to-ground root-zone interfaces in every formal Unity 4K/temporal candidate after the detailed-tree rebuild, so the Vegetation/Natural Complexity gate cannot be evaluated from a candidate that silently dropped the contextual vegetation pass.",
+  "scope": {
+    "benchmark_scene": "Assets/Scenes/QualityBlock1990s.unity",
+    "formal_entry_chain": [
+      "QualityBlock4KCapture.PrepareAndValidateScene",
+      "QualityBlockGroundDetailUpgrade.BuildDetailedGround",
+      "QualityBlockFoliageOpticsUpgrade.BuildFoliageOptics"
+    ],
+    "required_validator": "QualityBlockFoliageOpticsUpgrade.ValidateOpenScene"
+  },
+  "required_execution_order": [
+    "QualityBlockTreeDetailUpgrade.BuildDetailedTrees",
+    "QualityBlockTreeWoodyContinuityQA.ApplyToOpenScene",
+    "QualityBlockFoliageMorphologyVariationUpgrade.ApplyToOpenScene",
+    "QualityBlockFoliageOpticsUpgrade.EnsureMaterials",
+    "QualityBlockFoliageOpticsUpgrade.ApplyToOpenScene",
+    "QualityBlockVegetationEcologyContractQA.Validate",
+    "QualityBlockVegetationEcologyUpgrade.ApplyToOpenScene",
+    "QualityBlockVegetationRootZoneInterfaceQA.ApplyToOpenScene",
+    "QualityBlockFoliageOpticsUpgrade.ValidateOpenScene"
+  ],
+  "construction_reasoning": {
+    "base_tree_count": 6,
+    "ecology_root": "VegetationEcologyDetail",
+    "tree_pit_interface": {
+      "required_reconstructed_count": 6,
+      "paved_tree_count": 5,
+      "grass_tree_count": 1,
+      "soil_basin_radius_m": 1.06,
+      "soil_basin_apparent_depth_m": 0.062,
+      "paved_edge_ring_radius_m": 1.16,
+      "paved_radial_root_breaks_per_tree": 16,
+      "paved_radial_root_breaks_total": 80,
+      "grass_root_transition_lobes": 36,
+      "intent": "Replace a simplistic tree-ground intersection with a physically legible recessed soil basin, paving-edge construction and species/context-sensitive root transition while preserving the existing ground datum."
+    },
+    "interfaces": [
+      "tree trunk/root flare to soil basin",
+      "soil basin to paving edging on paved trees",
+      "soil basin to grass fringe on grass tree",
+      "understory/shrub/curb weeds to their supporting ground surfaces"
+    ],
+    "orientation_and_exposure": "All ecology placement remains scene-context driven relative to the existing six benchmark tree slots, curb/grass/plaza context and midsummer environment."
+  },
+  "material_reasoning": {
+    "soil": {
+      "material": "PBR_DrySoil",
+      "physical_class": "dry dielectric soil",
+      "metallic_max": 0.02,
+      "wetness": 0.0,
+      "weathering_rule": "No wetness or dark runoff may be introduced without a causal exposure/drainage condition."
+    },
+    "paved_interface": {
+      "material": "PBR_WashedConcrete",
+      "physical_class": "dielectric mineral/concrete edge",
+      "metallic_max": 0.02
+    },
+    "grass_fringe": {
+      "material_class": "leaf transmission material",
+      "physical_class": "thin dielectric vegetation",
+      "metallic_max": 0.02
+    },
+    "angular_response": "Dielectric soil/concrete and thin-leaf vegetation must derive grazing response from their PBR/shader models; painted or baked highlight bands are forbidden."
+  },
+  "weathering_causality": {
+    "required": true,
+    "rules": [
+      "Tree-pit dirt/soil variation must originate at the recessed basin/contact zone.",
+      "Paving-edge discoloration or accumulation may follow drainage/contact geometry but may not be placed as decorative random stains.",
+      "Vegetation density and ground contact must remain compatible with exposure and supporting surface type."
+    ]
+  },
+  "lod_and_temporal_policy": {
+    "tree_lods": [0, 1, 2, 3],
+    "root_zone_note": "Root-zone interface geometry is formal-scene evidence and must remain visually stable through benchmark camera motion; actual pop/shimmer judgement is render-only.",
+    "critical_fail_if_observed": [
+      "visible LOD pop",
+      "severe aliasing or shimmer",
+      "floating vegetation",
+      "interpenetrating hero root/tree-pit geometry"
+    ]
+  },
+  "fail_closed_rules": [
+    "FAIL if VegetationEcologyDetail is absent after the formal foliage rebuild.",
+    "FAIL if the ecology contract is not validated before ecology construction.",
+    "FAIL if the root-zone interface validator does not pass in the same formal scene candidate.",
+    "FAIL if legacy/simple tree-pit geometry remains where the root-zone reconstruction is required.",
+    "FAIL if required reconstructed counts, basin dimensions, paved/grass split, materials or contact metadata drift outside their contracts.",
+    "FAIL if formal validation can pass after deleting the ecology root or a required root-zone reconstruction.",
+    "FAIL if construction/material metadata is missing.",
+    "Do not self-repair after evidence capture has been armed; rebuild before the formal evidence epoch instead."
+  ],
+  "visual_fidelity_gate_mapping": {
+    "expected_impact_only_not_points": {
+      "Geometry & construction fidelity": "medium",
+      "Material/PBR physical plausibility": "small",
+      "Texture/microdetail/texel fidelity": "small",
+      "Weathering/context causality": "medium",
+      "Vegetation/natural complexity": "major",
+      "Temporal/LOD/aliasing stability": "small"
+    },
+    "visual_fidelity_points_awarded": 0,
+    "visual_fidelity_status": "UNSCORED_UNTIL_REAL_4K_RENDER",
+    "pass_claim_allowed_without_actual_render": false
+  },
+  "render_verification": {
+    "required_unity_version": "6000.3.0f1",
+    "required_stills": [
+      "3840x2160 frontal/hero where vegetation interfaces are visible",
+      "3840x2160 oblique vegetation/root-zone view",
+      "3840x2160 grazing-light vegetation/root-zone view where applicable"
+    ],
+    "required_crops": [
+      "100% tree-pit/root-flare crop",
+      "100% understory/ground-contact crop"
+    ],
+    "required_temporal": "camera motion crossing relevant vegetation/tree LOD ranges",
+    "status": "PENDING_RUNTIME"
+  },
+  "implementation_readiness": {
+    "score_100": 93,
+    "reason_not_higher": "Unity 6000.3.0f1 compile/runtime, formal pass execution, failure injection and actual 4K evidence are not currently available from a Runner."
+  }
+}

@@ -6,18 +6,18 @@ using UnityEditor;
 using UnityEngine;
 
 /// <summary>
-/// Binds the registered-material physicality guard into the reflection-lighting fingerprint path.
-/// QualityBlockReflectionProbeAwaiter evaluates that fingerprint before RenderProbe(), on every observed
-/// Editor poll, at completion and immediately before still capture; therefore a material-registry drift
-/// cannot enter or survive the formal cubemap baseline merely because MainCamera pre-cull has not run yet.
-/// The same entrypoint also chains manufacturing-scale detail UVs, the facade formal-build binding,
-/// generated-foliage formal evidence, balcony drainage/floor-fall construction, the dry waterproof
-/// microsurface state, and the facade glazing-gasket construction state, closing equivalent ReflectionProbe
-/// blind spots for stale UV meshes, missing facade construction/occupancy, stale foliage, stale balcony
-/// geometry/material response, or a stale/missing glass-to-sash interface.
+/// Binds registered-material physicality and high-value construction state into the formal
+/// reflection-lighting fingerprint path. QualityBlockReflectionProbeAwaiter evaluates that fingerprint
+/// before RenderProbe(), on every observed Editor poll, at completion and immediately before still capture;
+/// therefore source/material/construction drift cannot enter or survive the formal cubemap baseline merely
+/// because MainCamera pre-cull has not run yet.
 ///
-/// This is evidence-integrity infrastructure only. It awards zero Visual Fidelity points and cannot clear
-/// any critical defect without sealed native-4K rendered evidence.
+/// The entrypoint chains manufacture-scale detail UVs, facade formal-build state, generated foliage,
+/// balcony drainage/floor fall, dry waterproof microstructure, glazing-gasket construction and the
+/// period-plausible metal crescent-latch/receiver assembly. The first latch call may create a genuinely
+/// missing generated pass before the reflection epoch is armed; subsequent calls are read-only and fail
+/// closed on root replacement/deletion. This is evidence-integrity infrastructure only: it awards zero
+/// Visual Fidelity points and cannot clear a rendered critical defect without sealed native-4K evidence.
 /// </summary>
 public static class QualityBlockReflectionMaterialPhysicalityBindingQA
 {
@@ -25,6 +25,7 @@ public static class QualityBlockReflectionMaterialPhysicalityBindingQA
     private const string ScenePath = "Assets/Scenes/QualityBlock1990s.unity";
     private const string MaterialPhysicalityContractPath = "Assets/QA/registered_material_asset_physicality_contract.json";
     private const string FacadeGlazingGasketContractPath = "Assets/QA/facade_glazing_gasket_contract.json";
+    private const string FacadeSashLatchContractPath = "Assets/QA/facade_sash_latch_contract.json";
 
     private static readonly string[] CanonicalCriticalRisks =
     {
@@ -37,90 +38,78 @@ public static class QualityBlockReflectionMaterialPhysicalityBindingQA
     public static void ValidateContractConfigOnly()
     {
         BindingContract contract = LoadJson<BindingContract>(ContractPath);
-        if (contract == null || !string.Equals(contract.schemaVersion, "1.1", StringComparison.Ordinal))
-            throw new InvalidOperationException("Reflection material physicality binding contract is null/unparseable or not schema 1.1.");
+        if (contract == null || !string.Equals(contract.schemaVersion, "1.2", StringComparison.Ordinal))
+            throw new InvalidOperationException("Reflection material physicality binding contract is null/unparseable or not schema 1.2.");
         if (!string.Equals(contract.scenePath, ScenePath, StringComparison.Ordinal))
             throw new InvalidOperationException("Reflection material physicality binding scene identity drifted.");
         if (!string.Equals(contract.materialPhysicalityContractPath, MaterialPhysicalityContractPath, StringComparison.Ordinal))
             throw new InvalidOperationException("Reflection material physicality binding no longer targets the canonical registered-material contract.");
         if (!string.Equals(contract.facadeGlazingGasketContractPath, FacadeGlazingGasketContractPath, StringComparison.Ordinal))
             throw new InvalidOperationException("Reflection material physicality binding no longer targets the canonical facade glazing-gasket contract.");
+        if (!string.Equals(contract.facadeSashLatchContractPath, FacadeSashLatchContractPath, StringComparison.Ordinal))
+            throw new InvalidOperationException("Reflection material physicality binding no longer targets the canonical facade sash-latch contract.");
 
         Requirements r = contract.requirements;
         if (r == null ||
             !r.validateMaterialPhysicalityBeforeEveryReflectionLightingFingerprint ||
             !r.validateFacadeGlazingGasketBeforeEveryReflectionLightingFingerprint ||
+            !r.ensureFacadeSashLatchBeforeFirstReflectionBaseline ||
+            !r.validateFacadeSashLatchBeforeEveryReflectionLightingFingerprint ||
             !r.reflectionFingerprintUsedBeforeRenderProbeRequest ||
             !r.reflectionFingerprintRevalidatedOnEveryEditorPoll ||
             !r.reflectionFingerprintRevalidatedAtCompletion ||
             !r.reflectionFingerprintRevalidatedImmediatelyBeforeStillCapture ||
             !r.physicalityValidationMustBeReportFreeDuringFingerprinting ||
             !r.facadeGlazingGasketValidationMustBeReadOnlyDuringFingerprinting ||
+            !r.facadeSashLatchValidationMustBeReadOnlyAfterEpochArm ||
             !r.physicalityFailureAbortsReflectionEvidence ||
             !r.facadeGlazingGasketFailureAbortsReflectionEvidence ||
+            !r.facadeSashLatchFailureAbortsReflectionEvidence ||
             !r.actualRenderRequiredForVisualPoints)
             throw new InvalidOperationException("Reflection material physicality binding requirements were weakened or are incomplete.");
 
         RequireExactSet(contract.criticalDefectRisksReduced, CanonicalCriticalRisks, "criticalDefectRisksReduced");
         if (contract.visualFidelityPointsAwarded != 0 || contract.runtimeRenderVerified)
             throw new InvalidOperationException("Reflection material physicality binding may not award Visual Fidelity points or claim runtime render verification.");
-        if (contract.limitations == null || contract.limitations.Length < 4 || contract.limitations.Any(string.IsNullOrWhiteSpace))
+        if (contract.limitations == null || contract.limitations.Length < 5 || contract.limitations.Any(string.IsNullOrWhiteSpace))
             throw new InvalidOperationException("Reflection material physicality binding limitations are missing or incomplete.");
 
-        // Keep the upstream material contract itself fail-closed before declaring this binding valid.
         QualityBlockRegisteredMaterialAssetPhysicalityQA.ValidateContractConfigOnly();
-        // The newly introduced glazing-gasket interface has its own manufacture/install/PBR/LOD contract.
-        // Bind that contract here so a future edit cannot silently remove the formal probe-time requirement.
         QualityBlockFacadeGlazingGasketUpgrade.ValidateContractConfigOnly();
-        // QualityBlockVisualGateIntegrityQA already invokes this reflection pre-probe binding. Validate the
-        // sibling reflection-lighting coverage contract here as well so a direct numeric-gate integrity path
-        // cannot retain stale critical-defect aliases or omit legal-but-render-changing light policy state.
+        QualityBlockFacadeSashLatchUpgrade.ValidateContractConfigOnly();
         QualityBlockReflectionLightingCoverageQA.ValidateContractConfigOnly();
-        // The same core integrity path must also freeze the exact canonical ReflectionProbe configuration.
-        // Otherwise a weakened influence/capture-volume contract could remain dormant until runtime and the
-        // source-side 92-point gate integrity check would not notice it.
         QualityBlockReflectionProbeStateCoherenceQA.ValidateContractConfigOnly();
-        // ReflectionProbe.RenderProbe does not invoke MainCamera pre-cull. Keep manufacture-scale UV and
-        // phase-diversity policy bound to this already-central pre-probe integrity entrypoint as well.
         QualityBlockReflectionDetailPhysicalUvBindingQA.ValidateContractConfigOnly();
-        // The same formal reflection boundary must not accept the facade-optics-only fallback when higher-
-        // fidelity rough-opening, metric-UV and occupancy passes are present in source but absent from scene.
         QualityBlockFacadeFormalBuildBinding.ValidateContractConfigOnly();
-        // Recent foliage morphology, folded-lamina and analytic silhouette guards are MainCamera pre-cull
-        // aware, but cubemap rendering bypasses that callback. Bind their read-only state contract here so
-        // cubemaps, stills and temporal evidence cannot silently represent different foliage generations.
         QualityBlockFoliageFormalEvidenceBindingQA.ValidateContractConfigOnly();
-        // Balcony drainage/floor-fall construction is also created at the scene-save boundary. Bind its
-        // machine-readable construction/material contract to the same source-side integrity path so a future
-        // edit cannot silently remove the physical fall while reflection evidence still seals successfully.
         QualityBlockBalconyDrainageWaterproofingQA.ValidateContractConfigOnly();
-        // The post-save waterproof microsurface pass intentionally runs before reflection synchronization.
-        // Its contract must also be part of the central source-side integrity chain; otherwise a probe could
-        // seal with the older perfectly uniform material while MainCamera later sees the micro-normal state.
         QualityBlockBalconySurfaceMicrostructureQA.ValidateContractConfigOnly();
     }
 
     /// <summary>
     /// Called from every formal reflection-lighting fingerprint evaluation. The delegated validations are
-    /// deliberately report-free during the in-flight probe stage. The facade binding may create missing
-    /// generated passes only on the first pre-RenderProbe evaluation; once present, it validates/fails
-    /// closed rather than silently rebuilding drift during subsequent polls. Foliage, balcony drainage,
-    /// balcony microsurface and glazing-gasket validations are read-only here and never repair geometry,
-    /// mesh, texture or material state during a probe cycle.
+    /// report-free during an in-flight probe stage. The facade formal binding and sash-latch binding may
+    /// create genuinely missing generated passes only on their first pre-RenderProbe evaluation; after each
+    /// epoch is armed, missing/replaced geometry aborts instead of mutating evidence. Foliage, balcony,
+    /// microsurface and glazing-gasket checks remain read-only throughout.
     /// </summary>
     public static void ValidateOpenScene()
     {
         ValidateContractConfigOnly();
         QualityBlockFacadeFormalBuildBinding.EnsurePreparedForFormalEvidence();
+        // Replace the known low-fidelity twin rubber handle blocks with one physically assembled metal
+        // crescent latch + receiver per two-panel window before the first cubemap baseline. The class itself
+        // freezes the generated-root instance ID after this call, so repeated fingerprint polls are read-only.
+        QualityBlockFacadeSashLatchUpgrade.EnsurePreparedForFormalEvidence();
         QualityBlockRegisteredMaterialAssetPhysicalityQA.ValidateForFormalEvidence();
         QualityBlockReflectionDetailPhysicalUvBindingQA.ValidateOpenScene();
         QualityBlockFoliageFormalEvidenceBindingQA.ValidateOpenScene();
         QualityBlockBalconyDrainageWaterproofingQA.ValidateOpenScene();
         QualityBlockBalconySurfaceMicrostructureQA.ValidateOpenScene();
-        // The gasket pass is built only at the persisted scene-save boundary. During reflection synchronization
-        // this validation is intentionally read-only: missing/drifted geometry aborts rather than mutating the
-        // candidate after a probe request has begun.
         QualityBlockFacadeGlazingGasketUpgrade.ValidateOpenScene();
+        // Redundant read-only validation makes the post-arm intent explicit at the central fingerprint
+        // boundary and catches legacy-handle re-enablement, mesh/material drift or LOD assignment changes.
+        QualityBlockFacadeSashLatchUpgrade.ValidateOpenScene();
     }
 
     private static void RequireExactSet(string[] actual, string[] expected, string label)
@@ -162,6 +151,7 @@ public static class QualityBlockReflectionMaterialPhysicalityBindingQA
         public string scenePath;
         public string materialPhysicalityContractPath;
         public string facadeGlazingGasketContractPath;
+        public string facadeSashLatchContractPath;
         public Requirements requirements;
         public string[] criticalDefectRisksReduced;
         public int visualFidelityPointsAwarded;
@@ -174,14 +164,18 @@ public static class QualityBlockReflectionMaterialPhysicalityBindingQA
     {
         public bool validateMaterialPhysicalityBeforeEveryReflectionLightingFingerprint;
         public bool validateFacadeGlazingGasketBeforeEveryReflectionLightingFingerprint;
+        public bool ensureFacadeSashLatchBeforeFirstReflectionBaseline;
+        public bool validateFacadeSashLatchBeforeEveryReflectionLightingFingerprint;
         public bool reflectionFingerprintUsedBeforeRenderProbeRequest;
         public bool reflectionFingerprintRevalidatedOnEveryEditorPoll;
         public bool reflectionFingerprintRevalidatedAtCompletion;
         public bool reflectionFingerprintRevalidatedImmediatelyBeforeStillCapture;
         public bool physicalityValidationMustBeReportFreeDuringFingerprinting;
         public bool facadeGlazingGasketValidationMustBeReadOnlyDuringFingerprinting;
+        public bool facadeSashLatchValidationMustBeReadOnlyAfterEpochArm;
         public bool physicalityFailureAbortsReflectionEvidence;
         public bool facadeGlazingGasketFailureAbortsReflectionEvidence;
+        public bool facadeSashLatchFailureAbortsReflectionEvidence;
         public bool actualRenderRequiredForVisualPoints;
     }
 }

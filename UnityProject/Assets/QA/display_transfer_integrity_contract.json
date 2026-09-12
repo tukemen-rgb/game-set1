@@ -1,0 +1,95 @@
+{
+  "contractVersion": "display-transfer-integrity-v1.0.0",
+  "id": "qualityblock-display-transfer-integrity",
+  "purpose": "Prevent authoritative native-4K evidence from being sealed with an omitted or duplicated display gamma transfer. Scene/PBR lighting remains linear through the floating-point HDR image-effect source; the filmic shader outputs linear LDR; the native non-HDR target owns the single Linear-to-sRGB encoding step before PNG readback.",
+  "pipeline": {
+    "renderPipeline": "Built-in Render Pipeline",
+    "projectColorSpace": "Linear",
+    "cameraHdrRequired": true,
+    "dynamicResolutionAllowed": false,
+    "imageEffect": "QualityBlockFilmicTonemap.OnRenderImage",
+    "imageEffectAttribute": "ImageEffectTransformsToLDR",
+    "floatingPointHdrSourceMustBeLinear": true,
+    "tonemapShaderMustOutputLinearLdr": true,
+    "manualGammaEncodingForbidden": true,
+    "nativeLdrTargetMustUseSrgbReadWrite": true,
+    "resolvedTargetMustInheritSrgbDescriptor": true
+  },
+  "authoritativeStillTargets": {
+    "width": 3840,
+    "height": 2160,
+    "requiredOrder": ["hero", "oblique", "grazing"],
+    "targetNamePattern": "QA4K_<view>_MSAA",
+    "cameraTargetFormatClass": "non-HDR LDR color",
+    "cameraTargetSrgbRequired": true,
+    "sourceDescriptor": "RenderTextureFormat.ARGB32 + sRGB when project color space is Linear",
+    "resolveDescriptor": "copy of the source descriptor with msaaSamples=1",
+    "readback": "resolved sRGB LDR RenderTexture -> RGB24 Texture2D -> PNG",
+    "pixelCrops": "100% source texels; no resampling"
+  },
+  "runtimeGuard": {
+    "mechanism": "InitializeOnLoad Camera.onPreCull fail-closed guard on the authoritative MainCamera targets",
+    "validateEveryCanonicalStill": true,
+    "requireLinearProject": true,
+    "requireNativeDimensions": true,
+    "requireLdrCameraTarget": true,
+    "requireSrgbCameraTarget": true,
+    "requireHdrCameraPath": true,
+    "requireFilmicTonemap": true,
+    "requireImageEffectTransformsToLdr": true,
+    "sequenceMustBeHeroObliqueGrazing": true,
+    "onFailureDisableRequiredTonemap": true,
+    "failureCannotSealExistingHdrRuntimeReceipt": true
+  },
+  "sourceBinding": {
+    "captureSource": "Assets/Editor/QualityBlock4KCapture.cs",
+    "tonemapComponentSource": "Assets/Scripts/Art/QualityBlockFilmicTonemap.cs",
+    "tonemapShaderSource": "Assets/Shaders/NewTownFilmicTonemap.shader",
+    "requireSrgbDescriptorExpression": true,
+    "requireSingleSampleResolveDescriptorInheritance": true,
+    "requireResolvedTargetReadback": true,
+    "forbidExplicitGammaFunctionsInTonemapShader": [
+      "LinearToGammaSpace",
+      "GammaToLinearSpace",
+      "manual pow-based gamma encoding"
+    ]
+  },
+  "visualFidelityPolicy": {
+    "affectedCategories": [
+      "Cinematic image quality/composition/color/exposure",
+      "Lighting/shadows/reflections",
+      "Material/PBR physical plausibility"
+    ],
+    "visualFidelityPointsAwarded": 0,
+    "criticalDefectAutomaticallyCleared": false,
+    "actual3840x2160PixelReviewRequired": true,
+    "runtimeRenderVerification": "PENDING_UNITY_RUNTIME",
+    "reason": "Correct transfer plumbing is necessary for trustworthy pixels but does not prove that the resulting exposure, color, highlight rolloff, material response or composition is visually good."
+  },
+  "failurePolicy": {
+    "linearProjectMissing": "FAIL authoritative still before culling",
+    "nativeTargetNotSrgb": "FAIL authoritative still before culling and disable required tonemap so runtime receipt cannot seal",
+    "targetIsHdrAfterTonemap": "FAIL authoritative still before culling",
+    "manualTonemapGammaEncodingDetected": "FAIL source preflight to prevent double encoding",
+    "captureResolveSourceBindingMissing": "FAIL source preflight",
+    "viewOrderDrift": "FAIL authoritative packet",
+    "renderQualityClaimWithoutActualPixels": "FORBIDDEN"
+  },
+  "researchReferences": [
+    {
+      "title": "Unity 6 RenderTextureReadWrite",
+      "url": "https://docs.unity3d.com/6000.0/ScriptReference/RenderTextureReadWrite.html",
+      "use": "In Linear color space, non-HDR color render textures normally use sRGB read/write conversion; HDR floating-point formats are always treated as linear data."
+    },
+    {
+      "title": "Unity 6 RenderTexture.sRGB",
+      "url": "https://docs.unity3d.com/6000.0/ScriptReference/RenderTexture-sRGB.html",
+      "use": "Runtime read-only property used by the formal MainCamera pre-cull guard to prove the native LDR target actually uses sRGB read/write conversion."
+    },
+    {
+      "title": "Unity 6 GL.sRGBWrite",
+      "url": "https://docs.unity3d.com/6000.0/ScriptReference/GL-sRGBWrite.html",
+      "use": "Documents that fragment outputs are linear and non-HDR sRGB targets perform Linear-to-sRGB conversion in Linear color space; appropriate RenderTexture color-space flags are preferred over ad-hoc state switching."
+    }
+  ]
+}

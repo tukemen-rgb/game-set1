@@ -1,0 +1,63 @@
+{
+  "schemaVersion": "1.0",
+  "assemblyId": "apartment_sliding_sash_glazing_gasket",
+  "expectedPaneCount": 60,
+  "manufacture": "Generated fallback reconstruction of the glazing capture interface in a circa-2000 Japanese apartment aluminum sliding sash: extruded aluminum sash retains a single clear-glass pane through a replaceable dark elastomer glazing gasket/weather seal. The gasket is modeled as a separate manufactured component rather than a dark line painted into glass or aluminum.",
+  "dimensionsThickness": "Each apartment optical pane remains 1.03 m wide x 1.46 m high with the separately enforced nominal 4 mm clear-float glass edge. The visible gasket reconstruction uses a conservative 10 mm face band and 10 mm depth around the pane perimeter. Those gasket dimensions are benchmark reconstruction assumptions for readable 4K construction depth, not identification of a specific historical product section.",
+  "materialsFinish": "Canonical MAT_WindowRubber: aged dark-charcoal EPDM/rubber weather seal, dry high-roughness dielectric. No metallic response, emission, painted highlight, or glass-like smoothness is permitted. Existing metric micro-normal and roughness variation remain lighting-neutral.",
+  "mounting": "The gasket perimeter is seated immediately outside each optical pane edge and follows the two physically separated sliding-sash leaf planes. Four LOD0 bars meet edge-to-edge at the corners without a floating gap or coplanar overlap. It is render-only detail; gameplay collision remains on the established coarse fallback.",
+  "interfacesGapsSeals": "The gasket is the explicit interface between the 4 mm glass edge and the aluminum sash/glazing groove. It must visually close the previous glass-to-frame void without intersecting the broad optical surface. The lower sash track remains the drainage route; gasket geometry must not bridge across or visually seal the track as a solid plate.",
+  "orientationExposure": "Exterior-facing vertical glazing interface, partly sheltered by aluminum sash extrusions but exposed to daylight, warm midsummer air, dust, and limited wind-driven moisture. The benchmark state is dry; direct wet-film gloss is forbidden.",
+  "aging": "Cause-based aging is limited to subtle UV dulling and recessed edge grime where rubber meets sash/glass. No ferrous rust, random streaking, bright edge polish, or baked shadow/highlight is allowed on the elastomer.",
+  "geometryVsMaterial": "The 10 mm perimeter silhouette, contact depth, corner joints, pane separation and LOD simplification are geometry. Fine molded/rubber grain and sub-millimetre roughness breakup are material detail. Contact shadow, Fresnel response and grazing highlight must come from actual Unity lighting/material response, never albedo paint.",
+  "lodPolicy": "LOD0 keeps four chamfered physical gasket bars per pane. LOD1 combines the four bars into one volumetric ring renderer per pane. LOD2 and LOD3 use progressively narrower front-ring proxy geometry with no stock Plane/Quad primitive. One building-wide LODGroup uses animated cross-fade at 0.18/0.08/0.03/0.008 screen-relative height; benchmark hero/oblique/grazing framing is expected to retain the construction-rich close representation where observable, but runtime pixels are authoritative.",
+  "weatheringCausality": "LOD0 gasket bars are tagged sheltered/recessed with recessed-grime and UV-exposure sources only. Rain influence is low, splash is zero, and contact accumulation is mild. This prevents arbitrary dirt placement while preserving the darker interface accumulation expected at protected glazing edges.",
+  "lookdevBrief": "Required lookdev: front diffuse view must read as a narrow matte charcoal gasket separating glass and aluminum; 35-degree oblique must show a real 10 mm depth/contact edge without a black painted halo; midsummer grazing light must produce a weak broad dielectric response and reveal pane depth separation; 100-percent sash crop must show clean corner joins, no z-fight, no floating border, no repeated bright pattern, and no aliasing shimmer. Compare LOD transitions on an oblique walk without visible pop.",
+  "sourceBasis": "Construction basis is conservative rather than product-identifying. LIXIL PRO-SE documentation confirms sliding-window aluminum sash families with defined glazing grooves, including a 17 mm groove option, while LIXIL service parts document dedicated drainage/condensation components for apartment sliding windows and Atmos-family products from the late 1990s. These sources support a physically assembled glazing/sash/drainage interface, not the exact 10 mm gasket section used here. Reference pages reviewed 2026-09-12: https://www.lixil.co.jp/lineup/building_apartment_store/pro-se/specification/double-sliding/ and https://store.lixil.co.jp/window/window-parts/sash/slidingwindowforcondominiums.html .",
+  "geometry": {
+    "paneWidthM": 1.03,
+    "paneHeightM": 1.46,
+    "visibleGasketFaceWidthM": 0.01,
+    "gasketDepthM": 0.01,
+    "glassNominalThicknessM": 0.004
+  },
+  "material": {
+    "assetPath": "Assets/Art/GeneratedDetailMaterials/MAT_WindowRubber.mat",
+    "baseColorSrgb": [0.075, 0.078, 0.075],
+    "roughnessMin": 0.78,
+    "roughnessMax": 0.95,
+    "metallicMax": 0.0,
+    "specularF0Min": 0.035,
+    "specularF0Max": 0.055,
+    "normalScale": 0.05,
+    "microstructureMm": 0.25,
+    "wetness": 0.0,
+    "uvAging": "small value/roughness drift only; no directional painted fade",
+    "angularFresnelResponse": "weak dielectric front response increasing naturally toward grazing; broad because of high roughness"
+  },
+  "qa": {
+    "lodCount": 4,
+    "lod0RenderersPerPane": 4,
+    "phaseBins": 8,
+    "phaseStepM": 0.013,
+    "automaticVisualPoints": 0,
+    "renderVerificationPending": true,
+    "requireSceneSaveBinding": true,
+    "requireNative4KPreCullValidation": true
+  },
+  "requiredEvidenceRefs": [
+    "hero/facade_center",
+    "oblique/construction_depth",
+    "grazing/sash_rail_response"
+  ],
+  "criticalDefectIds": [
+    "visible_primitive_placeholder",
+    "impossible_material_physics",
+    "obvious_repetition",
+    "hero_geometry_intersection",
+    "severe_aliasing_or_shimmer",
+    "visible_lod_pop",
+    "missing_construction_material_metadata",
+    "unverified_render_claim"
+  ]
+}

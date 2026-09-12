@@ -33,17 +33,18 @@ public static class QualityBlockDanchiLodUpgrade
         QualityBlockDetailBevelUpgrade.BuildBeveledDetailedQualityBlock();
         EditorSceneManager.OpenScene(ScenePath, OpenSceneMode.Single);
 
-        // Fan-face refinement must precede proxy generation: its physical rotor/guard/shroud then
-        // participate in the same four-level building LOD contract rather than remaining a late overlay.
+        // Fan-face reconstruction and its round-wire correction must precede proxy generation. This
+        // keeps the actual manufactured geometry inside the same four-level LOD contract rather than
+        // letting a post-LOD overlay or the earlier rectangular radial-spoke approximation enter formal evidence.
         QualityBlockAcFanPhysicalRefinement.ApplyToOpenScene();
+        QualityBlockAcFanGuardRoundWireRefinement.ApplyToOpenScene();
         ApplyToOpenScene();
         ValidateOpenScene();
-        QualityBlockAcFanPhysicalRefinement.ValidateOpenScene();
         EditorSceneManager.MarkSceneDirty(EditorSceneManager.GetActiveScene());
         EditorSceneManager.SaveOpenScenes();
         AssetDatabase.SaveAssets();
         AssetDatabase.Refresh();
-        Debug.Log("Four-level danchi detail LOD hierarchy built with physical outdoor-AC fan faces. Runtime transition/render verification remains pending.");
+        Debug.Log("Four-level danchi detail LOD hierarchy built with physical outdoor-AC fan faces and round-wire guards. Runtime transition/render verification remains pending.");
     }
 
     [MenuItem("NewTown/Geometry/Apply Danchi Detail LOD Pass Only")]
@@ -156,11 +157,18 @@ public static class QualityBlockDanchiLodUpgrade
             throw new InvalidOperationException(
                 $"LOD proxy renderer ownership mismatch: proxies={proxyRendererCount}, declared={lod1Count + lod2Count + lod3Count}.");
 
+        // This validation method is also the final Danchi-specific entrypoint used by the formal 4K
+        // preparation chain. Keep AC construction/material/metadata and the round-wire topology direct
+        // dependencies here so a later refactor cannot leave them as build-time-only checks.
+        QualityBlockAcFanPhysicalRefinement.ValidateOpenScene();
+        QualityBlockAcFanGuardRoundWireRefinement.ValidateOpenScene();
+
         Debug.Log(
             $"Danchi detail LOD validation passed structurally: renderers " +
             $"LOD0={lod0Count}, LOD1={lod1Count}, LOD2={lod2Count}, LOD3={lod3Count}; " +
-            $"physical tiers micro/fine/medium/macro={microCount}/{fineCount}/{mediumCount}/{macroCount}. " +
-            "Actual cross-fade timing, shadow continuity and silhouette transitions still require Unity render inspection.");
+            $"physical tiers micro/fine/medium/macro={microCount}/{fineCount}/{mediumCount}/{macroCount}; " +
+            "outdoor-AC rotor/shroud/round-wire-guard construction is directly validated. " +
+            "Actual cross-fade timing, wire aliasing, shadow continuity and silhouette transitions still require Unity render inspection.");
     }
 
     private static void RemoveExistingLodArtifacts(GameObject root)

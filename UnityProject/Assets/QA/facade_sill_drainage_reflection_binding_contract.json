@@ -1,0 +1,29 @@
+{
+  "schemaVersion": "1.0",
+  "purpose": "Bind the generated facade sill-drainage assembly to the formal reflection-probe epoch. A genuinely missing fallback sill pass may be prepared before the first reflection baseline; after that baseline is armed, all request/poll/completion/pre-still checks are read-only and fail closed on root replacement/deletion, authored/fallback mode changes, legacy-sill re-enablement, or structural/material/LOD/topology drift. This contract awards no Visual Fidelity points.",
+  "scenePath": "Assets/Scenes/QualityBlock1990s.unity",
+  "sillConstructionContractPath": "Assets/QA/facade_sill_drainage_contract.json",
+  "requirements": {
+    "prepareMissingGeneratedSillOnlyBeforeFirstReflectionBaseline": true,
+    "freezeGeneratedRootInstanceAfterFirstReflectionBaseline": true,
+    "validateSillBeforeEveryReflectionLightingFingerprint": true,
+    "validationMustBeReadOnlyAfterEpochArm": true,
+    "authoredFallbackModeMustRemainStableAfterEpochArm": true,
+    "sillFailureAbortsReflectionEvidence": true,
+    "actualRenderRequiredForVisualPoints": true
+  },
+  "criticalDefectRisksReduced": [
+    "baked_or_painted_highlights",
+    "impossible_material_physics",
+    "missing_construction_material_metadata"
+  ],
+  "visualFidelityPointsAwarded": 0,
+  "runtimeRenderVerified": false,
+  "limitations": [
+    "This binding proves reflection-epoch coherence only; it does not prove that the reconstructed sill dimensions are visually correct at benchmark distance.",
+    "Read-only post-arm validation cannot prove that drain openings read as physical recesses rather than overly dark holes in final pixels.",
+    "A stable root instance and passing structural QA cannot prove that anodized-aluminum Fresnel response, highlight width or contact shadowing are filmic under the actual midsummer lighting state.",
+    "The binding cannot clear visible_lod_pop or severe_aliasing_or_shimmer; native-4K temporal evidence remains mandatory.",
+    "Unity 6000.3.0f1 compile/runtime behavior remains unverified until a real Runner executes the reflection request, poll, completion and pre-still sequence."
+  ]
+}

@@ -1,0 +1,128 @@
+{
+  "schemaVersion": "1.0",
+  "runId": "2026-09-12_facade_glazing_gasket_interfaces",
+  "branch": "gpt/unity-migration",
+  "startHead": "b51c80a38963e952931ab8dbc28281ff09a78f94",
+  "implementationHeadBeforeRunRecord": "ce132b54a8e0a90c9e3bd830c1774ad4a0b767b5",
+  "runRecordCommit": "SELF",
+  "commitPolicy": "The run-record file is committed last, so its own commit hash is intentionally represented as SELF; final external run summary records the resulting branch HEAD.",
+  "implementationCommits": [
+    {
+      "sha": "5632a1a16d213d0baf5f2bb8bbc87a0a5c8b503f",
+      "message": "feat: add physical facade glazing gasket assembly"
+    },
+    {
+      "sha": "dc5a4c6d91a8a0a8d2a6ca2439dc19b85cdc0879",
+      "message": "qa: define glazing gasket construction and evidence contract"
+    },
+    {
+      "sha": "ce132b54a8e0a90c9e3bd830c1774ad4a0b767b5",
+      "message": "qa: bind glazing gasket metadata to danchi domain"
+    }
+  ],
+  "priorityReasoning": {
+    "selectedGap": "The generated facade already had real rough openings, aluminum sash geometry, two depth-separated glass panes and 4 mm glass edge thickness, but no explicit glass-to-sash glazing gasket around the 60 apartment panes. At 4K this can make glazing read as floating in an extrusion and weakens geometry/contact/material plausibility exactly in facade_center, construction_depth and sash_rail_response evidence.",
+    "whyBeforeMoreExpansion": "The missing interface affects construction fidelity, PBR material separation, grazing-light contact response, repeated-module perception and LOD stability in existing locked benchmark crops. It therefore has higher expected gate impact than adding a new unrelated prop.",
+    "renderPointPolicy": "No Visual Fidelity points are awarded from this source-side implementation. Contact, z-fighting, black-halo risk, repetition, shimmer and LOD pop remain render-only judgments."
+  },
+  "manufactureInstallationReconstruction": {
+    "components": "Existing 1.03 m x 1.46 m apartment glass panes plus a separate dark elastomer perimeter captured by four LOD0 gasket bars per pane; existing aluminum frame/sash, track and 4 mm glass-edge geometry remain authoritative surrounding parts.",
+    "dimensionsThickness": "10 mm visible gasket face and 10 mm modeled depth are conservative benchmark reconstruction assumptions; nominal glass thickness remains 4 mm. The dimensions are not claimed as an identified historical product section.",
+    "materialsFinish": "Canonical dry MAT_WindowRubber EPDM/rubber family: dark charcoal, high roughness, dielectric/zero metallic, no emission or baked highlight, metric 18 repeats/m texture response.",
+    "mounting": "The gasket follows each of the two sliding leaves at its actual pane depth and sits immediately outside the pane perimeter, closing the prior glass-to-frame visual void without adding gameplay collision.",
+    "interfacesGapsSeals": "LOD0 bars touch at boundaries rather than crossing the broad pane face; the assembly remains separate from the lower track/drainage route and from the rough-opening perimeter seal.",
+    "orientationExposure": "Vertical exterior-facing but partly recessed/sheltered sash interface in dry midsummer benchmark conditions.",
+    "aging": "Only subdued UV/recess grime/contact accumulation metadata; no ferrous rust and no arbitrary random dirt story.",
+    "geometryVsMaterial": "Perimeter thickness/contact/corner meeting and pane depth are geometry. Fine rubber grain and roughness breakup remain material microstructure.",
+    "lod": "LOD0=240 separate chamfered bars, LOD1=60 volumetric rings, LOD2=60 front-ring proxies, LOD3=60 narrower front-ring proxies; one animated-crossfade LODGroup uses 0.18/0.08/0.03/0.008 screen-relative thresholds."
+  },
+  "externalResearch": [
+    {
+      "source": "LIXIL PRO-SE double sliding window specification",
+      "url": "https://www.lixil.co.jp/lineup/building_apartment_store/pro-se/specification/double-sliding/",
+      "use": "Family-level evidence that Japanese building sliding-sash systems define physical glazing grooves; not used to identify the benchmark sash product."
+    },
+    {
+      "source": "LIXIL apartment sliding-window service parts",
+      "url": "https://store.lixil.co.jp/window/window-parts/sash/slidingwindowforcondominiums.html",
+      "use": "Family-level evidence that sash drainage/condensation interfaces are separate service components; benchmark dimensions remain conservative reconstruction assumptions."
+    }
+  ],
+  "implementation": {
+    "source": "Assets/Editor/QualityBlockFacadeGlazingGasketUpgrade.cs",
+    "contract": "Assets/QA/facade_glazing_gasket_contract.json",
+    "metadataCoverageContract": "Assets/QA/scene_metadata_coverage_contract.json",
+    "paneCount": 60,
+    "lod0RendererCount": 240,
+    "lod1RendererCount": 60,
+    "lod2RendererCount": 60,
+    "lod3RendererCount": 60,
+    "metricUvPhaseBins": 8,
+    "metricUvPhaseStepM": 0.013,
+    "sceneSaveFormalBinding": true,
+    "native4kPreCullValidation": true,
+    "colliderChanges": false,
+    "authoredDanchiRemainsAuthoritative": true
+  },
+  "verification": {
+    "githubComparison": {
+      "base": "b51c80a38963e952931ab8dbc28281ff09a78f94",
+      "headBeforeRunRecord": "ce132b54a8e0a90c9e3bd830c1774ad4a0b767b5",
+      "status": "ahead",
+      "aheadBy": 3,
+      "behindBy": 0,
+      "mergeBaseUnchanged": true,
+      "changedPathsBeforeRunRecord": [
+        "UnityProject/Assets/Editor/QualityBlockFacadeGlazingGasketUpgrade.cs",
+        "UnityProject/Assets/QA/facade_glazing_gasket_contract.json",
+        "UnityProject/Assets/QA/scene_metadata_coverage_contract.json"
+      ]
+    },
+    "staticChecks": [
+      "All new implementation paths are below UnityProject; Godot was not modified.",
+      "No base merge was performed; compare merge-base remained the starting HEAD.",
+      "The Danchi metadata domain now explicitly links facade_glazing_gasket_contract.json and names glazing gaskets in interface/geometry/LOD policy.",
+      "Source QA requires canonical EPDM material, no metallic response/emission, no colliders, no stock Cube/Plane/Quad mesh, exact LOD counts and transforms, metric phase-diverse UVs, and cause-based LOD0 weathering metadata.",
+      "Source/contract explicitly award zero Visual Fidelity points and keep render verification pending."
+    ],
+    "unity6000_3_0f1Compile": "PENDING_RUNNER",
+    "unityRuntimeSceneSaveBuild": "PENDING_RUNNER",
+    "reflectionProbeIntegration": "PENDING_RUNNER",
+    "native3840x2160HeroObliqueGrazing": "PENDING_RUNNER",
+    "pixelReview": "PENDING_RUNNER",
+    "temporalLodReview": "PENDING_RUNNER"
+  },
+  "scoreState": {
+    "implementationReadiness": 93,
+    "visualFidelityStatus": "UNSCORED_UNTIL_REAL_4K_RENDER",
+    "visualFidelityPointsAwardedThisRun": 0,
+    "visualFidelityPassClaimed": false,
+    "expectedImpactOnlyNotAwarded": {
+      "geometryConstruction": "HIGH: adds missing glass-to-sash physical interface and construction depth",
+      "materialPbr": "MODERATE: makes EPDM a separate dry dielectric response instead of an absent/painted border",
+      "lightingReflections": "LOW_TO_MODERATE: provides real grazing/contact geometry for sunlight and probe response",
+      "textureMicrodetail": "MODERATE: metric physical UVs plus eight deterministic phases reduce synchronized microtexture restarts",
+      "weatheringContext": "MODERATE: sheltered/recessed UV/grime causality is attached to the physical source component",
+      "periodAuthenticity": "LOW_TO_MODERATE: strengthens ordinary sliding-sash construction plausibility without claiming a specific product",
+      "temporalLodAliasing": "MODERATE: explicit four-level crossfade exists, but only temporal pixels can clear shimmer/pop"
+    }
+  },
+  "criticalDefectsNotCleared": [
+    "visible_primitive_placeholder",
+    "impossible_material_physics",
+    "obvious_repetition",
+    "hero_geometry_intersection",
+    "severe_aliasing_or_shimmer",
+    "visible_lod_pop",
+    "major_light_leak",
+    "unverified_render_claim"
+  ],
+  "renderRisksToInspect": [
+    "10 mm gasket could become an over-dark halo in frontal 4K even if construction is valid.",
+    "gasket/glass edge contact could reveal a hairline gap, interpenetration or z-fighting in oblique/grazing crops.",
+    "eight UV phase bins may still be visually insufficient across 60 panes if microstructure has a strong recognizable motif.",
+    "narrow LOD2/LOD3 front rings can shimmer or cross-fade visibly at subpixel width despite structurally valid LOD policy.",
+    "actual EPDM roughness/normal intensity depends on generated material assets and must be verified in Unity, not inferred from metadata."
+  ],
+  "nextBlocker": "Unity 6000.3.0f1 runtime/Runner is still absent. When it appears, stop speculative expansion and run compile -> formal scene save/build -> gasket QA -> reflection synchronization -> native 3840x2160 hero/oblique/grazing -> 100% facade_center/construction_depth/sash_rail_response crops -> temporal LOD/shimmer review. Score only those actual pixels."
+}

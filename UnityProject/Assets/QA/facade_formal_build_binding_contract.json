@@ -1,6 +1,6 @@
 {
-  "schemaVersion": "1.1",
-  "purpose": "Guarantee that scoreable reflection/still evidence uses the already-developed physical facade rough openings, world-aligned aperture UVs, deterministic apartment occupancy variation and physical glass-edge thickness, while preserving that exact prepared facade identity across Unity script/assembly reloads instead of silently accepting replacement roots as a fresh baseline.",
+  "schemaVersion": "1.2",
+  "purpose": "Guarantee that scoreable reflection/still evidence uses the already-developed physical generated facade or the exact persisted authored danchi representation that was present before the reflection baseline. Generated fallback mode freezes scene/root identities; authored mode additionally freezes a deterministic SHA-256 over the danchi art slot/root, persisted transform and visibility state, renderer mesh/material asset dependencies, and LOD configuration across Unity script/assembly reloads. No source-side binding may award Visual Fidelity points without actual native 4K pixels.",
   "scenePath": "Assets/Scenes/QualityBlock1990s.unity",
   "requirements": {
     "mustRunAfterFacadeOptics": true,
@@ -18,27 +18,33 @@
     "validateSceneGuidAcrossEpoch": true,
     "authoredFallbackModeMustRemainStableAfterEpochArm": true,
     "unsavedReplacementMustFailBeforeEvidence": true,
+    "freezeAuthoredRepresentationFingerprintAfterFirstReflectionBaseline": true,
+    "authoredFingerprintMustCoverStableIdentityTransformRendererMeshMaterialAndLod": true,
+    "authoredFingerprintMustPersistAcrossAssemblyReloads": true,
+    "legacyAuthoredEpochWithoutFingerprintMustFailClosed": true,
     "actualRenderRequiredForVisualPoints": true,
     "visualFidelityPointsAwarded": 0
   },
   "formalPreparationOrder": [
     "QualityBlockFacadeOpticsUpgrade.BuildAndApply",
-    "DanchiFacadeApertureShell physical rough-opening construction",
-    "world-aligned metric facade-aperture UV bake",
-    "FacadeOccupancyVariation deterministic curtain/track assembly",
-    "sceneSaving-bound 4 mm glass perimeter edge construction",
-    "full pre-probe facade validation and scene persistence",
-    "freeze scene GUID plus stable GlobalObjectIds for optics/aperture/occupancy into UnityEditor.SessionState",
+    "select exactly one danchi.main art slot and resolve authored-versus-generated representation",
+    "if generated fallback: build/validate DanchiFacadeApertureShell physical rough openings, metric aperture UVs, deterministic occupancy variation and 4 mm glass perimeter edges",
+    "if authored: require one active persisted authored prefab/model instance, inactive fallback, persisted scene membership and renderable renderer set",
+    "before reflection baseline, compute authored representation SHA-256 from scene GUID, stable slot/authored/fallback GlobalObjectIds, authored prefab dependency hash, persisted hierarchy transforms/visibility, renderer mesh/material dependency hashes and LOD state",
+    "freeze generated stable root identities or authored SHA-256 into UnityEditor.SessionState",
     "registered material + physical UV + facade formal-build validation",
     "reflection probe baseline",
+    "every reflection poll/completion/pre-still call recomputes the current read-only identity/fingerprint and fails closed on drift",
     "native 3840x2160 hero/oblique/grazing evidence"
   ],
   "reflectionLifecyclePolicy": {
-    "newPreparationEpochIdentity": "Clean Unity Editor session + benchmark scene GUID + authored/fallback mode + persisted GlobalObjectIds for generated optics/aperture/occupancy roots",
-    "firstPreProbeFingerprint": "May build a genuinely missing generated pass, performs full source-side validation, requires persisted scene objects with stable GlobalObjectIds, then arms a SessionState epoch token.",
-    "assemblyReload": "The armed epoch survives script/domain reload through UnityEditor.SessionState. Reload is not permission to rebuild, replace or re-arm facade roots.",
-    "subsequentEditorPolls": "Must not write runtime reports or rebuild scene state. They verify scene GUID, authored/fallback mode, exact stable root identities, physical UVs, occupancy, glass thickness and report-free aperture construction state.",
-    "inFlightMutation": "Missing/replaced optics, aperture or occupancy roots, an authored/fallback mode switch, scene GUID drift or an unsaved replacement object is a hard failure; no automatic repair is permitted while reflection evidence may be in flight.",
+    "newPreparationEpochIdentity": "Clean Unity Editor session + benchmark scene GUID + authored/fallback mode. Generated mode binds persisted GlobalObjectIds for optics/aperture/occupancy. Authored mode binds a persisted authored-representation SHA-256.",
+    "firstPreProbeFingerprint": "May build a genuinely missing generated pass only in fallback mode. Authored mode never repairs or rewrites authored art; it validates one persisted active danchi.main replacement, requires inactive fallback, computes the representation fingerprint, then arms SessionState.",
+    "authoredFingerprintCoverage": "Schema facade-authored-evidence-v1 covers stable slot/authored/fallback identities, authored source prefab/model path+GUID+AssetDatabase dependency hash, persisted hierarchy activeSelf/local transforms, renderer enabled/shadow/reflection state, shared mesh asset identity+dependency hash, ordered shared material identity+dependency hashes, and LODGroup/LOD thresholds plus renderer membership.",
+    "assemblyReload": "The armed epoch and authored fingerprint survive script/domain reload through UnityEditor.SessionState. Reload is not permission to rebuild, replace, mutate or re-arm facade representation.",
+    "subsequentEditorPolls": "Must not write runtime reports or rebuild scene state. They verify scene GUID and authored/fallback mode. Generated mode validates exact stable roots and physical construction. Authored mode deterministically recomputes the representation fingerprint and requires an exact SHA-256 match.",
+    "inFlightMutation": "Generated root replacement, authored slot/root replacement, transform/visibility changes, prefab/model/mesh/material dependency edits, LOD changes, authored/fallback mode switching, scene GUID drift, or an unsaved replacement object is a hard failure; no automatic repair is permitted while reflection evidence may be in flight.",
+    "legacyAuthoredEpoch": "If SessionState says an authored epoch is armed but the schema-1.2 authored fingerprint is absent, fail closed and require a clean Editor restart. Never grandfather pre-1.2 authored evidence.",
     "resetBoundary": "A clean Unity Editor restart is the conservative boundary for arming a fresh facade formal-build epoch."
   },
   "criticalDefectRisksReduced": [
@@ -49,18 +55,19 @@
     "missing_construction_material_metadata"
   ],
   "requiredEvidence": [
-    "hero/facade_center at 3840x2160 plus 100% review for repeated occupancy modules, opaque fallback intrusion and window construction seating",
-    "oblique/construction_depth at 3840x2160 plus 100% crop for 0.22 m RC rough-opening depth, perimeter seals, glazing/curtain ordering and light leaks",
-    "grazing/sash_rail_response at 3840x2160 plus 100% crop for physical UV scale, sash/seal/glass interfaces and non-painted grazing response",
-    "grazing/material_grazing and temporal pixels at 100% for concrete repetition, curtain/track LOD changes, thin glass-edge shimmer and reflection continuity"
+    "hero/facade_center at 3840x2160 plus 100% review for repeated occupancy/modules, opaque fallback intrusion, authored replacement seating and window construction",
+    "oblique/construction_depth at 3840x2160 plus 100% crop for facade depth, authored/generated interface seating, perimeter seals, glazing/curtain ordering and light leaks",
+    "grazing/sash_rail_response at 3840x2160 plus 100% crop for physical UV scale, authored/generated material response, sash/seal/glass interfaces and non-painted grazing response",
+    "grazing/material_grazing and temporal pixels at 100% for material dependency continuity, concrete/module repetition, LOD changes, thin-edge shimmer and reflection continuity"
   ],
   "limitations": [
-    "This binding proves only that the higher-fidelity source passes and the same persisted facade-root identities are present before and throughout formal reflection evidence; it does not prove their pixels are photorealistic.",
-    "Stable GlobalObjectId and SessionState checks are evidence-coherence controls, not visual scoring evidence.",
-    "Source-side geometry/metadata validation cannot clear obvious_repetition, major_light_leak, hero_geometry_intersection or any other visual critical defect without actual native render evidence.",
-    "Unity 6000.3.0f1 compilation, SessionState behavior, GlobalObjectId stability, scene serialization order, reflection-probe execution and 3840x2160 rendered output remain runtime verification pending until a Runner is available.",
-    "A clean Editor restart intentionally permits a new formal epoch; the external render-candidate freshness/provenance guards remain responsible for tying that epoch to the exact candidate revision.",
-    "Existing generated passes are validated rather than silently regenerated so evidence-state drift fails closed instead of being hidden during a formal packet."
+    "This binding proves evidence-state identity/coherence only; it does not prove that authored or generated pixels are photorealistic.",
+    "Stable GlobalObjectId, AssetDatabase dependency hashes, deterministic SHA-256 and SessionState are provenance controls, not visual scoring evidence.",
+    "The authored fingerprint intentionally covers persisted render dependencies and render-affecting hierarchy/LOD state, but it does not inspect arbitrary runtime MaterialPropertyBlock values, animation time, procedural shader globals or external native-plugin state; formal capture guards must keep such mutable inputs deterministic.",
+    "Source-side geometry/metadata validation cannot clear obvious_repetition, major_light_leak, hero_geometry_intersection, visible LOD pop, aliasing/shimmer or any other visual critical defect without actual native render evidence.",
+    "Unity 6000.3.0f1 compilation, SessionState behavior, GlobalObjectId stability, AssetDatabase dependency-hash stability, scene serialization order, reflection-probe execution and 3840x2160 rendered output remain runtime verification pending until a Runner is available.",
+    "A clean Editor restart intentionally permits a new formal epoch; external render-candidate freshness/provenance guards remain responsible for tying that epoch to the exact candidate revision.",
+    "Existing generated passes and authored replacement art are validated rather than silently regenerated so evidence-state drift fails closed instead of being hidden during a formal packet."
   ],
   "forbiddenThemes": [
     "earthquake",

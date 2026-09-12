@@ -1,0 +1,119 @@
+{
+  "schemaVersion": "1.0",
+  "runDate": "2026-09-13",
+  "branch": "gpt/unity-migration",
+  "startHead": "d5e5c3ff5d51ba8a8dc334751e543223391f24b4",
+  "substantiveWorkHead": "7edda95622c2c55219be1bb01b750c34c5de8078",
+  "substantiveCommits": [
+    {
+      "sha": "5546ad60bdcd91556e007e12492cd2135ac306af",
+      "purpose": "Add a deterministic reflection lightmap-binding fingerprint covering the ordered baked lightmap array plus per-renderer baked/realtime lightmap index and atlas scale-offset state."
+    },
+    {
+      "sha": "d2b825bf4be14b146b2045312cf42f0426015c69",
+      "purpose": "Extend the machine-readable render-state coherence contract with fail-closed GI-binding requirements while preserving the existing schema consumed by the canonical render-state validator."
+    },
+    {
+      "sha": "821fbc407ea74f44b3ee826a163252fd6ce1a2c0",
+      "purpose": "Fold the lightmap-binding digest into the canonical reflection lighting fingerprint used at request/poll/completion/pre-still boundaries."
+    },
+    {
+      "sha": "305ccc3eb4c1ec68346311c23b1f4c2a42aa965b",
+      "purpose": "Add DynamicGI.indirectScale to the canonical lighting fingerprint so legal indirect-energy drift cannot survive reflection synchronization."
+    },
+    {
+      "sha": "a4bdc54fd948d56e4f287c1b3806cc7009d54c2c",
+      "purpose": "Require DynamicGI indirect-scale identity in the machine-readable reflection synchronization contract."
+    },
+    {
+      "sha": "7edda95622c2c55219be1bb01b750c34c5de8078",
+      "purpose": "Make the lighting-coverage validator fail closed if DynamicGI indirect-scale coverage is removed from the reflection synchronization contract."
+    }
+  ],
+  "priorityDecision": {
+    "chosenRisk": "reflection_and_still_can_share_mesh_material_sun_state_while_using_different_renderer_lightmap_bindings_or_indirect_gi_scale",
+    "reason": "The existing render-state fingerprint covered renderer identity, transform, mesh, material, texture, shadow/probe/sorting state and rejected hidden MaterialPropertyBlocks, but did not explicitly freeze renderer lightmap atlas bindings. Unity also exposes DynamicGI.indirectScale as a render-changing control over realtime and baked lightmap contribution. Both channels can materially alter indirect illumination while other formal evidence remains individually valid, so they were higher-value to close than speculative asset expansion without a Runner.",
+    "visualPointsAwarded": 0
+  },
+  "implementation": {
+    "newFingerprint": "QualityBlockReflectionLightmapBindingFingerprint.BuildCurrentSha256",
+    "fingerprintAlgorithm": "SHA-256",
+    "rendererStateCovered": [
+      "hierarchy_path",
+      "renderer_type",
+      "lightmapIndex",
+      "lightmapScaleOffset",
+      "realtimeLightmapIndex",
+      "realtimeLightmapScaleOffset"
+    ],
+    "lightmapArrayStateCovered": [
+      "LightmapSettings.lightmapsMode",
+      "ordered_LightmapSettings.lightmaps",
+      "lightmapColor_asset_identity_dependency_and_sampling",
+      "lightmapDir_asset_identity_dependency_and_sampling",
+      "shadowMask_asset_identity_dependency_and_sampling"
+    ],
+    "failClosedRules": [
+      "non_persistent_lightmap_texture_rejected",
+      "lightmap_binding_digest_must_remain_identical_across_reflection_request_every_observed_poll_completion_and_pre_still",
+      "DynamicGI.indirectScale_is_part_of_the_same_canonical_lighting_digest",
+      "hash_equality_awards_zero_visual_points"
+    ]
+  },
+  "verification": {
+    "githubSourceReview": "PASS",
+    "officialUnityApiSurfaceReview": "PASS_FOR_REFERENCED_API_SHAPES",
+    "verifiedApis": [
+      "Renderer.lightmapIndex",
+      "Renderer.lightmapScaleOffset",
+      "Renderer.realtimeLightmapIndex",
+      "Renderer.realtimeLightmapScaleOffset",
+      "LightmapSettings.lightmaps",
+      "LightmapSettings.lightmapsMode",
+      "LightmapData.lightmapColor",
+      "LightmapData.lightmapDir",
+      "LightmapData.shadowMask",
+      "DynamicGI.indirectScale"
+    ],
+    "githubActionsAtRunStart": 0,
+    "commitStatusContextsAtRunStart": 0,
+    "unity6000_3_0f1CompileVerified": false,
+    "runtimeFingerprintObserved": false,
+    "failureInjectionObserved": false,
+    "native3840x2160RenderVerified": false,
+    "hundredPercentCropsReviewed": false,
+    "visualFidelityStatus": "UNSCORED_UNTIL_REAL_4K_RENDER"
+  },
+  "scores": {
+    "implementationReadiness": 93,
+    "implementationReadinessPossible": 100,
+    "visualFidelityPointsAwardedThisRun": 0,
+    "visualFidelityTotal": null,
+    "visualFidelityPassClaimed": false
+  },
+  "expectedVisualScoreImpactAfterRealRender": [
+    {
+      "category": "lighting_shadows_reflections",
+      "magnitude": "moderate_evidence_integrity_improvement",
+      "reason": "Prevents reflection cubemaps and stills from being accepted when indirect-light energy or renderer-to-lightmap atlas bindings differ despite stable direct sun/material state."
+    },
+    {
+      "category": "material_pbr_physical_plausibility",
+      "magnitude": "small_to_moderate_evidence_integrity_improvement",
+      "reason": "Keeps metal/glass Fresnel and roughness review tied to one coherent indirect-illumination state instead of allowing GI drift to masquerade as material response."
+    },
+    {
+      "category": "cinematic_image_quality_composition_color_exposure",
+      "magnitude": "small_evidence_integrity_improvement",
+      "reason": "Prevents indirect-energy drift from contaminating exposure/color judgments between synchronized reflection evidence and the final still."
+    }
+  ],
+  "constraints": {
+    "godotTouched": false,
+    "baseMerged": false,
+    "forbiddenThemePolicyChanged": false,
+    "unityOnlyFilesChanged": true
+  },
+  "nextBlocker": "Unity 6000.3.0f1 Editor/Runner execution. On first availability, stop speculative expansion; compile the new fingerprint, establish a clean request hash, inject a lightmapIndex or lightmapScaleOffset mutation during an in-flight probe and require fail-closed mismatch, separately change DynamicGI.indirectScale and require mismatch, restart clean, refresh probes, capture native 3840x2160 hero/oblique/grazing frames plus 100% crops, and only then score the Visual Fidelity Gate from actual pixels.",
+  "note": "Implementation Readiness remains 93/100 because no Unity compile/runtime artifact exists. Visual Fidelity remains unscored; this run changes evidence integrity, not observed image quality."
+}

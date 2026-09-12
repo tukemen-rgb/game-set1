@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1440" height="900" viewBox="0 0 1440 900">
+  <rect width="1440" height="900" fill="#f2f2ee"/>
+  <g font-family="Arial, Helvetica, sans-serif" fill="#1d1d1b">
+    <text x="72" y="72" font-size="34" font-weight="700">Facade sill tray — 2 mm physical front edge-break lookdev</text>
+    <text x="72" y="112" font-size="19">Implementation brief only. Final acceptance requires native 3840×2160 frontal / oblique / grazing pixels plus temporal LOD evidence.</text>
+
+    <text x="72" y="176" font-size="24" font-weight="700">Section through tray depth (not to scale)</text>
+    <path d="M120 360 L690 385 L690 325 L684 319 L120 295 Z" fill="#b7bab8" stroke="#202020" stroke-width="3"/>
+    <line x1="120" y1="295" x2="690" y2="325" stroke="#5d5d5a" stroke-width="2"/>
+    <line x1="120" y1="360" x2="690" y2="385" stroke="#5d5d5a" stroke-width="2"/>
+    <circle cx="686" cy="322" r="10" fill="none" stroke="#c54b28" stroke-width="4"/>
+    <circle cx="688" cy="382" r="10" fill="none" stroke="#c54b28" stroke-width="4"/>
+    <path d="M790 250 L1010 250 L1050 290 L1050 520 L1010 560 L790 560" fill="#b7bab8" stroke="#202020" stroke-width="4"/>
+    <line x1="1010" y1="250" x2="1050" y2="290" stroke="#c54b28" stroke-width="7"/>
+    <line x1="1050" y1="520" x2="1010" y2="560" stroke="#c54b28" stroke-width="7"/>
+    <text x="1080" y="300" font-size="22">front top break = 2 mm authored assumption</text>
+    <text x="1080" y="540" font-size="22">front bottom break = 2 mm authored assumption</text>
+    <text x="790" y="602" font-size="20">Outer front/back/top/bottom envelope remains unchanged.</text>
+
+    <text x="72" y="470" font-size="24" font-weight="700">Manufacture / installation logic</text>
+    <text x="72" y="510" font-size="20">• Extruded/anodized aluminum: remove mathematical knife edge with real macro geometry, not a normal-map trick.</text>
+    <text x="72" y="545" font-size="20">• Keep lower-frame seat, drain recess, 50 mm physical openings, skirt and drip nose unchanged.</text>
+    <text x="72" y="580" font-size="20">• Inherit MAT_AgedAluminum: metallic 0.82–0.94, roughness 0.43–0.55, dry wetness 0.</text>
+    <text x="72" y="615" font-size="20">• Rebuild combined LOD1/2/3 proxy from the refined five-piece LOD0 assembly; never let edge geometry vanish at distance.</text>
+
+    <text x="72" y="690" font-size="24" font-weight="700">Pixel checks</text>
+    <text x="72" y="730" font-size="20">Frontal: no decorative bright line. Oblique: frame-seat/recess unchanged. Grazing: finite moving highlight, no faceting or painted rim.</text>
+    <text x="72" y="765" font-size="20">Temporal: no highlight-centroid snap, silhouette pop, shimmer or proxy mismatch through LOD0→1→2→3 cross-fades.</text>
+    <text x="72" y="818" font-size="19" font-weight="700">Visual Fidelity points awarded by this lookdev: 0. Render verification pending.</text>
+  </g>
+</svg>

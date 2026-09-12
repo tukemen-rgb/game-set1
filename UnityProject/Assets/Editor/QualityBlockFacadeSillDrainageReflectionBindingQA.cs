@@ -8,15 +8,13 @@ using UnityEngine;
 
 /// <summary>
 /// Freezes the facade sill-drainage construction state at the first formal reflection-lighting
-/// baseline. Before the epoch is armed, a genuinely missing generated sill pass may be prepared.
-/// After arming, every reflection fingerprint evaluation is read-only: root replacement/deletion,
-/// authored/fallback mode changes, legacy-sill re-enablement, LOD/material/topology drift or other
-/// structural failures abort reflection evidence instead of silently repairing it.
+/// baseline. Before the epoch is armed, a genuinely missing generated sill pass and its deterministic
+/// tray edge-break refinement may be prepared. After arming, every reflection fingerprint evaluation
+/// is read-only: root replacement/deletion, mesh/proxy drift, authored/fallback mode changes,
+/// legacy-sill re-enablement, LOD/material/topology drift or other structural failures abort evidence.
 ///
-/// The armed epoch is stored in UnityEditor.SessionState and the generated root is bound by
-/// GlobalObjectId rather than a process-local InstanceID. This deliberately survives script/assembly
-/// reloads within the same Editor session. A clean Editor restart is therefore the conservative reset
-/// boundary for a new formal reflection epoch.
+/// SessionState plus GlobalObjectId preserve the binding across script/assembly reloads within the same
+/// Editor session. A clean Editor restart remains the conservative reset boundary for a new formal epoch.
 ///
 /// This is evidence-coherence infrastructure only. It awards zero Visual Fidelity points and cannot
 /// clear any rendered critical defect without sealed native-4K evidence.
@@ -28,10 +26,9 @@ public static class QualityBlockFacadeSillDrainageReflectionBindingQA
     private const string RootName = "FacadeSillDrainageInterfaces";
     private const string ContractPath = "Assets/QA/facade_sill_drainage_reflection_binding_contract.json";
     private const string SillContractPath = "Assets/QA/facade_sill_drainage_contract.json";
-    private const string ContractSchema = "1.1";
+    private const string SillEdgeBreakContractPath = "Assets/QA/facade_sill_tray_edge_break_contract.json";
+    private const string ContractSchema = "1.2";
 
-    // SessionState is intentionally used instead of static fields. Unity documents SessionState as
-    // surviving assembly reloads while remaining scoped to the current Editor process/session.
     private const string SessionPrefix = "QualityBlock.FacadeSillReflectionBinding.";
     private const string EpochArmedKey = SessionPrefix + "EpochArmed";
     private const string AuthoredEpochKey = SessionPrefix + "AuthoredEpoch";
@@ -57,14 +54,20 @@ public static class QualityBlockFacadeSillDrainageReflectionBindingQA
         if (!string.Equals(contract.sillConstructionContractPath, SillContractPath, StringComparison.Ordinal))
             throw new InvalidOperationException(
                 "Facade sill reflection binding no longer targets the canonical sill construction contract.");
+        if (!string.Equals(contract.sillTrayEdgeBreakContractPath, SillEdgeBreakContractPath, StringComparison.Ordinal))
+            throw new InvalidOperationException(
+                "Facade sill reflection binding no longer targets the canonical tray edge-break contract.");
 
         Requirements r = contract.requirements;
         if (r == null ||
             !r.prepareMissingGeneratedSillOnlyBeforeFirstReflectionBaseline ||
+            !r.ensureSillTrayEdgeBreakBeforeFirstReflectionBaseline ||
             !r.freezeGeneratedRootGlobalObjectIdAfterFirstReflectionBaseline ||
+            !r.freezeSillTrayMeshFingerprintAfterFirstReflectionBaseline ||
             !r.persistEpochAcrossAssemblyReloadsWithSessionState ||
             !r.validateSceneGuidAcrossEpoch ||
             !r.validateSillBeforeEveryReflectionLightingFingerprint ||
+            !r.validateSillTrayEdgeBreakBeforeEveryReflectionLightingFingerprint ||
             !r.validationMustBeReadOnlyAfterEpochArm ||
             !r.authoredFallbackModeMustRemainStableAfterEpochArm ||
             !r.sillFailureAbortsReflectionEvidence ||
@@ -76,6 +79,7 @@ public static class QualityBlockFacadeSillDrainageReflectionBindingQA
         {
             "baked_or_painted_highlights",
             "impossible_material_physics",
+            "visible_lod_pop",
             "missing_construction_material_metadata"
         };
         RequireExactSet(contract.criticalDefectRisksReduced, requiredRisks,
@@ -84,19 +88,19 @@ public static class QualityBlockFacadeSillDrainageReflectionBindingQA
         if (contract.visualFidelityPointsAwarded != 0 || contract.runtimeRenderVerified)
             throw new InvalidOperationException(
                 "Facade sill reflection binding may not award Visual Fidelity points or claim runtime render verification.");
-        if (contract.limitations == null || contract.limitations.Length < 6 ||
+        if (contract.limitations == null || contract.limitations.Length < 7 ||
             contract.limitations.Any(string.IsNullOrWhiteSpace))
             throw new InvalidOperationException(
                 "Facade sill reflection-binding limitations are missing or incomplete.");
 
         QualityBlockFacadeSillDrainageUpgrade.ValidateContractConfigOnly();
+        QualityBlockFacadeSillTrayEdgeBreakRefinement.ValidateContractConfigOnly();
     }
 
     /// <summary>
     /// Called before the first reflection fingerprint and again on subsequent fingerprint evaluations.
-    /// The first call may prepare missing fallback sill geometry. Once armed, SessionState survives
-    /// assembly reloads and this method delegates to read-only validation only; it never rebuilds or
-    /// repairs the sill pass during the same Editor session.
+    /// The first call may prepare missing fallback sill geometry and refine the tray/proxy mesh assets.
+    /// Once armed, both bindings survive assembly reloads and delegate to read-only validation only.
     /// </summary>
     public static void EnsurePreparedForFormalEvidence()
     {
@@ -110,6 +114,7 @@ public static class QualityBlockFacadeSillDrainageReflectionBindingQA
         }
 
         QualityBlockFacadeSillDrainageUpgrade.EnsurePreparedForFormalEvidence();
+        QualityBlockFacadeSillTrayEdgeBreakRefinement.EnsurePreparedForFormalEvidence();
 
         bool authored = IsAuthoredDanchiActive();
         GameObject root = FindSceneObject(RootName);
@@ -128,6 +133,7 @@ public static class QualityBlockFacadeSillDrainageReflectionBindingQA
                 throw new InvalidOperationException(
                     "Facade sill-drainage root is missing after formal pre-baseline preparation.");
             QualityBlockFacadeSillDrainageUpgrade.ValidateOpenScene();
+            QualityBlockFacadeSillTrayEdgeBreakRefinement.ValidateGeneratedAssets();
             rootGlobalObjectId = RequireStableGlobalObjectId(root);
         }
 
@@ -135,19 +141,16 @@ public static class QualityBlockFacadeSillDrainageReflectionBindingQA
         SessionState.SetString(RootGlobalObjectIdKey, rootGlobalObjectId);
         SessionState.SetString(SceneGuidKey, sceneGuid);
         SessionState.SetString(EpochTokenKey, Guid.NewGuid().ToString("N"));
-        // Set the armed flag last so a partial failure can never expose an incompletely initialized epoch.
         SessionState.SetBool(EpochArmedKey, true);
 
         Debug.Log(
             "Facade sill reflection epoch armed fail-closed for this Editor session: " +
             $"authored={authored}, sceneGuid={sceneGuid}, rootGlobalObjectId={rootGlobalObjectId}, epochToken={EpochToken}. " +
-            "SessionState preserves this binding across assembly reloads; Visual Fidelity remains UNSCORED.");
+            "Tray edge-break/proxy mesh fingerprint is frozen independently; Visual Fidelity remains UNSCORED.");
     }
 
     /// <summary>
     /// Strictly read-only validation used by reflection request/poll/completion/pre-still fingerprints.
-    /// The SessionState epoch survives script/assembly reloads, and GlobalObjectId rejects a replacement
-    /// scene object even when Unity happens to recycle a process-local InstanceID.
     /// </summary>
     public static void ValidateForReflectionEvidence()
     {
@@ -162,7 +165,6 @@ public static class QualityBlockFacadeSillDrainageReflectionBindingQA
             !string.Equals(currentSceneGuid, ArmedSceneGuid, StringComparison.Ordinal))
             throw new InvalidOperationException(
                 "Benchmark scene GUID changed after the facade sill reflection epoch was armed. Start from a clean Editor session and recapture a fresh reflection baseline.");
-
         if (string.IsNullOrWhiteSpace(EpochToken))
             throw new InvalidOperationException(
                 "Facade sill reflection epoch token is missing. Session-state evidence is incomplete; recapture from a clean Editor session.");
@@ -171,6 +173,10 @@ public static class QualityBlockFacadeSillDrainageReflectionBindingQA
         if (authored != AuthoredEpoch)
             throw new InvalidOperationException(
                 "Danchi authored/fallback mode changed after the facade sill reflection epoch was armed.");
+
+        // The refinement owns a separate SessionState mesh fingerprint. Validate it before any early return so
+        // authored/fallback epoch changes or a post-arm tray/proxy mutation cannot bypass reflection evidence QA.
+        QualityBlockFacadeSillTrayEdgeBreakRefinement.ValidateGeneratedAssets();
 
         GameObject root = FindSceneObject(RootName);
         if (AuthoredEpoch)
@@ -192,8 +198,8 @@ public static class QualityBlockFacadeSillDrainageReflectionBindingQA
                 "Facade sill-drainage root stable identity changed after the reflection epoch was armed. " +
                 "A replacement object may not inherit an existing reflection baseline; recapture in a clean Editor session.");
 
-        // Read-only: this validator checks renderer/material/mesh/LOD/weathering/topology state but does not rebuild it.
         QualityBlockFacadeSillDrainageUpgrade.ValidateOpenScene();
+        QualityBlockFacadeSillTrayEdgeBreakRefinement.ValidateGeneratedAssets();
     }
 
     private static string RequireSceneGuid()
@@ -207,9 +213,7 @@ public static class QualityBlockFacadeSillDrainageReflectionBindingQA
 
     private static string RequireStableGlobalObjectId(GameObject root)
     {
-        if (root == null)
-            throw new ArgumentNullException(nameof(root));
-
+        if (root == null) throw new ArgumentNullException(nameof(root));
         GlobalObjectId id = GlobalObjectId.GetGlobalObjectIdSlow(root);
         string value = id.ToString();
         if (string.IsNullOrWhiteSpace(value) ||
@@ -279,6 +283,7 @@ public static class QualityBlockFacadeSillDrainageReflectionBindingQA
         public string purpose;
         public string scenePath;
         public string sillConstructionContractPath;
+        public string sillTrayEdgeBreakContractPath;
         public Requirements requirements;
         public string[] criticalDefectRisksReduced;
         public int visualFidelityPointsAwarded;
@@ -290,10 +295,13 @@ public static class QualityBlockFacadeSillDrainageReflectionBindingQA
     private sealed class Requirements
     {
         public bool prepareMissingGeneratedSillOnlyBeforeFirstReflectionBaseline;
+        public bool ensureSillTrayEdgeBreakBeforeFirstReflectionBaseline;
         public bool freezeGeneratedRootGlobalObjectIdAfterFirstReflectionBaseline;
+        public bool freezeSillTrayMeshFingerprintAfterFirstReflectionBaseline;
         public bool persistEpochAcrossAssemblyReloadsWithSessionState;
         public bool validateSceneGuidAcrossEpoch;
         public bool validateSillBeforeEveryReflectionLightingFingerprint;
+        public bool validateSillTrayEdgeBreakBeforeEveryReflectionLightingFingerprint;
         public bool validationMustBeReadOnlyAfterEpochArm;
         public bool authoredFallbackModeMustRemainStableAfterEpochArm;
         public bool sillFailureAbortsReflectionEvidence;

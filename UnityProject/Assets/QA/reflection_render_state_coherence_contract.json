@@ -1,7 +1,8 @@
 {
   "schemaVersion": "1.0",
+  "lightmapBindingExtensionVersion": "1.0",
   "status": "PENDING_REAL_UNITY_4K_RENDER",
-  "purpose": "Bind the renderable scene/material state used by realtime reflection probes to the exact state used by native-4K still capture. This is evidence-integrity infrastructure only: matching hashes do not prove image quality and award zero Visual Fidelity points.",
+  "purpose": "Bind the renderable scene/material/GI-binding state used by realtime reflection probes to the exact state used by native-4K still capture. This is evidence-integrity infrastructure only: matching hashes do not prove image quality and award zero Visual Fidelity points.",
   "fingerprintAlgorithm": "SHA-256",
   "scenePath": "Assets/Scenes/QualityBlock1990s.unity",
   "visualFidelityPointsAwarded": 0,
@@ -13,6 +14,9 @@
     "includeActiveRendererIdentityAndHierarchy": true,
     "includeRendererTransforms": true,
     "includeRendererShadowProbeAndSortingState": true,
+    "includeRendererLightmapAndRealtimeLightmapBindings": true,
+    "includeLightmapArrayModeAndTextureDependencies": true,
+    "rejectNonPersistentLightmapTextures": true,
     "includeMeshIdentityCountsBoundsAndAssetDependencyHash": true,
     "includeCurrentSerializedMaterialState": true,
     "includeMaterialAssetDependencyHash": true,
@@ -28,17 +32,19 @@
     "QualityBlockAlbedoLightingNeutralityQA.ValidateGeneratedBaseAlbedos",
     "QualityBlockSceneMetadataCoverageQA.ValidateOpenScene",
     "QualityBlockBenchmarkPrimitiveExposureQA.ValidateOpenScene",
-    "QualityBlockReflectionMaterialOverrideGuard.ValidateOpenScene"
+    "QualityBlockReflectionMaterialOverrideGuard.ValidateOpenScene",
+    "QualityBlockReflectionLightmapBindingFingerprint.ValidateContractConfigOnly"
   ],
   "scope": {
     "rendererSelection": "Active and enabled Renderer components belonging to Assets/Scenes/QualityBlock1990s.unity, sorted by deterministic hierarchy path and component type.",
     "transformState": "World position, world rotation and lossy scale for every active renderer.",
-    "rendererState": "Layer, static editor flags, shadow casting, receive shadows, light-probe usage, reflection-probe usage, sorting layer/order and world bounds.",
+    "rendererState": "Layer, static editor flags, shadow casting, receive shadows, light-probe usage, reflection-probe usage, sorting layer/order and world bounds. The companion lightmap-binding hash additionally freezes lightmapIndex, lightmapScaleOffset, realtimeLightmapIndex and realtimeLightmapScaleOffset for every active renderer.",
+    "lightmapState": "LightmapSettings.lightmapsMode and the ordered LightmapSettings.lightmaps array are fingerprinted. Each assigned color/directional/shadow-mask texture must be a persisted project asset and contributes path, GUID, dependency hash, dimensions, mip count and sampling state. Non-persistent lightmap textures fail closed.",
     "meshState": "Shared mesh name, asset path/GUID/dependency hash when authored, vertex/submesh counts, topology/index counts and bounds. Runtime procedural meshes additionally retain identity/count/bounds checks and a bounded deterministic vertex sample; subtle in-place mutations outside that sample still require actual-pixel review.",
     "materialState": "Ordered shared material slots, current Editor-serialized material state, shader identity/keywords/render queue/GI/instancing flags and dependency hash for authored material assets.",
     "textureState": "Common PBR/detail texture bindings plus asset path/GUID/dependency hash, dimensions, mip count, filter mode, wrap mode, anisotropy, scale and offset.",
     "materialPropertyBlocks": "Renderer MaterialPropertyBlock overrides are rejected from formal reflection/still evidence until their arbitrary per-renderer/per-material property payload can be fingerprinted explicitly. This prevents an untracked override channel from changing albedo, roughness, metallic, emission or texture binding between probe and still.",
-    "exclusions": "This fingerprint is not a substitute for pixel review, does not infer Fresnel correctness from metadata, and does not claim to cryptographically cover arbitrary native-plugin or shader-global state outside the recorded scene/material/texture scope."
+    "exclusions": "These fingerprints are not a substitute for pixel review, do not infer Fresnel correctness from metadata, and do not claim to cryptographically cover arbitrary native-plugin or shader-global state outside the recorded scene/material/texture/GI-binding scope."
   },
   "criticalDefectRisksReduced": [
     "baked_or_painted_highlights",
@@ -58,8 +64,10 @@
   ],
   "hardRules": [
     "The first accepted render-state hash must be taken only after source physicality/texture/metadata/primitive validators pass.",
+    "Renderer lightmap/realtime-lightmap indices and scale-offsets plus the ordered persisted lightmap texture array must remain identical from reflection request through every observed poll, completion and pre-still boundary.",
+    "A non-persistent in-memory lightmap texture is not acceptable formal evidence because its provenance cannot be reproduced after an Editor restart.",
     "MaterialPropertyBlock overrides are not accepted into formal evidence until they are explicitly fingerprinted; the current pipeline fails closed if any active benchmark renderer has one.",
-    "The render-state hash must be folded into the existing reflection lighting fingerprint so the existing request/poll/completion/pre-still equality checks cover both lighting and renderable scene state.",
+    "The render-state and lightmap-binding hashes must be folded into the existing reflection lighting fingerprint so the existing request/poll/completion/pre-still equality checks cover lighting, renderable scene state and GI bindings together.",
     "A hash mismatch aborts evidence generation; it must never be normalized away or converted into a Visual Fidelity deduction.",
     "Hash equality awards zero points and cannot clear any critical defect.",
     "Actual sealed 3840x2160 pixels and 100% crops remain mandatory for every Visual Fidelity judgment."

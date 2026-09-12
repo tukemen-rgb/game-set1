@@ -94,6 +94,12 @@ public static class QualityBlockReviewedVisualEvidenceIntegrityQA
         // reviewer can reach the numeric gate. It remains warning-only and cannot clear/assert the defect.
         QualityBlockRenderedLightLeakDiagnostics.ValidateLatestReportForScoring();
 
+        // A valid temporal sequence is still stale evidence if scene/material/shader/settings/capture-recipe
+        // inputs changed and a new still candidate was sealed afterward. Bind temporal provenance to the same
+        // current candidate SHA/epoch/scene before any temporal category or defect review can reach the gate.
+        // This bridge awards zero points and cannot clear shimmer/aliasing/LOD-pop by itself.
+        QualityBlockTemporalCandidateCoherenceQA.ValidateForScoring();
+
         // Temporal/LOD/aliasing review is not scoreable from PNG existence alone. Require the
         // authoritative prepared sequence to prove one MainCamera pre-cull lighting fingerprint per
         // temporal frame and one filmic native-4K HDR->LDR invocation per frame with zero fallback.
@@ -105,8 +111,8 @@ public static class QualityBlockReviewedVisualEvidenceIntegrityQA
             "Reviewed Visual Fidelity evidence integrity valid: exact hero/oblique/grazing entries, exact nine categories, " +
             "exact twelve critical-defect reviews, no duplicates/unknown IDs, complete evidence/corrective-action text, " +
             "machine-revalidated construction/material metadata, current SHA-256-bound native-4K repetition and light-leak triage reports, " +
-            "and a sealed per-frame temporal lighting + filmic HDR->LDR runtime receipt. " +
-            "Pixel diagnostics remain warning-only; this QA awards 0 Visual Fidelity points and human pixel review/provenance/numeric gate still decide scoring eligibility/PASS.");
+            "temporal evidence bound to the same current still candidate SHA/epoch/scene, and a sealed per-frame temporal lighting + filmic HDR->LDR runtime receipt. " +
+            "Pixel/provenance diagnostics remain non-scoring; this QA awards 0 Visual Fidelity points and direct pixel review/provenance/numeric gate still decide eligibility/PASS.");
     }
 
     public static void ValidateContractConfigOnly()
@@ -117,9 +123,9 @@ public static class QualityBlockReviewedVisualEvidenceIntegrityQA
         IntegrityContract contract = JsonUtility.FromJson<IntegrityContract>(File.ReadAllText(ContractPath));
         if (contract == null)
             throw new InvalidOperationException("Reviewed-evidence integrity contract could not be parsed.");
-        if (!string.Equals(contract.schemaVersion, "1.2", StringComparison.Ordinal))
+        if (!string.Equals(contract.schemaVersion, "1.3", StringComparison.Ordinal))
             throw new InvalidOperationException(
-                $"Unexpected reviewed-evidence integrity schemaVersion '{contract.schemaVersion}'. Expected 1.2.");
+                $"Unexpected reviewed-evidence integrity schemaVersion '{contract.schemaVersion}'. Expected 1.3.");
         if (contract.runtimeRenderVerified)
             throw new InvalidOperationException(
                 "Reviewed-evidence integrity contract may not claim runtime render verification.");
@@ -150,9 +156,13 @@ public static class QualityBlockReviewedVisualEvidenceIntegrityQA
             !rules.requireCurrentRenderedRepetitionDiagnostics ||
             !rules.renderedRepetitionDiagnosticsCannotClearCriticalDefect ||
             !rules.requireCurrentRenderedLightLeakDiagnostics ||
-            !rules.renderedLightLeakDiagnosticsCannotDecideCriticalDefect)
+            !rules.renderedLightLeakDiagnosticsCannotDecideCriticalDefect ||
+            !rules.requireCurrentTemporalCandidateCoherence ||
+            !rules.temporalCandidateCoherenceCannotAwardPointsOrClearCriticalDefects)
             throw new InvalidOperationException(
                 "Reviewed-evidence integrity rules were weakened or are incomplete.");
+
+        QualityBlockTemporalCandidateCoherenceQA.ValidateContractConfigOnly();
     }
 
     private static void ValidateCaptureEntries(QualityBlockVisualFidelityGate.CaptureEvidence[] captures)
@@ -333,5 +343,7 @@ public static class QualityBlockReviewedVisualEvidenceIntegrityQA
         public bool renderedRepetitionDiagnosticsCannotClearCriticalDefect;
         public bool requireCurrentRenderedLightLeakDiagnostics;
         public bool renderedLightLeakDiagnosticsCannotDecideCriticalDefect;
+        public bool requireCurrentTemporalCandidateCoherence;
+        public bool temporalCandidateCoherenceCannotAwardPointsOrClearCriticalDefects;
     }
 }

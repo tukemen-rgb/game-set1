@@ -41,6 +41,18 @@
     "onFailureDisableRequiredTonemap": true,
     "failureCannotSealExistingHdrRuntimeReceipt": true
   },
+  "runtimeTelemetryBridge": {
+    "component": "QualityBlockFilmicTonemap",
+    "receiptProducer": "QualityBlockHdrTonemapRuntimeQA.ValidateLatestNative4KCapture",
+    "receiptPath": "Assets/QA/hdr_tonemap_runtime_receipt.json",
+    "receiptSchema": "1.2",
+    "linearHdrSourceInvocationCountMustEqualStillCount": 3,
+    "srgbLdrDestinationInvocationCountMustEqualStillCount": 3,
+    "lastSourceSrgbMustBeFalse": true,
+    "lastDestinationSrgbMustBeTrue": true,
+    "receiptMustBeIndependentlyRevalidatable": true,
+    "purpose": "The pre-cull target guard alone is insufficient: every actual OnRenderImage invocation must independently observe linear HDR input and sRGB LDR output before the capture manifest may be written."
+  },
   "sourceBinding": {
     "captureSource": "Assets/Editor/QualityBlock4KCapture.cs",
     "tonemapComponentSource": "Assets/Scripts/Art/QualityBlockFilmicTonemap.cs",
@@ -70,6 +82,8 @@
     "linearProjectMissing": "FAIL authoritative still before culling",
     "nativeTargetNotSrgb": "FAIL authoritative still before culling and disable required tonemap so runtime receipt cannot seal",
     "targetIsHdrAfterTonemap": "FAIL authoritative still before culling",
+    "anyOnRenderImageSourceNotLinearHdr": "FAIL authoritative packet before manifest write",
+    "anyOnRenderImageDestinationNotSrgbLdr": "FAIL authoritative packet before manifest write",
     "manualTonemapGammaEncodingDetected": "FAIL source preflight to prevent double encoding",
     "captureResolveSourceBindingMissing": "FAIL source preflight",
     "viewOrderDrift": "FAIL authoritative packet",
@@ -84,7 +98,7 @@
     {
       "title": "Unity 6 RenderTexture.sRGB",
       "url": "https://docs.unity3d.com/6000.0/ScriptReference/RenderTexture-sRGB.html",
-      "use": "Runtime read-only property used by the formal MainCamera pre-cull guard to prove the native LDR target actually uses sRGB read/write conversion."
+      "use": "Runtime read-only property used both by the formal MainCamera pre-cull guard and the image-effect telemetry to prove the expected transfer state."
     },
     {
       "title": "Unity 6 GL.sRGBWrite",

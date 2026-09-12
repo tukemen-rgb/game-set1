@@ -1,6 +1,6 @@
 {
-  "schemaVersion": "1.0",
-  "purpose": "Guarantee that scoreable reflection/still evidence uses the already-developed physical facade rough openings, world-aligned aperture UVs, deterministic apartment occupancy variation and physical glass-edge thickness, rather than silently rendering the lower-fidelity facade-optics-only state.",
+  "schemaVersion": "1.1",
+  "purpose": "Guarantee that scoreable reflection/still evidence uses the already-developed physical facade rough openings, world-aligned aperture UVs, deterministic apartment occupancy variation and physical glass-edge thickness, while preserving that exact prepared facade identity across Unity script/assembly reloads instead of silently accepting replacement roots as a fresh baseline.",
   "scenePath": "Assets/Scenes/QualityBlock1990s.unity",
   "requirements": {
     "mustRunAfterFacadeOptics": true,
@@ -13,6 +13,11 @@
     "existingPassDriftMustFailClosed": true,
     "reflectionPollValidationMustBeReportFree": true,
     "inFlightRootReplacementMustAbort": true,
+    "persistEpochAcrossAssemblyReloadsWithSessionState": true,
+    "freezeStableGlobalObjectIdsAfterFirstReflectionBaseline": true,
+    "validateSceneGuidAcrossEpoch": true,
+    "authoredFallbackModeMustRemainStableAfterEpochArm": true,
+    "unsavedReplacementMustFailBeforeEvidence": true,
     "actualRenderRequiredForVisualPoints": true,
     "visualFidelityPointsAwarded": 0
   },
@@ -22,15 +27,19 @@
     "world-aligned metric facade-aperture UV bake",
     "FacadeOccupancyVariation deterministic curtain/track assembly",
     "sceneSaving-bound 4 mm glass perimeter edge construction",
+    "full pre-probe facade validation and scene persistence",
+    "freeze scene GUID plus stable GlobalObjectIds for optics/aperture/occupancy into UnityEditor.SessionState",
     "registered material + physical UV + facade formal-build validation",
     "reflection probe baseline",
     "native 3840x2160 hero/oblique/grazing evidence"
   ],
   "reflectionLifecyclePolicy": {
-    "newPreparationEpochIdentity": "DanchiFacadeOptics Unity instance ID",
-    "firstPreProbeFingerprint": "May build a missing generated pass, then performs full source-side validation and freezes optics/aperture/occupancy instance IDs.",
-    "subsequentEditorPolls": "Must not write runtime reports or rebuild scene state. They revalidate physical UVs, occupancy, glass thickness and a report-free aperture construction fingerprint.",
-    "inFlightMutation": "Missing or replaced aperture/occupancy root under the same optics instance is a hard failure; no automatic repair is permitted while reflection evidence may be in flight."
+    "newPreparationEpochIdentity": "Clean Unity Editor session + benchmark scene GUID + authored/fallback mode + persisted GlobalObjectIds for generated optics/aperture/occupancy roots",
+    "firstPreProbeFingerprint": "May build a genuinely missing generated pass, performs full source-side validation, requires persisted scene objects with stable GlobalObjectIds, then arms a SessionState epoch token.",
+    "assemblyReload": "The armed epoch survives script/domain reload through UnityEditor.SessionState. Reload is not permission to rebuild, replace or re-arm facade roots.",
+    "subsequentEditorPolls": "Must not write runtime reports or rebuild scene state. They verify scene GUID, authored/fallback mode, exact stable root identities, physical UVs, occupancy, glass thickness and report-free aperture construction state.",
+    "inFlightMutation": "Missing/replaced optics, aperture or occupancy roots, an authored/fallback mode switch, scene GUID drift or an unsaved replacement object is a hard failure; no automatic repair is permitted while reflection evidence may be in flight.",
+    "resetBoundary": "A clean Unity Editor restart is the conservative boundary for arming a fresh facade formal-build epoch."
   },
   "criticalDefectRisksReduced": [
     "visible_primitive_placeholder",
@@ -46,9 +55,11 @@
     "grazing/material_grazing and temporal pixels at 100% for concrete repetition, curtain/track LOD changes, thin glass-edge shimmer and reflection continuity"
   ],
   "limitations": [
-    "This binding proves only that the higher-fidelity source passes are present and validated before formal reflection evidence; it does not prove their pixels are photorealistic.",
+    "This binding proves only that the higher-fidelity source passes and the same persisted facade-root identities are present before and throughout formal reflection evidence; it does not prove their pixels are photorealistic.",
+    "Stable GlobalObjectId and SessionState checks are evidence-coherence controls, not visual scoring evidence.",
     "Source-side geometry/metadata validation cannot clear obvious_repetition, major_light_leak, hero_geometry_intersection or any other visual critical defect without actual native render evidence.",
-    "Unity 6000.3.0f1 compilation, scene serialization order, reflection-probe execution and 3840x2160 rendered output remain runtime verification pending until a Runner is available.",
+    "Unity 6000.3.0f1 compilation, SessionState behavior, GlobalObjectId stability, scene serialization order, reflection-probe execution and 3840x2160 rendered output remain runtime verification pending until a Runner is available.",
+    "A clean Editor restart intentionally permits a new formal epoch; the external render-candidate freshness/provenance guards remain responsible for tying that epoch to the exact candidate revision.",
     "Existing generated passes are validated rather than silently regenerated so evidence-state drift fails closed instead of being hidden during a formal packet."
   ],
   "forbiddenThemes": [

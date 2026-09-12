@@ -23,7 +23,9 @@ public static class QualityBlockAcFanGuardMountInterfaceRefinement
     private const string ContractPath = "Assets/QA/ac_outdoor_fan_physical_refinement_contract.json";
     private const string MountMeshPath = "Assets/Art/GeneratedDetailMeshes/GM_ACFan_GuardMountStandoffs.asset";
     private const string GuardMaterialPath = "Assets/Art/GeneratedDetailMaterials/MAT_DarkGalvanizedSteel.mat";
-    private const string MountObjectName = "HD_AC_FanGuardMounts";
+    // Deliberately does not contain the exact HD_AC_FanGuard prefix: the physical fan validator counts
+    // that prefix as the wire guard itself. "Feet" still classifies this object into Danchi LOD1.
+    private const string MountObjectName = "HD_AC_GuardMountFeet";
 
     private const int ExpectedUnits = 15;
     private const int MountCountPerUnit = 4;
@@ -192,7 +194,7 @@ public static class QualityBlockAcFanGuardMountInterfaceRefinement
         string json = File.ReadAllText(absolute);
         string[] required =
         {
-            "\"refinementRevision\": \"round-wire-mount-2\"",
+            "\"mountInterfaceRevision\": \"mount-2\"",
             "\"mountCountPerUnit\": 4",
             "\"mountCenterRadiusMetres\": 0.188",
             "\"mountRadiusMetres\": 0.0075",

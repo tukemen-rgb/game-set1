@@ -15,27 +15,37 @@
       <path d="M 38,-8 C 76,-35 132,-55 164,-29 C 142,-2 91,20 47,25 Z" transform="rotate(288)"/>
     </g>
     <circle r="36" fill="#202422" stroke="#111" stroke-width="3"/>
-    <g fill="none" stroke="#60635f" stroke-width="5">
+    <g fill="none" stroke="#60635f" stroke-width="5" stroke-linecap="round" stroke-linejoin="round">
       <circle r="52"/><circle r="96"/><circle r="140"/><circle r="184"/>
       <path d="M0,-188V188 M-188,0H188 M-133,-133L133,133 M133,-133L-133,133"/>
     </g>
   </g>
+
+  <g transform="translate(520 92)" font-family="sans-serif" fill="#222">
+    <rect x="0" y="0" width="250" height="70" rx="8" fill="#e6e2d8" stroke="#777"/>
+    <circle cx="34" cy="35" r="15" fill="#60635f" stroke="#333" stroke-width="2"/>
+    <text x="62" y="29" font-size="14" font-weight="700">Guard wire section</text>
+    <text x="62" y="50" font-size="13">Ø5 mm round; 8-sided mesh section</text>
+    <text x="62" y="66" font-size="11">rings and radial spokes use same circular intent</text>
+  </g>
+
   <g font-family="sans-serif" fill="#222" font-size="18">
     <text x="575" y="185" font-weight="700">Manufacture / installation stack</text>
     <text x="575" y="220">1. molded casing front + 18 mm annular inlet shroud</text>
     <text x="575" y="252">2. recessed five-blade axial rotor, Ø330 mm assumption</text>
     <text x="575" y="284">3. hub on existing motor axis</text>
-    <text x="575" y="316">4. circular guard: four rings + eight spokes, Ø5 mm wire</text>
-    <text x="575" y="358" font-weight="700">Material response</text>
-    <text x="575" y="393">Rotor/shroud: dark dielectric polymer, metallic ≤ 0.02</text>
-    <text x="575" y="425">Guard: aged galvanized steel, metallic response retained</text>
-    <text x="575" y="457">Dry benchmark: wetness = 0; highlights come from light/geometry</text>
-    <text x="575" y="499" font-weight="700">Cause-based aging</text>
-    <text x="575" y="534">Rotor: recessed dust + mild UV only</text>
-    <text x="575" y="566">Shroud: UV dulling / lip rain exposure / recess dust</text>
-    <text x="575" y="598">Guard: rain + UV; no rust without ferrous coating breach</text>
-    <text x="575" y="640" font-weight="700">LOD evidence</text>
-    <text x="575" y="675">LOD0 full → LOD1 full → LOD2 no wire guard → LOD3 shroud silhouette</text>
-    <text x="575" y="707">Check oblique/balcony_services crop for aliasing, intersections, toy-like repetition.</text>
+    <text x="575" y="316">4. circular guard: four rings + eight ROUND spokes, Ø5 mm wire</text>
+    <text x="575" y="338" font-size="14">   32 segments/ring; 8-sided wire section; flat finite spoke ends; no rectangular spoke strips</text>
+    <text x="575" y="374" font-weight="700">Material response</text>
+    <text x="575" y="409">Rotor/shroud: dark dielectric polymer, metallic ≤ 0.02</text>
+    <text x="575" y="441">Guard: aged galvanized steel, metallic response retained</text>
+    <text x="575" y="473">Dry benchmark: wetness = 0; highlights come from light/geometry</text>
+    <text x="575" y="515" font-weight="700">Cause-based aging</text>
+    <text x="575" y="550">Rotor: recessed dust + mild UV only</text>
+    <text x="575" y="582">Shroud: UV dulling / lip rain exposure / recess dust</text>
+    <text x="575" y="614">Guard: rain + UV; no rust without ferrous coating breach</text>
+    <text x="575" y="650" font-weight="700">LOD evidence</text>
+    <text x="575" y="681">LOD0 full → LOD1 same round-wire mesh → LOD2 no wire guard → LOD3 shroud silhouette</text>
+    <text x="575" y="713">Check oblique/balcony_services crop: wire highlight, clearance, aliasing, repetition and LOD disappearance.</text>
   </g>
 </svg>

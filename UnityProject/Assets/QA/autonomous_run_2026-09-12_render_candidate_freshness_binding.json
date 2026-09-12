@@ -12,11 +12,11 @@
   },
   "commits": [
     {
-      "sha": "4249b82b4cf4c5dddb9e3efc49fa080bc243538f",
+      "sha": "c2741c33162ba69f7ff54c580e7aeb19618fac60",
       "summary": "Add fail-closed render-candidate freshness QA, candidate epoch/seal/invalidation receipts, active-scene/dependency/settings/recipe fingerprinting, and stale-receipt invalidation."
     },
     {
-      "sha": "4aa661fff10470df0cac90dcf41e7bd9c4cb5227",
+      "sha": "3f593d2a21311cc1afc5574e5c0288f8bf2d12b8",
       "summary": "Add machine-readable render_candidate_freshness_contract.json with zero-point evidence policy and stale re-seal attack closure."
     }
   ],

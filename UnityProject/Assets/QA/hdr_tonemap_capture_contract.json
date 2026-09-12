@@ -1,7 +1,7 @@
 {
-  "schemaVersion": "1.1",
+  "schemaVersion": "1.2",
   "id": "qualityblock-hdr-tonemap-capture",
-  "purpose": "Prove at runtime that every authoritative native still preserves scene HDR values until the filmic display transform and explicitly terminates the Built-in image-effect chain in LDR before PNG evidence is sealed.",
+  "purpose": "Prove at runtime that every authoritative native still preserves scene-linear HDR values until the filmic display transform and explicitly terminates the Built-in image-effect chain in an sRGB LDR destination before PNG evidence is sealed.",
   "pipeline": {
     "renderPipeline": "Built-in Render Pipeline",
     "renderingPath": "Forward",
@@ -14,16 +14,20 @@
   "runtimeEvidence": {
     "hdrSourceRequired": true,
     "hdrSourceRequiredForEveryStill": true,
+    "linearHdrSourceRequiredForEveryStill": true,
     "acceptedObservedHdrSourceFormats": [
       "ARGBHalf",
       "ARGBFloat",
       "RGB111110Float",
       "DefaultHDR"
     ],
+    "hdrSourceSrgbFlagRequired": false,
     "ldrDestinationRequired": true,
     "ldrDestinationRequiredForEveryStill": true,
+    "srgbLdrDestinationRequiredForEveryStill": true,
     "destinationMustBeNonHdrFormat": true,
     "destinationMustBeNonNull": true,
+    "ldrDestinationSrgbFlagRequired": true,
     "nativeWidth": 3840,
     "nativeHeight": 2160,
     "minimumTonemappedInvocations": 3,
@@ -34,7 +38,8 @@
       "grazing-light"
     ],
     "fallbackBlitAllowedInAuthoritativeEvidence": false,
-    "receiptPath": "Assets/QA/hdr_tonemap_runtime_receipt.json"
+    "receiptPath": "Assets/QA/hdr_tonemap_runtime_receipt.json",
+    "receiptSchema": "1.2"
   },
   "displayTransform": {
     "shader": "Hidden/NewTown/FilmicTonemap",
@@ -42,6 +47,7 @@
     "globalExposureOnly": true,
     "filmicShoulderToe": true,
     "outputRange": "LDR 0..1",
+    "singleDisplayEncodingStep": "linear LDR fragment output -> sRGB RenderTexture write",
     "forbiddenDefectMasking": [
       "bloom used to conceal highlights",
       "sharpening used to fabricate microdetail",
@@ -55,6 +61,11 @@
     "runtimeReceiptGeneratedOnlyAfterThreeNativeStills": true,
     "perStillHdrSourceCounterMustEqualAuthoritativeStillCount": true,
     "perStillLdrDestinationCounterMustEqualAuthoritativeStillCount": true,
+    "perStillLinearHdrSourceCounterMustEqualAuthoritativeStillCount": true,
+    "perStillSrgbLdrDestinationCounterMustEqualAuthoritativeStillCount": true,
+    "lastSourceMustBeLinearHdr": true,
+    "lastDestinationMustBeSrgbLdr": true,
+    "receiptFileMustBeIndependentlyRevalidatable": true,
     "sourceFlagsAloneAreInsufficient": true,
     "runtimeReceiptDoesNotProveVisualQuality": true,
     "manualPixelReviewStillRequired": true,
@@ -64,16 +75,19 @@
   "failurePolicy": {
     "missingImageEffectTransformsToLDR": "FAIL native review packet before capture",
     "anyStillWithoutHdrObservedSource": "FAIL native review packet; highlight preservation is not proven for every still",
+    "anyStillWithoutLinearHdrObservedSource": "FAIL native review packet; the filmic transform may have received an incorrectly encoded source",
     "anyStillWithoutLdrObservedDestination": "FAIL native review packet; HDR-to-LDR termination is not proven for every still",
+    "anyStillWithoutSrgbLdrObservedDestination": "FAIL native review packet; the single Linear-to-sRGB display write is not proven for every still",
     "missingTonemapInvocation": "FAIL native review packet; do not seal or score stills",
     "fallbackInvocation": "FAIL native review packet; do not seal or score stills",
     "missingRuntimeReceipt": "FAIL evidence provenance"
   },
   "rationale": [
     "The benchmark uses physically plausible sunlight, specular response and a filmic shoulder, so clipping scene values before the display transform would invalidate lighting/material judgments even if the final PNG looks superficially acceptable.",
-    "A last-frame-only format observation is insufficient: each authoritative hero/oblique/grazing image-effect invocation contributes to explicit HDR-source and LDR-destination counters, and both counters must equal the still count.",
+    "A last-frame-only observation is insufficient. Each authoritative hero/oblique/grazing image-effect invocation contributes to explicit HDR, LDR, scene-linear-HDR and sRGB-LDR counters, and all four counters must equal the still count.",
+    "The source must remain linear while floating-point HDR and the destination must expose sRGB read/write when LDR, proving the intended single display-encoding step rather than merely proving buffer bit depth.",
     "ImageEffectTransformsToLDR makes the intended transition explicit to Unity's Built-in image-effect pipeline instead of relying on an implicit destination format.",
-    "Runtime telemetry proves execution and buffer class only. It cannot clear clipping, exposure, color, material, reflection or other visible defects without the actual 3840x2160 frames and 100% crops."
+    "Runtime telemetry proves execution and transfer plumbing only. It cannot clear clipping, exposure, color, material, reflection or other visible defects without the actual 3840x2160 frames and 100% crops."
   ],
   "researchReferences": [
     {
@@ -87,9 +101,9 @@
       "use": "Forward Built-in HDR requires a camera post-processing effect so the scene can render through an HDR buffer before display conversion."
     },
     {
-      "title": "Unity 6 Camera.OnRenderImage",
-      "url": "https://docs.unity3d.com/6000.0/Documentation/ScriptReference/Camera.OnRenderImage.html",
-      "use": "Built-in pipeline invokes OnRenderImage after camera rendering for fullscreen image effects."
+      "title": "Unity 6 RenderTexture.sRGB",
+      "url": "https://docs.unity3d.com/6000.0/ScriptReference/RenderTexture-sRGB.html",
+      "use": "Runtime read-only state used to prove that the observed HDR source is linear and the LDR destination owns the sRGB write transform."
     }
   ]
 }

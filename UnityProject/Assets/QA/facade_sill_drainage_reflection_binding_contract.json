@@ -1,11 +1,13 @@
 {
-  "schemaVersion": "1.0",
-  "purpose": "Bind the generated facade sill-drainage assembly to the formal reflection-probe epoch. A genuinely missing fallback sill pass may be prepared before the first reflection baseline; after that baseline is armed, all request/poll/completion/pre-still checks are read-only and fail closed on root replacement/deletion, authored/fallback mode changes, legacy-sill re-enablement, or structural/material/LOD/topology drift. This contract awards no Visual Fidelity points.",
+  "schemaVersion": "1.1",
+  "purpose": "Bind the generated facade sill-drainage assembly to one formal reflection-probe epoch across request, polling, completion and pre-still review, including Unity script/assembly reload boundaries. A genuinely missing fallback sill pass may be prepared before the first baseline; after arming, SessionState persists the epoch and a scene-object GlobalObjectId plus scene GUID freeze identity. All later checks are read-only and fail closed on replacement/deletion, authored/fallback changes, legacy-sill re-enablement, or structural/material/LOD/topology drift. This contract awards no Visual Fidelity points.",
   "scenePath": "Assets/Scenes/QualityBlock1990s.unity",
   "sillConstructionContractPath": "Assets/QA/facade_sill_drainage_contract.json",
   "requirements": {
     "prepareMissingGeneratedSillOnlyBeforeFirstReflectionBaseline": true,
-    "freezeGeneratedRootInstanceAfterFirstReflectionBaseline": true,
+    "freezeGeneratedRootGlobalObjectIdAfterFirstReflectionBaseline": true,
+    "persistEpochAcrossAssemblyReloadsWithSessionState": true,
+    "validateSceneGuidAcrossEpoch": true,
     "validateSillBeforeEveryReflectionLightingFingerprint": true,
     "validationMustBeReadOnlyAfterEpochArm": true,
     "authoredFallbackModeMustRemainStableAfterEpochArm": true,
@@ -22,8 +24,10 @@
   "limitations": [
     "This binding proves reflection-epoch coherence only; it does not prove that the reconstructed sill dimensions are visually correct at benchmark distance.",
     "Read-only post-arm validation cannot prove that drain openings read as physical recesses rather than overly dark holes in final pixels.",
-    "A stable root instance and passing structural QA cannot prove that anodized-aluminum Fresnel response, highlight width or contact shadowing are filmic under the actual midsummer lighting state.",
+    "Stable GlobalObjectId and passing structural QA cannot prove that anodized-aluminum Fresnel response, highlight width or contact shadowing are filmic under the actual midsummer lighting state.",
+    "SessionState intentionally persists until the Unity Editor process exits; a new formal epoch after source/scene edits should start from a clean Editor session rather than weakening the armed epoch in place.",
+    "A newly generated but unsaved root may not have a stable GlobalObjectId and must fail closed until the benchmark scene is persisted.",
     "The binding cannot clear visible_lod_pop or severe_aliasing_or_shimmer; native-4K temporal evidence remains mandatory.",
-    "Unity 6000.3.0f1 compile/runtime behavior remains unverified until a real Runner executes the reflection request, poll, completion and pre-still sequence."
+    "Unity 6000.3.0f1 compile/runtime behavior remains unverified until a real Runner executes reflection request, poll, completion, an assembly reload boundary, and pre-still validation."
   ]
 }

@@ -24,14 +24,14 @@
       "guardConcentricRingCount": 4,
       "guardRadialSpokeCount": 8,
       "guardWireDiameterMetres": 0.005,
-      "guardRingMajorSegments": 32,
-      "guardWireCrossSectionSegments": 8,
+      "guardRingMajorSegments": 48,
+      "guardWireCrossSectionSegments": 12,
       "radialSpokeCrossSection": "round",
       "spokeInnerRadiusMetres": 0.030,
       "spokeOuterRadiusMetres": 0.188,
-      "expectedGuardVertices": 1168,
-      "expectedGuardTriangles": 2304,
-      "geometry": "round-section concentric wire rings plus round-section radial spokes with flat finite ends; replaces square bar lattice and forbids rectangular spoke strips",
+      "expectedGuardVertices": 2512,
+      "expectedGuardTriangles": 4992,
+      "geometry": "round-section concentric wire rings plus round-section radial spokes with flat finite ends; 48-segment ring paths and 12-sided 5 mm wire sections reduce polygonal specular stepping in native-4K grazing crops; replaces square bar lattice and forbids rectangular spoke strips",
       "mounting": "front of rotor with positive axial separation; guard sits ahead of the molded inlet shroud rather than coplanar with the rotor"
     }
   },
@@ -106,6 +106,7 @@
     "reviewAt100Percent": true,
     "inspect": [
       "round-wire grazing highlight rather than flat-strip highlight",
+      "polygonal specular stepping on 5 mm wire",
       "guard/rotor/shroud axial separation",
       "blade/guard intersection",
       "guard repetition across fifteen balcony units",

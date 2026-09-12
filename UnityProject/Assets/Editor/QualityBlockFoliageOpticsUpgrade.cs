@@ -38,12 +38,15 @@ public static class QualityBlockFoliageOpticsUpgrade
         QualityBlockFoliageMorphologyVariationUpgrade.ApplyToOpenScene();
         EnsureMaterials(out Material dark, out Material mid);
         ApplyToOpenScene(dark, mid);
+        QualityBlockVegetationEcologyContractQA.Validate();
+        QualityBlockVegetationEcologyUpgrade.ApplyToOpenScene();
+        QualityBlockVegetationRootZoneInterfaceQA.ApplyToOpenScene();
         ValidateOpenScene();
         EditorSceneManager.MarkSceneDirty(EditorSceneManager.GetActiveScene());
         EditorSceneManager.SaveOpenScenes();
         AssetDatabase.SaveAssets();
         AssetDatabase.Refresh();
-        Debug.Log("Tree foliage optics + morphology-diversity pass built with corrected continuous woody geometry. Actual transmitted-light balance, dapple density, silhouette repetition, bark continuity and shadow softness still require Unity render inspection.");
+        Debug.Log("Tree foliage optics + morphology-diversity + ecology/root-zone pass built with corrected continuous woody geometry. Actual transmitted-light balance, dapple density, silhouette repetition, bark continuity, understory complexity, root-zone seating and shadow softness still require Unity render inspection.");
     }
 
     [MenuItem("NewTown/Lighting/Apply Tree Foliage Optics Only")]
@@ -66,6 +69,8 @@ public static class QualityBlockFoliageOpticsUpgrade
         QualityBlockTreeWoodyContinuityQA.ValidateOpenScene();
         QualityBlockFoliageMorphologyDiversityQA.ValidateContractConfigOnly();
         QualityBlockFoliageMorphologyVariationUpgrade.ValidateCurrentScene(false);
+        QualityBlockVegetationEcologyUpgrade.ValidateOpenScene();
+        QualityBlockVegetationRootZoneInterfaceQA.ValidateOpenScene();
 
         Shader shader = Shader.Find(ShaderName);
         if (shader == null)
@@ -144,7 +149,7 @@ public static class QualityBlockFoliageOpticsUpgrade
         if (validatedTrees == 0)
             Debug.Log("All tree slots use authored replacements; generated foliage-optics validation was not applicable.");
         else
-            Debug.Log($"Foliage optical structure validated for {validatedTrees} generated trees: deterministic sun alignment, two-sided transmission materials, morphology diversity, per-cluster exposure variation and explicit soft-shadow casters are present. Unity render verification remains pending.");
+            Debug.Log($"Foliage optical structure validated for {validatedTrees} generated trees: deterministic sun alignment, two-sided transmission materials, morphology diversity, per-cluster exposure variation, explicit soft-shadow casters, ecology and root-zone interfaces are present. Unity render verification remains pending.");
     }
 
     private static void ApplyToOpenScene(Material dark, Material mid)

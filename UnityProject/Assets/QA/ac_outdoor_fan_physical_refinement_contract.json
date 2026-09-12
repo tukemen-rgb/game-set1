@@ -1,6 +1,7 @@
 {
   "schemaVersion": "1.0",
-  "refinementRevision": "round-wire-mount-2",
+  "refinementRevision": "round-wire-1",
+  "mountInterfaceRevision": "mount-2",
   "assemblyId": "danchi.outdoor_ac.axial_fan_face",
   "scope": "generated fallback outdoor-unit fan face only",
   "expectedGeneratedUnits": 15,

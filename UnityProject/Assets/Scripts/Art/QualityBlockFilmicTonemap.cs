@@ -35,6 +35,8 @@ public sealed class QualityBlockFilmicTonemap : MonoBehaviour
     private int fallbackInvocationCount;
     private int hdrSourceInvocationCount;
     private int ldrDestinationInvocationCount;
+    private int linearHdrSourceInvocationCount;
+    private int srgbLdrDestinationInvocationCount;
     private RenderTextureFormat lastSourceFormat = RenderTextureFormat.Default;
     private RenderTextureFormat lastDestinationFormat = RenderTextureFormat.Default;
     private int lastSourceWidth;
@@ -58,6 +60,8 @@ public sealed class QualityBlockFilmicTonemap : MonoBehaviour
     public int FallbackInvocationCount => fallbackInvocationCount;
     public int HdrSourceInvocationCount => hdrSourceInvocationCount;
     public int LdrDestinationInvocationCount => ldrDestinationInvocationCount;
+    public int LinearHdrSourceInvocationCount => linearHdrSourceInvocationCount;
+    public int SrgbLdrDestinationInvocationCount => srgbLdrDestinationInvocationCount;
     public RenderTextureFormat LastSourceFormat => lastSourceFormat;
     public RenderTextureFormat LastDestinationFormat => lastDestinationFormat;
     public int LastSourceWidth => lastSourceWidth;
@@ -90,6 +94,8 @@ public sealed class QualityBlockFilmicTonemap : MonoBehaviour
         fallbackInvocationCount = 0;
         hdrSourceInvocationCount = 0;
         ldrDestinationInvocationCount = 0;
+        linearHdrSourceInvocationCount = 0;
+        srgbLdrDestinationInvocationCount = 0;
         lastSourceFormat = RenderTextureFormat.Default;
         lastDestinationFormat = RenderTextureFormat.Default;
         lastSourceWidth = 0;
@@ -131,8 +137,13 @@ public sealed class QualityBlockFilmicTonemap : MonoBehaviour
             lastSourceWidth = source.width;
             lastSourceHeight = source.height;
             lastSourceSrgb = source.sRGB;
-            if (IsHdrFormat(source.format))
+            bool sourceIsHdr = IsHdrFormat(source.format);
+            if (sourceIsHdr)
+            {
                 hdrSourceInvocationCount++;
+                if (!source.sRGB)
+                    linearHdrSourceInvocationCount++;
+            }
         }
 
         lastDestinationWasNull = destination == null;
@@ -142,8 +153,13 @@ public sealed class QualityBlockFilmicTonemap : MonoBehaviour
             lastDestinationWidth = destination.width;
             lastDestinationHeight = destination.height;
             lastDestinationSrgb = destination.sRGB;
-            if (!IsHdrFormat(destination.format))
+            bool destinationIsLdr = !IsHdrFormat(destination.format);
+            if (destinationIsLdr)
+            {
                 ldrDestinationInvocationCount++;
+                if (destination.sRGB)
+                    srgbLdrDestinationInvocationCount++;
+            }
         }
         else
         {

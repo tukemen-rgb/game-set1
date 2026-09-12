@@ -1,13 +1,16 @@
 {
-  "schemaVersion": "1.2",
-  "purpose": "Fail closed before and throughout realtime reflection-probe synchronization unless the machine-readable material registry still matches actual active Unity Material assets, the persisted facade glazing gasket remains structurally/materially valid, and the period-plausible metal crescent-latch replacement is prepared before the first probe baseline then remains unchanged. This protects the cubemap baseline from physically invalid/stale materials and from MainCamera-only facade-interface state; it does not award Visual Fidelity points.",
+  "schemaVersion": "1.3",
+  "purpose": "Fail closed before and throughout realtime reflection-probe synchronization unless the machine-readable material registry still matches actual active Unity Material assets, the persisted facade glazing gasket remains structurally/materially valid, the deterministic smooth LOD0 sash-latch crescent assets are prepared before the first probe baseline then remain unchanged, and the period-plausible metal crescent-latch replacement is prepared before the first probe baseline then remains unchanged. This protects the cubemap baseline from physically invalid/stale materials and from MainCamera-only facade-interface or latch-curve state; it does not award Visual Fidelity points.",
   "scenePath": "Assets/Scenes/QualityBlock1990s.unity",
   "materialPhysicalityContractPath": "Assets/QA/registered_material_asset_physicality_contract.json",
   "facadeGlazingGasketContractPath": "Assets/QA/facade_glazing_gasket_contract.json",
   "facadeSashLatchContractPath": "Assets/QA/facade_sash_latch_contract.json",
+  "facadeSashLatchCurveContractPath": "Assets/QA/facade_sash_latch_curve_refinement_contract.json",
   "requirements": {
     "validateMaterialPhysicalityBeforeEveryReflectionLightingFingerprint": true,
     "validateFacadeGlazingGasketBeforeEveryReflectionLightingFingerprint": true,
+    "ensureFacadeSashLatchCurveBeforeFirstReflectionBaseline": true,
+    "validateFacadeSashLatchCurveBeforeEveryReflectionLightingFingerprint": true,
     "ensureFacadeSashLatchBeforeFirstReflectionBaseline": true,
     "validateFacadeSashLatchBeforeEveryReflectionLightingFingerprint": true,
     "reflectionFingerprintUsedBeforeRenderProbeRequest": true,
@@ -16,9 +19,11 @@
     "reflectionFingerprintRevalidatedImmediatelyBeforeStillCapture": true,
     "physicalityValidationMustBeReportFreeDuringFingerprinting": true,
     "facadeGlazingGasketValidationMustBeReadOnlyDuringFingerprinting": true,
+    "facadeSashLatchCurveValidationMustBeReadOnlyAfterEpochArm": true,
     "facadeSashLatchValidationMustBeReadOnlyAfterEpochArm": true,
     "physicalityFailureAbortsReflectionEvidence": true,
     "facadeGlazingGasketFailureAbortsReflectionEvidence": true,
+    "facadeSashLatchCurveFailureAbortsReflectionEvidence": true,
     "facadeSashLatchFailureAbortsReflectionEvidence": true,
     "actualRenderRequiredForVisualPoints": true
   },
@@ -30,8 +35,9 @@
   "visualFidelityPointsAwarded": 0,
   "runtimeRenderVerified": false,
   "limitations": [
-    "The binding proves source/runtime material-contract coherence plus persisted glazing-gasket and sash-latch construction coherence at each reflection-lighting fingerprint evaluation; it does not prove final BRDF appearance, filtered texture response, Fresnel behavior or highlight plausibility.",
+    "The binding proves source/runtime material-contract coherence plus persisted glazing-gasket, smooth latch-curve asset and sash-latch construction coherence at each reflection-lighting fingerprint evaluation; it does not prove final BRDF appearance, filtered texture response, Fresnel behavior or highlight plausibility.",
     "The glazing-gasket validation proves the persisted structural state sent to ReflectionProbe.RenderProbe; it does not prove that the 10 mm interface is visually proportionate, free of black-halo artifacts or free of subpixel shimmer in final camera views.",
+    "The curve refinement binding proves that the exact 32-ring swept LOD0 crescent asset set is present before the first probe baseline and unchanged after epoch arm; it cannot prove that 32 rings are visually sufficient, that the 10 mm section is proportionate, or that grazing highlights are free of faceting/shimmer.",
     "The sash-latch binding proves that the old rubber handle renderers are disabled and the metal lock/receiver/LOD state is stable after the first pre-probe preparation; it cannot prove the reconstructed dimensions look proportionate or that the small hardware avoids aliasing at 4K.",
     "A passing binding cannot clear impossible_material_physics, visible_lod_pop, severe_aliasing_or_shimmer or any other critical defect without sealed native-4K rendered evidence and required frontal/oblique/grazing review.",
     "Unity compile/runtime behavior remains unverified until a real Unity 6000.3.0f1 Runner executes the packet."

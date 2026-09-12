@@ -1,0 +1,116 @@
+{
+  "schemaVersion": "1.0",
+  "runId": "2026-09-12-sash-latch-curve-refinement",
+  "branch": "gpt/unity-migration",
+  "startHead": "8420cd2b5b196f10374287ce9d8515aa7cc2903c",
+  "substantiveWorkHead": "a0da0f93e40fe37b9d764c4dcd62565e3a8d865a",
+  "commits": [
+    {
+      "sha": "96f6f7c078bea5c6b35e6cbf8b9da239c1e763ad",
+      "purpose": "Add deterministic 32-ring swept LOD0 crescent-lever asset refinement with exact topology/UV validation and formal-epoch dependency-hash freeze."
+    },
+    {
+      "sha": "ab9ab8e993be4f646c7084dc8796b2ac5402e96c",
+      "purpose": "Add technical lookdev illustration covering silhouette, cross-section, installation interfaces and required rendered evidence."
+    },
+    {
+      "sha": "55b1f9635651b3cfd73c48a074682ca56d5d8703",
+      "purpose": "Add machine-readable manufacture/installation/PBR/LOD/evidence contract for the smooth crescent refinement."
+    },
+    {
+      "sha": "20100789f9e1a7bc666f9f9a616f1f7d82ecd66f",
+      "purpose": "Update parent sash-latch metadata so LOD0 construction reasoning describes the continuous swept lever instead of the superseded six-box approximation."
+    },
+    {
+      "sha": "5513f8ba7a54a64cfa2f46953aed47c1466f97df",
+      "purpose": "Bind curve preparation and read-only validation into the central reflection-lighting fingerprint before parent latch preparation."
+    },
+    {
+      "sha": "a0da0f93e40fe37b9d764c4dcd62565e3a8d865a",
+      "purpose": "Upgrade the reflection physicality contract to require smooth-curve coherence before request, during poll/completion and before still capture."
+    }
+  ],
+  "problemSelected": "The existing physical sash-latch pass replaced generic rubber handles, but its LOD0 crescent lever was still assembled from six overlapping chamfered boxes at angles -65/-39/-13/+13/+39/+65 degrees. At a 100-percent native-4K sash crop or grazing light this can create a visible staircase silhouette and discontinuous highlight travel. Because visible primitive-like faceting, aliasing and implausible material response directly threaten Geometry, Material/PBR, Lighting and Temporal categories, refining this known hero-detail weakness was higher value than adding a new unrelated asset.",
+  "constructionReasoning": {
+    "manufacture": "Model one continuous swept hard-surface operating lever around the existing pivot, with broad faces and a geometric corner break. Do not claim exact historical product identity.",
+    "dimensionsThickness": "Retain the parent 34 mm centerline radius and reconstruct a 130 degree sweep, 10 x 10 mm section and 2 mm corner break. Use 32 arc rings for LOD0. The 50 mm mounting pitch remains the only product/period-supported dimension in the parent assembly; the refined lever section remains a benchmark assumption.",
+    "materialsFinish": "Reuse MAT_AgedAluminum and its metallic/roughness/normal response; no new material, emission or painted highlight. Contracted envelope: baseColor sRGB approximately [0.55,0.57,0.56], metallic 0.5-1.0, roughness 0.38-0.72, normalScale 0.08, microstructure about 0.45 mm, wetness 0.",
+    "mountingInterfaces": "Keep the existing renderer transform, pivot, base plate, receiver, fasteners and weathering component. The curve must clear meeting-stile, glazing gasket and optical glass, and remain mechanically legible against the receiver.",
+    "orientationExposure": "Sheltered vertical sash hardware under coherent midsummer sun/sky/reflection fill. Grazing evidence is required specifically because a smooth real curve should carry a continuous BRDF highlight rather than six discrete box responses.",
+    "aging": "No new arbitrary dirt is generated. Parent sheltered/recessed grime, UV/oxide dulling and localized hand-contact polish remain authoritative.",
+    "geometryVsMaterial": "Centerline curve, section thickness, 2 mm corner break and cap shape are geometry. Oxidation, micro-scratches, 0.45 mm microstructure and contact polish remain material response.",
+    "lod": "Only LOD0 geometry is refined. Parent LOD1/2/3 and cross-fade thresholds remain unchanged so temporal evidence must still prove that LOD0-to-LOD1 simplification does not pop or shimmer."
+  },
+  "implementation": {
+    "assetPathPattern": "Assets/Art/GeneratedFacadeHardwareMeshes/SashLatch/GM_SashLatch_CrescentLever_P{0..7}.asset",
+    "phaseBins": 8,
+    "phaseStepM": 0.011,
+    "arcRings": 32,
+    "sectionSides": 8,
+    "duplicatedUvSeamVerticesPerRing": 1,
+    "expectedVertexCountPerMesh": 306,
+    "expectedTriangleCountPerMesh": 512,
+    "centerlineRadiusM": 0.034,
+    "sweepDegrees": 130.0,
+    "sectionWidthM": 0.010,
+    "sectionThicknessM": 0.010,
+    "cornerBreakM": 0.002,
+    "approximateGeneratedBoundsM": [0.02672, 0.07069, 0.01000],
+    "formalEvidencePolicy": "The central reflection fingerprint calls QualityBlockSashLatchCurveRefinement.EnsurePreparedForFormalEvidence before QualityBlockFacadeSashLatchUpgrade.EnsurePreparedForFormalEvidence. First call may create/repair deterministic curve assets, records AssetDatabase dependency hashes and arms the epoch. Subsequent reflection fingerprints and MainCamera culls validate exact vertices/UV/triangle order/topology and fail closed on dependency-hash drift instead of repairing in flight.",
+    "visualFidelityPointsAwarded": 0
+  },
+  "verification": {
+    "githubSourceReview": "PASS for repository write/readback and formal binding structure.",
+    "topologyArithmetic": "PASS by static arithmetic: 32 rings x 9 side vertices plus two 9-vertex end-cap sets = 306 vertices; 31 intervals x 8 sides x 2 triangles plus 16 cap triangles = 512 triangles.",
+    "physicalBoundsArithmetic": "PASS by static calculation: expected lever mesh bounds are approximately 26.72 mm x 70.69 mm x 10.00 mm and remain within the source QA envelope.",
+    "reflectionOrdering": "PASS by source review: smooth curve preparation occurs before parent latch formal preparation in the central reflection-material binding, then both are revalidated at the same fingerprint boundary.",
+    "githubActionsRuns": 0,
+    "commitStatusContexts": 0,
+    "unity6000_3_0f1Compile": "PENDING_RUNNER",
+    "unityRuntimeAssetGeneration": "PENDING_RUNNER",
+    "native3840x2160FrontalObliqueGrazing": "PENDING_RUNNER",
+    "oneHundredPercentSashCrop": "PENDING_RUNNER",
+    "temporalLodAliasReview": "PENDING_RUNNER"
+  },
+  "scores": {
+    "implementationReadiness": 93,
+    "implementationReadinessPossible": 100,
+    "visualFidelityStatus": "UNSCORED_UNTIL_REAL_4K_RENDER",
+    "visualFidelityPointsAwardedThisRun": 0,
+    "visualFidelityPassClaimed": false
+  },
+  "expectedVisualScoreImpact": [
+    "Geometry & construction fidelity: potentially improves the hero sash hardware silhouette by replacing a six-piece approximation with one continuous swept manufactured form. No score until rendered.",
+    "Material/PBR physical plausibility: potentially removes six independent box-edge highlight discontinuities while preserving the same canonical aged-metal material. No score until rendered.",
+    "Lighting/shadows/reflections: potentially produces continuous grazing highlight travel and more coherent contact/self-shadowing; formal reflection fingerprint now binds the curve state. No score until rendered.",
+    "Texture/microdetail: physical-metre UVs remain deterministic across eight 11 mm phase variants and the cross-section seam has explicit UV continuity. No score until rendered.",
+    "Temporal/LOD/aliasing: denser LOD0 curvature may reduce silhouette stair-stepping but could also introduce new subpixel sparkle; parent LOD1 remains substantially simpler, so temporal evidence is mandatory. No score until rendered."
+  ],
+  "criticalDefectsNotCleared": [
+    "visible_primitive_placeholder",
+    "baked_or_painted_highlights",
+    "impossible_material_physics",
+    "obvious_repetition",
+    "hero_geometry_intersection",
+    "inconsistent_sun_shadow_direction",
+    "severe_aliasing_or_shimmer",
+    "visible_lod_pop",
+    "major_light_leak",
+    "missing_construction_material_metadata",
+    "unverified_render_claim"
+  ],
+  "renderRisksToInspect": [
+    "32 arc rings may still facet under extreme 100-percent crop/grazing light; do not assume source topology is sufficient.",
+    "The reconstructed 10 x 10 mm lever section may read too heavy or too thin relative to the actual sash; correct from pixels rather than defending the assumption.",
+    "The 2 mm corner break may make the edge highlight too broad or too sharp under the canonical midsummer lighting/material response.",
+    "The existing LOD1 proxy remains much simpler than the new LOD0 curve and may cause visible cross-fade shape change or shimmer.",
+    "Pivot/receiver/glazing-gasket clearance remains a pixel-level intersection check despite source-side dimensions.",
+    "Metric UV phase variation does not prove repetition is invisible; the 100-percent crop and temporal motion remain authoritative."
+  ],
+  "nextBlocker": "No Unity Runner or workflow/status context is available. At first Unity 6000.3.0f1 runtime availability, stop speculative expansion: compile, execute the curve contract/asset validator, confirm all eight generated meshes are 306 vertices/512 triangles and frozen through reflection request-poll-completion, then capture native 3840x2160 hero/facade_center, oblique/construction_depth and grazing/sash_rail_response plus crop/sash_latch_100pct and temporal oblique evidence. Score/fix only from those pixels, prioritizing faceting, section proportion, receiver/gasket intersection, metallic highlight continuity, LOD pop and shimmer.",
+  "constraintsObserved": {
+    "godotModified": false,
+    "baseMerged": false,
+    "earthquakeDisasterReconstructionThemeAdded": false
+  }
+}

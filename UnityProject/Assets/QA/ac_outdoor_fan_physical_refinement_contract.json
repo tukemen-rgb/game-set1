@@ -1,5 +1,6 @@
 {
   "schemaVersion": "1.0",
+  "refinementRevision": "round-wire-1",
   "assemblyId": "danchi.outdoor_ac.axial_fan_face",
   "scope": "generated fallback outdoor-unit fan face only",
   "expectedGeneratedUnits": 15,
@@ -23,16 +24,26 @@
       "guardConcentricRingCount": 4,
       "guardRadialSpokeCount": 8,
       "guardWireDiameterMetres": 0.005,
-      "geometry": "round-section concentric wire rings plus radial spokes; replaces square bar lattice",
-      "mounting": "front of rotor with positive axial separation"
+      "guardRingMajorSegments": 32,
+      "guardWireCrossSectionSegments": 8,
+      "radialSpokeCrossSection": "round",
+      "spokeInnerRadiusMetres": 0.030,
+      "spokeOuterRadiusMetres": 0.188,
+      "expectedGuardVertices": 1168,
+      "expectedGuardTriangles": 2304,
+      "geometry": "round-section concentric wire rings plus round-section radial spokes with flat finite ends; replaces square bar lattice and forbids rectangular spoke strips",
+      "mounting": "front of rotor with positive axial separation; guard sits ahead of the molded inlet shroud rather than coplanar with the rotor"
     }
   },
   "interfaces": {
     "rotorBehindGuard": true,
     "guardMustNotIntersectRotor": true,
+    "minimumRotorToGuardAxialClearanceMetres": 0.015,
+    "minimumShroudToGuardAxialClearanceMetres": 0.003,
     "shroudMustRemainCenteredOnHub": true,
     "legacySolidFanDiscForbidden": true,
-    "legacySquareGrilleForbidden": true
+    "legacySquareGrilleForbidden": true,
+    "rectangularRadialGuardSpokesForbidden": true
   },
   "materials": [
     {
@@ -56,10 +67,10 @@
       "metallic": [0.65, 1.0],
       "specularF0": [0.55, 0.85],
       "normalScaleIntent": 0.55,
-      "microstructure": "subtle aged zinc/steel surface; geometry supplies round-wire highlight",
+      "microstructure": "subtle aged zinc/steel surface; physical circular wire geometry supplies the grazing highlight, never a painted line",
       "wetness": 0.0,
       "uvAging": "subtle oxidation/dulling",
-      "angularFresnelResponse": "metallic grazing reflection broadened by aging"
+      "angularFresnelResponse": "metallic grazing reflection broadened by aging and circular wire curvature"
     }
   ],
   "weathering": {
@@ -70,19 +81,36 @@
   },
   "lodPolicy": {
     "levelsRequired": 4,
-    "LOD0": "shroud + five-blade rotor + full four-ring/eight-spoke wire guard",
-    "LOD1": "shroud + rotor + guard retained",
+    "LOD0": "shroud + five-blade rotor + full four-ring/eight-spoke round-wire guard",
+    "LOD1": "shroud + rotor + full round-wire guard retained with the same canonical guard mesh",
     "LOD2": "shroud + rotor retained; wire guard removed before it aliases",
     "LOD3": "shroud only preserves circular intake silhouette; rotor/guard removed",
     "crossFadeRequired": true,
     "visibleLodPopForbidden": true,
     "severeAliasingOrShimmerForbidden": true
   },
+  "formalBuildBinding": {
+    "requiredOrder": [
+      "QualityBlockAcFanPhysicalRefinement.ApplyToOpenScene",
+      "QualityBlockAcFanGuardRoundWireRefinement.ApplyToOpenScene",
+      "QualityBlockDanchiLodUpgrade.ApplyToOpenScene"
+    ],
+    "finalDanchiLodValidationMustDirectlyValidatePhysicalFan": true,
+    "finalDanchiLodValidationMustDirectlyValidateRoundWireGuard": true,
+    "reason": "The formal 4K chain reaches Danchi LOD generation through tree/foliage/ground preparation; the refined guard must therefore exist before proxy creation and remain directly validated at the final Danchi LOD validation entrypoint."
+  },
   "formalEvidence": {
     "nativeCapture": "3840x2160",
     "primaryReviewCrop": "oblique/balcony_services",
     "secondaryReviewViews": ["hero", "grazing"],
     "reviewAt100Percent": true,
+    "inspect": [
+      "round-wire grazing highlight rather than flat-strip highlight",
+      "guard/rotor/shroud axial separation",
+      "blade/guard intersection",
+      "guard repetition across fifteen balcony units",
+      "LOD1-to-LOD2 guard disappearance for pop or shimmer"
+    ],
     "actualRenderRequired": true,
     "automaticVisualScore": 0,
     "runtimeRenderVerification": "PENDING_UNITY_RUNTIME"

@@ -63,6 +63,7 @@ public static class QualityBlockFoliageOpticsUpgrade
         if (!EditorSceneManager.GetActiveScene().IsValid() || EditorSceneManager.GetActiveScene().path != ScenePath)
             EditorSceneManager.OpenScene(ScenePath, OpenSceneMode.Single);
 
+        QualityBlockTreeWoodyContinuityQA.ValidateOpenScene();
         QualityBlockFoliageMorphologyDiversityQA.ValidateContractConfigOnly();
         QualityBlockFoliageMorphologyVariationUpgrade.ValidateCurrentScene(false);
 

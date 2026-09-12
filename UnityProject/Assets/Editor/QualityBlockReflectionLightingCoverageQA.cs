@@ -11,9 +11,10 @@ using UnityEngine;
 ///
 /// A field can remain individually legal while still changing the rendered result. The reflection
 /// fingerprint therefore has to bind not only the physical sun/sky values, but also the rendering
-/// policy that decides how those values are applied (light render mode, bounce energy, pixel-light
-/// budget, shadowmask mode and subtractive shadow color). This QA also prevents stale aliases in the
-/// reflection contract's critical-defect mapping from drifting away from the canonical 100-point gate.
+/// policy that decides how those values are applied (light render mode, bounce energy, DynamicGI
+/// indirect scale, pixel-light budget, shadowmask mode and subtractive shadow color). This QA also
+/// prevents stale aliases in the reflection contract's critical-defect mapping from drifting away from
+/// the canonical 100-point gate.
 ///
 /// Contract validity is implementation/evidence integrity only. It awards zero Visual Fidelity points.
 /// </summary>
@@ -60,10 +61,11 @@ public static class QualityBlockReflectionLightingCoverageQA
             !lighting.includeSubtractiveShadowColor ||
             !lighting.includeGlobalShadowAndLodSettings ||
             !lighting.includePixelLightAndShadowmaskState ||
+            !lighting.includeDynamicGiIndirectScale ||
             !lighting.actualRenderRequiredForVisualPoints)
             throw new InvalidOperationException(
                 "Reflection lighting coverage was weakened. Request/poll/completion/pre-still identity must include sun render/bounce state, " +
-                "sky/ambient/reflection/fog, subtractive shadow color, pixel-light/shadowmask state and global shadow/LOD state.");
+                "sky/ambient/reflection/fog, DynamicGI indirect scale, subtractive shadow color, pixel-light/shadowmask state and global shadow/LOD state.");
 
         CriticalFailurePolicy policy = sync.criticalFailurePolicy;
         if (policy == null)
@@ -145,6 +147,7 @@ public static class QualityBlockReflectionLightingCoverageQA
         public bool includeSubtractiveShadowColor;
         public bool includeGlobalShadowAndLodSettings;
         public bool includePixelLightAndShadowmaskState;
+        public bool includeDynamicGiIndirectScale;
         public bool actualRenderRequiredForVisualPoints;
     }
 

@@ -25,10 +25,10 @@ public static class QualityBlockAcFanGuardRoundWireRefinement
     private const int ExpectedUnits = 15;
 
     private const float GuardWireRadius = 0.0025f;
-    private const int RingMajorSegments = 32;
-    private const int WireCrossSectionSegments = 8;
-    private const int ExpectedGuardVertices = 1168;
-    private const int ExpectedGuardTriangles = 2304;
+    private const int RingMajorSegments = 48;
+    private const int WireCrossSectionSegments = 12;
+    private const int ExpectedGuardVertices = 2512;
+    private const int ExpectedGuardTriangles = 4992;
 
     private static readonly float[] RingRadii = { 0.052f, 0.096f, 0.140f, 0.184f };
 
@@ -183,11 +183,11 @@ public static class QualityBlockAcFanGuardRoundWireRefinement
             "\"guardConcentricRingCount\": 4",
             "\"guardRadialSpokeCount\": 8",
             "\"guardWireDiameterMetres\": 0.005",
-            "\"guardRingMajorSegments\": 32",
-            "\"guardWireCrossSectionSegments\": 8",
+            "\"guardRingMajorSegments\": 48",
+            "\"guardWireCrossSectionSegments\": 12",
             "\"radialSpokeCrossSection\": \"round\"",
-            "\"expectedGuardVertices\": 1168",
-            "\"expectedGuardTriangles\": 2304",
+            "\"expectedGuardVertices\": 2512",
+            "\"expectedGuardTriangles\": 4992",
             "\"minimumRotorToGuardAxialClearanceMetres\": 0.015",
             "\"minimumShroudToGuardAxialClearanceMetres\": 0.003",
             "\"automaticVisualScore\": 0",

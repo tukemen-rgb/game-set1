@@ -34,6 +34,7 @@ public static class QualityBlockFoliageOpticsUpgrade
     {
         QualityBlockTreeDetailUpgrade.BuildDetailedTrees();
         EditorSceneManager.OpenScene(ScenePath, OpenSceneMode.Single);
+        QualityBlockTreeWoodyContinuityQA.ApplyToOpenScene();
         QualityBlockFoliageMorphologyVariationUpgrade.ApplyToOpenScene();
         EnsureMaterials(out Material dark, out Material mid);
         ApplyToOpenScene(dark, mid);
@@ -42,7 +43,7 @@ public static class QualityBlockFoliageOpticsUpgrade
         EditorSceneManager.SaveOpenScenes();
         AssetDatabase.SaveAssets();
         AssetDatabase.Refresh();
-        Debug.Log("Tree foliage optics + morphology-diversity pass built. Actual transmitted-light balance, dapple density, silhouette repetition and shadow softness still require Unity render inspection.");
+        Debug.Log("Tree foliage optics + morphology-diversity pass built with corrected continuous woody geometry. Actual transmitted-light balance, dapple density, silhouette repetition, bark continuity and shadow softness still require Unity render inspection.");
     }
 
     [MenuItem("NewTown/Lighting/Apply Tree Foliage Optics Only")]

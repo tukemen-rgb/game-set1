@@ -59,7 +59,10 @@ public static class QualityBlockAcFanGuardRoundWireRefinement
             throw new InvalidOperationException($"Expected {ExpectedUnits} generated AC bays, got {bays.Length}.");
 
         Mesh refined = SaveMesh(BuildRoundWireGuardMesh());
-        ValidateGuardMesh(refined, new List<string>());
+        var meshErrors = new List<string>();
+        ValidateGuardMesh(refined, meshErrors);
+        if (meshErrors.Count > 0)
+            throw new InvalidOperationException("Generated round-wire guard mesh failed self-validation:\n - " + string.Join("\n - ", meshErrors));
 
         foreach (Transform bay in bays)
         {
@@ -174,7 +177,8 @@ public static class QualityBlockAcFanGuardRoundWireRefinement
         string json = File.ReadAllText(absolute);
         string[] required =
         {
-            "\"schemaVersion\": \"1.1\"",
+            "\"schemaVersion\": \"1.0\"",
+            "\"refinementRevision\": \"round-wire-1\"",
             "\"expectedGeneratedUnits\": 15",
             "\"guardConcentricRingCount\": 4",
             "\"guardRadialSpokeCount\": 8",
@@ -184,6 +188,8 @@ public static class QualityBlockAcFanGuardRoundWireRefinement
             "\"radialSpokeCrossSection\": \"round\"",
             "\"expectedGuardVertices\": 1168",
             "\"expectedGuardTriangles\": 2304",
+            "\"minimumRotorToGuardAxialClearanceMetres\": 0.015",
+            "\"minimumShroudToGuardAxialClearanceMetres\": 0.003",
             "\"automaticVisualScore\": 0",
             "\"runtimeRenderVerification\": \"PENDING_UNITY_RUNTIME\""
         };
@@ -220,7 +226,7 @@ public static class QualityBlockAcFanGuardRoundWireRefinement
             errors.Add("Refined guard tangents are incomplete.");
 
         Vector3 size = mesh.bounds.size;
-        if (Mathf.Abs(size.x - 0.381f) > 0.0035f || Mathf.Abs(size.y - 0.381f) > 0.0035f)
+        if (Mathf.Abs(size.x - 0.376f) > 0.0035f || Mathf.Abs(size.y - 0.376f) > 0.0035f)
             errors.Add($"Refined guard radial envelope drifted: bounds {size.x:F4} x {size.y:F4} m.");
         if (Mathf.Abs(size.z - 0.005f) > 0.0006f)
             errors.Add($"Refined guard wire depth drifted: bounds.z={size.z:F4} m; expected about 5 mm.");
@@ -376,7 +382,8 @@ public static class QualityBlockAcFanGuardRoundWireRefinement
         Mesh existing = AssetDatabase.LoadAssetAtPath<Mesh>(GuardMeshPath);
         if (existing == null)
         {
-            Directory.CreateDirectory(Path.GetDirectoryName(GuardMeshPath));
+            string directory = Path.GetDirectoryName(GuardMeshPath);
+            if (!string.IsNullOrEmpty(directory)) Directory.CreateDirectory(directory);
             AssetDatabase.CreateAsset(generated, GuardMeshPath);
             return generated;
         }

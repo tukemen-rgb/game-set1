@@ -32,13 +32,18 @@ public static class QualityBlockDanchiLodUpgrade
     {
         QualityBlockDetailBevelUpgrade.BuildBeveledDetailedQualityBlock();
         EditorSceneManager.OpenScene(ScenePath, OpenSceneMode.Single);
+
+        // Fan-face refinement must precede proxy generation: its physical rotor/guard/shroud then
+        // participate in the same four-level building LOD contract rather than remaining a late overlay.
+        QualityBlockAcFanPhysicalRefinement.ApplyToOpenScene();
         ApplyToOpenScene();
         ValidateOpenScene();
+        QualityBlockAcFanPhysicalRefinement.ValidateOpenScene();
         EditorSceneManager.MarkSceneDirty(EditorSceneManager.GetActiveScene());
         EditorSceneManager.SaveOpenScenes();
         AssetDatabase.SaveAssets();
         AssetDatabase.Refresh();
-        Debug.Log("Four-level danchi detail LOD hierarchy built. Runtime transition/render verification remains pending.");
+        Debug.Log("Four-level danchi detail LOD hierarchy built with physical outdoor-AC fan faces. Runtime transition/render verification remains pending.");
     }
 
     [MenuItem("NewTown/Geometry/Apply Danchi Detail LOD Pass Only")]
@@ -222,17 +227,18 @@ public static class QualityBlockDanchiLodUpgrade
         if (ContainsAny(n, "Bolt", "Fastener", "Washer", "Nut", "Seal", "Handle", "Clip", "GrilleBar"))
             return 0;
 
-        // Small manufactured attachments and service hardware.
+        // Small manufactured attachments and service hardware. The circular wire guard remains only
+        // through LOD1 so sub-pixel wire does not turn into shimmer at medium distance.
         if (ContainsAny(n, "BasePlate", "Bracket", "Receiver", "Track", "Collar", "Clamp", "Pipe", "Hose",
-            "Refrigerant", "FanHub", "Foot", "Feet", "Mullion", "Conduit", "Joint"))
+            "Refrigerant", "FanHub", "FanGuard", "Foot", "Feet", "Mullion", "Conduit", "Joint"))
             return 1;
 
         // Components that continue to create facade depth/parallax at medium distance.
-        if (ContainsAny(n, "Divider", "SashStile", "FanDisc", "ClothesBracket", "StairWindow"))
+        if (ContainsAny(n, "Divider", "SashStile", "FanDisc", "FanRotor", "ClothesBracket", "StairWindow"))
             return 2;
 
-        // Large edges and openings control the apartment block silhouette/read at long distance.
-        if (ContainsAny(n, "BalconySlabLip", "RailMid", "RailLower", "WindowFrame", "WindowSill"))
+        // Large edges/openings and the condenser inlet shroud control the long-distance facade read.
+        if (ContainsAny(n, "BalconySlabLip", "RailMid", "RailLower", "WindowFrame", "WindowSill", "FanShroud"))
             return 3;
 
         // Unknown future detail is retained to LOD1 rather than promoted to the far silhouette by accident.

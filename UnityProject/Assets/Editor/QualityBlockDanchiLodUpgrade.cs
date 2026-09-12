@@ -33,18 +33,19 @@ public static class QualityBlockDanchiLodUpgrade
         QualityBlockDetailBevelUpgrade.BuildBeveledDetailedQualityBlock();
         EditorSceneManager.OpenScene(ScenePath, OpenSceneMode.Single);
 
-        // Fan-face reconstruction and its round-wire correction must precede proxy generation. This
-        // keeps the actual manufactured geometry inside the same four-level LOD contract rather than
-        // letting a post-LOD overlay or the earlier rectangular radial-spoke approximation enter formal evidence.
+        // Fan-face reconstruction, round-wire correction and physical guard mounts must all precede
+        // proxy generation. This keeps the manufactured assembly inside one four-level LOD contract
+        // rather than allowing floating or late-overlay service geometry into formal evidence.
         QualityBlockAcFanPhysicalRefinement.ApplyToOpenScene();
         QualityBlockAcFanGuardRoundWireRefinement.ApplyToOpenScene();
+        QualityBlockAcFanGuardMountInterfaceRefinement.ApplyToOpenScene();
         ApplyToOpenScene();
         ValidateOpenScene();
         EditorSceneManager.MarkSceneDirty(EditorSceneManager.GetActiveScene());
         EditorSceneManager.SaveOpenScenes();
         AssetDatabase.SaveAssets();
         AssetDatabase.Refresh();
-        Debug.Log("Four-level danchi detail LOD hierarchy built with physical outdoor-AC fan faces and round-wire guards. Runtime transition/render verification remains pending.");
+        Debug.Log("Four-level danchi detail LOD hierarchy built with physical outdoor-AC fan faces, round-wire guards and seated mounting feet. Runtime transition/render verification remains pending.");
     }
 
     [MenuItem("NewTown/Geometry/Apply Danchi Detail LOD Pass Only")]
@@ -158,16 +159,17 @@ public static class QualityBlockDanchiLodUpgrade
                 $"LOD proxy renderer ownership mismatch: proxies={proxyRendererCount}, declared={lod1Count + lod2Count + lod3Count}.");
 
         // This validation method is also the final Danchi-specific entrypoint used by the formal 4K
-        // preparation chain. Keep AC construction/material/metadata and the round-wire topology direct
-        // dependencies here so a later refactor cannot leave them as build-time-only checks.
+        // preparation chain. Keep AC construction/material/metadata, round-wire topology and its
+        // physical shroud-mount interface direct dependencies so later refactors fail closed.
         QualityBlockAcFanPhysicalRefinement.ValidateOpenScene();
         QualityBlockAcFanGuardRoundWireRefinement.ValidateOpenScene();
+        QualityBlockAcFanGuardMountInterfaceRefinement.ValidateOpenScene();
 
         Debug.Log(
             $"Danchi detail LOD validation passed structurally: renderers " +
             $"LOD0={lod0Count}, LOD1={lod1Count}, LOD2={lod2Count}, LOD3={lod3Count}; " +
             $"physical tiers micro/fine/medium/macro={microCount}/{fineCount}/{mediumCount}/{macroCount}; " +
-            "outdoor-AC rotor/shroud/round-wire-guard construction is directly validated. " +
+            "outdoor-AC rotor/shroud/round-wire-guard/mount construction is directly validated. " +
             "Actual cross-fade timing, wire aliasing, shadow continuity and silhouette transitions still require Unity render inspection.");
     }
 
@@ -235,8 +237,8 @@ public static class QualityBlockDanchiLodUpgrade
         if (ContainsAny(n, "Bolt", "Fastener", "Washer", "Nut", "Seal", "Handle", "Clip", "GrilleBar"))
             return 0;
 
-        // Small manufactured attachments and service hardware. The circular wire guard remains only
-        // through LOD1 so sub-pixel wire does not turn into shimmer at medium distance.
+        // Small manufactured attachments and service hardware. The circular wire guard and its mounting
+        // feet remain only through LOD1 so sub-pixel wire/hardware does not turn into shimmer at medium distance.
         if (ContainsAny(n, "BasePlate", "Bracket", "Receiver", "Track", "Collar", "Clamp", "Pipe", "Hose",
             "Refrigerant", "FanHub", "FanGuard", "Foot", "Feet", "Mullion", "Conduit", "Joint"))
             return 1;

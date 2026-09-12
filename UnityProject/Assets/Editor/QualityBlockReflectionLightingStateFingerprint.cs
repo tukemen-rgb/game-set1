@@ -11,10 +11,10 @@ using UnityEngine.Rendering;
 /// <summary>
 /// Produces a deterministic SHA-256 fingerprint of the physical lighting state that is allowed to
 /// illuminate realtime reflection probes and native-4K benchmark stills. The payload also folds in
-/// separately validated renderable-scene/material and ReflectionProbe-configuration fingerprints so
-/// cubemaps cannot be accepted from one material/geometry/probe state and then reused for a still from
-/// another. This is evidence-integrity infrastructure only: matching hashes prove configuration
-/// coherence, not visual quality.
+/// separately validated renderable-scene/material, renderer/lightmap-GI binding and ReflectionProbe-
+/// configuration fingerprints so cubemaps cannot be accepted from one material/geometry/GI/probe state
+/// and then reused for a still from another. This is evidence-integrity infrastructure only: matching
+/// hashes prove configuration coherence, not visual quality.
 /// </summary>
 public static class QualityBlockReflectionLightingStateFingerprint
 {
@@ -23,12 +23,12 @@ public static class QualityBlockReflectionLightingStateFingerprint
 
     /// <summary>
     /// Validates the complete solar/sky/reflection contract first, then hashes the exact scene lighting
-    /// state plus independently validated renderable-scene/material and reflection-probe-state fingerprints.
-    /// The hash intentionally includes ambient SH coefficients because DynamicGI.UpdateEnvironment can change
-    /// diffuse sky fill after the sky material was assigned; a probe refresh that straddles such a change is
-    /// not coherent evidence. It also includes rendering-policy values and exact probe capture/influence state
-    /// that can remain individually valid while changing the output, preventing a legal probe-request state
-    /// from drifting to a different legal still-capture state.
+    /// state plus independently validated renderable-scene/material, renderer/lightmap-GI-binding and
+    /// reflection-probe-state fingerprints. The hash intentionally includes ambient SH coefficients because
+    /// DynamicGI.UpdateEnvironment can change diffuse sky fill after the sky material was assigned; a probe
+    /// refresh that straddles such a change is not coherent evidence. It also includes rendering-policy
+    /// values and exact probe capture/influence state that can remain individually valid while changing the
+    /// output, preventing a legal probe-request state from drifting to a different legal still-capture state.
     /// </summary>
     public static string BuildCurrentSha256()
     {
@@ -61,8 +61,8 @@ public static class QualityBlockReflectionLightingStateFingerprint
         if (sky == null || sky.shader == null)
             throw new InvalidOperationException("Lighting fingerprint requires the physical benchmark sky material.");
 
-        var sb = new StringBuilder(6656);
-        Append(sb, "schema", "reflection-lighting-state-v4");
+        var sb = new StringBuilder(7168);
+        Append(sb, "schema", "reflection-lighting-state-v5");
         Append(sb, "scene", EditorSceneManager.GetActiveScene().path);
         Append(sb, "unityVersion", Application.unityVersion);
 
@@ -76,6 +76,15 @@ public static class QualityBlockReflectionLightingStateFingerprint
         string renderStateSha256 = QualityBlockReflectionRenderStateFingerprint.BuildValidatedCurrentSha256();
         Append(sb, "renderState.algorithm", QualityBlockReflectionRenderStateFingerprint.Algorithm);
         Append(sb, "renderState.sha256", renderStateSha256);
+
+        // Baked/realtime GI assignments are renderer state too, but they are not represented by mesh,
+        // material or transform identity. Freeze the exact renderer lightmap indices/scale-offsets and the
+        // ordered persisted LightmapSettings texture array into the same asynchronous evidence hash. A legal
+        // lightmap rebinding after RenderProbe() must therefore invalidate the candidate instead of silently
+        // presenting different indirect illumination in the still.
+        string lightmapBindingSha256 = QualityBlockReflectionLightmapBindingFingerprint.BuildCurrentSha256();
+        Append(sb, "lightmapBinding.algorithm", QualityBlockReflectionLightmapBindingFingerprint.Algorithm);
+        Append(sb, "lightmapBinding.sha256", lightmapBindingSha256);
 
         // Probe configuration itself changes the evidence: moving a probe, changing its influence volume,
         // capture center, intensity, clipping, culling or sky clear policy can alter reflections while all
@@ -175,7 +184,7 @@ public static class QualityBlockReflectionLightingStateFingerprint
         string current = BuildCurrentSha256();
         if (!string.Equals(current, expectedSha256, StringComparison.OrdinalIgnoreCase))
             throw new InvalidOperationException(
-                $"Physical lighting, probe configuration or renderable scene/material state drifted before {phase}: expected {expectedSha256}, current {current}. Reflection evidence is invalid and capture must abort.");
+                $"Physical lighting, probe configuration, renderer/lightmap GI binding or renderable scene/material state drifted before {phase}: expected {expectedSha256}, current {current}. Reflection evidence is invalid and capture must abort.");
     }
 
     private static void AppendMaterialFloat(StringBuilder sb, Material material, string property)

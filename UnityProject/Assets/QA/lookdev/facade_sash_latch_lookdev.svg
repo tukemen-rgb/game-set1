@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="1000" viewBox="0 0 1600 1000">
+  <rect width="1600" height="1000" fill="#f2f0e9"/>
+  <style>
+    .title{font:700 38px sans-serif;fill:#202226}.h{font:700 24px sans-serif;fill:#202226}.t{font:19px sans-serif;fill:#30343a}.small{font:16px sans-serif;fill:#4a4e54}.dim{font:17px monospace;fill:#1f496e}.metal{fill:#8e9492;stroke:#353a3a;stroke-width:3}.dark{fill:#4e5352;stroke:#252929;stroke-width:3}.glass{fill:#c9e6ec;fill-opacity:.38;stroke:#739aa2;stroke-width:3}.gasket{fill:#353838}.guide{stroke:#7c7f82;stroke-width:2;stroke-dasharray:8 8;fill:none}.measure{stroke:#1f496e;stroke-width:2;marker-start:url(#a);marker-end:url(#a)}
+  </style>
+  <defs><marker id="a" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto"><path d="M0,4 L8,0 L8,8 Z" fill="#1f496e"/></marker></defs>
+  <text x="70" y="70" class="title">Facade sliding-sash crescent latch — construction / lookdev brief</text>
+  <text x="70" y="105" class="small">Circa-2000 Japanese apartment fallback. Period-plausible reconstruction, not an exact product identification. Native 4K render remains authoritative.</text>
+
+  <text x="70" y="165" class="h">Front elevation — meeting stiles</text>
+  <rect x="90" y="205" width="255" height="520" class="glass"/>
+  <rect x="355" y="205" width="255" height="520" class="glass"/>
+  <rect x="320" y="185" width="55" height="560" class="metal"/>
+  <rect x="350" y="185" width="55" height="560" class="metal"/>
+  <rect x="350" y="350" width="30" height="82" rx="3" class="metal"/>
+  <circle cx="365" cy="391" r="11" class="metal"/>
+  <path d="M365 391 C395 355, 425 362, 437 392 C423 419, 397 429, 375 416" fill="none" stroke="#8e9492" stroke-width="11" stroke-linecap="round"/>
+  <path d="M435 358 L455 358 L455 424 L435 424 M455 363 L470 363 L470 376 L455 376 M455 406 L470 406 L470 419 L455 419" class="dark" fill="none" stroke-width="9"/>
+  <circle cx="365" cy="366" r="4" class="dark"/><circle cx="365" cy="416" r="4" class="dark"/>
+  <line x1="305" y1="366" x2="305" y2="416" class="measure"/>
+  <text x="190" y="397" class="dim">50 mm mounting pitch</text>
+  <line x1="350" y1="452" x2="380" y2="452" class="measure"/>
+  <text x="337" y="480" class="dim">30 mm base</text>
+  <text x="92" y="760" class="t">One crescent lock per two-panel window; receiver is a separate metal part. Old twin rubber handle blocks are disabled.</text>
+
+  <text x="760" y="165" class="h">35° / section intent</text>
+  <polygon points="795,255 1035,220 1035,690 795,725" class="glass"/>
+  <polygon points="1035,220 1080,235 1080,675 1035,690" class="gasket"/>
+  <polygon points="1080,235 1140,255 1140,655 1080,675" class="metal"/>
+  <polygon points="1115,370 1150,380 1150,465 1115,455" class="metal"/>
+  <circle cx="1144" cy="418" r="12" class="metal"/>
+  <path d="M1145 418 C1183 382, 1217 398, 1228 430 C1214 458, 1181 468, 1156 448" fill="none" stroke="#8e9492" stroke-width="12" stroke-linecap="round"/>
+  <polygon points="1225,392 1250,399 1250,460 1225,453" class="dark"/>
+  <line x1="1115" y1="490" x2="1150" y2="500" class="measure"/>
+  <text x="1080" y="530" class="dim">~10 mm plate depth</text>
+  <line x1="1144" y1="418" x2="1182" y2="392" class="measure"/>
+  <text x="1170" y="365" class="dim">~34 mm crescent radius</text>
+  <text x="760" y="760" class="t">Required separation: glass → EPDM gasket → sash metal → latch. No floating hardware, no glass intersection, no coplanar z-fight.</text>
+
+  <rect x="70" y="815" width="1460" height="130" rx="12" fill="#e4e1d7" stroke="#9a968c" stroke-width="2"/>
+  <text x="95" y="850" class="h">Rendered QA targets</text>
+  <text x="95" y="885" class="t">Front: metal lock reads as discrete manufactured hardware, not black/rubber rectangles. Oblique: plate thickness, pivot projection and receiver throat remain legible.</text>
+  <text x="95" y="917" class="t">Grazing: highlight comes only from metallic BRDF + coherent summer sun/sky/reflections. 100% crop: screw spacing, contact seating, phase repetition, LOD shimmer/pop and aliasing are judged from pixels.</text>
+</svg>

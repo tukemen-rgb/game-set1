@@ -11,9 +11,10 @@ using UnityEngine;
 /// Editor poll, at completion and immediately before still capture; therefore a material-registry drift
 /// cannot enter or survive the formal cubemap baseline merely because MainCamera pre-cull has not run yet.
 /// The same entrypoint also chains manufacturing-scale detail UVs, the facade formal-build binding,
-/// generated-foliage formal evidence, balcony drainage/floor-fall construction, and the dry waterproof
-/// microsurface state, closing equivalent ReflectionProbe blind spots for stale UV meshes, missing facade
-/// construction/occupancy, stale foliage, stale balcony geometry, or stale flat-material response.
+/// generated-foliage formal evidence, balcony drainage/floor-fall construction, the dry waterproof
+/// microsurface state, and the facade glazing-gasket construction state, closing equivalent ReflectionProbe
+/// blind spots for stale UV meshes, missing facade construction/occupancy, stale foliage, stale balcony
+/// geometry/material response, or a stale/missing glass-to-sash interface.
 ///
 /// This is evidence-integrity infrastructure only. It awards zero Visual Fidelity points and cannot clear
 /// any critical defect without sealed native-4K rendered evidence.
@@ -23,6 +24,7 @@ public static class QualityBlockReflectionMaterialPhysicalityBindingQA
     private const string ContractPath = "Assets/QA/reflection_material_physicality_binding_contract.json";
     private const string ScenePath = "Assets/Scenes/QualityBlock1990s.unity";
     private const string MaterialPhysicalityContractPath = "Assets/QA/registered_material_asset_physicality_contract.json";
+    private const string FacadeGlazingGasketContractPath = "Assets/QA/facade_glazing_gasket_contract.json";
 
     private static readonly string[] CanonicalCriticalRisks =
     {
@@ -35,33 +37,41 @@ public static class QualityBlockReflectionMaterialPhysicalityBindingQA
     public static void ValidateContractConfigOnly()
     {
         BindingContract contract = LoadJson<BindingContract>(ContractPath);
-        if (contract == null || !string.Equals(contract.schemaVersion, "1.0", StringComparison.Ordinal))
-            throw new InvalidOperationException("Reflection material physicality binding contract is null/unparseable or not schema 1.0.");
+        if (contract == null || !string.Equals(contract.schemaVersion, "1.1", StringComparison.Ordinal))
+            throw new InvalidOperationException("Reflection material physicality binding contract is null/unparseable or not schema 1.1.");
         if (!string.Equals(contract.scenePath, ScenePath, StringComparison.Ordinal))
             throw new InvalidOperationException("Reflection material physicality binding scene identity drifted.");
         if (!string.Equals(contract.materialPhysicalityContractPath, MaterialPhysicalityContractPath, StringComparison.Ordinal))
             throw new InvalidOperationException("Reflection material physicality binding no longer targets the canonical registered-material contract.");
+        if (!string.Equals(contract.facadeGlazingGasketContractPath, FacadeGlazingGasketContractPath, StringComparison.Ordinal))
+            throw new InvalidOperationException("Reflection material physicality binding no longer targets the canonical facade glazing-gasket contract.");
 
         Requirements r = contract.requirements;
         if (r == null ||
             !r.validateMaterialPhysicalityBeforeEveryReflectionLightingFingerprint ||
+            !r.validateFacadeGlazingGasketBeforeEveryReflectionLightingFingerprint ||
             !r.reflectionFingerprintUsedBeforeRenderProbeRequest ||
             !r.reflectionFingerprintRevalidatedOnEveryEditorPoll ||
             !r.reflectionFingerprintRevalidatedAtCompletion ||
             !r.reflectionFingerprintRevalidatedImmediatelyBeforeStillCapture ||
             !r.physicalityValidationMustBeReportFreeDuringFingerprinting ||
+            !r.facadeGlazingGasketValidationMustBeReadOnlyDuringFingerprinting ||
             !r.physicalityFailureAbortsReflectionEvidence ||
+            !r.facadeGlazingGasketFailureAbortsReflectionEvidence ||
             !r.actualRenderRequiredForVisualPoints)
             throw new InvalidOperationException("Reflection material physicality binding requirements were weakened or are incomplete.");
 
         RequireExactSet(contract.criticalDefectRisksReduced, CanonicalCriticalRisks, "criticalDefectRisksReduced");
         if (contract.visualFidelityPointsAwarded != 0 || contract.runtimeRenderVerified)
             throw new InvalidOperationException("Reflection material physicality binding may not award Visual Fidelity points or claim runtime render verification.");
-        if (contract.limitations == null || contract.limitations.Length < 3 || contract.limitations.Any(string.IsNullOrWhiteSpace))
+        if (contract.limitations == null || contract.limitations.Length < 4 || contract.limitations.Any(string.IsNullOrWhiteSpace))
             throw new InvalidOperationException("Reflection material physicality binding limitations are missing or incomplete.");
 
         // Keep the upstream material contract itself fail-closed before declaring this binding valid.
         QualityBlockRegisteredMaterialAssetPhysicalityQA.ValidateContractConfigOnly();
+        // The newly introduced glazing-gasket interface has its own manufacture/install/PBR/LOD contract.
+        // Bind that contract here so a future edit cannot silently remove the formal probe-time requirement.
+        QualityBlockFacadeGlazingGasketUpgrade.ValidateContractConfigOnly();
         // QualityBlockVisualGateIntegrityQA already invokes this reflection pre-probe binding. Validate the
         // sibling reflection-lighting coverage contract here as well so a direct numeric-gate integrity path
         // cannot retain stale critical-defect aliases or omit legal-but-render-changing light policy state.
@@ -94,9 +104,9 @@ public static class QualityBlockReflectionMaterialPhysicalityBindingQA
     /// Called from every formal reflection-lighting fingerprint evaluation. The delegated validations are
     /// deliberately report-free during the in-flight probe stage. The facade binding may create missing
     /// generated passes only on the first pre-RenderProbe evaluation; once present, it validates/fails
-    /// closed rather than silently rebuilding drift during subsequent polls. Foliage, balcony drainage and
-    /// balcony microsurface validations are read-only here and never repair geometry, mesh, texture or
-    /// material state during a probe cycle.
+    /// closed rather than silently rebuilding drift during subsequent polls. Foliage, balcony drainage,
+    /// balcony microsurface and glazing-gasket validations are read-only here and never repair geometry,
+    /// mesh, texture or material state during a probe cycle.
     /// </summary>
     public static void ValidateOpenScene()
     {
@@ -107,6 +117,10 @@ public static class QualityBlockReflectionMaterialPhysicalityBindingQA
         QualityBlockFoliageFormalEvidenceBindingQA.ValidateOpenScene();
         QualityBlockBalconyDrainageWaterproofingQA.ValidateOpenScene();
         QualityBlockBalconySurfaceMicrostructureQA.ValidateOpenScene();
+        // The gasket pass is built only at the persisted scene-save boundary. During reflection synchronization
+        // this validation is intentionally read-only: missing/drifted geometry aborts rather than mutating the
+        // candidate after a probe request has begun.
+        QualityBlockFacadeGlazingGasketUpgrade.ValidateOpenScene();
     }
 
     private static void RequireExactSet(string[] actual, string[] expected, string label)
@@ -147,6 +161,7 @@ public static class QualityBlockReflectionMaterialPhysicalityBindingQA
         public string purpose;
         public string scenePath;
         public string materialPhysicalityContractPath;
+        public string facadeGlazingGasketContractPath;
         public Requirements requirements;
         public string[] criticalDefectRisksReduced;
         public int visualFidelityPointsAwarded;
@@ -158,12 +173,15 @@ public static class QualityBlockReflectionMaterialPhysicalityBindingQA
     private sealed class Requirements
     {
         public bool validateMaterialPhysicalityBeforeEveryReflectionLightingFingerprint;
+        public bool validateFacadeGlazingGasketBeforeEveryReflectionLightingFingerprint;
         public bool reflectionFingerprintUsedBeforeRenderProbeRequest;
         public bool reflectionFingerprintRevalidatedOnEveryEditorPoll;
         public bool reflectionFingerprintRevalidatedAtCompletion;
         public bool reflectionFingerprintRevalidatedImmediatelyBeforeStillCapture;
         public bool physicalityValidationMustBeReportFreeDuringFingerprinting;
+        public bool facadeGlazingGasketValidationMustBeReadOnlyDuringFingerprinting;
         public bool physicalityFailureAbortsReflectionEvidence;
+        public bool facadeGlazingGasketFailureAbortsReflectionEvidence;
         public bool actualRenderRequiredForVisualPoints;
     }
 }

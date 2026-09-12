@@ -8,8 +8,8 @@ using UnityEngine.SceneManagement;
 /// <summary>
 /// Fail-closed runtime evidence for the benchmark HDR -> LDR display transform.
 /// Source-side camera/HDR flags are not enough: the authoritative native-4K capture must prove that
-/// OnRenderImage actually received an HDR buffer, executed the filmic material, and wrote an LDR
-/// destination for all three 3840x2160 stills. This receipt is provenance only and awards zero points.
+/// OnRenderImage actually received a linear HDR buffer, executed the filmic material, and wrote an sRGB
+/// LDR destination for all three 3840x2160 stills. This receipt is provenance only and awards zero points.
 /// </summary>
 public static class QualityBlockHdrTonemapRuntimeQA
 {
@@ -23,7 +23,7 @@ public static class QualityBlockHdrTonemapRuntimeQA
     [Serializable]
     private sealed class RuntimeReceipt
     {
-        public string schemaVersion = "1.1";
+        public string schemaVersion = "1.2";
         public string generatedUtc;
         public string unityVersion;
         public string graphicsDeviceName;
@@ -43,6 +43,8 @@ public static class QualityBlockHdrTonemapRuntimeQA
         public int fallbackInvocationCount;
         public int hdrSourceInvocationCount;
         public int ldrDestinationInvocationCount;
+        public int linearHdrSourceInvocationCount;
+        public int srgbLdrDestinationInvocationCount;
         public string lastSourceFormat;
         public string lastDestinationFormat;
         public int lastSourceWidth;
@@ -54,9 +56,11 @@ public static class QualityBlockHdrTonemapRuntimeQA
         public bool lastDestinationSrgb;
         public bool everyStillHadHdrSource;
         public bool everyStillHadLdrDestination;
+        public bool everyStillHadLinearHdrSource;
+        public bool everyStillHadSrgbLdrDestination;
         public int automaticVisualPoints = 0;
         public bool visualVerificationStillRequired = true;
-        public string status = "RUNTIME_HDR_TO_LDR_PROVEN_FOR_EVERY_NATIVE_STILL";
+        public string status = "RUNTIME_LINEAR_HDR_TO_SRGB_LDR_PROVEN_FOR_EVERY_NATIVE_STILL";
     }
 
     [MenuItem("NewTown/QA/Validate HDR Tonemap Capture Contract")]
@@ -71,6 +75,8 @@ public static class QualityBlockHdrTonemapRuntimeQA
             "ImageEffectTransformsToLDR",
             "hdrSourceRequiredForEveryStill",
             "ldrDestinationRequiredForEveryStill",
+            "linearHdrSourceRequiredForEveryStill",
+            "srgbLdrDestinationRequiredForEveryStill",
             "3840",
             "2160",
             "authoritativeStillCount",
@@ -89,7 +95,7 @@ public static class QualityBlockHdrTonemapRuntimeQA
         if (onRenderImage == null || !Attribute.IsDefined(onRenderImage, typeof(ImageEffectTransformsToLDR), true))
             throw new InvalidOperationException("QualityBlockFilmicTonemap.OnRenderImage must carry ImageEffectTransformsToLDR so the benchmark tonemap explicitly terminates the HDR image-effect chain in LDR.");
 
-        Debug.Log("HDR-tonemap contract QA passed. Every still must individually contribute one HDR-source and one LDR-destination telemetry count; actual execution remains runtime-verification pending.");
+        Debug.Log("HDR-tonemap contract QA passed. Every still must individually contribute linear-HDR-source and sRGB-LDR-destination telemetry; actual execution remains runtime-verification pending.");
     }
 
     /// <summary>
@@ -122,6 +128,10 @@ public static class QualityBlockHdrTonemapRuntimeQA
             throw new InvalidOperationException($"Only {tonemap.HdrSourceInvocationCount}/{RequiredStillCount} authoritative stills observed a floating-point HDR image-effect source.");
         if (tonemap.LdrDestinationInvocationCount != RequiredStillCount)
             throw new InvalidOperationException($"Only {tonemap.LdrDestinationInvocationCount}/{RequiredStillCount} authoritative stills observed a non-HDR image-effect destination.");
+        if (tonemap.LinearHdrSourceInvocationCount != RequiredStillCount)
+            throw new InvalidOperationException($"Only {tonemap.LinearHdrSourceInvocationCount}/{RequiredStillCount} authoritative stills observed a scene-linear HDR source (HDR + sRGB=false). Display-transfer provenance is invalid.");
+        if (tonemap.SrgbLdrDestinationInvocationCount != RequiredStillCount)
+            throw new InvalidOperationException($"Only {tonemap.SrgbLdrDestinationInvocationCount}/{RequiredStillCount} authoritative stills observed an sRGB LDR destination. A missing Linear-to-sRGB write would invalidate exposure/color review.");
 
         if (tonemap.LastSourceWidth != NativeWidth || tonemap.LastSourceHeight != NativeHeight)
             throw new InvalidOperationException($"Last tonemap source was not native 3840x2160: {tonemap.LastSourceWidth}x{tonemap.LastSourceHeight}.");
@@ -136,6 +146,10 @@ public static class QualityBlockHdrTonemapRuntimeQA
             throw new InvalidOperationException($"Benchmark tonemap source was not an observed floating-point HDR format: {tonemap.LastSourceFormat}. HDR highlights may have been truncated before the display transform.");
         if (!ldrDestination)
             throw new InvalidOperationException($"Benchmark tonemap destination remained HDR ({tonemap.LastDestinationFormat}) despite ImageEffectTransformsToLDR; PNG evidence provenance is ambiguous.");
+        if (tonemap.LastSourceSrgb)
+            throw new InvalidOperationException("The last authoritative HDR image-effect source reported sRGB=true. Scene-linear HDR input is required before the filmic transform.");
+        if (!tonemap.LastDestinationSrgb)
+            throw new InvalidOperationException("The last authoritative LDR image-effect destination reported sRGB=false. The intended single Linear-to-sRGB display transfer is missing.");
 
         Scene activeScene = SceneManager.GetActiveScene();
         RuntimeReceipt receipt = new RuntimeReceipt
@@ -159,6 +173,8 @@ public static class QualityBlockHdrTonemapRuntimeQA
             fallbackInvocationCount = tonemap.FallbackInvocationCount,
             hdrSourceInvocationCount = tonemap.HdrSourceInvocationCount,
             ldrDestinationInvocationCount = tonemap.LdrDestinationInvocationCount,
+            linearHdrSourceInvocationCount = tonemap.LinearHdrSourceInvocationCount,
+            srgbLdrDestinationInvocationCount = tonemap.SrgbLdrDestinationInvocationCount,
             lastSourceFormat = tonemap.LastSourceFormat.ToString(),
             lastDestinationFormat = tonemap.LastDestinationFormat.ToString(),
             lastSourceWidth = tonemap.LastSourceWidth,
@@ -170,15 +186,73 @@ public static class QualityBlockHdrTonemapRuntimeQA
             lastDestinationSrgb = tonemap.LastDestinationSrgb,
             everyStillHadHdrSource = tonemap.HdrSourceInvocationCount == RequiredStillCount,
             everyStillHadLdrDestination = tonemap.LdrDestinationInvocationCount == RequiredStillCount,
+            everyStillHadLinearHdrSource = tonemap.LinearHdrSourceInvocationCount == RequiredStillCount,
+            everyStillHadSrgbLdrDestination = tonemap.SrgbLdrDestinationInvocationCount == RequiredStillCount,
         };
 
+        ValidateRuntimeReceipt(receipt);
         File.WriteAllText(ReceiptPath, JsonUtility.ToJson(receipt, true));
         AssetDatabase.Refresh();
 
         Debug.Log(
             "Native-4K HDR->LDR runtime QA passed: all three benchmark stills invoked the filmic tonemap, " +
-            $"all {RequiredStillCount} observed HDR sources and LDR destinations, last source={tonemap.LastSourceFormat}, destination={tonemap.LastDestinationFormat}, no fallback blit. " +
-            "This proves display-transform execution only; Visual Fidelity remains UNSCORED until actual pixels are reviewed.");
+            $"all {RequiredStillCount} observed scene-linear HDR sources and sRGB LDR destinations, last source={tonemap.LastSourceFormat}, destination={tonemap.LastDestinationFormat}, no fallback blit. " +
+            "This proves display-transfer execution only; Visual Fidelity remains UNSCORED until actual pixels are reviewed.");
+    }
+
+    [MenuItem("NewTown/QA/Validate Latest Native 4K Display Transfer Receipt File")]
+    public static void ValidateLatestRuntimeReceiptFile()
+    {
+        ValidateContractConfigOnly();
+        if (!File.Exists(ReceiptPath))
+            throw new InvalidOperationException("HDR-tonemap runtime receipt is missing: " + ReceiptPath);
+
+        RuntimeReceipt receipt = JsonUtility.FromJson<RuntimeReceipt>(File.ReadAllText(ReceiptPath));
+        ValidateRuntimeReceipt(receipt);
+        Debug.Log("Latest native-4K display-transfer receipt is internally valid. This does not award Visual Fidelity points.");
+    }
+
+    private static void ValidateRuntimeReceipt(RuntimeReceipt receipt)
+    {
+        if (receipt == null)
+            throw new InvalidOperationException("HDR-tonemap runtime receipt is null or unreadable.");
+        if (!string.Equals(receipt.schemaVersion, "1.2", StringComparison.Ordinal))
+            throw new InvalidOperationException($"HDR-tonemap runtime receipt schema must be 1.2, got '{receipt.schemaVersion}'.");
+        if (string.IsNullOrWhiteSpace(receipt.generatedUtc) ||
+            !DateTime.TryParse(receipt.generatedUtc, null, System.Globalization.DateTimeStyles.RoundtripKind, out _))
+            throw new InvalidOperationException("HDR-tonemap runtime receipt generatedUtc is missing or invalid.");
+        if (string.IsNullOrWhiteSpace(receipt.unityVersion) || string.IsNullOrWhiteSpace(receipt.graphicsDeviceName) ||
+            string.IsNullOrWhiteSpace(receipt.graphicsDeviceType))
+            throw new InvalidOperationException("HDR-tonemap runtime receipt is missing Unity/graphics runtime identity.");
+        if (!string.Equals(receipt.scenePath, ScenePath, StringComparison.Ordinal))
+            throw new InvalidOperationException($"HDR-tonemap receipt scene path drifted: '{receipt.scenePath}'.");
+        if (string.IsNullOrWhiteSpace(receipt.cameraName) ||
+            !string.Equals(receipt.shaderName, "Hidden/NewTown/FilmicTonemap", StringComparison.Ordinal))
+            throw new InvalidOperationException("HDR-tonemap runtime receipt camera/shader identity is invalid.");
+        if (!receipt.imageEffectTransformsToLdr || !receipt.systemSupportsImageEffects || !receipt.cameraAllowHdr ||
+            !receipt.linearColorSpace || !string.Equals(receipt.cameraRenderingPath, RenderingPath.Forward.ToString(), StringComparison.Ordinal))
+            throw new InvalidOperationException("HDR-tonemap runtime receipt lost required Forward/HDR/Linear image-effect state.");
+        if (receipt.renderInvocationCount != RequiredStillCount || receipt.tonemapAppliedInvocationCount != RequiredStillCount ||
+            receipt.native4KInvocationCount != RequiredStillCount || receipt.native4KTonemapAppliedCount != RequiredStillCount ||
+            receipt.fallbackInvocationCount != 0)
+            throw new InvalidOperationException("HDR-tonemap runtime receipt invocation counts do not represent exactly three successful authoritative stills.");
+        if (receipt.hdrSourceInvocationCount != RequiredStillCount || receipt.ldrDestinationInvocationCount != RequiredStillCount ||
+            receipt.linearHdrSourceInvocationCount != RequiredStillCount || receipt.srgbLdrDestinationInvocationCount != RequiredStillCount ||
+            !receipt.everyStillHadHdrSource || !receipt.everyStillHadLdrDestination ||
+            !receipt.everyStillHadLinearHdrSource || !receipt.everyStillHadSrgbLdrDestination)
+            throw new InvalidOperationException("HDR-tonemap runtime receipt does not prove linear-HDR -> sRGB-LDR transfer for every authoritative still.");
+        if (receipt.lastSourceWidth != NativeWidth || receipt.lastSourceHeight != NativeHeight ||
+            receipt.lastDestinationWidth != NativeWidth || receipt.lastDestinationHeight != NativeHeight || receipt.lastDestinationWasNull)
+            throw new InvalidOperationException("HDR-tonemap runtime receipt dimensions/destination identity are invalid.");
+        if (receipt.lastSourceSrgb || !receipt.lastDestinationSrgb)
+            throw new InvalidOperationException("HDR-tonemap runtime receipt last-buffer color-transfer state is invalid (source must be linear, destination must be sRGB). ");
+        if (!Enum.TryParse(receipt.lastSourceFormat, out RenderTextureFormat sourceFormat) || !IsHdrFormat(sourceFormat))
+            throw new InvalidOperationException("HDR-tonemap runtime receipt last source format is not a recognized HDR format.");
+        if (!Enum.TryParse(receipt.lastDestinationFormat, out RenderTextureFormat destinationFormat) || IsHdrFormat(destinationFormat))
+            throw new InvalidOperationException("HDR-tonemap runtime receipt last destination format is not a recognized LDR format.");
+        if (receipt.automaticVisualPoints != 0 || !receipt.visualVerificationStillRequired ||
+            !string.Equals(receipt.status, "RUNTIME_LINEAR_HDR_TO_SRGB_LDR_PROVEN_FOR_EVERY_NATIVE_STILL", StringComparison.Ordinal))
+            throw new InvalidOperationException("HDR-tonemap runtime receipt scoring-separation/status fields are invalid.");
     }
 
     private static QualityBlockFilmicTonemap RequirePreparedTonemap()

@@ -14,12 +14,13 @@ using UnityEngine;
 ///
 /// The entrypoint chains manufacture-scale detail UVs, facade formal-build state, generated foliage,
 /// balcony drainage/floor fall, dry waterproof microstructure, glazing-gasket construction, the smooth LOD0
-/// crescent-lever asset set, the curve-preserving LOD1 sash-latch proxy set, and the period-plausible metal
-/// crescent-latch/receiver assembly. The first curve/LOD-continuity calls may create or repair deterministic
-/// mesh assets before the first reflection baseline and arm their dependency hashes; the first parent latch
-/// call may create a genuinely missing generated pass. Subsequent calls are read-only and fail closed on
-/// curve/proxy drift or root replacement/deletion. This is evidence-integrity infrastructure only: it awards
-/// zero Visual Fidelity points and cannot clear a rendered critical defect without sealed native-4K evidence.
+/// crescent-lever asset set, the curve-preserving LOD1 proxy set, the curve-preserving LOD2/LOD3 far proxy set,
+/// and the period-plausible metal crescent-latch/receiver assembly. The first curve/LOD-continuity calls may
+/// create or repair deterministic mesh assets before the first reflection baseline and arm their dependency
+/// hashes; the first parent latch call may create a genuinely missing generated pass. Subsequent calls are
+/// read-only and fail closed on curve/proxy drift or root replacement/deletion. This is evidence-integrity
+/// infrastructure only: it awards zero Visual Fidelity points and cannot clear a rendered critical defect
+/// without sealed native-4K evidence.
 /// </summary>
 public static class QualityBlockReflectionMaterialPhysicalityBindingQA
 {
@@ -30,6 +31,7 @@ public static class QualityBlockReflectionMaterialPhysicalityBindingQA
     private const string FacadeSashLatchContractPath = "Assets/QA/facade_sash_latch_contract.json";
     private const string FacadeSashLatchCurveContractPath = "Assets/QA/facade_sash_latch_curve_refinement_contract.json";
     private const string FacadeSashLatchLodContinuityContractPath = "Assets/QA/facade_sash_latch_lod_continuity_contract.json";
+    private const string FacadeSashLatchFarLodContinuityContractPath = "Assets/QA/facade_sash_latch_far_lod_continuity_contract.json";
 
     private static readonly string[] CanonicalCriticalRisks =
     {
@@ -42,8 +44,8 @@ public static class QualityBlockReflectionMaterialPhysicalityBindingQA
     public static void ValidateContractConfigOnly()
     {
         BindingContract contract = LoadJson<BindingContract>(ContractPath);
-        if (contract == null || !string.Equals(contract.schemaVersion, "1.4", StringComparison.Ordinal))
-            throw new InvalidOperationException("Reflection material physicality binding contract is null/unparseable or not schema 1.4.");
+        if (contract == null || !string.Equals(contract.schemaVersion, "1.5", StringComparison.Ordinal))
+            throw new InvalidOperationException("Reflection material physicality binding contract is null/unparseable or not schema 1.5.");
         if (!string.Equals(contract.scenePath, ScenePath, StringComparison.Ordinal))
             throw new InvalidOperationException("Reflection material physicality binding scene identity drifted.");
         if (!string.Equals(contract.materialPhysicalityContractPath, MaterialPhysicalityContractPath, StringComparison.Ordinal))
@@ -56,6 +58,8 @@ public static class QualityBlockReflectionMaterialPhysicalityBindingQA
             throw new InvalidOperationException("Reflection material physicality binding no longer targets the canonical sash-latch curve-refinement contract.");
         if (!string.Equals(contract.facadeSashLatchLodContinuityContractPath, FacadeSashLatchLodContinuityContractPath, StringComparison.Ordinal))
             throw new InvalidOperationException("Reflection material physicality binding no longer targets the canonical sash-latch LOD-continuity contract.");
+        if (!string.Equals(contract.facadeSashLatchFarLodContinuityContractPath, FacadeSashLatchFarLodContinuityContractPath, StringComparison.Ordinal))
+            throw new InvalidOperationException("Reflection material physicality binding no longer targets the canonical sash-latch far-LOD-continuity contract.");
 
         Requirements r = contract.requirements;
         if (r == null ||
@@ -65,6 +69,8 @@ public static class QualityBlockReflectionMaterialPhysicalityBindingQA
             !r.validateFacadeSashLatchCurveBeforeEveryReflectionLightingFingerprint ||
             !r.ensureFacadeSashLatchLodContinuityBeforeFirstReflectionBaseline ||
             !r.validateFacadeSashLatchLodContinuityBeforeEveryReflectionLightingFingerprint ||
+            !r.ensureFacadeSashLatchFarLodContinuityBeforeFirstReflectionBaseline ||
+            !r.validateFacadeSashLatchFarLodContinuityBeforeEveryReflectionLightingFingerprint ||
             !r.ensureFacadeSashLatchBeforeFirstReflectionBaseline ||
             !r.validateFacadeSashLatchBeforeEveryReflectionLightingFingerprint ||
             !r.reflectionFingerprintUsedBeforeRenderProbeRequest ||
@@ -75,11 +81,13 @@ public static class QualityBlockReflectionMaterialPhysicalityBindingQA
             !r.facadeGlazingGasketValidationMustBeReadOnlyDuringFingerprinting ||
             !r.facadeSashLatchCurveValidationMustBeReadOnlyAfterEpochArm ||
             !r.facadeSashLatchLodContinuityValidationMustBeReadOnlyAfterEpochArm ||
+            !r.facadeSashLatchFarLodContinuityValidationMustBeReadOnlyAfterEpochArm ||
             !r.facadeSashLatchValidationMustBeReadOnlyAfterEpochArm ||
             !r.physicalityFailureAbortsReflectionEvidence ||
             !r.facadeGlazingGasketFailureAbortsReflectionEvidence ||
             !r.facadeSashLatchCurveFailureAbortsReflectionEvidence ||
             !r.facadeSashLatchLodContinuityFailureAbortsReflectionEvidence ||
+            !r.facadeSashLatchFarLodContinuityFailureAbortsReflectionEvidence ||
             !r.facadeSashLatchFailureAbortsReflectionEvidence ||
             !r.actualRenderRequiredForVisualPoints)
             throw new InvalidOperationException("Reflection material physicality binding requirements were weakened or are incomplete.");
@@ -87,13 +95,14 @@ public static class QualityBlockReflectionMaterialPhysicalityBindingQA
         RequireExactSet(contract.criticalDefectRisksReduced, CanonicalCriticalRisks, "criticalDefectRisksReduced");
         if (contract.visualFidelityPointsAwarded != 0 || contract.runtimeRenderVerified)
             throw new InvalidOperationException("Reflection material physicality binding may not award Visual Fidelity points or claim runtime render verification.");
-        if (contract.limitations == null || contract.limitations.Length < 7 || contract.limitations.Any(string.IsNullOrWhiteSpace))
+        if (contract.limitations == null || contract.limitations.Length < 8 || contract.limitations.Any(string.IsNullOrWhiteSpace))
             throw new InvalidOperationException("Reflection material physicality binding limitations are missing or incomplete.");
 
         QualityBlockRegisteredMaterialAssetPhysicalityQA.ValidateContractConfigOnly();
         QualityBlockFacadeGlazingGasketUpgrade.ValidateContractConfigOnly();
         QualityBlockSashLatchCurveRefinement.ValidateContractConfigOnly();
         QualityBlockSashLatchLodContinuityRefinement.ValidateContractConfigOnly();
+        QualityBlockSashLatchFarLodContinuityRefinement.ValidateContractConfigOnly();
         QualityBlockFacadeSashLatchUpgrade.ValidateContractConfigOnly();
         QualityBlockReflectionLightingCoverageQA.ValidateContractConfigOnly();
         QualityBlockReflectionProbeStateCoherenceQA.ValidateContractConfigOnly();
@@ -106,8 +115,8 @@ public static class QualityBlockReflectionMaterialPhysicalityBindingQA
 
     /// <summary>
     /// Called from every formal reflection-lighting fingerprint evaluation. The delegated validations are
-    /// report-free during an in-flight probe stage. The facade formal binding, curve refinement, LOD-continuity
-    /// refinement and sash-latch binding may create genuinely missing generated state only on their first
+    /// report-free during an in-flight probe stage. The facade formal binding, curve refinements, LOD-continuity
+    /// refinements and sash-latch binding may create genuinely missing generated state only on their first
     /// pre-RenderProbe evaluation; after each epoch is armed, missing/replaced/drifted state aborts instead of
     /// mutating evidence. Foliage, balcony, microsurface and glazing-gasket checks remain read-only throughout.
     /// </summary>
@@ -121,10 +130,13 @@ public static class QualityBlockReflectionMaterialPhysicalityBindingQA
         // the legacy six-box LOD0 curve while the still camera later sees the refined asset cache.
         QualityBlockSashLatchCurveRefinement.EnsurePreparedForFormalEvidence();
 
-        // Replace the straight-bar LOD1 proxy at its exact asset path before the parent latch builder reads it.
-        // The refined proxy keeps the same renderer/material/LOD identity but preserves the crescent envelope
-        // through the first cross-fade, reducing structural risk for visible_lod_pop without self-awarding points.
+        // Preserve the manufactured crescent silhouette through the first cross-fade.
         QualityBlockSashLatchLodContinuityRefinement.EnsurePreparedForFormalEvidence();
+
+        // Replace the broad rectangular LOD2 and single-sliver LOD3 payloads at the exact phase-specific asset
+        // paths the parent builder already references. The first baseline therefore sees the same physical curve
+        // envelope through all four LODs rather than allowing a later still/temporal pass to mutate far proxies.
+        QualityBlockSashLatchFarLodContinuityRefinement.EnsurePreparedForFormalEvidence();
 
         // Replace the known low-fidelity twin rubber handle blocks with one physically assembled metal
         // crescent latch + receiver per two-panel window before the first cubemap baseline. The class itself
@@ -141,6 +153,7 @@ public static class QualityBlockReflectionMaterialPhysicalityBindingQA
         // explicit and catches curve/proxy-cache drift, legacy-handle re-enablement, mesh/material drift or LOD changes.
         QualityBlockSashLatchCurveRefinement.ValidateGeneratedAssets();
         QualityBlockSashLatchLodContinuityRefinement.ValidateGeneratedAssets();
+        QualityBlockSashLatchFarLodContinuityRefinement.ValidateGeneratedAssets();
         QualityBlockFacadeSashLatchUpgrade.ValidateOpenScene();
     }
 
@@ -186,6 +199,7 @@ public static class QualityBlockReflectionMaterialPhysicalityBindingQA
         public string facadeSashLatchContractPath;
         public string facadeSashLatchCurveContractPath;
         public string facadeSashLatchLodContinuityContractPath;
+        public string facadeSashLatchFarLodContinuityContractPath;
         public Requirements requirements;
         public string[] criticalDefectRisksReduced;
         public int visualFidelityPointsAwarded;
@@ -202,6 +216,8 @@ public static class QualityBlockReflectionMaterialPhysicalityBindingQA
         public bool validateFacadeSashLatchCurveBeforeEveryReflectionLightingFingerprint;
         public bool ensureFacadeSashLatchLodContinuityBeforeFirstReflectionBaseline;
         public bool validateFacadeSashLatchLodContinuityBeforeEveryReflectionLightingFingerprint;
+        public bool ensureFacadeSashLatchFarLodContinuityBeforeFirstReflectionBaseline;
+        public bool validateFacadeSashLatchFarLodContinuityBeforeEveryReflectionLightingFingerprint;
         public bool ensureFacadeSashLatchBeforeFirstReflectionBaseline;
         public bool validateFacadeSashLatchBeforeEveryReflectionLightingFingerprint;
         public bool reflectionFingerprintUsedBeforeRenderProbeRequest;
@@ -212,11 +228,13 @@ public static class QualityBlockReflectionMaterialPhysicalityBindingQA
         public bool facadeGlazingGasketValidationMustBeReadOnlyDuringFingerprinting;
         public bool facadeSashLatchCurveValidationMustBeReadOnlyAfterEpochArm;
         public bool facadeSashLatchLodContinuityValidationMustBeReadOnlyAfterEpochArm;
+        public bool facadeSashLatchFarLodContinuityValidationMustBeReadOnlyAfterEpochArm;
         public bool facadeSashLatchValidationMustBeReadOnlyAfterEpochArm;
         public bool physicalityFailureAbortsReflectionEvidence;
         public bool facadeGlazingGasketFailureAbortsReflectionEvidence;
         public bool facadeSashLatchCurveFailureAbortsReflectionEvidence;
         public bool facadeSashLatchLodContinuityFailureAbortsReflectionEvidence;
+        public bool facadeSashLatchFarLodContinuityFailureAbortsReflectionEvidence;
         public bool facadeSashLatchFailureAbortsReflectionEvidence;
         public bool actualRenderRequiredForVisualPoints;
     }

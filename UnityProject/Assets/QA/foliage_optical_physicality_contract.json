@@ -1,10 +1,10 @@
 {
-  "contractVersion": "foliage-optical-physicality-v1.0.0",
-  "generatedUtc": "2026-09-09T13:35:00Z",
+  "contractVersion": "foliage-optical-physicality-v1.1.0",
+  "generatedUtc": "2026-09-13T12:34:00Z",
   "runtimeRenderVerification": "PENDING_UNITY_RUNTIME",
   "visualFidelityPointsAwarded": 0,
   "visualFidelityStatus": "UNSCORED_UNTIL_REAL_4K_RENDER",
-  "intent": "Constrain generated midsummer foliage to a dry thin-dielectric optical response with measured-order refractive behavior, broad microfacet highlights, coherent two-sided normals and cause-based transmitted sunlight. This contract cannot clear the visual gate without sealed native 4K evidence.",
+  "intent": "Constrain generated midsummer foliage to a dry thin-dielectric optical response with measured-order refractive behavior, broad microfacet highlights, coherent two-sided normals, cause-based transmitted sunlight and a genuinely signed canopy/leaf-value response. This contract cannot clear the visual gate without sealed native 4K evidence.",
   "physicalBasis": {
     "materialClass": "living dry-surface plant leaf / thin dielectric lamina",
     "metallic": 0.0,
@@ -18,10 +18,14 @@
     "baseSmoothnessScaleRange": [0.20, 0.26],
     "diffuseWrapRange": [0.24, 0.30],
     "clusterTransmissionStrengthRange": [0.20, 0.50],
+    "signedCanopyValueResponse": "canopy exposure bias plus deterministic leaf-value variation is applied as a signed multiplier around unity before a final per-channel 0..1 albedo clamp; positive context/variation may brighten and negative context/variation may darken",
+    "formalAssignedExposureBiasRange": [-0.105, 0.075],
+    "formalAssignedLeafVariationRange": [-0.045, 0.045],
+    "formalExpectedExposureMultiplierEnvelope": [0.85, 1.12],
     "wetness": "disabled in the dry benchmark; no generic wet sheen is permitted",
     "uvAging": "small ordinary canopy exposure/value variation only; no emissive green and no painted sun highlight",
     "angularFresnelResponse": "Schlick Fresnel driven by dielectric F0=0.03; specular lobe uses isotropic GGX with Schlick-Smith masking and roughness derived from the co-registered smoothness mask",
-    "geometryVsMaterial": "leaf/cluster silhouette, branch attachment and LOD population remain geometry; lamina micro-normal, broad dielectric specular and transmitted-light response remain material/shader detail"
+    "geometryVsMaterial": "leaf/cluster silhouette, branch attachment and LOD population remain geometry; lamina micro-normal, broad dielectric specular, signed canopy value response and transmitted-light response remain material/shader detail"
   },
   "manufactureInstallationReasoning": {
     "assembly": "natural leaf attached to explicit twig/cluster geometry",
@@ -30,7 +34,7 @@
     "materialsFinish": "non-metallic living leaf surface with dry cuticle/cell-wall dielectric response and vein-scale micro-normal structure",
     "mounting": "leaf clusters remain parented to generated branch/twig hierarchy; optical QA must not create colliders or move gameplay geometry",
     "interfacesGapsSeals": "no manufactured seals; required interface is a physically located branch/twig attachment with no floating leaf cluster",
-    "orientationExposure": "two-sided shading uses the viewed face normal; canopy height/radial/sun-side context drives modest exposure/transmission variation under the same SummerSun used by the sky and shadows",
+    "orientationExposure": "two-sided shading uses the viewed face normal; canopy height/radial/sun-side context drives modest signed exposure and transmission variation under the same SummerSun used by the sky and shadows",
     "aging": "ordinary midsummer value variation only; damage, storm, disaster and reconstruction cues are prohibited",
     "lodPolicy": "existing LOD0/1/2/3 leaf/cluster hierarchy remains renderer-distinct with animated cross-fade; actual shimmer/pop requires temporal render evidence"
   },
@@ -46,7 +50,9 @@
       "_Wrap",
       "_SmoothnessScale",
       "_DielectricF0",
-      "_NormalScale"
+      "_NormalScale",
+      "_ExposureBias",
+      "_LeafVariation"
     ],
     "requiredBehavior": [
       "Cull Off with view-facing back-face shading normal",
@@ -54,6 +60,8 @@
       "Schlick Fresnel angular response",
       "GGX direct specular with Schlick-Smith masking",
       "transmission multiplied by main-light attenuation and non-reflected dielectric energy",
+      "signed canopy exposure and leaf-value variation may brighten or darken albedo before the final physical 0..1 color clamp",
+      "pre-multiply upper clamp on 1 + exposureBias + leafVariation is prohibited",
       "no emission",
       "no baked or painted highlight"
     ]
@@ -101,10 +109,16 @@
     "smoothnessScaleAllowedRange": [0.20, 0.26],
     "wrapAllowedRange": [0.24, 0.30],
     "rendererTransmissionAllowedRange": [0.20, 0.50],
+    "exposureBiasAllowedRange": [-0.13, 0.10],
+    "leafVariationAllowedRange": [-0.05, 0.05],
+    "requireBothVariationSignsForGeneratedFoliage": true,
+    "requireFinalAlbedoClamp": true,
+    "forbidPreMultiplyUnityClamp": true,
     "requireDoubleSidedGI": true,
     "requireGPUInstancing": true,
     "requireNoEmission": true,
     "renderInspectionTargets": [
+      "hero/vegetation_canopy_value_distribution",
       "oblique/vegetation_grounding",
       "grazing/tree_shadow_contact",
       "grazing/material_grazing",
@@ -115,6 +129,7 @@
       "painted or baked leaf highlight",
       "chrome/plastic-like foliage sparkle",
       "incoherent back-face lighting",
+      "one-sided foliage value response caused by positive exposure/variation clipping",
       "severe foliage aliasing or shimmer",
       "visible foliage LOD pop",
       "claiming foliage visual quality without an actual Unity render"

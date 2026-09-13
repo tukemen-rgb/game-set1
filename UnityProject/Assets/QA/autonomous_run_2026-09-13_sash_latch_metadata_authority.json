@@ -1,0 +1,64 @@
+{
+  "schemaVersion": "1.0",
+  "runDate": "2026-09-13",
+  "branch": "gpt/unity-migration",
+  "startingHead": "8977f7aa1c9d87c42987402d2336bb2607fd101c",
+  "substantiveHeadBeforeRunRecord": "2b1837c56b89120d36a90a30a4a90bd82fde9c70",
+  "objective": "Close the formal metadata-authority gap between the retained legacy EPDM window-handle fallback and the active physical aluminum crescent-latch assembly without claiming rendered quality.",
+  "problemFound": "material_construction_lookdev.json intentionally still records HD_WindowHandle_ as EPDM fallback provenance, while the formal facade path disables all 60 of those renderers and replaces their visible role with FacadeSashLatchHardware governed by facade_sash_latch_contract.json. Without an explicit machine-readable authority bridge, a reviewer or future QA could incorrectly treat the inactive EPDM record as active visible latch material metadata, weakening the missing-construction/material-metadata critical-fail guarantee.",
+  "changes": [
+    {
+      "commit": "e781d0ea585971f43aae4c434a6c73c3f36a2310",
+      "summary": "Added QualityBlockSashLatchMetadataAuthorityQA. It cross-validates the central sliding-window fallback record, the physical sash-latch contract, canonical anodized-aluminum and galvanized-steel material metadata, mandatory manufacture/installation fields, physical dimensions, LOD policy and zero-point render-pending policy. QA4K_ and QATemporal_ camera pre-cull paths also delegate to the existing physical latch scene validator, so enabled legacy handles, non-canonical latch materials, stock primitive geometry or invalid LODs fail before formal evidence."
+    },
+    {
+      "commit": "2b1837c56b89120d36a90a30a4a90bd82fde9c70",
+      "summary": "Added sash_latch_metadata_authority_contract.json defining legacy-fallback-only semantics, 60 disabled EPDM renderers, the superseding physical latch assembly/root, canonical metal material paths, 30-window/four-LOD/50-mm-pitch expectations, geometry-vs-material authority, 4K lookdev brief, critical-defect mapping and failure-injection cases."
+    }
+  ],
+  "verification": {
+    "staticCrossContractEvidence": [
+      "Central sliding_window registry currently records HD_WindowHandle_ with materialId epdm_rubber and explicitly describes it as fallback hardware.",
+      "facade_sash_latch_contract.json identifies apartment_sliding_sash_crescent_latch, 30 windows, one lock per two-panel window, 50 mm screw pitch, MAT_AgedAluminum primary metal, MAT_DarkGalvanizedSteel fasteners, four LOD levels, disabled legacy rubber handles, reflection fingerprint binding, automaticVisualPoints=0 and renderVerificationPending=true.",
+      "QualityBlockFacadeSashLatchUpgrade.ValidateOpenScene already requires exactly 60 legacy handle renderers and fails if any is enabled; active latch renderers are restricted to canonical aluminum/fastener materials and purpose-built GM_SashLatch_ meshes with UV/normal/tangent data and no stock primitives.",
+      "The new authority QA requires the central aluminum material record to provide physically plausible albedo/roughness/metallic/specular-F0/normal/microstructure/wet/UV/angular-response metadata and cross-binds its asset path to the physical latch contract."
+    ],
+    "githubActionsRunsAtSubstantiveHead": 0,
+    "commitStatusContextsAtSubstantiveHead": 0,
+    "unityCompileRuntime": "PENDING_NO_RUNNER",
+    "native3840x2160Render": "PENDING_NO_RUNNER",
+    "hundredPercentCrops": "PENDING_NO_RUNNER",
+    "temporalEvidence": "PENDING_NO_RUNNER"
+  },
+  "failureInjectionPlan": [
+    "Enable one HD_WindowHandle_ renderer and confirm formal pre-cull scene QA fails instead of accepting EPDM fallback as visible hardware.",
+    "Change the central legacy materialId away from epdm_rubber without updating the authority bridge and confirm config QA fails.",
+    "Change the physical latch primary material path away from MAT_AgedAluminum.mat and confirm cross-contract QA fails.",
+    "Change the fastener material path away from MAT_DarkGalvanizedSteel.mat and confirm cross-contract QA fails.",
+    "Remove a mandatory manufacture/mounting/interfaces/aging/geometry-vs-material/lookdev field and confirm config QA fails.",
+    "Set automaticVisualPoints above zero or renderVerificationPending=false before actual native evidence and confirm config QA fails."
+  ],
+  "implementationReadiness": {
+    "score": 93,
+    "outOf": 100,
+    "reason": "Metadata authority for the physically upgraded sash lock is now explicit and fail-closed, but Unity 6000.3.0f1 compile/runtime and actual rendered evidence remain unavailable. Readiness is therefore not increased from the existing conservative value."
+  },
+  "visualFidelity": {
+    "status": "UNSCORED_UNTIL_REAL_4K_RENDER",
+    "pointsAwardedThisRun": 0,
+    "passClaimed": false,
+    "expectedImpactNotScore": {
+      "geometryConstructionFidelity": "small-to-medium",
+      "materialPbrPhysicalPlausibility": "medium",
+      "periodAccuracySceneAuthenticity": "small",
+      "temporalLodAliasingStability": "small"
+    }
+  },
+  "constraintsVerified": {
+    "godotPreserved": true,
+    "baseMerged": false,
+    "earthquakeDisasterReconstructionThemesAdded": false,
+    "visualPointsClaimedWithoutRender": false
+  },
+  "nextBlocker": "No Unity Runner or real benchmark screenshots are present. When runtime becomes available, stop speculative expansion, compile first, execute the metadata failure injections, then capture fresh reflection-bound 3840x2160 frontal/oblique/grazing stills, the 100-percent sash-latch crop and temporal oblique evidence before assigning any Visual Fidelity score."
+}

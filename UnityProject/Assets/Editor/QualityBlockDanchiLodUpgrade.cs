@@ -223,15 +223,36 @@ public static class QualityBlockDanchiLodUpgrade
 
         var renderer = go.AddComponent<MeshRenderer>();
         renderer.sharedMaterials = source.sharedMaterials;
+        renderer.enabled = source.enabled;
         renderer.shadowCastingMode = source.shadowCastingMode;
         renderer.receiveShadows = source.receiveShadows;
         renderer.lightProbeUsage = source.lightProbeUsage;
         renderer.reflectionProbeUsage = source.reflectionProbeUsage;
         renderer.probeAnchor = source.probeAnchor;
+        renderer.lightProbeProxyVolumeOverride = source.lightProbeProxyVolumeOverride;
         renderer.motionVectorGenerationMode = source.motionVectorGenerationMode;
         renderer.allowOcclusionWhenDynamic = source.allowOcclusionWhenDynamic;
         renderer.sortingLayerID = source.sortingLayerID;
         renderer.sortingOrder = source.sortingOrder;
+        renderer.renderingLayerMask = source.renderingLayerMask;
+
+        // Preserve MeshRenderer-specific shading inputs. Additional vertex streams can override normals,
+        // tangents, vertex colors or UVs; dropping them at LOD1+ can change material response even when
+        // the primary mesh/material references are identical. GI authoring state is copied for the same
+        // reason. Runtime lightmap assignments are copied for immediate continuity but are validated again
+        // after any save/reopen because Unity's lightmapping system owns those transient indices/offsets.
+        renderer.additionalVertexStreams = source.additionalVertexStreams;
+        renderer.receiveGI = source.receiveGI;
+        renderer.scaleInLightmap = source.scaleInLightmap;
+        renderer.stitchLightmapSeams = source.stitchLightmapSeams;
+        renderer.lightmapIndex = source.lightmapIndex;
+        renderer.lightmapScaleOffset = source.lightmapScaleOffset;
+        renderer.realtimeLightmapIndex = source.realtimeLightmapIndex;
+        renderer.realtimeLightmapScaleOffset = source.realtimeLightmapScaleOffset;
+
+        // Effective source visibility also matters. A disabled/inactive legacy or alternate renderer must
+        // never reappear only because a freshly-created proxy defaults to visible.
+        go.SetActive(source.gameObject.activeInHierarchy);
 
         // Preserve renderer-local material state across LODs. Losing MaterialPropertyBlocks at the
         // transition can create a visible albedo/roughness/wetness jump even when mesh/material assets

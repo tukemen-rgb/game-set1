@@ -10,15 +10,15 @@ using UnityEngine;
 /// Enforces the material-side physical constraints of generated dry midsummer foliage.
 ///
 /// This pass does not claim visual quality. It constrains the custom leaf shader/materials to a
-/// measured-order dielectric F0, explicit normal amplitude, broad roughness, modest transmission and
-/// two-sided response so the first native-4K render is not starting from an arbitrary game-art
-/// specular model. Actual highlight shape, translucency balance and shimmer still require sealed
-/// Unity render evidence.
+/// measured-order dielectric F0, explicit normal amplitude, broad roughness, modest transmission,
+/// two-sided response and a genuinely signed canopy/leaf-value response. Actual highlight shape,
+/// translucency balance, canopy value distribution and shimmer still require sealed Unity render evidence.
 /// </summary>
 public static class QualityBlockFoliagePhysicalityQA
 {
     private const string ScenePath = "Assets/Scenes/QualityBlock1990s.unity";
     private const string ContractPath = "Assets/QA/foliage_optical_physicality_contract.json";
+    private const string ShaderPath = "Assets/Shaders/NewTownFoliageTransmission.shader";
     private const string ShaderName = "NewTown/FoliageTransmission";
     private const string DarkMaterialPath = "Assets/Art/GeneratedPBR/PBR_LeafDark_Transmission.mat";
     private const string MidMaterialPath = "Assets/Art/GeneratedPBR/PBR_LeafMid_Transmission.mat";
@@ -36,6 +36,8 @@ public static class QualityBlockFoliagePhysicalityQA
     private static readonly int SmoothnessScaleId = Shader.PropertyToID("_SmoothnessScale");
     private static readonly int WrapId = Shader.PropertyToID("_Wrap");
     private static readonly int TransmissionStrengthId = Shader.PropertyToID("_TransmissionStrength");
+    private static readonly int ExposureBiasId = Shader.PropertyToID("_ExposureBias");
+    private static readonly int LeafVariationId = Shader.PropertyToID("_LeafVariation");
 
     [MenuItem("NewTown/Materials/Apply Foliage Dielectric BRDF Physicality")]
     public static void ApplyAndValidateOpenScene()
@@ -55,7 +57,7 @@ public static class QualityBlockFoliagePhysicalityQA
         ValidateOpenScene();
         Debug.Log(
             "Foliage material physicality applied: dielectric F0=0.03, explicit normal scale, broad dry-leaf roughness, " +
-            "two-sided GGX/Fresnel shader and bounded transmission. Native 4K visual verification remains pending.");
+            "two-sided GGX/Fresnel shader, bounded transmission and signed canopy/leaf-value response. Native 4K visual verification remains pending.");
     }
 
     [MenuItem("NewTown/QA/Validate Foliage Dielectric BRDF Physicality")]
@@ -63,6 +65,7 @@ public static class QualityBlockFoliagePhysicalityQA
     {
         RequireQualityScene();
         ValidateContractConfigOnly();
+        ValidateShaderSignedValueResponse();
 
         Shader shader = Shader.Find(ShaderName);
         if (shader == null || !shader.isSupported)
@@ -91,6 +94,11 @@ public static class QualityBlockFoliagePhysicalityQA
                 $"Generated foliage renderer coverage unexpectedly low: trees={generatedTreeSlots.Length}, leafRenderers={leafRenderers.Length}. " +
                 "Expected at least 24 explicit source clusters per generated tree before LOD proxies.");
 
+        float minimumVariation = float.PositiveInfinity;
+        float maximumVariation = float.NegativeInfinity;
+        float minimumCombinedBias = float.PositiveInfinity;
+        float maximumCombinedBias = float.NegativeInfinity;
+
         foreach (MeshRenderer renderer in leafRenderers)
         {
             Material material = renderer.sharedMaterial;
@@ -103,18 +111,46 @@ public static class QualityBlockFoliagePhysicalityQA
             var block = new MaterialPropertyBlock();
             renderer.GetPropertyBlock(block);
             float transmission = block.GetFloat(TransmissionStrengthId);
+            float exposureBias = block.GetFloat(ExposureBiasId);
+            float variation = block.GetFloat(LeafVariationId);
+
             if (transmission < 0.20f || transmission > 0.50f)
                 errors.Add(
                     $"Leaf renderer {renderer.gameObject.name} has out-of-contract transmitted-light strength {transmission:F3}; expected 0.20-0.50.");
+            if (exposureBias < -0.13f || exposureBias > 0.10f)
+                errors.Add(
+                    $"Leaf renderer {renderer.gameObject.name} has out-of-contract canopy exposure bias {exposureBias:F3}; expected -0.13 to +0.10.");
+            if (variation < -0.05f || variation > 0.05f)
+                errors.Add(
+                    $"Leaf renderer {renderer.gameObject.name} has out-of-contract leaf value variation {variation:F3}; expected -0.05 to +0.05.");
+
+            minimumVariation = Mathf.Min(minimumVariation, variation);
+            maximumVariation = Mathf.Max(maximumVariation, variation);
+            float combinedBias = exposureBias + variation;
+            minimumCombinedBias = Mathf.Min(minimumCombinedBias, combinedBias);
+            maximumCombinedBias = Mathf.Max(maximumCombinedBias, combinedBias);
+        }
+
+        if (generatedTreeSlots.Length > 0 && leafRenderers.Length > 0)
+        {
+            // The formal generator deliberately assigns a signed variation. Requiring both signs prevents
+            // a future refactor from collapsing the canopy to one-sided darkening even if the shader remains correct.
+            if (!(minimumVariation < -0.005f && maximumVariation > 0.005f))
+                errors.Add(
+                    $"Generated foliage leaf-value variation is not genuinely signed: min={minimumVariation:F4}, max={maximumVariation:F4}. " +
+                    "Expected both negative and positive cluster values.");
         }
 
         if (errors.Count > 0)
             throw new InvalidOperationException(
                 "Foliage dielectric BRDF physicality QA FAILED:\n - " + string.Join("\n - ", errors));
 
+        string signedRange = leafRenderers.Length > 0
+            ? $"variation={minimumVariation:F3}..{maximumVariation:F3}, combinedBias={minimumCombinedBias:F3}..{maximumCombinedBias:F3}"
+            : "variation=n/a, combinedBias=n/a";
         Debug.Log(
             $"Foliage dielectric BRDF physicality source-QA passed: generatedTreeSlots={generatedTreeSlots.Length}, " +
-            $"activeLeafRenderers={leafRenderers.Length}, F0={DielectricF0:F3}, normalScale={NormalScale:F2}. " +
+            $"activeLeafRenderers={leafRenderers.Length}, F0={DielectricF0:F3}, normalScale={NormalScale:F2}, {signedRange}. " +
             "This does not award Visual Fidelity points; native 4K still/temporal evidence is still required.");
     }
 
@@ -127,10 +163,13 @@ public static class QualityBlockFoliagePhysicalityQA
         string json = File.ReadAllText(ContractPath);
         string[] requiredTokens =
         {
-            "\"contractVersion\": \"foliage-optical-physicality-v1.0.0\"",
+            "\"contractVersion\": \"foliage-optical-physicality-v1.1.0\"",
             "\"selectedDielectricF0\": 0.03",
             "\"selectedNormalScale\": 0.72",
             "\"normalIncidenceF0Formula\": \"((n - 1) / (n + 1))^2\"",
+            "\"signedCanopyValueResponse\"",
+            "\"forbidPreMultiplyUnityClamp\": true",
+            "\"requireBothVariationSignsForGeneratedFoliage\": true",
             "\"Schlick Fresnel angular response\"",
             "\"GGX direct specular with Schlick-Smith masking\"",
             "\"requireNoEmission\": true",
@@ -141,6 +180,25 @@ public static class QualityBlockFoliagePhysicalityQA
         foreach (string token in requiredTokens)
             if (json.IndexOf(token, StringComparison.Ordinal) < 0)
                 throw new InvalidOperationException($"Foliage optical physicality contract missing token: {token}");
+    }
+
+    private static void ValidateShaderSignedValueResponse()
+    {
+        if (!File.Exists(ShaderPath))
+            throw new InvalidOperationException($"Missing foliage shader source: {ShaderPath}");
+
+        string source = File.ReadAllText(ShaderPath);
+        const string requiredMultiplier = "half exposureMultiplier = 1.0h + _ExposureBias + _LeafVariation;";
+        const string requiredFinalClamp = "half3 albedo = saturate(tex.rgb * exposureMultiplier);";
+        const string forbiddenPreClamp = "saturate(1.0h + _ExposureBias + _LeafVariation)";
+
+        if (source.IndexOf(requiredMultiplier, StringComparison.Ordinal) < 0 ||
+            source.IndexOf(requiredFinalClamp, StringComparison.Ordinal) < 0)
+            throw new InvalidOperationException(
+                "Foliage shader no longer applies signed canopy/leaf-value response before the final per-channel albedo clamp.");
+        if (source.IndexOf(forbiddenPreClamp, StringComparison.Ordinal) >= 0)
+            throw new InvalidOperationException(
+                "Foliage shader pre-clamps 1 + exposureBias + leafVariation to unity, which deletes all positive canopy/leaf-value response.");
     }
 
     private static Material RequireMaterial(string path, Shader shader)

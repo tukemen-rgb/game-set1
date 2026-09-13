@@ -1,0 +1,51 @@
+{
+  "date": "2026-09-13",
+  "topic": "numeric_visual_deduction_arithmetic",
+  "startingHead": "8e2549368e1341a45492d6b93e239d91d9a1499b",
+  "substantiveHead": "ada25df7f36f29b810a635e9654730052b5a9a13",
+  "commits": [
+    {
+      "sha": "24bfe2e10c6c1986168c994379674815b9bc6cc4",
+      "summary": "Harden reviewed visual score arithmetic"
+    },
+    {
+      "sha": "ada25df7f36f29b810a635e9654730052b5a9a13",
+      "summary": "Define numeric visual deduction contract"
+    }
+  ],
+  "finding": "Reviewed category scores had free-text deduction rationale but no explicit machine-readable deduction count bound to the numeric score. That allowed prose deductions and awarded category points to become mathematically inconsistent without a dedicated fail-closed invariant.",
+  "verification": {
+    "unity6000_3_0f1CompileRuntime": "PENDING_RUNNER",
+    "actual3840x2160RenderEvidence": "PENDING_RUNNER",
+    "staticChecks": [
+      "reviewed-evidence integrity schema is 1.4",
+      "exactly nine explicit integer deductionPoints values are required",
+      "score + deductionPoints == canonical category weight is enforced for every category",
+      "deductionPoints must remain within 0..category weight",
+      "missing or legacy numeric arithmetic fails closed and requires re-review",
+      "the arithmetic QA awards zero Visual Fidelity points"
+    ]
+  },
+  "implementationReadiness": 93,
+  "visualFidelity": "UNSCORED_UNTIL_REAL_4K_RENDER",
+  "visualPointsAwardedThisRun": 0,
+  "expectedVisualScoreImpact": {
+    "directObservedPoints": 0,
+    "scoringIntegrity": "HIGH_ACROSS_ALL_NINE_CATEGORIES",
+    "reason": "Prevents mathematically inconsistent category awards and deductions from reaching the 92-point gate."
+  },
+  "failureInjectionNextRunner": [
+    "full-score category with deductionPoints=1 must fail",
+    "below-full category with deductionPoints=0 must fail",
+    "omitting deductionPoints from a full-score category must fail",
+    "non-integer deductionPoints such as 1.5 must fail explicit integer proof",
+    "legacy evidence without scoreArithmeticSchemaVersion must fail and require re-review",
+    "clean arithmetic packet may proceed only through the existing provenance, pixel-observability, temporal and numeric gates"
+  ],
+  "constraints": {
+    "godotModified": false,
+    "baseMerged": false,
+    "forbiddenThemesAdded": false
+  },
+  "nextBlocker": "Unity 6000.3.0f1 runner plus actual native 3840x2160 hero/oblique/grazing renders, 100% crops and temporal evidence."
+}

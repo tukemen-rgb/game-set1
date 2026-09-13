@@ -1,0 +1,194 @@
+{
+  "schemaVersion": "1.0",
+  "status": "IMPLEMENTATION_CONTRACT_RENDER_VERIFICATION_PENDING",
+  "scope": "QualityBlock1990s generated danchi facade and balcony weathering",
+  "visualFidelityCategoryTargets": {
+    "weathering_context_causality_weight": 10,
+    "weathering_context_causality_hardMinimum": 9,
+    "material_pbr_physical_plausibility_weight": 20,
+    "geometry_construction_fidelity_weight": 20
+  },
+  "benchmarkContext": {
+    "season": "midsummer",
+    "regionModel": "Kanto-class Japanese new-town climate context; not a claim about a specific real site",
+    "surfaceState": "dry benchmark",
+    "recentRain": false,
+    "rule": "Dry residue and accumulated soiling may remain visible. Generic wet sheen, active rain streak animation, or uniformly wet facade treatment is forbidden unless the environment context explicitly changes."
+  },
+  "constructionReasoning": [
+    {
+      "assembly": "sliding aluminum sash and projecting sill/drip edge",
+      "components": ["extruded aluminum sash frame", "sliding sash tracks", "projecting sill/drip nose", "wall-to-frame seal"],
+      "dimensions_m": {
+        "opening_width": 2.36,
+        "opening_height": 1.76,
+        "frame_face": 0.065,
+        "sill_projection_depth": 0.20,
+        "sill_height": 0.055
+      },
+      "mounting": "frame fixed into facade opening; projecting sill/drip nose sheds rainfall outside the wall plane",
+      "interfaces": ["frame-to-concrete perimeter seal", "sill underside drip edge", "vertical runoff path on wall beneath drip points"],
+      "orientationExposure": "rain-exposed front facade with local recess shielding",
+      "agingCause": "rain carries dust/mineral residue over discrete low points of the sill; gravity elongates marks downward; marks narrow/taper as water quantity falls",
+      "geometryVsMaterialDetail": "sill projection and frame are geometry; runoff is a thin non-colliding decal-like mesh offset from the wall, never a box or painted highlight"
+    },
+    {
+      "assembly": "balcony slab fascia and metal rail base fixing",
+      "components": ["concrete/slab fascia", "metal rail post", "base plate", "paired anchor fasteners"],
+      "dimensions_m": {
+        "slab_lip_height": 0.18,
+        "slab_lip_depth": 0.10,
+        "rail_base_plate_width": 0.13,
+        "rail_base_plate_depth": 0.14
+      },
+      "mounting": "rail posts mechanically anchored through base plates at the slab edge",
+      "interfaces": ["metal-to-concrete fixing", "slab drip edge", "anchor penetration"],
+      "orientationExposure": "sun and rain exposed; strong drying between rainfall events",
+      "agingCause": "water exits low points at the slab edge; isolated coating damage at ferrous fixtures can create localized iron-oxide runoff",
+      "geometryVsMaterialDetail": "fasteners, base plates, slab lips remain physical geometry; only sparse residue is decal-like microgeometry"
+    },
+    {
+      "assembly": "full-height rainwater downpipe",
+      "components": ["vertical pipe", "stand-off clamps", "clamp fasteners", "facade behind pipe"],
+      "dimensions_m": {
+        "clamp_spacing_approx": 1.55,
+        "runoff_mark_max_width": 0.115
+      },
+      "mounting": "pipe is held off the wall by regularly spaced mechanical clamps",
+      "interfaces": ["pipe/clamp", "clamp/wall fixing", "lower discharge/grade zone"],
+      "orientationExposure": "concentrated rainwater path with repeated wetting near one facade line",
+      "agingCause": "small leakage/splash and repeated wetting concentrate mineral/biological soiling close to the installed drainage path; effect falls off rapidly with distance",
+      "geometryVsMaterialDetail": "pipe/clamps/bolts are geometry; wall residue is a tapered surface mesh following the installed path"
+    },
+    {
+      "assembly": "grade-to-facade splash zone",
+      "components": ["facade base", "ground contact", "adjacent soil/paving", "nearby downpipe discharge zone"],
+      "dimensions_m": {
+        "credible_splash_height_min": 0.18,
+        "credible_splash_height_max": 0.42
+      },
+      "mounting": "not a mounted component; it is the physical interface between vertical wall and exterior grade",
+      "interfaces": ["wall/grade contact", "soil/paving splash source", "downpipe-side concentrated wetting"],
+      "orientationExposure": "maximum splash exposure occurs close to grade and increases near concentrated drainage",
+      "agingCause": "soil-laden droplets and splashback deposit dirt with height-limited energy; staining must decay upward rather than form a uniform rectangle",
+      "geometryVsMaterialDetail": "irregular band edge is explicit decal-like mesh geometry; no baked shadow, no primitive cube"
+    },
+    {
+      "assembly": "air-conditioner drain hose termination",
+      "components": ["outdoor unit", "refrigerant lines", "drain hose", "balcony floor below termination"],
+      "dimensions_m": {
+        "drain_hose_radius": 0.012,
+        "residue_patch_radius_x_range": [0.055, 0.095],
+        "residue_patch_radius_z_range": [0.035, 0.070]
+      },
+      "mounting": "flexible drain hose routes from the outdoor unit toward the balcony floor termination",
+      "interfaces": ["hose termination", "balcony floor"],
+      "orientationExposure": "sheltered balcony floor; episodic condensate during AC use rather than rainfall",
+      "agingCause": "repeated condensate can leave a small mineral/dust residue at the actual hose termination even when the dry benchmark is captured",
+      "geometryVsMaterialDetail": "hose remains physical pipe geometry; only a small horizontal residue patch is decal-like mesh"
+    }
+  ],
+  "materialDefinitions": [
+    {
+      "id": "rain_mineral_residue",
+      "baseColor_linearIntent": "subtle neutral green-grey darkening; no black painted streak",
+      "alpha": 0.105,
+      "roughness": 0.92,
+      "metallic": 0.0,
+      "specularF0": "inherits dielectric substrate response; overlay must not introduce metallic reflection",
+      "normalScale": 0.0,
+      "microstructure": "primarily deposited film/color and roughness change; thickness too small for modeled relief at benchmark distance",
+      "wetness": 0.0,
+      "uvAging": "persistent mineral/organic residue may fade slowly; no emissive or glossy response",
+      "angularFresnelResponse": "must remain subordinate to underlying concrete/sash optics; no painted grazing highlight"
+    },
+    {
+      "id": "grade_splash_soil",
+      "baseColor_linearIntent": "low-saturation brown soil/dust deposit",
+      "alpha": 0.135,
+      "roughness": 0.95,
+      "metallic": 0.0,
+      "normalScale": 0.0,
+      "microstructure": "sub-mm particulate deposit represented by substrate microdetail rather than thick relief",
+      "wetness": 0.0,
+      "uvAging": "upper edge fades and erodes faster than protected low band",
+      "angularFresnelResponse": "diffuse deposit; must not create a specular stripe"
+    },
+    {
+      "id": "ferrous_runoff_residue",
+      "baseColor_linearIntent": "muted iron-oxide orange-brown, low opacity",
+      "alpha": 0.12,
+      "roughness": 0.90,
+      "metallic": 0.0,
+      "normalScale": 0.0,
+      "microstructure": "oxide/mineral staining on concrete, not exposed bulk steel",
+      "wetness": 0.0,
+      "uvAging": "older stains desaturate and diffuse at edges",
+      "angularFresnelResponse": "non-metallic because the visible mark is oxide residue on concrete"
+    },
+    {
+      "id": "condensate_mineral_residue",
+      "baseColor_linearIntent": "very subtle neutral mineral/dust ring at hose termination",
+      "alpha": 0.085,
+      "roughness": 0.94,
+      "metallic": 0.0,
+      "normalScale": 0.0,
+      "microstructure": "thin deposit; no puddle geometry in dry benchmark",
+      "wetness": 0.0,
+      "uvAging": "sheltered; slower UV fade than exposed facade",
+      "angularFresnelResponse": "no artificial wet highlight without active condensate evidence"
+    }
+  ],
+  "distributionRules": {
+    "windowRunoff": "one narrow tapered path per physical sill; lateral position, length and drift vary deterministically but remain inside the sill catchment",
+    "balconyDrip": "one or occasionally two short tapered marks per physical slab lip; never a repeated full-width stripe",
+    "railRust": "sparse subset only (approximately 19 percent of physical rail base plates) to represent localized coating failure without procedural repetition",
+    "gradeSplash": "continuous low band with height increased near the real downpipe side; hard-clamped to physically credible splash height",
+    "downpipeRunoff": "concentrated at the installed downpipe line only",
+    "acResidue": "small horizontal patch at each modeled drain-hose termination; dry residue only"
+  },
+  "lodPolicy": {
+    "LOD0": "all five weathering mesh groups available for 4K hero/oblique/grazing inspection",
+    "LOD1": "may retain grade and primary runoff while reducing sparse micro-streak density after render verification",
+    "LOD2": "only low-frequency grade/downpipe context if still perceptible",
+    "LOD3": "weathering may be omitted when below pixel contribution threshold",
+    "currentImplementationNote": "weathering detail is currently grouped into five combined meshes to reduce renderer cost; distance-specific LOD switching remains render/performance verification work"
+  },
+  "qaRules": {
+    "requiredSourceCounts": {
+      "windowSills": 30,
+      "balconySlabLips": 30,
+      "railBaseFixings": 210,
+      "acDrainHoses": 15
+    },
+    "requiredMeshGroups": 5,
+    "forbiddenPrimitiveMeshNames": ["Cube", "Cylinder", "Sphere", "Capsule", "Plane", "Quad"],
+    "metallicMaximum": 0.001,
+    "smoothnessMaximumDryResidue": 0.25,
+    "collidersAllowed": 0,
+    "legacyWeatheringOverlaysAllowed": false,
+    "automaticFailConditions": [
+      "visible rectangular primitive-placeholder weathering",
+      "stain with no physical source upstream or at interface",
+      "rust residue treated as metallic bulk metal",
+      "painted/baked specular or sunlight highlight",
+      "uniform wet facade in dry benchmark",
+      "obvious repeated stain spacing or identical streak silhouette",
+      "weathering geometry z-fighting/interpenetration visible in benchmark crop",
+      "weathering used to hide a light leak, geometry seam, or missing construction"
+    ]
+  },
+  "renderVerification": {
+    "status": "PENDING_UNITY_RUNTIME",
+    "requiredViews": ["hero/facade_center", "hero/facade_right", "oblique/balcony_services", "grazing/material_grazing", "grazing/sash_rail_response"],
+    "checks": [
+      "streak width and opacity remain subdominant at native 3840x2160",
+      "no z-fighting or transparent sorting rectangles",
+      "grade splash does not read as a painted horizontal band",
+      "rail rust remains sparse and source-anchored",
+      "weathering does not erase substrate PBR response",
+      "no repeated procedural pattern is immediately obvious at 100 percent crops"
+    ],
+    "visualFidelityPointsAwardedNow": 0
+  }
+}

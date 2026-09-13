@@ -1,0 +1,95 @@
+{
+  "schemaVersion": "1.0",
+  "runId": "2026-09-12_facade_sill_reflection_domain_reload_persistence",
+  "branch": "gpt/unity-migration",
+  "startHead": "c31a00f780015692e2e46cb4a40fffb969a68039",
+  "preRecordHead": "9589b7f45129fc7bd72b9882a2ad3d373622b0fc",
+  "objective": "Close the remaining evidence-integrity gap where a Unity script/assembly reload could erase the in-memory facade-sill reflection epoch and allow a later fingerprint evaluation to arm a replacement sill root as if it were the original baseline state.",
+  "priorityRationale": "The preceding sill-reflection run explicitly identified domain reload as its unresolved coherence risk. Because Visual Fidelity points for lighting/reflections/material response must come only from actual rendered evidence, the reflection request, poll, completion and pre-still checks must remain bound to the same persisted construction state even if Editor assemblies reload between those phases. Adding more decorative geometry before fixing this would increase implementation breadth while leaving the scoring evidence path weaker than the geometry it is intended to judge.",
+  "commitsBeforeRunRecord": [
+    {
+      "sha": "9589b7f45129fc7bd72b9882a2ad3d373622b0fc",
+      "message": "qa: persist sill reflection epoch across assembly reloads"
+    }
+  ],
+  "changedPathsBeforeRunRecord": [
+    "UnityProject/Assets/Editor/QualityBlockFacadeSillDrainageReflectionBindingQA.cs",
+    "UnityProject/Assets/QA/facade_sill_drainage_reflection_binding_contract.json"
+  ],
+  "implementation": {
+    "epochPersistence": "Replaced process-local static epoch booleans/InstanceID storage with UnityEditor.SessionState keys. The armed/authored flags, benchmark scene GUID, generated-root GlobalObjectId and a non-empty epoch token now survive script/assembly reloads for the lifetime of the Editor session.",
+    "stableObjectIdentity": "Generated fallback sill evidence is bound by UnityEditor.GlobalObjectId instead of GetInstanceID(). Post-arm validation recomputes the scene object's GlobalObjectId and fails closed if the root was deleted or replaced, even if Unity could recycle a process-local InstanceID.",
+    "sceneIdentity": "The persisted benchmark scene GUID is frozen at arm time and revalidated on every reflection fingerprint evaluation.",
+    "unsavedObjectPolicy": "A generated root that cannot provide a non-null stable GlobalObjectId is rejected for formal reflection evidence; an unsaved replacement may not inherit an earlier baseline.",
+    "resetPolicy": "There is intentionally no scene-open or assembly-reload reset hook. SessionState clears when the Unity Editor process exits, making a clean Editor session the conservative fresh-epoch boundary rather than allowing evidence-time re-arming.",
+    "machineReadableContract": "Assets/QA/facade_sill_drainage_reflection_binding_contract.json schema 1.1",
+    "visualPointsAwardedByThisWork": 0
+  },
+  "apiBasis": {
+    "sessionState": "Unity documents SessionState as Editor-session state that survives assembly reloading and is cleared when Unity exits.",
+    "globalObjectId": "Unity 6 documents GlobalObjectId as a unique stable project-scoped identifier for scene/asset objects, persistent across scene save/reload and authoring serialization operations.",
+    "reasonForBoth": "SessionState carries the epoch across managed-domain reloads; GlobalObjectId supplies stable scene-object identity where InstanceID is only process-local."
+  },
+  "evidencePolicy": {
+    "reflectionEpochSurvivesAssemblyReload": true,
+    "reflectionEpochSurvivesSceneCloseReopenWithinEditorSession": true,
+    "rootReplacementAfterArmFails": true,
+    "sceneGuidChangeAfterArmFails": true,
+    "authoredFallbackModeChangeAfterArmFails": true,
+    "postArmValidationReadOnly": true,
+    "actualNative4KRequiredForVisualScoring": true
+  },
+  "verification": {
+    "githubStaticSourceReview": "PASS",
+    "contractSourceConsistencyReview": "PASS_BY_INSPECTION",
+    "unityApiDocumentationReview": "PASS: SessionState assembly-reload persistence and GlobalObjectId stable scene-object identity confirmed against Unity documentation",
+    "branchLinearityFromStartHead": "PASS: compare reports 1 ahead / 0 behind before this run record and merge-base equals startHead",
+    "changedPathScope": "PASS: both substantive paths are under UnityProject/Assets; no Godot path changed",
+    "godotPreserved": true,
+    "baseMerged": false,
+    "excludedThemeContentAdded": false,
+    "githubActionsRunsAtPreRecordHead": 0,
+    "commitStatusContextsAtPreRecordHead": 0,
+    "unityTargetVersion": "6000.3.0f1",
+    "unityCompile": "PENDING_RUNNER",
+    "unityEditorRuntime": "PENDING_RUNNER",
+    "sessionStateAcrossAssemblyReloadExecution": "PENDING_RUNNER",
+    "globalObjectIdReplacementFailureInjection": "PENDING_RUNNER",
+    "reflectionRequestPollCompletionExecution": "PENDING_RUNNER",
+    "native3840x2160Hero": "PENDING_RUNNER",
+    "native3840x2160Oblique": "PENDING_RUNNER",
+    "native3840x2160Grazing": "PENDING_RUNNER",
+    "pixelExact100PercentCrops": "PENDING_RUNNER",
+    "temporalLodWalk": "PENDING_RUNNER",
+    "renderedVisualReview": "PENDING_RUNNER"
+  },
+  "currentScores": {
+    "implementationReadiness": 93,
+    "implementationReadinessMax": 100,
+    "visualFidelity": null,
+    "visualFidelityStatus": "UNSCORED_UNTIL_REAL_4K_RENDER",
+    "visualPointsAwardedThisRun": 0,
+    "visualPassClaimed": false
+  },
+  "expectedVisualScoreImpactNotAwarded": {
+    "geometry_construction_fidelity": "none directly; this protects evidence identity for the already-implemented physical sill assembly",
+    "material_pbr_physical_plausibility": "small indirect: a replacement aluminum sill root cannot be silently re-armed after assembly reload and inherit the previous reflection baseline",
+    "lighting_shadows_reflections": "medium indirect: request/poll/completion/pre-still reflection coherence now retains the same sill object identity across managed assembly reloads",
+    "texture_microdetail_texel_fidelity": "none directly",
+    "weathering_context_causality": "small indirect: post-reload validation remains read-only and rechecks canonical sill structural/weathering state",
+    "vegetation_natural_complexity": "none",
+    "period_accuracy_scene_authenticity": "none directly",
+    "cinematic_image_quality": "small indirect through stronger reflection-evidence provenance only",
+    "temporal_lod_aliasing_stability": "none directly; actual LOD pop/shimmer still requires temporal pixels"
+  },
+  "unresolvedRisks": [
+    "Unity 6000.3.0f1 compile/runtime behavior is still unverified because this branch has no workflow run or commit-status context.",
+    "A real Editor must prove that SessionState values survive the exact script/assembly reload mechanism used by the capture environment and that the reflection fingerprint remains fail-closed afterward.",
+    "A real Editor must intentionally replace the generated sill root after arming and verify GlobalObjectId mismatch aborts evidence rather than repairing or re-arming it.",
+    "If the fallback sill root must be generated from a genuinely missing state, its persisted GlobalObjectId availability after formal preparation must be verified; formal evidence should fail rather than accept an unsaved unstable root.",
+    "This work does not determine whether the sill's dimensions, drain-opening scale, tray edge highlights or metal response look filmic; only actual native-4K frontal/oblique/grazing pixels can decide those questions.",
+    "It cannot clear visible_lod_pop or severe_aliasing_or_shimmer without the required temporal render sequence."
+  ],
+  "nextBlocker": "No Unity Runner or new benchmark screenshots are available. When runtime appears, stop speculative expansion and execute: clean Unity 6000.3.0f1 session -> formal sill preparation/validation -> first reflection fingerprint and epoch arm -> force script/assembly reload -> verify SessionState epoch and GlobalObjectId remain bound -> inject root replacement and confirm FAIL -> restart clean Editor -> fresh reflection request/poll/completion -> immediate pre-still validation -> native 3840x2160 hero/oblique/grazing plus 100% sill crops and temporal oblique. Only those pixels may populate the 100-point Visual Fidelity Gate.",
+  "stopPolicy": "Continue safe source-side readiness work only while no runner/render exists and the date is no later than 2026-09-18. On runner/screenshots, prioritize actual render scoring/fixes. No new commits on or after 2026-09-19 without new instructions."
+}

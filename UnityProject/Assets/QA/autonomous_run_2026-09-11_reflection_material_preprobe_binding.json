@@ -1,0 +1,91 @@
+{
+  "schemaVersion": "1.0",
+  "generatedUtc": "2026-09-11T06:42:00Z",
+  "runId": "2026-09-11-reflection-material-preprobe-binding",
+  "branch": "gpt/unity-migration",
+  "startHead": "0592b3b6a9ed230d2d49599ad107bd4fc10f6f84",
+  "substantiveWorkHead": "72d77a7667a13a27f60511d50417c4e6b4d86400",
+  "substantiveCommits": [
+    "f40a193817f95130daec201d770cdd7cce7d6ef4",
+    "725f03487d176ee80910f0f3d9e6b60b6a329194",
+    "14321e7cfe4113ace170a9997e570a2891dd5394",
+    "27f3cbc9ebf2ece4d963c6a323d65b56149b39a5",
+    "72d77a7667a13a27f60511d50417c4e6b4d86400"
+  ],
+  "objective": "Close the remaining gap between registered-material physicality validation and realtime reflection-probe evidence. ReflectionProbe.RenderProbe bypasses MainCamera pre-cull, so physically invalid or stale registered materials must fail before they can enter the cubemap baseline, not only before the later 4K still.",
+  "changes": [
+    {
+      "path": "Assets/QA/reflection_material_physicality_binding_contract.json",
+      "summary": "Added a machine-readable zero-point contract requiring report-free registered-material physicality validation on every reflection-lighting fingerprint evaluation, covering pre-RenderProbe request, observed Editor polls, completion and immediate pre-still validation."
+    },
+    {
+      "path": "Assets/Editor/QualityBlockReflectionMaterialPhysicalityBindingQA.cs",
+      "summary": "Added a fail-closed contract validator and runtime bridge to QualityBlockRegisteredMaterialAssetPhysicalityQA.ValidateForFormalEvidence(). The bridge preserves the existing texture-aware metallic/roughness checks and active-renderer binding checks without writing reports while reflection probes are in flight."
+    },
+    {
+      "path": "Assets/Editor/QualityBlockReflectionLightingStateFingerprint.cs",
+      "summary": "Inserted the material-physicality binding before the lighting/render-state SHA-256 is accepted. QualityBlockReflectionProbeAwaiter already computes this fingerprint before calling RenderProbe(), at every observed Editor poll, at completion and during pre-still proof validation, so the same fail-closed material contract now governs the entire cubemap evidence interval."
+    },
+    {
+      "path": "Assets/Editor/QualityBlockVisualGateIntegrityQA.cs",
+      "summary": "Bound the new reflection material contract into the core 92/100 Visual Fidelity Gate integrity entrypoint so a weakened or removed pre-probe material policy cannot coexist with an otherwise valid numeric gate."
+    }
+  ],
+  "sourceAudit": {
+    "findings": [
+      "QualityBlockReflectionProbeAwaiter.Begin computes QualityBlockReflectionLightingStateFingerprint.BuildCurrentSha256() before enumerating probes and before any ReflectionProbe.RenderProbe() call.",
+      "The awaiter recomputes the same fingerprint on every observed EditorApplication.update poll and validates the current fingerprint again through ValidateLatestWaitProof immediately before still capture.",
+      "MainCamera pre-cull cannot protect reflection-probe rendering because ReflectionProbe.RenderProbe does not require the formal camera callback; direct binding to the reflection fingerprint path is therefore necessary.",
+      "The existing reflection render-state fingerprint already detects later renderer/material/texture drift, while this run additionally prevents an initially invalid registered material state from being accepted as the cubemap baseline."
+    ],
+    "selfAudit": [
+      "No Visual Fidelity points were assigned for source/evidence-integrity work.",
+      "The delegated material validation uses writeReport=false, avoiding evidence-file mutation during repeated probe polling.",
+      "An incidental diagnostic-message drift was introduced while updating VisualGateIntegrity (reporting canonical weight instead of the actual rule weight in one invalid-bounds error). It was detected by commit-diff review and corrected in 72d77a7667a13a27f60511d50417c4e6b4d86400 without changing gate semantics.",
+      "The new binding uses the exact canonical critical-risk IDs impossible_material_physics, missing_construction_material_metadata and baked_or_painted_highlights; aliases are rejected."
+    ]
+  },
+  "verification": {
+    "level": "SOURCE_GITHUB_ONLY",
+    "unityCompileVerified": false,
+    "unityRuntimeVerified": false,
+    "native4kRenderVerified": false,
+    "actualPixelReviewPerformed": false,
+    "githubWorkflowRunsObservedAfterSubstantiveWork": 0,
+    "githubCommitStatusContextsObservedAfterSubstantiveWork": 0,
+    "branchCompareAfterSubstantiveWork": {
+      "aheadBy": 5,
+      "behindBy": 0,
+      "mergeBase": "0592b3b6a9ed230d2d49599ad107bd4fc10f6f84",
+      "changedPathsRestrictedToUnityProject": true
+    }
+  },
+  "knownLimitations": [
+    "Unity 6000.3.0f1 has not compiled or executed the new bridge; API/type correctness remains Runner-pending.",
+    "The registered-material validation is now invoked on every reflection-lighting fingerprint poll. Source texture extrema are cached, but registry parsing/renderer-binding inspection still repeats; if real Runner timing shows the 30-second probe wait is materially affected, move the same validation into the existing cached reflection-render-state source-validation path rather than weakening or removing it.",
+    "Passing source metallic/roughness/F0 metadata and binding checks cannot prove final BRDF/Fresnel appearance, mip/filter behavior, reflection plausibility or absence of baked highlights. Native 3840x2160 grazing-light pixels remain authoritative.",
+    "No actual ReflectionProbe cubemap, 4K still or 100% crop exists for this head, so no Visual Fidelity category is scored or cleared."
+  ],
+  "implementationReadiness": {
+    "score": 93,
+    "possible": 100,
+    "status": "SOURCE_PIPELINE_READY_RUNTIME_PENDING",
+    "reasonNoIncrease": "The run closes a reflection-evidence correctness gap but the remaining 7 readiness points remain reserved for actual Unity 6000.3.0f1 compile/runtime and capture verification."
+  },
+  "visualFidelity": {
+    "status": "UNSCORED_UNTIL_REAL_4K_RENDER",
+    "pointsAwardedThisRun": 0,
+    "passClaimed": false,
+    "expectedScoreImpactAfterRealRender": [
+      "Material/PBR physical plausibility: reduces the chance that a cubemap is generated from metallic/roughness values or material bindings that violate the authored physical contract.",
+      "Lighting/shadows/reflections: increases evidence coherence because reflection probes and stills can no longer straddle an initially invalid registered-material state.",
+      "Critical impossible_material_physics and missing_construction_material_metadata: source/runtime risk is reduced, but neither defect is cleared without sealed actual pixels and required review."
+    ]
+  },
+  "constraints": {
+    "godotModified": false,
+    "baseMerged": false,
+    "earthquakeDisasterReconstructionThemesAdded": false
+  },
+  "nextBlocker": "Unity 6000.3.0f1 Runner/Editor compile and runtime. When available, stop speculative expansion and run Prepare Complete Native 4K Review Packet. Confirm the registered-material physicality bridge passes before the first RenderProbe request and remains stable through probe polling/completion without causing timeout, then judge only sealed 3840x2160 hero/oblique/grazing frames and 100% crops. If the bridge materially slows probe polling, retain identical fail-closed semantics but relocate repeated physicality work behind the existing raw render-state hash cache."
+}

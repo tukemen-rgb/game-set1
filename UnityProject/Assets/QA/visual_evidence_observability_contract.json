@@ -1,0 +1,117 @@
+{
+  "schemaVersion": "1.2",
+  "purpose": "Prevent category points or critical-defect dismissals from being awarded from generic notes that do not identify observable native-4K still and, where required, temporal evidence.",
+  "referenceFormat": "viewId/cropId for pixel-exact still crops; viewId for still full frames; temporal probe id for sealed native-4K frame sequences.",
+  "allowedViews": ["hero", "oblique", "grazing"],
+  "allowedCropRefs": [
+    "hero/facade_center",
+    "hero/ground_contact",
+    "hero/facade_right",
+    "hero/rooftop_period_hardware",
+    "oblique/construction_depth",
+    "oblique/balcony_services",
+    "oblique/vegetation_grounding",
+    "oblique/rooftop_reception_oblique",
+    "grazing/material_grazing",
+    "grazing/sash_rail_response",
+    "grazing/tree_shadow_contact"
+  ],
+  "allowedTemporalRefs": ["subpixel_grazing", "lod_walk_oblique"],
+  "categoryRequirements": [
+    {
+      "id": "geometry_construction",
+      "requiredViews": ["hero", "oblique"],
+      "requiredCropRefs": ["hero/facade_center", "oblique/construction_depth"],
+      "minimumCropReferences": 2,
+      "reason": "Construction depth and interfaces must be visible from frontal and oblique evidence."
+    },
+    {
+      "id": "material_pbr",
+      "requiredViews": ["oblique", "grazing"],
+      "requiredCropRefs": ["grazing/material_grazing", "grazing/sash_rail_response"],
+      "minimumCropReferences": 2,
+      "reason": "PBR plausibility requires angular response and a grazing-light inspection."
+    },
+    {
+      "id": "lighting_shadows_reflections",
+      "requiredViews": ["hero", "grazing"],
+      "requiredCropRefs": ["hero/ground_contact", "grazing/tree_shadow_contact"],
+      "minimumCropReferences": 2,
+      "reason": "Lighting needs both broad-frame coherence and close shadow/contact evidence."
+    },
+    {
+      "id": "texture_microdetail",
+      "requiredViews": ["grazing"],
+      "requiredCropRefs": ["grazing/material_grazing", "grazing/sash_rail_response"],
+      "minimumCropReferences": 2,
+      "reason": "Microdetail and texel fidelity must be judged at native 100% scale under grazing light."
+    },
+    {
+      "id": "weathering_causality",
+      "requiredViews": ["hero", "oblique", "grazing"],
+      "requiredCropRefs": ["hero/facade_center", "oblique/balcony_services", "grazing/material_grazing"],
+      "minimumCropReferences": 3,
+      "reason": "Weathering must be traceable to facade exposure, services/drainage and angular material response."
+    },
+    {
+      "id": "vegetation_natural_complexity",
+      "requiredViews": ["oblique", "grazing"],
+      "requiredCropRefs": ["oblique/vegetation_grounding", "grazing/tree_shadow_contact"],
+      "minimumCropReferences": 2,
+      "reason": "Natural complexity must include plant structure, grounding and cast/contact shadow behavior."
+    },
+    {
+      "id": "period_authenticity",
+      "requiredViews": ["hero", "oblique"],
+      "requiredCropRefs": [
+        "hero/facade_right",
+        "oblique/balcony_services",
+        "hero/rooftop_period_hardware",
+        "oblique/rooftop_reception_oblique"
+      ],
+      "minimumCropReferences": 4,
+      "reason": "Period authenticity must be visible in occupied facade/service evidence and in the dedicated frontal/oblique rooftop receiving-hardware crops. The roof crops are canonical native-capture records so their pixels are sealed by the same render provenance as the scored still packet."
+    },
+    {
+      "id": "cinematic_image",
+      "requiredViews": ["hero", "oblique", "grazing"],
+      "requiredCropRefs": [],
+      "minimumCropReferences": 0,
+      "reason": "Composition, exposure and color are full-frame judgments and must be reviewed across all benchmark views."
+    },
+    {
+      "id": "temporal_lod_aliasing",
+      "requiredViews": ["hero", "oblique", "grazing"],
+      "requiredCropRefs": ["grazing/sash_rail_response", "oblique/vegetation_grounding"],
+      "minimumCropReferences": 2,
+      "requiredTemporalRefs": ["subpixel_grazing", "lod_walk_oblique"],
+      "minimumTemporalReferences": 2,
+      "reason": "Spatial aliasing is reviewed in stills, while temporal shimmer and LOD transitions require both sealed native-4K motion probes before any temporal score can clear its hard minimum."
+    }
+  ],
+  "criticalDefectRequirements": [
+    {"id":"visible_primitive_placeholder","requiredViews":["hero","oblique"],"requiredCropRefs":["hero/facade_center","oblique/construction_depth"],"minimumCropReferences":2},
+    {"id":"baked_or_painted_highlights","requiredViews":["grazing"],"requiredCropRefs":["grazing/material_grazing"],"minimumCropReferences":1},
+    {"id":"impossible_material_physics","requiredViews":["grazing"],"requiredCropRefs":["grazing/material_grazing","grazing/sash_rail_response"],"minimumCropReferences":2},
+    {"id":"obvious_repetition","requiredViews":["hero","oblique"],"requiredCropRefs":["hero/facade_center","oblique/vegetation_grounding"],"minimumCropReferences":2},
+    {"id":"hero_geometry_intersection","requiredViews":["hero","oblique"],"requiredCropRefs":["hero/ground_contact","oblique/construction_depth"],"minimumCropReferences":2},
+    {"id":"sun_shadow_inconsistency","requiredViews":["hero","grazing"],"requiredCropRefs":["hero/ground_contact","grazing/tree_shadow_contact"],"minimumCropReferences":2},
+    {"id":"forbidden_disaster_theme","requiredViews":["hero","oblique","grazing"],"requiredCropRefs":[],"minimumCropReferences":0},
+    {"id":"severe_aliasing_or_shimmer","requiredViews":["oblique","grazing"],"requiredCropRefs":["oblique/vegetation_grounding","grazing/sash_rail_response"],"minimumCropReferences":2,"requiredTemporalRefs":["subpixel_grazing","lod_walk_oblique"],"minimumTemporalReferences":2},
+    {"id":"visible_lod_pop","requiredViews":["oblique","grazing"],"requiredCropRefs":["oblique/vegetation_grounding","grazing/sash_rail_response"],"minimumCropReferences":2,"requiredTemporalRefs":["lod_walk_oblique"],"minimumTemporalReferences":1},
+    {"id":"major_light_leak","requiredViews":["hero","oblique","grazing"],"requiredCropRefs":["hero/facade_center","hero/ground_contact","oblique/construction_depth","oblique/balcony_services","grazing/material_grazing"],"minimumCropReferences":5},
+    {"id":"missing_construction_material_metadata","requiredViews":[],"requiredCropRefs":[],"minimumCropReferences":0},
+    {"id":"unverified_render_claim","requiredViews":["hero","oblique","grazing"],"requiredCropRefs":[],"minimumCropReferences":0}
+  ],
+  "hardRules": [
+    "Every scored category must identify every required still full-frame, 100% crop and temporal probe reference.",
+    "Every critical-defect review must include non-empty evidence notes, even when present=false.",
+    "Unknown still view, crop or temporal references are invalid.",
+    "A direct call to the numeric gate must still run still-render provenance and sealed temporal-evidence validation; wrappers are not optional.",
+    "Implementation readiness or source-code inspection can never substitute for observed render references.",
+    "The Temporal/LOD/aliasing category cannot clear its hard minimum from still frames alone.",
+    "severe_aliasing_or_shimmer cannot be cleared without subpixel_grazing and lod_walk_oblique; visible_lod_pop cannot be cleared without lod_walk_oblique.",
+    "Period authenticity cannot be scored without the canonical sealed frontal and oblique rooftop receiving-hardware crops in addition to occupied facade/service evidence.",
+    "major_light_leak cannot be cleared without direct review of all five leak-sensitive canonical crops used by the SHA-256-bound pixel-domain diagnostic."
+  ]
+}

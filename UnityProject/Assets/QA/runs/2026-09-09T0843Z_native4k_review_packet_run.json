@@ -1,0 +1,106 @@
+{
+  "schemaVersion": "1.0",
+  "branch": "gpt/unity-migration",
+  "runUtc": "2026-09-09T08:43:02Z",
+  "startHead": "c13931eac869985a876de19989e01da76cc50ba2",
+  "substantiveWorkHead": "d59cd91ea0906bb3f879bb84e578f11b98db4aa6",
+  "focus": "Make shadow/edge quality a persisted benchmark invariant and prepare one runner entry point that produces sealed native-4K still, display-diagnostic and temporal evidence without auto-awarding Visual Fidelity points.",
+  "constraints": {
+    "godotPreserved": true,
+    "baseMerged": false,
+    "earthquakeDisasterReconstructionThemeIntroduced": false,
+    "visualFidelityClaimedWithoutActualRender": false
+  },
+  "substantiveCommits": [
+    {
+      "sha": "3bd59d5f13220eeecca3c836142a0c44f80946ba",
+      "message": "Enforce shadow stability on benchmark save"
+    },
+    {
+      "sha": "bd505434792ac24c540ab197e8e6143045a37c63",
+      "message": "Bind shadow contract to scene save gate"
+    },
+    {
+      "sha": "96cd364790f02bff2544b48181abd57c45f3859f",
+      "message": "Add native 4K rendered image diagnostics"
+    },
+    {
+      "sha": "377138962f77fee13e8ec64294471c3198d85cb8",
+      "message": "Add cinematic render diagnostics contract"
+    },
+    {
+      "sha": "d59cd91ea0906bb3f879bb84e578f11b98db4aa6",
+      "message": "Add one-shot native 4K review packet runner"
+    }
+  ],
+  "implementation": {
+    "shadowPersistence": {
+      "saveGate": "Assets/Editor/QualityBlockShadowStabilitySaveGate.cs",
+      "scene": "Assets/Scenes/QualityBlock1990s.unity",
+      "behavior": "On benchmark sceneSaving, once QualityBlock1990s and SummerSun exist, apply then validate the existing StableFit/4-cascade/VeryHigh-shadow/MSAA/LOD policy before save completion.",
+      "reason": "The cinematic/environment chain already applies the shadow pass, but a save gate prevents later benchmark scene edits from silently persisting a lower-quality shadow/LOD state."
+    },
+    "renderDiagnostics": {
+      "code": "Assets/Editor/QualityBlockRenderedImageDiagnostics.cs",
+      "contract": "Assets/QA/cinematic_render_diagnostics_contract.json",
+      "input": "Actual runtime-produced hero/oblique/grazing 3840x2160 PNGs plus all manifest 100% crops only",
+      "metrics": [
+        "mean display luma",
+        "1st/50th/99th percentile display luma",
+        "mean display saturation",
+        "black/white clipping percentages",
+        "any-channel highlight clipping percentage",
+        "low/high luma percentages"
+      ],
+      "policy": "Thresholds are triage warnings only. No automatic Visual Fidelity points or deductions are generated; exact pixels still require human review."
+    },
+    "runnerEntry": {
+      "code": "Assets/Editor/QualityBlockNative4KReviewPacket.cs",
+      "menu": "NewTown/QA/Prepare Complete Native 4K Review Packet",
+      "sequence": [
+        "validate 100-point gate and evidence contracts",
+        "validate persisted shadow stability",
+        "capture + SHA-256 seal native hero/oblique/grazing stills and pixel-exact 100% crops",
+        "write objective cinematic display diagnostics",
+        "capture + seal native-4K subpixel_grazing temporal sequence",
+        "capture + seal native-4K lod_walk_oblique temporal sequence",
+        "stop before scoring so a reviewer must inspect and record evidence/deductions/corrective actions"
+      ]
+    }
+  },
+  "verification": {
+    "gitCompare": "c13931eac869985a876de19989e01da76cc50ba2 -> d59cd91ea0906bb3f879bb84e578f11b98db4aa6 is ahead by 5, behind by 0",
+    "changedPaths": [
+      "UnityProject/Assets/Editor/QualityBlockNative4KReviewPacket.cs",
+      "UnityProject/Assets/Editor/QualityBlockRenderedImageDiagnostics.cs",
+      "UnityProject/Assets/Editor/QualityBlockShadowStabilitySaveGate.cs",
+      "UnityProject/Assets/QA/cinematic_render_diagnostics_contract.json",
+      "UnityProject/Assets/QA/shadow_stability_contract.json"
+    ],
+    "godotPathsChanged": 0,
+    "commitStatusesOnSubstantiveHead": 0,
+    "workflowRunsOnSubstantiveHead": 0,
+    "unityCompile": "UNVERIFIED_NO_RUNNER",
+    "captures4KDirectory": "ABSENT",
+    "native3840x2160Render": "ABSENT",
+    "pixelExact100PercentCrops": "ABSENT",
+    "temporalSequences": "ABSENT",
+    "renderDiagnosticsExecution": "PENDING_ACTUAL_RENDER",
+    "visualFidelityStatus": "UNSCORED_NO_ACTUAL_RENDER"
+  },
+  "implementationReadiness": {
+    "score": 93,
+    "outOf": 100,
+    "changeThisRun": 0,
+    "reason": "The remaining readiness blocker is still actual Unity 6000.3.0f1 compile/import verification. New source-side evidence/diagnostic orchestration cannot substitute for that runner result."
+  },
+  "expectedVisualScoreImpact": {
+    "visualPointsAwardedNow": 0,
+    "lightingShadowsReflections": "Potentially positive because the already-authored StableFit 4-cascade VeryHigh shadow policy is now re-applied/validated on benchmark save, reducing the chance of stale low-quality shadow settings or detached-contact evidence.",
+    "cinematicImage": "Potentially positive indirectly because actual 4K post-tonemap clipping/crush statistics will be generated before review, focusing corrections on real highlight rolloff and shadow-separation defects rather than speculative exposure changes.",
+    "temporalLodAliasing": "Potentially positive because the one-shot review packet produces both required sealed motion probes alongside the still set and preserves the existing MSAA/LOD cross-fade shadow policy.",
+    "criticalDefectRisk": "Improves detection rather than auto-clearance: major light leak, severe aliasing/shimmering, visible LOD pop and render-quality-without-render remain impossible to clear from source configuration alone."
+  },
+  "nextBlocker": "Unity 6000.3.0f1 editor/runner. On the first real runner, stop source expansion and execute QualityBlockNative4KReviewPacket.Prepare. Inspect the sealed hero/oblique/grazing frames, all 100% crops, cinematic diagnostics, subpixel_grazing and lod_walk_oblique. Fix observed clipping/crush, shadow acne/peter-panning/light leaks, rail/sash/foliage shimmer and LOD pop before adding new detail or assigning any Visual Fidelity score.",
+  "recordingNote": "This bookkeeping file is committed after substantiveWorkHead and is intentionally excluded from substantiveCommits to avoid a self-referential final commit hash."
+}

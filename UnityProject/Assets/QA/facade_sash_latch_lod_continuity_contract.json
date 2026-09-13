@@ -1,0 +1,57 @@
+{
+  "schemaVersion": "1.0",
+  "assemblyId": "apartment_sliding_sash_crescent_latch_lod1_continuity_refinement",
+  "parentContractPath": "Assets/QA/facade_sash_latch_contract.json",
+  "lod0CurveContractPath": "Assets/QA/facade_sash_latch_curve_refinement_contract.json",
+  "manufacture": "LOD1 preserves the manufactured crescent identity instead of replacing the operating lever with a rotated rectangular bar. The proxy keeps a simplified plate and keeper, but the lever remains one continuous swept metal body. This is a deliberate real-time simplification of the same physical part rather than a different object appearing at the LOD boundary.",
+  "dimensionsThickness": "LOD0 and LOD1 share the same 34 mm centerline radius, 130 degree sweep, 10 mm x 10 mm lever section and 2 mm corner break. LOD0 uses 32 arc rings; LOD1 uses 16 arc rings. The LOD1 plate remains 30 x 80 x 8 mm and the simplified keeper remains 24 x 66 x 10 mm, matching the existing proxy envelope while removing the straight-bar silhouette discontinuity.",
+  "materialsFinish": "LOD1 continues to use the canonical aged sash-metal material from the parent assembly. Metallic response, roughness, oxidation and contact polish remain material properties; silhouette curvature and edge rolloff are geometry. No painted highlight, emission, chrome-like replacement or material swap is introduced at the LOD transition.",
+  "mounting": "The LOD1 proxy remains in the same per-window LODGroup and local assembly coordinate system as LOD0. Base plate, swept lever and keeper are combined into one render proxy, with the lever translated to the same lock/pivot location used by the LOD0 CrescentLever renderer. No gameplay collider or independent transform is introduced.",
+  "interfacesGapsSeals": "The LOD1 curve must preserve the same meeting-stile, pivot and receiver relationship as LOD0 and remain outside the optical glass and glazing gasket envelope. Simplification may remove sub-pixel fasteners and pivot relief, but it may not turn the crescent into a broad slab, cross the keeper gap, penetrate the sash, or materially change the visible lever reach.",
+  "orientationExposure": "Sheltered vertical sash hardware under the same coherent midsummer Japanese sun, sky fill, contact shadow and reflection-probe state as LOD0. The first LOD transition is expected to occur while the hardware is small but still silhouette-bearing, so curve continuity matters most in oblique and grazing motion.",
+  "aging": "No independent LOD1 weathering layer is created. The proxy inherits the parent aged-metal material response and must not introduce a new dirt mask, rust narrative, wetness jump, value jump or highlight stripe at the LOD boundary.",
+  "geometryVsMaterial": "The 34 mm crescent centerline, 130 degree sweep, 10 mm section, 2 mm corner break and LOD simplification are geometry. Fine oxidation, extrusion character, micro-scratches, contact polish, roughness and Fresnel response remain material/lighting behavior. LOD1 reduces ring density rather than replacing curvature with texture or a painted cue.",
+  "lodPolicy": "At screen-relative height 0.006 the assembly cross-fades from the 32-ring LOD0 lever to a 16-ring LOD1 lever with the same physical envelope. LOD1 remains a single combined renderer for real-time cost discipline. The next transition remains 0.003. Cross-fade does not waive temporal review: visible silhouette snap, highlight snap, shimmer or phase mismatch is still a critical failure.",
+  "weatheringCausality": "Cause-based aging remains inherited from the parent material/exposure model. The refinement changes only manufactured form and LOD continuity; it does not add source-independent dirt, wetness, rust or damage.",
+  "lookdevBrief": "Front 4K: LOD0 and LOD1 should read as the same crescent lock, with no straight-bar substitution. Oblique transition: follow the lever silhouette through the 0.006 cross-fade and verify receiver reach remains stable. Grazing transition: the metal highlight should contract with reduced tessellation without jumping direction or becoming a rectangular stripe. 100-percent crop: compare LOD0 and forced-LOD1 lever envelope, keeper clearance and phase continuity. Temporal oblique motion: reject any visible pop, shimmer, silhouette width jump or reflection discontinuity.",
+  "geometry": {
+    "phaseBins": 8,
+    "phaseStepM": 0.011,
+    "lod0ArcRings": 32,
+    "lod1ArcRings": 16,
+    "sectionSides": 8,
+    "centerlineRadiusM": 0.034,
+    "sweepDegrees": 130.0,
+    "sectionWidthM": 0.010,
+    "sectionThicknessM": 0.010,
+    "cornerBreakM": 0.002,
+    "lod0Transition": 0.0060,
+    "lod1Transition": 0.0030
+  },
+  "qa": {
+    "automaticVisualPoints": 0,
+    "runtimeRenderVerified": false,
+    "prepareBeforeFirstReflectionBaseline": true,
+    "readOnlyAfterFormalEpochArm": true,
+    "requireNative4kTemporalTransitionEvidence": true,
+    "require100PercentCrop": true,
+    "requireSamePhysicalCurveEnvelopeAcrossLod0AndLod1": true
+  },
+  "requiredEvidenceRefs": [
+    "hero/facade_center",
+    "oblique/construction_depth",
+    "grazing/sash_rail_response",
+    "crop/sash_latch_100pct"
+  ],
+  "criticalDefectIds": [
+    "visible_primitive_placeholder",
+    "baked_or_painted_highlights",
+    "impossible_material_physics",
+    "obvious_repetition",
+    "hero_geometry_intersection",
+    "severe_aliasing_or_shimmer",
+    "visible_lod_pop",
+    "missing_construction_material_metadata",
+    "unverified_render_claim"
+  ]
+}

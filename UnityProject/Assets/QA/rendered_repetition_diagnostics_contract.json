@@ -1,0 +1,47 @@
+{
+  "schemaVersion": "1.0",
+  "id": "native_4k_rendered_repetition_diagnostics",
+  "status": "PENDING_UNITY_RUNTIME",
+  "nativeWidth": 3840,
+  "nativeHeight": 2160,
+  "actualUnityRenderRequired": true,
+  "analyzePixelExact100PercentCrops": true,
+  "visualFidelityPointsAwarded": 0,
+  "automaticallyClearsCriticalDefect": false,
+  "criticalDefectId": "obvious_repetition",
+  "sampleStridePx": 4,
+  "gradientThresholdCode": 12,
+  "minimumQualifiedComparisonsPerShift": 1800,
+  "minimumPeriodPx": 32,
+  "maximumPeriodPx": 512,
+  "periodStepPx": 8,
+  "localNeighborhoodRadiusSteps": 3,
+  "localProminenceWarning": 0.12,
+  "requiredCropRefs": [
+    "hero/facade_center",
+    "hero/ground_contact",
+    "oblique/vegetation_grounding",
+    "grazing/material_grazing",
+    "grazing/tree_shadow_contact"
+  ],
+  "measurement": {
+    "signal": "Rec.709-like display-luma code derived from the exact post-tonemap PNG pixels",
+    "textureQualification": "A comparison participates only when either endpoint has local one-pixel luma gradient at or above gradientThresholdCode. Smooth sky/wall fields therefore cannot create a high-confidence repetition signal merely by being smooth.",
+    "translationSweep": "Horizontal and vertical translations are swept from minimumPeriodPx through maximumPeriodPx in periodStepPx increments.",
+    "localProminence": "For each tested translation, compare its mean absolute luma difference with the median of nearby tested translations. A repeated tile/module can create a local difference trough even when ordinary spatial correlation changes with translation distance.",
+    "warningOnly": "A prominence warning is triage evidence, not an automatic Visual Fidelity deduction or automatic critical FAIL. Perspective, legitimate manufactured modules and scene structure require human review of the exact pixels.",
+    "noClearanceByMetric": "A low diagnostic signal cannot clear obvious_repetition. The reviewer must explicitly inspect every required crop and record observed evidence in visual_fidelity_evidence.json."
+  },
+  "hardRules": [
+    "Diagnostics may run only after an actual Unity-produced native 3840x2160 manifest exists.",
+    "Each analyzed crop must be one of the canonical pixel-exact 100% capture records and is SHA-256 bound into the diagnostics report.",
+    "The diagnostics report must bind the current 4k_capture_manifest.json SHA-256 and every analyzed crop SHA-256 before Visual Fidelity scoring is allowed.",
+    "Warnings may direct corrective work but never award Visual Fidelity points.",
+    "No diagnostic result, including zero warnings, may automatically clear the obvious_repetition critical defect.",
+    "Do not randomize authentic manufactured dimensions merely to reduce the metric; repeated manufactured structure can be legitimate and must be judged from real construction plus the render.",
+    "Do not hide repetition with blur, bloom, depth of field, sharpening or exposure manipulation.",
+    "No earthquake/disaster/reconstruction interpretation is permitted."
+  ],
+  "runtimeRenderVerified": false,
+  "verification": "PENDING_UNITY_RUNTIME"
+}

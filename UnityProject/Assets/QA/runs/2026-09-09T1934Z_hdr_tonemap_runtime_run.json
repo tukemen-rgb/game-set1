@@ -1,0 +1,146 @@
+{
+  "schemaVersion": "1.0",
+  "runUtc": "2026-09-09T19:34:39Z",
+  "branch": "gpt/unity-migration",
+  "startHead": "97cacfe3fceeb46fb6eebca8fca7f2476f3cd32c",
+  "substantiveWorkHead": "0c5af4b26fdff77d14549ad52b4648aca711ee69",
+  "substantiveCommits": [
+    {
+      "sha": "1bed9c1253c758ffb15f291fe4a2454724e6513b",
+      "message": "Make benchmark tonemap an explicit HDR-to-LDR stage"
+    },
+    {
+      "sha": "f7de0fd06992f09734b7e4597cc42a1de7550cc5",
+      "message": "Apply HDR-to-LDR marker to the image-effect method"
+    },
+    {
+      "sha": "fa0389387a581a801394a04de67a50ad640e00b9",
+      "message": "Add runtime HDR-to-LDR capture proof"
+    },
+    {
+      "sha": "9a533143541ba5f689312901c3341b4bb2eb2c4c",
+      "message": "Define machine-readable HDR tonemap capture contract"
+    },
+    {
+      "sha": "0946b97012f75c253e6a286c3151f11ccfe21328",
+      "message": "Gate native 4K sealing on observed HDR-to-LDR tonemapping"
+    },
+    {
+      "sha": "b30556533eb16079c7a73eef68e6d8b79e79c796",
+      "message": "Use runtime SceneManager in HDR tonemap QA"
+    },
+    {
+      "sha": "ab575c0bfc74ac515039fe7b5e828222109d4189",
+      "message": "Make HDR tonemap proof intrinsic to native capture"
+    },
+    {
+      "sha": "0c5af4b26fdff77d14549ad52b4648aca711ee69",
+      "message": "Centralize HDR tonemap proof in native capture"
+    }
+  ],
+  "scope": {
+    "unityProjectOnly": true,
+    "godotChanged": false,
+    "baseMerged": false,
+    "excludedThemeContentChanged": false
+  },
+  "problemFound": "The benchmark camera was configured Forward + HDR and used a filmic OnRenderImage shader, but the image effect did not explicitly mark the point where Unity should switch the Built-in image-effect chain from HDR to LDR. Source configuration alone also did not prove that the three authoritative native stills actually traversed the filmic pass with an HDR source rather than an already-truncated buffer or a fallback blit. An initial higher-level packet integration still left alternate direct callers of CapturePreparedSceneAfterProbeSync dependent on convention, so the final implementation moved reset/proof ownership into the native capture method itself.",
+  "implementation": [
+    "Marked QualityBlockFilmicTonemap.OnRenderImage with ImageEffectTransformsToLDR so the display-transform boundary is explicit to the Built-in image-effect pipeline.",
+    "Added runtime-only telemetry for total/native-4K image-effect invocations, successful filmic passes, fallback blits, source/destination formats, dimensions and sRGB flags.",
+    "Added QualityBlockHdrTonemapRuntimeQA with a pre-capture telemetry reset and a fail-closed post-capture proof requiring exactly three 3840x2160 filmic invocations, zero fallback blits, observed HDR source format and observed LDR destination format.",
+    "Added hdr_tonemap_capture_contract.json with automaticVisualPoints=0 and actual-render/manual-pixel-review requirements.",
+    "Integrated the contract preflight into Prepare Complete Native 4K Review Packet.",
+    "Moved the runtime reset/proof inside QualityBlock4KCapture.CapturePreparedSceneAfterProbeSync itself, before runtime-manifest production, so alternate callers cannot bypass the HDR-to-LDR evidence requirement while still producing an authoritative manifest."
+  ],
+  "verification": {
+    "githubCompareStartToSubstantiveHead": {
+      "status": "ahead",
+      "aheadByIncludingInterleavedBookkeeping": 10,
+      "behindBy": 0,
+      "mergeBaseEqualsStartHead": true,
+      "changedFiles": [
+        "UnityProject/Assets/Editor/QualityBlock4KCapture.cs",
+        "UnityProject/Assets/Editor/QualityBlockHdrTonemapRuntimeQA.cs",
+        "UnityProject/Assets/Editor/QualityBlockNative4KReviewPacket.cs",
+        "UnityProject/Assets/QA/hdr_tonemap_capture_contract.json",
+        "UnityProject/Assets/QA/implementation_readiness.json",
+        "UnityProject/Assets/QA/runs/2026-09-09T1934Z_hdr_tonemap_runtime_run.json",
+        "UnityProject/Assets/Scripts/Art/QualityBlockFilmicTonemap.cs"
+      ],
+      "note": "Two bookkeeping commits were written before the final capture-method hardening and therefore appear in ancestry before substantiveWorkHead; substantiveCommits above intentionally lists only the eight implementation commits."
+    },
+    "officialUnityDocumentationChecked": [
+      {
+        "topic": "ImageEffectTransformsToLDR",
+        "finding": "The attribute requests an LDR destination for the marked image effect and switches the subsequent image-effect chain to LDR; the effect is responsible for LDR-range output.",
+        "url": "https://docs.unity3d.com/ScriptReference/ImageEffectTransformsToLDR.html"
+      },
+      {
+        "topic": "Unity 6 Built-in Forward HDR",
+        "finding": "Forward Built-in HDR requires a camera post-processing effect; without one the scene renders directly to a non-HDR backbuffer.",
+        "url": "https://docs.unity3d.com/6000.0/Documentation/Manual/hdr-birp.html"
+      },
+      {
+        "topic": "Unity 6 OnRenderImage",
+        "finding": "Built-in Render Pipeline invokes OnRenderImage after a Camera finishes rendering so it can modify the Camera's final image.",
+        "url": "https://docs.unity3d.com/6000.0/Documentation/ScriptReference/Camera.OnRenderImage.html"
+      },
+      {
+        "topic": "Unity 6 HDR buffer formats",
+        "finding": "Built-in camera HDR modes include FP16/ARGBHalf and R11G11B10/RGB111110Float, which are accepted by the runtime proof as observed HDR sources.",
+        "url": "https://docs.unity3d.com/6000.0/Documentation/ScriptReference/Rendering.CameraHDRMode.html"
+      }
+    ],
+    "workflowRunsOnBranch": 0,
+    "unity6000_3_0f1CompileExecuted": false,
+    "native3840x2160CaptureExecuted": false,
+    "native100PercentCropsReviewed": false,
+    "temporalEvidenceReviewed": false,
+    "hdrTonemapRuntimeReceiptExists": false,
+    "reasonPending": "No Unity editor/runner execution is available on the branch, so compile/runtime receipt generation and actual image review remain pending."
+  },
+  "implementationReadiness": {
+    "score": 93,
+    "possible": 100,
+    "status": "SOURCE_AND_PIPELINE_READINESS_ONLY"
+  },
+  "visualFidelity": {
+    "status": "UNSCORED",
+    "pointsAwardedThisRun": 0,
+    "passClaimed": false,
+    "criticalDefectsClearedByThisRun": 0,
+    "reason": "No actual Unity native render was produced or inspected. Runtime buffer telemetry is evidence plumbing, not visible-quality evidence."
+  },
+  "expectedVisualScoreImpact": [
+    {
+      "category": "Cinematic image quality/composition/color/exposure",
+      "effect": "Protects the intended global exposure and filmic highlight shoulder by making the HDR-to-LDR transition explicit and runtime-verifiable.",
+      "automaticPoints": 0
+    },
+    {
+      "category": "Lighting/shadows/reflections",
+      "effect": "Reduces the risk that high-intensity sun/reflection information is truncated before tonemapping and then incorrectly judged as a lighting defect.",
+      "automaticPoints": 0
+    },
+    {
+      "category": "Material/PBR physical plausibility",
+      "effect": "Preserves highlight energy for later pixel review of dielectric and metallic response; does not assert those responses look correct.",
+      "automaticPoints": 0
+    },
+    {
+      "category": "Evidence integrity",
+      "effect": "Runtime-manifest production itself now fails unless all three native stills execute the expected HDR-to-LDR filmic path; this protects future scoring but awards no visual points.",
+      "automaticPoints": 0
+    }
+  ],
+  "nextBlocker": "Unity 6000.3.0f1 editor/runner compile plus execution of Prepare Complete Native 4K Review Packet. The first runtime check is that hdr_tonemap_runtime_receipt.json must prove exactly three native filmic passes, zero fallback passes, an HDR source and an LDR destination before 4k_capture_manifest.json can be produced by the authoritative capture method. If the proof fails, fix the actual buffer/effect path rather than weakening the contract. If it passes, stop speculative expansion and score the sealed hero/oblique/grazing frames, 100% crops and temporal sequence from actual pixels only.",
+  "bookkeeping": {
+    "implementationReadinessCommits": [
+      "eca71014507c8621b0bf28011880aea440fd0cc8",
+      "ff324814bfd60454ac012933c638f9fde4d238f4"
+    ],
+    "initialRunRecordCommit": "cbead4b69098e71485f24af6d3de5b8e3e72c3cd",
+    "thisFinalRunRecordCommitExcludedFromSubstantiveCommits": true
+  }
+}

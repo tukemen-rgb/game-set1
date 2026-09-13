@@ -1,0 +1,171 @@
+{
+  "contractVersion": "facade-weathering-optical-refinement-v1.0.0",
+  "schemaVersion": "1.0",
+  "status": "IMPLEMENTATION_READY_RENDER_VERIFICATION_PENDING",
+  "parentConstructionContract": "Assets/QA/facade_weathering_contract.json",
+  "shader": "NewTown/QualityBlockWeatheringResidue",
+  "scope": "The five source-anchored facade residue meshes created by QualityBlockFacadeWeatheringDetailUpgrade. This contract refines optical edge behavior only; it does not replace the parent manufacture/installation/causality contract.",
+  "benchmarkCondition": {
+    "season": "midsummer Japan",
+    "surfaceState": "dry",
+    "wetness": 0.0,
+    "rule": "No generic wet sheen, no painted sun response, no baked contact shadow and no view-independent highlight may be encoded into residue tint or opacity."
+  },
+  "physicalModel": {
+    "assemblyReasoning": "Aged facade weathering is treated as a thin deposited dielectric residue on the real host construction surface, not as a freestanding plate or decal with hard rectangular opacity.",
+    "geometryVsMaterialDetail": {
+      "geometry": "Causal extent, taper, drift path and irregular perimeter come from source-anchored microgeometry generated from sill edges, balcony drip edges, rail fixings, downpipe/grade exposure and AC drain endpoints.",
+      "material": "Optical density, soft deposit perimeter, dry diffuse tint and broad dielectric angular response are shader properties. Sun/shadow/reflection direction is evaluated live and is never painted into albedo."
+    },
+    "interface": "Residue remains coincident with or microscopically offset from its host surface; the shader does not introduce a fictitious physical thickness, floating shell or light-blocking volume.",
+    "exposureAndAging": [
+      "rain mineral transport below real drip edges",
+      "grade splash deposition from ground contact zone",
+      "ferrous runoff from real rail base fixings",
+      "condensate mineral residue at real AC drain endpoints",
+      "midsummer UV/drying reducing wet-look response"
+    ],
+    "angularResponse": "Dielectric Schlick Fresnel using F0=0.04 nominal and live light/view vectors; roughness remains high so the deposit cannot behave like metal, varnish or a painted highlight."
+  },
+  "materialProfiles": [
+    {
+      "material": "MAT_RainMineralResidue",
+      "groups": ["Weathering_RainRunoff", "Weathering_BalconyDrip"],
+      "tintLinearIntent": [0.23, 0.245, 0.225],
+      "opacity": 0.105,
+      "roughness": 0.92,
+      "metallic": 0.0,
+      "specularF0": 0.04,
+      "normalScale": 0.0,
+      "microstructure": "low-amplitude stable world-space optical-density variation only",
+      "wetness": 0.0,
+      "uvAging": "dry/chalked mineral deposit; no wet gloss",
+      "profileMode": 0,
+      "profile": "vertical_ribbon",
+      "edgeFeatherU": 0.22,
+      "startFeatherV": 0.08,
+      "endFeatherV": 0.28,
+      "ellipseCore": 0.56,
+      "microBreakup": 0.035
+    },
+    {
+      "material": "MAT_GradeSplashSoil",
+      "groups": ["Weathering_GradeSplash"],
+      "tintLinearIntent": [0.18, 0.135, 0.082],
+      "opacity": 0.135,
+      "roughness": 0.95,
+      "metallic": 0.0,
+      "specularF0": 0.04,
+      "normalScale": 0.0,
+      "microstructure": "low-amplitude stable world-space optical-density variation only",
+      "wetness": 0.0,
+      "uvAging": "dry soil/mineral residue; strongest near grade, optically fades upward",
+      "profileMode": 1,
+      "profile": "grade_strip",
+      "edgeFeatherU": 0.012,
+      "startFeatherV": 0.0,
+      "endFeatherV": 0.35,
+      "ellipseCore": 0.56,
+      "microBreakup": 0.03
+    },
+    {
+      "material": "MAT_FerrousRunoffResidue",
+      "groups": ["Weathering_RailRust"],
+      "tintLinearIntent": [0.31, 0.105, 0.035],
+      "opacity": 0.12,
+      "roughness": 0.90,
+      "metallic": 0.0,
+      "specularF0": 0.04,
+      "normalScale": 0.0,
+      "microstructure": "low-amplitude stable world-space optical-density variation only",
+      "wetness": 0.0,
+      "uvAging": "oxidized runoff residue is nonmetallic despite ferrous source",
+      "profileMode": 0,
+      "profile": "vertical_ribbon",
+      "edgeFeatherU": 0.22,
+      "startFeatherV": 0.08,
+      "endFeatherV": 0.30,
+      "ellipseCore": 0.56,
+      "microBreakup": 0.04
+    },
+    {
+      "material": "MAT_CondensateMineralResidue",
+      "groups": ["Weathering_ACResidue"],
+      "tintLinearIntent": [0.30, 0.31, 0.28],
+      "opacity": 0.085,
+      "roughness": 0.94,
+      "metallic": 0.0,
+      "specularF0": 0.04,
+      "normalScale": 0.0,
+      "microstructure": "low-amplitude stable world-space optical-density variation only",
+      "wetness": 0.0,
+      "uvAging": "dry mineral tide mark around condensate discharge point",
+      "profileMode": 2,
+      "profile": "horizontal_ellipse",
+      "edgeFeatherU": 0.22,
+      "startFeatherV": 0.0,
+      "endFeatherV": 0.28,
+      "ellipseCore": 0.56,
+      "microBreakup": 0.03
+    }
+  ],
+  "uvSemantics": {
+    "verticalRibbon": "UV0.x runs from left edge 0 to right edge 1; UV0.y runs from causal source 0 to tail 1.",
+    "gradeStrip": "UV0.x spans facade run 0..1; UV0.y runs from grade 0 to the irregular causal splash-height boundary 1.",
+    "horizontalEllipse": "UV0 center is 0.5,0.5 and perimeter lies on the unit ellipse, enabling radial alpha feathering without resampling a texture mask.",
+    "requiredRange": "Every weathering mesh must supply UV0 for every vertex and span approximately 0..1 in both axes."
+  },
+  "lodPolicy": {
+    "strategy": "These are five already-combined microdetail renderers and follow the host facade visibility. Do not introduce a speculative distance switch before native 4K temporal evidence because a hard weathering LOD transition could itself create visible pop.",
+    "currentRendererCount": 5,
+    "lod0": "full causal geometry and optical feathering",
+    "lod1": "same combined geometry pending measured 4K visibility threshold",
+    "lod2": "same combined geometry pending measured 4K visibility threshold",
+    "lod3": "same combined geometry pending measured 4K visibility threshold",
+    "futureOptimizationRule": "Only reduce or remove a residue group after sealed temporal captures demonstrate no visible pop/shimmer at the proposed threshold."
+  },
+  "qaRules": {
+    "requiredGroups": [
+      "Weathering_GradeSplash",
+      "Weathering_RainRunoff",
+      "Weathering_BalconyDrip",
+      "Weathering_RailRust",
+      "Weathering_ACResidue"
+    ],
+    "rendererCount": 5,
+    "requiredShader": "NewTown/QualityBlockWeatheringResidue",
+    "metallicMustEqual": 0.0,
+    "dielectricF0": 0.04,
+    "minimumRoughness": 0.90,
+    "maximumOpacity": 0.135,
+    "noEmission": true,
+    "shadowCasting": "Off",
+    "receiveShadows": true,
+    "requireFullVertexUv0Coverage": true,
+    "forbidLegacyWeatheringOverlaysRoot": true,
+    "forbidBuiltInPrimitiveWeatheringMeshes": true,
+    "forbidPaintedOrBakedHighlights": true,
+    "forbidDirectionallyEncodedAlpha": true,
+    "criticalDefectRisksReduced": [
+      "visible_primitive_placeholder_geometry_in_benchmark_framing",
+      "obviously_painted_or_baked_highlights",
+      "materially_impossible_metallic_or_specular_values",
+      "missing_required_construction_or_material_metadata"
+    ]
+  },
+  "formalEvidence": {
+    "requiredViews": ["hero", "oblique", "grazing"],
+    "required100PercentCrops": ["hero/facade_center", "oblique/balcony_services", "grazing/material_grazing"],
+    "pixelChecks": [
+      "no hard rectangular/ribbon alpha boundary visible around residues",
+      "runoff terminates at real construction source and fades with distance",
+      "grade splash is strongest low and fades upward rather than reading as a painted stripe",
+      "rust runoff is nonmetallic and has no copper/chrome-like highlight",
+      "AC residue reads as a dry diffuse tide mark rather than a glossy puddle",
+      "no residue shimmer or popping during temporal evidence"
+    ],
+    "runtimeRenderVerification": "PENDING_UNITY_RUNTIME",
+    "visualFidelityPointsAwarded": 0,
+    "visualFidelityStatus": "UNSCORED"
+  }
+}

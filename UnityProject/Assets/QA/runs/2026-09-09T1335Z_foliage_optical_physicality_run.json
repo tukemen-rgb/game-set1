@@ -1,0 +1,90 @@
+{
+  "runUtc": "2026-09-09T13:35:00Z",
+  "branch": "gpt/unity-migration",
+  "startHead": "f80f341ca06d12cca19b2cd2220ec7a1d2b0df6a",
+  "substantiveWorkHead": "cb3984ef76b0f257bfb10638bba9047f0cf85321",
+  "substantiveCommits": [
+    "db49c31b88f1f21af28139e54662ec48fa7c2441",
+    "d2fe33789d404cd08bfc071a016262ed10f36d8c",
+    "5ccbbbcb8d3baf69668015a08dfc3c41923e0cca",
+    "2130e2edaf62f8cfc45203f3bc0fae59d64db544",
+    "cb3984ef76b0f257bfb10638bba9047f0cf85321"
+  ],
+  "scopeSafety": {
+    "godotModified": false,
+    "baseMerged": false,
+    "excludedThemesAdded": false,
+    "changedPathPrefix": "UnityProject/",
+    "compareBeforeBookkeeping": "ahead 5 / behind 0"
+  },
+  "implementationReadiness": {
+    "score": 93,
+    "possible": 100,
+    "visualFidelityStatus": "UNSCORED_UNTIL_REAL_4K_RENDER",
+    "visualPointsAwardedThisRun": 0,
+    "unchangedReason": "The remaining readiness blocker is actual Unity 6000.3.0f1 compile/runtime verification. Foliage BRDF and QA changes are source-side risk reduction only."
+  },
+  "problemFound": {
+    "summary": "The generated foliage path already had explicit geometry, two-sided transmission and causal canopy variation, but its direct specular term was an arbitrary power-lobe scalar without an explicit dielectric F0/Fresnel contract or controllable normal amplitude. That left a material-physicality gap capable of producing plastic/chrome-like leaf sparkle in grazing 4K light even though foliage metadata called the surface dielectric.",
+    "physicalAnchor": "Published plant-cell-wall refractive-index measurements around 1.415-1.425 imply normal-incidence dielectric F0 around 0.03 through ((n-1)/(n+1))^2. This is used only as a measured-order optical anchor, not as a species-specific measurement for the benchmark trees.",
+    "risk": [
+      "arbitrary non-Fresnel foliage highlight intensity",
+      "plastic/chrome-like grazing sparkle inconsistent with a dry dielectric leaf",
+      "back-face lighting discontinuity under Cull Off",
+      "material metadata and actual shader response drifting apart"
+    ]
+  },
+  "changes": [
+    {
+      "path": "Assets/Shaders/NewTownFoliageTransmission.shader",
+      "purpose": "Replaces the arbitrary leaf specular power lobe with dielectric Schlick Fresnel + isotropic GGX/Schlick-Smith direct specular, adds explicit F0 and normal scale, flips the shading normal on viewed back faces, and keeps transmission attenuated and energy-bounded."
+    },
+    {
+      "path": "Assets/QA/foliage_optical_physicality_contract.json",
+      "purpose": "Machine-readable natural-leaf material/construction reasoning, refractive-index/F0 basis, roughness/normal/transmission constraints, dry wetness and UV-aging policy, geometry-vs-material split, LOD policy and native-render review targets."
+    },
+    {
+      "path": "Assets/Editor/QualityBlockFoliagePhysicalityQA.cs",
+      "purpose": "Applies and validates actual generated foliage materials at F0=0.03, normalScale=0.72, broad dry-leaf smoothness scales, bounded transmission, double-sided GI, instancing and no emission; validates active generated leaf renderer bindings and property-block transmission."
+    },
+    {
+      "path": "Assets/Editor/QualityBlockFoliagePhysicalitySaveGate.cs",
+      "purpose": "Makes measured-order foliage dielectric physicality a persisted quality-scene invariant once high-detail tree masters exist."
+    },
+    {
+      "path": "Assets/Editor/QualityBlockNative4KReviewPacket.cs",
+      "purpose": "Requires foliage optical contract validation before native capture and actual foliage-material validation after the scored-scene rebuild/capture path."
+    }
+  ],
+  "verification": {
+    "sourceInspection": "PASS_WITH_RUNTIME_PENDING",
+    "branchCompareBeforeBookkeeping": "ahead 5 / behind 0; five changed files, all under UnityProject",
+    "sceneMaterialPhysicalityCompatibility": "PASS_STATIC_INSPECTION: general active-material QA accepts custom shaders, validates finite properties when present and no emission; it does not require Standard-only properties on foliage.",
+    "projectUnityVersion": "6000.3.0f1",
+    "workflowRuns": 0,
+    "captures4KDirectory": "NOT_FOUND",
+    "unityCompile": "PENDING_UNITY_RUNTIME",
+    "shaderCompile": "PENDING_UNITY_RUNTIME",
+    "native3840x2160Stills": "PENDING_UNITY_RUNTIME",
+    "pixelExact100PercentCrops": "PENDING_UNITY_RUNTIME",
+    "nativeTemporalSequences": "PENDING_UNITY_RUNTIME"
+  },
+  "expectedVisualScoreImpact": [
+    "Material/PBR physical plausibility: actual leaf shader now has an explicit dry-dielectric F0/Fresnel model and constrained roughness/normal amplitude instead of a generic art-directed specular scalar.",
+    "Vegetation/natural complexity: close/grazing leaf clusters should have more coherent two-sided angular response while preserving explicit plant/branch geometry and canopy-context variation.",
+    "Lighting/shadows/reflections: foliage direct reflection and transmitted sunlight are tied to the same directional light attenuation and an explicit dielectric energy budget rather than self-lighting or painted highlights.",
+    "Temporal/LOD/aliasing stability: broad roughness and bounded normal amplitude reduce the expected risk of sub-pixel foliage sparkle; actual shimmer and LOD pop remain sealed temporal-evidence judgments and receive zero source-side Visual points."
+  ],
+  "criticalDefectRisk": {
+    "reduced": [
+      "materially impossible metallic/specular values",
+      "obviously painted/baked highlights",
+      "severe aliasing/shimmering"
+    ],
+    "clearedByThisRun": [],
+    "reasonNotCleared": "Critical defects are visual judgments and cannot be cleared without actual sealed Unity render evidence."
+  },
+  "nextBlocker": "Unity 6000.3.0f1 editor/runner. On first runtime, stop speculative expansion and execute Prepare Complete Native 4K Review Packet. First inspect oblique/vegetation_grounding and grazing/tree_shadow_contact/material_grazing for overly dark energy loss, wax/plastic sparkle, back-face discontinuity or over-strong transmission, then inspect subpixel_grazing for foliage shimmer. Fix the observed native pixels before adding detail.",
+  "visualGatePolicy": "No Visual Fidelity score or PASS is permitted from this source-only run. PASS still requires >=92/100, all category hard minimums, no critical defect, sealed native 3840x2160 still/crop evidence and required temporal evidence.",
+  "recordingNote": "This per-run bookkeeping commit is excluded from substantiveCommits to avoid self-reference."
+}

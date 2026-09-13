@@ -1,0 +1,104 @@
+{
+  "schemaVersion": "1.0",
+  "runDate": "2026-09-13",
+  "branch": "gpt/unity-migration",
+  "startingHead": "9f7f8b8673dc2a533ba03190f29e0e8fdd478a46",
+  "headBeforeRunRecord": "5a03dfa65db2861ef72dd0b7625de2457a894dab",
+  "objective": "Close a formal-evidence gap where realtime reflection probes and native 4K stills could share identical scene/light/material hashes while global Built-in render policy, quality tier or effective texture mip residency changed between them.",
+  "finding": {
+    "gap": "The existing reflection lighting fingerprint already bound high-impact shadow/LOD/AA/anisotropy values, renderer/material/texture identity, lightmaps and probe configuration, but it did not bind the complete GraphicsSettings/QualitySettings project state, active GraphicsTier/render-pipeline identity, globalTextureMipmapLimit or renderer-bound texture streaming/mipmap-limit-group residency.",
+    "visualRisk": "A legal quality/tier/pipeline or texture-residency change can alter Standard-shader/reflection behavior or remove high-resolution texture mips without changing material bindings. That can contaminate Material/PBR, Lighting/Reflections, Texture/Microdetail, Cinematic and Temporal/LOD review while leaving previous scene hashes apparently coherent.",
+    "priorityReason": "This affects the evidence used to score several categories and can silently reduce 100% crop detail, so it was prioritized over adding speculative geometry while no Unity Runner/render evidence is available."
+  },
+  "commits": [
+    {
+      "sha": "69b22bd1c8fe40d75085f0456338244f79d636f5",
+      "summary": "Add fail-closed render policy evidence fingerprint"
+    },
+    {
+      "sha": "5c7b1b0a3e0cb4290f21522c2089520a45e5542e",
+      "summary": "Define render policy evidence contract"
+    },
+    {
+      "sha": "707ad67f2ef00f173a2529228b9f19047df3bdad",
+      "summary": "Bind render policy to reflection lighting evidence"
+    },
+    {
+      "sha": "5a03dfa65db2861ef72dd0b7625de2457a894dab",
+      "summary": "Align render policy risks with canonical visual gate IDs"
+    }
+  ],
+  "implementation": {
+    "newValidator": "QualityBlockRenderPolicyEvidenceQA",
+    "newContract": "Assets/QA/render_policy_evidence_contract.json",
+    "reflectionIntegration": "QualityBlockReflectionLightingStateFingerprint.BuildCurrentSha256 now folds the validated render-policy SHA-256 into the same request/poll/completion/pre-still fingerprint already enforced by QualityBlockReflectionProbeAwaiter.",
+    "failClosedRules": [
+      "Built-in Render Pipeline required; current/default/quality SRP assets must be null",
+      "Linear color space required",
+      "QualitySettings.globalTextureMipmapLimit must be 0",
+      "renderer-bound mipmapped Texture2D assets may not use streaming mipmaps",
+      "renderer-bound mipmapped Texture2D assets may not inherit a mipmap-limit group unless ignoreMipmapLimit=true",
+      "current quality level and active GraphicsTier are fingerprinted",
+      "serialized GraphicsSettings and QualitySettings project state are SHA-256-bound",
+      "current/default/quality render-pipeline asset identities are SHA-256-bound",
+      "active renderer/material/property Texture2D residency state is ordered and fingerprinted"
+    ],
+    "automaticVisualPoints": 0
+  },
+  "verification": {
+    "staticSourceReview": "PASS",
+    "unity6ApiDocumentationReview": "PASS_FOR_USED_APIS",
+    "branchCompareBeforeRunRecord": {
+      "aheadBy": 4,
+      "behindBy": 0,
+      "mergeBaseUnchanged": true,
+      "changedPaths": [
+        "UnityProject/Assets/Editor/QualityBlockReflectionLightingStateFingerprint.cs",
+        "UnityProject/Assets/Editor/QualityBlockRenderPolicyEvidenceQA.cs",
+        "UnityProject/Assets/QA/render_policy_evidence_contract.json"
+      ],
+      "godotChanged": false,
+      "baseMerged": false
+    },
+    "githubActionsAtHeadBeforeRunRecord": 0,
+    "commitStatusContextsAtHeadBeforeRunRecord": 0,
+    "unity6000_3_0f1Compile": "PENDING_RUNTIME",
+    "unityRuntime": "PENDING_RUNTIME",
+    "native3840x2160Render": "PENDING_RUNTIME",
+    "hundredPercentCrops": "PENDING_RUNTIME",
+    "temporalEvidence": "PENDING_RUNTIME"
+  },
+  "implementationReadiness": {
+    "score": 93,
+    "outOf": 100,
+    "reasonUnchanged": "The new fail-closed policy is source-complete but cannot earn the remaining runtime-readiness points without Unity 6000.3.0f1 compile/execution and native evidence."
+  },
+  "visualFidelity": {
+    "status": "UNSCORED_UNTIL_REAL_4K_RENDER",
+    "pointsAwardedThisRun": 0,
+    "passClaimed": false,
+    "expectedImpactAfterActualRender": {
+      "material_pbr_physical_plausibility": "medium; prevents tier/pipeline/residency drift from changing angular material response between probe and still",
+      "lighting_shadows_reflections": "high; proves reflection cubemaps and stills use one Built-in graphics/quality policy",
+      "texture_microdetail_texel_fidelity": "high; forbids global top-mip removal and renderer-bound mip streaming in formal evidence",
+      "cinematic_image_quality": "medium; prevents quality/pipeline policy drift from contaminating exposure/color/reflection review",
+      "temporal_lod_aliasing_stability": "medium-high; removes camera-dependent renderer texture residency as a source of formal temporal shimmer",
+      "automaticPoints": 0
+    }
+  },
+  "runtimeFailureInjectionPlan": [
+    "After reflection request set QualitySettings.globalTextureMipmapLimit=1; next observed poll must abort on policy mismatch.",
+    "Enable streamingMipmaps on one renderer-bound Texture2D; formal policy validation must fail before accepted capture.",
+    "Assign a mipmap-limit group without ignoreMipmapLimit; formal policy validation must fail.",
+    "Switch quality level or active Built-in graphics tier after reflection request; the policy hash must drift and invalidate the epoch.",
+    "Assign an SRP asset; the policy validator must fail before reflection/still evidence is accepted."
+  ],
+  "nextBlocker": "No Unity Runner or native screenshots are available. The next useful step is Unity 6000.3.0f1 compilation plus the failure injections above; if real screenshots appear, stop speculative source expansion and score/fix those pixels first.",
+  "constraints": {
+    "godotPreserved": true,
+    "baseMergePerformed": false,
+    "earthquakeDisasterReconstructionSceneThemesAdded": false,
+    "newCommitsAllowedThrough": "2026-09-18",
+    "visualPassRequiresActualRender": true
+  }
+}

@@ -1,0 +1,99 @@
+{
+  "schemaVersion": "1.0",
+  "runId": "2026-09-12_glazing_gasket_reflection_probe_binding",
+  "branch": "gpt/unity-migration",
+  "startHead": "0d05f12d6b3f5d3ec007119344c7f0a0f68dd1e7",
+  "implementationHeadBeforeRunRecord": "84807de43427c7bef734ce8f7ae1ea6596c29011",
+  "runRecordCommit": "SELF",
+  "commitPolicy": "The run-record file is committed last, so its own commit hash is intentionally represented as SELF; final external run summary records the resulting branch HEAD.",
+  "implementationCommits": [
+    {
+      "sha": "61d9f8b9340bda81a9c4935e7f3774ee81421a31",
+      "message": "qa: bind glazing gasket state into reflection evidence"
+    },
+    {
+      "sha": "84807de43427c7bef734ce8f7ae1ea6596c29011",
+      "message": "qa: require glazing gasket validation during probe sync"
+    }
+  ],
+  "priorityReasoning": {
+    "selectedGap": "The previous run added a scene-save-built facade glazing gasket and MainCamera native-4K pre-cull validation, but ReflectionProbe.RenderProbe does not invoke MainCamera pre-cull. The central reflection-lighting fingerprint validated materials, facade build, foliage and balcony state but did not explicitly validate the new glazing-gasket assembly. A probe could therefore begin from a missing or drifted gasket state and later still frames could validate a different state.",
+    "whyBeforeMoreExpansion": "The new gasket exists specifically to improve the glass-to-sash contact/interface visible in facade_center, construction_depth and sash_rail_response. Reflection mismatch would undermine the lighting/reflection and material evidence for the same high-value detail. Binding the assembly to the already-central request/poll/completion/pre-still fingerprint closes that coherence gap without speculative new scene content.",
+    "renderPointPolicy": "No Visual Fidelity points are awarded. Structural/material coherence at probe time does not prove that the gasket looks proportionate, physically plausible, non-repetitive or temporally stable in actual pixels."
+  },
+  "implementation": {
+    "bindingSource": "Assets/Editor/QualityBlockReflectionMaterialPhysicalityBindingQA.cs",
+    "bindingContract": "Assets/QA/reflection_material_physicality_binding_contract.json",
+    "gasketContract": "Assets/QA/facade_glazing_gasket_contract.json",
+    "reflectionBindingSchema": "1.1",
+    "gasketContractValidatedFromCoreGateIntegrity": true,
+    "gasketSceneStateValidatedBeforeEveryReflectionLightingFingerprint": true,
+    "gasketSceneValidationDuringProbeSyncIsReadOnly": true,
+    "failureAbortsReflectionEvidence": true,
+    "automaticVisualPoints": 0
+  },
+  "verification": {
+    "githubComparison": {
+      "base": "0d05f12d6b3f5d3ec007119344c7f0a0f68dd1e7",
+      "headBeforeRunRecord": "84807de43427c7bef734ce8f7ae1ea6596c29011",
+      "status": "ahead",
+      "aheadBy": 2,
+      "behindBy": 0,
+      "mergeBaseUnchanged": true,
+      "changedPathsBeforeRunRecord": [
+        "UnityProject/Assets/Editor/QualityBlockReflectionMaterialPhysicalityBindingQA.cs",
+        "UnityProject/Assets/QA/reflection_material_physicality_binding_contract.json"
+      ]
+    },
+    "staticChecks": [
+      "QualityBlockReflectionLightingStateFingerprint.BuildCurrentSha256 calls QualityBlockReflectionMaterialPhysicalityBindingQA.ValidateOpenScene before hashing the render/probe state.",
+      "The reflection binding now calls QualityBlockFacadeGlazingGasketUpgrade.ValidateContractConfigOnly from its config path and QualityBlockFacadeGlazingGasketUpgrade.ValidateOpenScene from its runtime scene path.",
+      "The binding contract requires the canonical glazing-gasket contract path, per-fingerprint validation, read-only in-flight behavior and fail-closed abort semantics.",
+      "The reflection binding still awards zero Visual Fidelity points and does not claim runtime render verification.",
+      "All changed implementation paths are below UnityProject; Godot was not modified.",
+      "No base merge was performed; compare merge-base remained the starting HEAD."
+    ],
+    "githubActionsRunsOnBranchBeforeImplementation": 0,
+    "commitStatusContextsOnImplementationHead": 0,
+    "unity6000_3_0f1Compile": "PENDING_RUNNER",
+    "reflectionProbeRuntimeValidation": "PENDING_RUNNER",
+    "native3840x2160HeroObliqueGrazing": "PENDING_RUNNER",
+    "pixelReview": "PENDING_RUNNER",
+    "temporalLodReview": "PENDING_RUNNER"
+  },
+  "scoreState": {
+    "implementationReadiness": 93,
+    "visualFidelityStatus": "UNSCORED_UNTIL_REAL_4K_RENDER",
+    "visualFidelityPointsAwardedThisRun": 0,
+    "visualFidelityPassClaimed": false,
+    "expectedImpactOnlyNotAwarded": {
+      "geometryConstruction": "LOW_TO_MODERATE: prevents probe/still evidence from representing different glass-to-sash construction states",
+      "materialPbr": "MODERATE: requires the canonical EPDM/glazing-interface material state before each formal reflection fingerprint",
+      "lightingShadowsReflections": "MODERATE: prevents a realtime cubemap from sealing against stale/missing gasket geometry that later camera frames reject",
+      "textureMicrodetail": "LOW: preserves the gasket metric-UV/phase state indirectly through its full assembly validator",
+      "temporalLodAliasing": "LOW: coherence only; actual LOD pop/shimmer remains pixel-only"
+    }
+  },
+  "criticalDefectsNotCleared": [
+    "visible_primitive_placeholder",
+    "baked_or_painted_highlights",
+    "impossible_material_physics",
+    "obvious_repetition",
+    "hero_geometry_intersection",
+    "sun_shadow_inconsistency",
+    "forbidden_disaster_theme",
+    "severe_aliasing_or_shimmer",
+    "visible_lod_pop",
+    "major_light_leak",
+    "missing_construction_material_metadata",
+    "unverified_render_claim"
+  ],
+  "renderRisksToInspect": [
+    "The 10 mm gasket can still read as an over-dark painted halo despite valid construction metadata.",
+    "Glass/gasket/sash contact can still reveal interpenetration, a hairline void or z-fighting in oblique/grazing pixels.",
+    "The dry EPDM response can still be too glossy or too flat once actual sky/sun/probe response is visible.",
+    "Eight UV phase bins can still reveal synchronized repetition across 60 panes.",
+    "LOD2/LOD3 narrow front-ring proxies can still shimmer or cross-fade visibly at subpixel width."
+  ],
+  "nextBlocker": "Unity 6000.3.0f1 runtime/Runner remains absent. When it appears, stop speculative expansion and verify compile -> persisted gasket build -> reflection request/poll/completion/pre-still gasket validation without mutation -> fresh probe synchronization -> native 3840x2160 hero/oblique/grazing plus 100% facade_center/construction_depth/sash_rail_response crops -> temporal LOD/shimmer review. Score only those actual pixels."
+}

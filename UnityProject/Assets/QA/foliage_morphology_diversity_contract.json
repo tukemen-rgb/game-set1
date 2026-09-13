@@ -1,0 +1,97 @@
+{
+  "schemaVersion": "1.0",
+  "status": "IMPLEMENTATION_READY_RENDER_PENDING",
+  "scenePath": "Assets/Scenes/QualityBlock1990s.unity",
+  "generator": "Assets/Editor/QualityBlockFoliageMorphologyVariationUpgrade.cs",
+  "purpose": "Reduce the immediately recognizable cloned-leaf-card failure mode in the generated six-tree fallback while preserving the biologically connected branch/twig hierarchy, PBR foliage optics and deterministic LOD identity. This source contract awards zero Visual Fidelity points; native 3840x2160 rendered evidence remains authoritative.",
+  "biologicalReasoning": {
+    "assembly": "twig/secondary branch -> explicit leaf cluster -> two-sided leaf lamina geometry",
+    "dimensionsThickness": "The existing leaf lamina thickness model is preserved. Derived variants change individual lamina width/length only within approximately -10%/+10%, orientation by small angles and attachment center by centimeter-order offsets; they do not create slab-like leaves.",
+    "materialFinish": "Leaf optics remain the dry living thin-dielectric materials governed by foliage_optical_physicality_contract.json. Morphology generation does not paint highlights, change metallic/specular values, add emission or bake lighting into albedo.",
+    "mounting": "Every morphology mesh remains assigned to the pre-existing LeafCluster transform attached to explicit twig/branch construction; no gameplay collider, tree placement or trunk/branch transform is altered.",
+    "interfacesGapsSeals": "Natural assembly has no manufactured seals. The required interface is continued branch/twig attachment with no floating cluster introduced by this pass.",
+    "orientationExposure": "Small deterministic per-leaf pitch/yaw/roll differences represent natural phyllotactic and petiole-angle variation while remaining subordinate to the cluster transform and coherent midsummer Japanese sun/sky lighting.",
+    "aging": "No damage or aging is synthesized by morphology. Ordinary midsummer foliage variation is optical/material-side; storm, breakage, disaster and reconstruction cues are prohibited.",
+    "geometryVsMaterialDetail": {
+      "geometry": ["leaf silhouette", "individual lamina scale", "individual lamina angle", "centimeter-order lamina center offset", "cluster/branch attachment", "LOD population"],
+      "material": ["leaf albedo", "vein/micro-normal", "dielectric roughness/Fresnel", "transmission", "ordinary exposure variation"],
+      "forbiddenShortcut": "Do not paint silhouette variation, sun highlights, contact shadows, holes or damage into albedo to imitate geometric diversity."
+    }
+  },
+  "sourceLibrary": {
+    "baseSprays": ["GM_LeafSpray_A", "GM_LeafSpray_B", "GM_LeafSpray_C"],
+    "derivedVariantCount": 12,
+    "variantNaming": "GM_LeafSpray_Morph_00..11",
+    "derivation": "Each derived mesh starts from one of the three explicit two-sided leaf-spray masters. Per contiguous eight-vertex lamina, deterministic bounded width/length/depth scaling, pitch/yaw/roll and centimeter-order center offset are applied; UV topology is preserved and normals/tangents are recalculated.",
+    "determinism": "Variant assignment is a stable integer function of tree index and parsed LeafCluster ordinal. Seven is coprime to twelve, so consecutive source ordinals traverse the full morphology library before repeating.",
+    "noRuntimeRandomness": true
+  },
+  "diversityRules": {
+    "expectedGeneratedTrees": 6,
+    "minimumSourceLeafClustersPerGeneratedTree": 24,
+    "minimumDistinctVariantsPerGeneratedTree": 10,
+    "maximumExactVariantUsePerGeneratedTree": 4,
+    "sourceAndRetainedLodMorphologyIdentityRequired": true,
+    "authoredArtSupersedesGeneratedFallback": true,
+    "colliderMutationForbidden": true,
+    "treePlacementMutationForbidden": true,
+    "woodyConstructionMutationForbidden": true
+  },
+  "lodPolicy": {
+    "levels": 4,
+    "animatedCrossFadeRequired": true,
+    "identityRule": "For any LeafCluster ordinal retained by a lower LOD, the generated morphology mesh must be exactly the same asset as the corresponding LOD0/source ordinal. LOD may remove clusters by physical scale but may not substitute a different leaf silhouette for a retained ordinal.",
+    "temporalReviewRequired": true
+  },
+  "criticalDefectRisksReduced": [
+    "obvious_repetition",
+    "severe_aliasing_or_shimmer",
+    "visible_lod_pop"
+  ],
+  "hardFailRules": [
+    "fewer than twelve deterministic morphology assets are available after the build pass",
+    "a generated tree uses fewer than ten distinct morphology variants in source/LOD0 foliage",
+    "one exact morphology variant is used more than four times in source/LOD0 foliage of a generated tree",
+    "a retained LOD proxy changes morphology mesh for the same LeafCluster ordinal",
+    "a morphology mesh loses complete UV0, normals or tangents",
+    "a morphology mesh contains invalid/non-positive bounds or malformed two-sided leaf topology",
+    "morphology processing changes gameplay colliders, trunk/branch placement or tree placement",
+    "foliage material is made metallic/emissive or receives painted/baked highlights",
+    "any disaster/reconstruction theme is introduced",
+    "source diversity checks are represented as rendered Visual Fidelity evidence"
+  ],
+  "formalEvidenceRequirements": {
+    "nativeResolution": [3840, 2160],
+    "requiredViews": ["hero", "oblique", "grazing"],
+    "required100PercentCrops": [
+      "oblique/vegetation_grounding",
+      "grazing/tree_shadow_contact"
+    ],
+    "requiredTemporalTarget": "temporal/subpixel_grazing",
+    "humanReviewRequired": true,
+    "actualRenderRequiredForVisualPoints": true,
+    "reviewFor": [
+      "no immediately obvious cloned leaf-spray silhouette across neighboring clusters",
+      "no unnatural starburst or uniformly fanned leaf orientation",
+      "no detached/floating leaf clusters",
+      "no metallic/plastic foliage flash under grazing sun",
+      "no severe leaf-edge aliasing or specular shimmer",
+      "no morphology swap/pop through LOD cross-fades",
+      "natural midsummer crown silhouette at hero framing"
+    ]
+  },
+  "lookdev": {
+    "illustration": "Assets/QA/lookdev/foliage_morphology_diversity_lookdev.svg",
+    "isRenderEvidence": false
+  },
+  "implementationReadinessScore": 93,
+  "visualFidelityStatus": "UNSCORED_UNTIL_REAL_4K_RENDER",
+  "runtimeRenderVerified": false,
+  "autoVisualPoints": 0,
+  "limitations": [
+    "Twelve deterministic source morphologies reduce exact clone repetition but do not prove that repeated silhouettes are visually imperceptible from benchmark cameras.",
+    "The pass preserves the existing three base spray topologies and does not claim species-specific botanical reconstruction.",
+    "Static source QA cannot prove leaf-edge temporal stability, shadow dither quality, transmission balance or LOD invisibility.",
+    "Authored tree assets intentionally supersede the generated fallback and require their own rendered review if present."
+  ]
+}

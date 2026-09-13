@@ -1,0 +1,72 @@
+{
+  "runId": "2026-09-09_benchmark_observability",
+  "startHead": "7e260a4aa2b85b71b88bb9307d3a7201e67be67c",
+  "substantiveWorkHead": "8312279000f6cdd28577c514ba01fe01923ac294",
+  "substantiveCommits": [
+    "4abdd16a0b7450d8970d88cf9c09360474ff46ac",
+    "cca9e7106e861c14494bc72951a4a22f2672c399",
+    "8312279000f6cdd28577c514ba01fe01923ac294"
+  ],
+  "scope": "4K benchmark observability gate for the period-authentic rooftop receiving assembly, including automatic non-resampled hero/oblique roof crops when real native Unity frames appear. Godot preserved.",
+  "implementationReadiness": {
+    "score": 93,
+    "possible": 100,
+    "changeThisRun": 0,
+    "reason": "The evidence pipeline is safer and more observable, but Unity 6000.3.0f1 compile/runner verification is still unavailable. Readiness is not Visual Fidelity."
+  },
+  "visualFidelity": {
+    "status": "UNSCORED_UNTIL_REAL_4K_RENDER",
+    "pointsAwardedThisRun": 0,
+    "passClaimed": false,
+    "reason": "No Assets/QA/Captures4K directory or actual Unity 3840x2160 frames exist on this head. Projection math and source QA are not visual evidence."
+  },
+  "work": [
+    {
+      "asset": "Assets/Editor/QualityBlockBenchmarkObservabilityQA.cs",
+      "result": "Projects every Renderer.bounds corner of PeriodAuthenticity2000 through the exact hero/oblique 3840x2160 benchmark camera transforms. Save QA requires the assembly to remain in frame, above a minimum pixel footprint, and fully contained by planned 1280x720 100% roof crops. It also installs an AssetPostprocessor that, only after real hero/oblique full-frame PNGs are imported, copies decoded Color32 crop texels 1:1 without scaling/filtering/sharpening and writes a separate UNSCORED evidence manifest."
+    },
+    {
+      "asset": "Assets/QA/benchmark_observability_contract.json",
+      "result": "Machine-readable frame dimensions, camera transforms, projected-pixel thresholds, crop rectangles, non-resampling policy, grazing applicability, critical fails, and no-score-without-render policy."
+    },
+    {
+      "asset": "Assets/Editor/QualityBlockPeriodAuthenticitySaveGate.cs",
+      "result": "Persisted quality-scene saves now require period construction/material/LOD QA and benchmark observability QA together, preventing a correct-but-unreviewable rooftop asset from silently entering the scored scene."
+    }
+  ],
+  "verification": {
+    "method": "GitHub source/static inspection plus analytic projection preflight; no Unity runtime was available.",
+    "changedFilesFromStartBeforeRunRecord": 3,
+    "changedFilesAllUnderUnityProject": true,
+    "aheadByBeforeRunRecord": 3,
+    "behindByBeforeRunRecord": 0,
+    "commitStatusContexts": 0,
+    "workflowRuns": 0,
+    "captures4KDirectoryPresent": false,
+    "unity6000_3_0f1CompileVerified": false,
+    "native3840x2160RenderVerified": false,
+    "pixelExact100PercentCropsVerified": false,
+    "staticChecks": [
+      "Hero and oblique camera transforms/FOV exactly match the existing QualityBlock4KCapture definitions.",
+      "Planned roof crops are 1280x720 at x=1280,y=1440 in both hero and oblique native frames and require 16 px containment margin.",
+      "Source QA requires at least 120x240 px projected period bounds in hero and 130x220 px in oblique, while retaining an 8 px full-frame edge margin.",
+      "A documented-envelope analytic preflight estimates approximately 164x341 px in hero and 180x313 px in oblique; actual Unity Renderer.bounds remain the authoritative save-time check.",
+      "The fixed grazing frame remains mandatory for the overall visual gate but is not used to judge this roofline-specific asset because the existing grazing composition is dedicated to facade/material angular response and ground/contact stability.",
+      "Crop extraction is conditional on real full-frame files and writes UNSCORED_REVIEW_REQUIRED; it cannot create or substitute a render."
+    ]
+  },
+  "constraints": {
+    "godotModified": false,
+    "baseMerged": false,
+    "earthquakeDisasterReconstructionThemeIntroduced": false
+  },
+  "expectedVisualScoreImpact": [
+    "Period accuracy/scene authenticity: prevents the VHF/UHF infrastructure from being technically present but too small/off-frame to contribute observable era specificity.",
+    "Geometry & construction fidelity: dedicated roof crops are sized to inspect ballast-to-rail-to-mast load path, Yagi geometry and coax routing in actual pixels.",
+    "Material/PBR physical plausibility: oblique crop makes galvanized angular response and dielectric feed-box/coax behavior reviewable without inventing painted highlights.",
+    "Temporal/LOD/aliasing stability: thin antenna elements are guaranteed a reviewable pixel footprint for later shimmer and LOD-pop inspection, but no stability points are awarded before runtime evidence.",
+    "Gate integrity: source projection/crop automation is explicitly barred from awarding Visual Fidelity points without real Unity render evidence."
+  ],
+  "nextBlocker": "Unity 6000.3.0f1 editor/runner compile and actual native 3840x2160 hero/oblique/grazing output. When those full frames appear, the new postprocessor should automatically generate the two 100% roof crops; stop speculative expansion and review thin-element aliasing/shimmer, LOD pop, ballast roof contact, cable continuity, interpenetration and galvanized highlights from those real pixels before further additions.",
+  "recordingNote": "This bookkeeping file is committed separately and is not counted in substantiveCommits."
+}

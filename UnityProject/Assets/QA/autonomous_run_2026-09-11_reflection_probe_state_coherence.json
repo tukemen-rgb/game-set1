@@ -1,0 +1,123 @@
+{
+  "schemaVersion": "1.0",
+  "runDate": "2026-09-11",
+  "branch": "gpt/unity-migration",
+  "startHead": "e86650ef4d2d71442bd4669001b6f53798e08cb1",
+  "substantiveWorkHead": "b1f6e1c9b70fea8162fcc56bbe8340c822c29431",
+  "readinessRecordHead": "40580eb8ce008b8bb86b311c21329668c317b249",
+  "commitsBeforeThisRecord": [
+    {
+      "sha": "03e353d2c42b6d3d7ee1eeccf6dac6a71ab6cf67",
+      "purpose": "Add the initial canonical ReflectionProbe state validator/fingerprint."
+    },
+    {
+      "sha": "48cda23a2173bd6c275eaf3b6ffb38cd06819db6",
+      "purpose": "Add the machine-readable two-probe state coherence contract."
+    },
+    {
+      "sha": "0b09b29daf587e28e84047c7c23c4107fbf5579a",
+      "purpose": "Self-audit correction: import UnityEngine.Rendering for ReflectionProbeClearFlags."
+    },
+    {
+      "sha": "f27bccde75b4cedd3b6bf7c8cfc3626b191c578e",
+      "purpose": "Advance the reflection lighting fingerprint to v4 and fold in the validated probe-state SHA-256."
+    },
+    {
+      "sha": "4b71b15ac5c10f182e69807d69398cbd81ed92fe",
+      "purpose": "Bind the new probe-state contract into the existing core Visual Gate integrity dependency path."
+    },
+    {
+      "sha": "cb8e12b9a6d127477afc2660f4ff777ec301d2cc",
+      "purpose": "Self-audit correction: retain fallback background color in the fingerprint but stop requiring canonical black when Skybox clear makes the RGB irrelevant."
+    },
+    {
+      "sha": "b1f6e1c9b70fea8162fcc56bbe8340c822c29431",
+      "purpose": "Align the machine-readable contract with the corrected Skybox fallback-background policy."
+    },
+    {
+      "sha": "40580eb8ce008b8bb86b311c21329668c317b249",
+      "purpose": "Refresh Implementation Readiness while keeping Visual Fidelity unscored."
+    }
+  ],
+  "problemFound": {
+    "summary": "Realtime reflection cubemaps were freshness-checked and bound to sun/sky/ambient/material/renderer state, but the ReflectionProbe configuration itself was not identity-bound across request, async polling, completion and the following still.",
+    "previouslyUnboundState": [
+      "probe world position/rotation/scale",
+      "influence size and capture center",
+      "blend distance and box projection",
+      "resolution and HDR state",
+      "intensity and importance",
+      "near/far clipping and probe shadow distance",
+      "culling mask and clear policy",
+      "fallback background state",
+      "realtime mode, refresh mode and time-slicing policy"
+    ],
+    "risk": "A recently completed cubemap could still represent a different local reflection field from the still. That can make metal, glass and wet/dielectric response appear plausible while the evidence no longer corresponds to the authored physical scene."
+  },
+  "changes": [
+    "Added QualityBlockReflectionProbeStateCoherenceQA.cs with exact canonical authoring checks for the two benchmark probes and a deterministic reflection-probe-state-v1 SHA-256.",
+    "Added reflection_probe_state_coherence_contract.json. It machine-locks the two authored probe identities, positions, influence/capture volumes, blend, box projection, resolution/HDR, intensity/importance, clipping/shadow distance, all-layer culling, Skybox clear and realtime refresh policy.",
+    "Folded the validated probe-state digest into QualityBlockReflectionLightingStateFingerprint, advancing the outer schema marker to reflection-lighting-state-v4. The existing async waiter therefore compares probe configuration at request, every observed Editor poll, completion and immediate pre-still validation without creating a second timing path.",
+    "Bound the probe-state contract into QualityBlockReflectionMaterialPhysicalityBindingQA.ValidateContractConfigOnly, which is already called by QualityBlockVisualGateIntegrityQA, so source-side core gate validation also rejects a weakened probe configuration contract.",
+    "Self-audited Unity 6 API usage against current ReflectionProbe documentation. Added the required UnityEngine.Rendering namespace. A second audit found that Unity's fallback background color is not physically relevant while clearFlags=Skybox and the physical skybox is mandatory, so the code now requires only a finite fallback value and fingerprints it for temporal drift rather than falsely requiring black.",
+    "Updated implementation_readiness.json while keeping the score at 93/100 and Visual Fidelity unscored."
+  ],
+  "verification": {
+    "githubSourceReview": true,
+    "unity6ApiDocsReviewed": true,
+    "branchCompareStartToSubstantiveHead": {
+      "ahead": 7,
+      "behind": 0,
+      "mergeBaseUnchanged": true,
+      "changedPaths": [
+        "UnityProject/Assets/Editor/QualityBlockReflectionLightingStateFingerprint.cs",
+        "UnityProject/Assets/Editor/QualityBlockReflectionMaterialPhysicalityBindingQA.cs",
+        "UnityProject/Assets/Editor/QualityBlockReflectionProbeStateCoherenceQA.cs",
+        "UnityProject/Assets/QA/reflection_probe_state_coherence_contract.json"
+      ]
+    },
+    "godotChanged": false,
+    "baseMerged": false,
+    "forbiddenThemeAdded": false,
+    "githubActionsWorkflowRunsOnBranch": 0,
+    "commitStatusContextsAtRunStart": 0,
+    "unity6000_3_0f1CompileVerified": false,
+    "unityRuntimeVerified": false,
+    "native3840x2160EvidenceGenerated": false,
+    "actualPixelReviewPerformed": false,
+    "visualFidelityScored": false,
+    "note": "No Unity runner is available. Source/API review establishes fail-closed intent and contract wiring only; it cannot prove compilation, realtime reflection behavior or rendered image quality."
+  },
+  "scores": {
+    "implementationReadiness": 93,
+    "implementationReadinessPossible": 100,
+    "visualFidelityStatus": "UNSCORED_UNTIL_REAL_4K_RENDER",
+    "visualFidelityPointsAwardedThisRun": 0,
+    "visualFidelityPassClaimed": false
+  },
+  "expectedVisualScoreImpactAfterRealRender": [
+    {
+      "category": "lighting_shadows_reflections",
+      "impact": "Fresh reflection evidence must now use the exact authored local probe placement/capture/influence/clipping/culling/intensity state throughout synchronization."
+    },
+    {
+      "category": "material_pbr",
+      "impact": "Angular/Fresnel and highlight review is less vulnerable to a cubemap captured from a different position, volume or intensity than the still's actual local reflection field."
+    },
+    {
+      "category": "cinematic_image",
+      "impact": "Highlight/exposure review cannot silently rely on a differently configured local reflection environment after the probe refresh."
+    },
+    {
+      "category": "critical_defect_integrity",
+      "impact": "Reduces evidence risk around impossible_material_physics, sun_shadow_inconsistency and unverified_render_claim; no critical defect is auto-cleared."
+    }
+  ],
+  "limitations": [
+    "No actual Unity 6000.3.0f1 compile was available, so source/API compatibility remains runtime verification pending.",
+    "The fingerprint proves configuration identity, not that the cubemap pixels are visually convincing or free from engine/rendering defects.",
+    "Fallback background RGB is intentionally not fixed while Skybox clear and the physical skybox are mandatory; its finite value is still fingerprinted to detect unexplained temporal mutation.",
+    "No 3840x2160 benchmark stills, 100% crops or temporal sequences were produced; Visual Fidelity remains unscored."
+  ],
+  "nextBlocker": "Unity 6000.3.0f1 Runner. On first availability, stop speculative expansion and run Prepare Complete Native 4K Review Packet. Confirm reflection-lighting-state-v4, including nested reflection-probe-state-v1, remains identical from pre-RenderProbe request through every observed Editor poll, completion and immediate pre-still validation. Then review only sealed native hero/oblique/grazing 3840x2160 pixels and 100% crops for scoring."
+}

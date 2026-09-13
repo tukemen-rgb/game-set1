@@ -1,0 +1,100 @@
+{
+  "schema_version": "1.0",
+  "run_id": "2026-09-13-vegetation-evidence-binding-consistency",
+  "branch": "gpt/unity-migration",
+  "starting_head": "d335ffe353fb35391884976b7c9601f94b60aa27",
+  "substantive_commits": [
+    {
+      "sha": "61a3880ef767a0ef633a40aff20dc52f2ad2effa",
+      "summary": "Correct the vegetation formal-build contract to the authoritative four maintained paved pits plus two grass-ground trees and dimensioned root-zone construction."
+    },
+    {
+      "sha": "cef55d0e66cc48ecc209e44614b2502d9046828d",
+      "summary": "Expand the formal foliage evidence contract so ecology, root-zone grounding, construction metadata and weathering causality are explicit reflection/still/temporal evidence dependencies."
+    },
+    {
+      "sha": "f3b98885b1ea77fb912862034bb51615e5904bcd",
+      "summary": "Enforce the expanded vegetation evidence contract in C#, including cross-contract dimensions/counts, direct formal-build source tokens and direct read-only ecology/root-zone validation."
+    }
+  ],
+  "problem_found": "The previous formal-build integration contract recorded five paved tree contexts and one grass context, but the authoritative ecology contract, root-zone contract and scene validator all require four maintained paved pits and two grass-ground trees. In addition, the central foliage formal-evidence binding only locked leaf morphology/lamina/silhouette/optics; ecology and root-zone validation were transitive through QualityBlockFoliageOpticsUpgrade and therefore vulnerable to a future refactor silently dropping them from reflection/still evidence.",
+  "authoritative_reconciliation": {
+    "tree_anchor_count": 6,
+    "maintained_paved_pit_count": 4,
+    "grass_ground_tree_count": 2,
+    "interior_paved_ring_count": 1,
+    "paving_boundary_ring_count": 3,
+    "root_zone_opening_radius_m": 1.16,
+    "root_zone_opening_diameter_m": 2.32,
+    "curb_modules_per_pit": 12,
+    "curb_modules_total": 48,
+    "generated_root_flares_per_tree": 7,
+    "generated_root_flares_total": 42,
+    "conservative_root_outer_radius_m": 1.0648,
+    "minimum_visible_soil_clearance_to_edging_m": 0.09,
+    "source_authorities": [
+      "Assets/QA/vegetation_ecology_contract.json",
+      "Assets/QA/vegetation_root_zone_interface_contract.json",
+      "Assets/Editor/QualityBlockVegetationEcologyUpgrade.cs",
+      "Assets/Editor/QualityBlockVegetationRootZoneInterfaceQA.cs"
+    ]
+  },
+  "changes": [
+    "vegetation_formal_build_integration_contract.json is schema 1.1 and now mirrors the authoritative four-pit/two-grass scene construction rather than the stale five/one assumption.",
+    "foliage_formal_evidence_binding_contract.json is schema 1.1 and explicitly includes ecology, root-zone and formal-build integration contracts as upstream dependencies.",
+    "Formal foliage evidence now maps zero-auto-point readiness impact to Geometry/Construction, Weathering/Causality, Vegetation/Natural Complexity, Lighting/Reflections and Temporal/LOD while preserving render-only scoring.",
+    "QualityBlockFoliageFormalEvidenceBindingQA directly validates ecology/root-zone contracts and formal-build integration counts/dimensions at the same entrypoint used by reflection evidence.",
+    "The formal evidence validator checks that QualityBlockFoliageOpticsUpgrade still contains the required ecology contract validation, ecology construction, root-zone construction and both scene validators, preventing a later transitive-validation regression.",
+    "During formal evidence-state validation, ecology and root-zone scene validation are called directly and read-only in addition to foliage-optics validation, so reflection polling cannot silently accept a grounded-vegetation regression.",
+    "Critical-risk mapping now explicitly includes hero geometry intersection and missing construction/material metadata in addition to repetition, material physics, shimmer and LOD pop."
+  ],
+  "verification": {
+    "authoritative_ecology_contract_review": "PASS_4_PAVED_2_GRASS",
+    "authoritative_root_zone_contract_review": "PASS_4_PITS_2_GRASS",
+    "formal_build_source_review": "PASS_REQUIRED_BUILD_AND_VALIDATE_CALLS_PRESENT",
+    "central_reflection_binding_review": "PASS_FOLIAGE_FORMAL_BINDING_INVOKED",
+    "modified_contracts_re_fetched_from_branch": "PASS",
+    "modified_csharp_re_fetched_from_branch": "PASS_STATIC_ONLY",
+    "unity_6000_3_0f1_compile": "PENDING_RUNNER",
+    "unity_runtime_formal_prepare": "PENDING_RUNNER",
+    "reflection_probe_lifecycle": "PENDING_RUNNER",
+    "3840x2160_render": "PENDING_RUNNER",
+    "100_percent_crops": "PENDING_RUNNER",
+    "temporal_render_evidence": "PENDING_RUNNER",
+    "visual_fidelity_scoring": "NOT_PERMITTED_WITHOUT_RENDER"
+  },
+  "implementation_readiness": {
+    "score_100": 93,
+    "delta_this_run": 0,
+    "reason": "The evidence path is stricter and an incorrect machine-readable construction assumption was corrected, but the remaining seven readiness points are still reserved for actual Unity compile/runtime and formal evidence-path execution."
+  },
+  "visual_fidelity": {
+    "status": "UNSCORED_UNTIL_REAL_4K_RENDER",
+    "points_awarded_this_run": 0,
+    "pass_claimed": false,
+    "expected_score_impact_not_awarded": {
+      "Geometry & construction fidelity": "medium evidence-integrity improvement from explicit root/soil/curb grounding and intersection checks",
+      "Material/PBR physical plausibility": "small evidence-integrity improvement from explicit dielectric soil/curb/bark dependency",
+      "Weathering/context causality": "medium evidence-integrity improvement from binding circulation/exposure-driven ecology and dry-state causality",
+      "Vegetation/natural complexity": "major evidence-integrity improvement because ecology/root-zone state can no longer be omitted transitively from formal evidence",
+      "Lighting/shadows/reflections": "small-to-medium evidence-integrity improvement because grounded vegetation state is validated before reflection evidence is accepted",
+      "Temporal/LOD/aliasing stability": "small evidence-integrity improvement; actual pop/shimmer remains render-only"
+    }
+  },
+  "next_runtime_verification": [
+    "Run a clean Unity 6000.3.0f1 compile and QualityBlock4KCapture.PrepareAndValidateScene.",
+    "Confirm the built benchmark contains six ecology patches, exactly four maintained pits and exactly two grass-ground tree contexts; each maintained pit must have twelve curb modules and a 1.16 m opening radius.",
+    "Failure injection: remove VegetationEcologyDetail after the formal build and confirm the reflection-bound foliage validator fails without rebuilding it.",
+    "Failure injection: remove one maintained pit, alter one curb-module count, or move a root-zone support datum and confirm formal evidence validation fails.",
+    "Failure injection: remove the direct ecology/root-zone validation token from a test copy of the formal build path and confirm the schema-1.1 binding contract fails source-integrity validation.",
+    "After clean rebuild, acquire fresh reflection probes, 3840x2160 hero/oblique/grazing stills, 100% vegetation-grounding/tree-shadow-contact crops, and native temporal LOD evidence.",
+    "Score Visual Fidelity only from those actual pixels; inspect root/curb intersection, floating soil/understory, stamped repetition, dielectric response, shadow/contact coherence, shimmer and visible LOD pop before assigning points."
+  ],
+  "constraints": {
+    "godot_preserved": true,
+    "base_merge_performed": false,
+    "earthquake_disaster_reconstruction_theme_added": false,
+    "new_visual_points_claimed_without_render": false
+  },
+  "next_blocker": "No Unity Runner or actual benchmark render is available; compile/runtime, deliberate failure injection, reflection lifecycle and native 4K/temporal pixel evidence remain the gating work."
+}

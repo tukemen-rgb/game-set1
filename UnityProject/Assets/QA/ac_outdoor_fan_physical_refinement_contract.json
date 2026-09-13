@@ -1,0 +1,154 @@
+{
+  "schemaVersion": "1.0",
+  "refinementRevision": "round-wire-1",
+  "mountInterfaceRevision": "mount-2",
+  "assemblyId": "danchi.outdoor_ac.axial_fan_face",
+  "scope": "generated fallback outdoor-unit fan face only",
+  "expectedGeneratedUnits": 15,
+  "reconstructionBasis": "Conservative manufacturer-neutral reconstruction of a late-1990s/circa-2000 Japanese balcony condenser fan face. Dimensions below are benchmark assumptions, not a claim about a specific maker/model.",
+  "components": {
+    "rotor": {
+      "bladeCount": 5,
+      "rotorOuterRadiusMetres": 0.165,
+      "hubRadiusMetres": 0.036,
+      "geometry": "five swept/tapered finite-thickness axial blades behind the guard; no opaque disc proxy",
+      "mounting": "rotor centered on existing condenser motor/hub axis",
+      "orientation": "fan plane parallel to condenser front face; stopped clock angle varies deterministically by unit"
+    },
+    "inletShroud": {
+      "outerRadiusMetres": 0.205,
+      "innerRadiusMetres": 0.181,
+      "depthMetres": 0.018,
+      "geometry": "finite-depth annular molded inlet lip"
+    },
+    "wireGuard": {
+      "guardConcentricRingCount": 4,
+      "guardRadialSpokeCount": 8,
+      "guardWireDiameterMetres": 0.005,
+      "guardRingMajorSegments": 48,
+      "guardWireCrossSectionSegments": 12,
+      "radialSpokeCrossSection": "round",
+      "spokeInnerRadiusMetres": 0.030,
+      "spokeOuterRadiusMetres": 0.188,
+      "expectedGuardVertices": 2512,
+      "expectedGuardTriangles": 4992,
+      "geometry": "round-section concentric wire rings plus round-section radial spokes with flat finite ends; 48-segment ring paths and 12-sided 5 mm wire sections reduce polygonal specular stepping in native-4K grazing crops; replaces square bar lattice and forbids rectangular spoke strips",
+      "mounting": "front of rotor with positive axial separation; four formed galvanized mounting feet physically bridge the air gap to the shroud"
+    },
+    "guardMountInterface": {
+      "mountCountPerUnit": 4,
+      "construction": "four formed/welded galvanized circular mounting feet/standoffs aligned to diagonal radial spokes; benchmark reconstruction rather than model-specific hardware",
+      "mountCenterRadiusMetres": 0.188,
+      "mountRadiusMetres": 0.0075,
+      "mountBackFromGuardPlaneMetres": -0.0085,
+      "mountFrontFromGuardPlaneMetres": 0.0025,
+      "mountRadialSegments": 16,
+      "expectedMountMeshVertices": 136,
+      "expectedMountMeshTriangles": 256,
+      "mountsMustSeatIntoShroudFace": true,
+      "controlledShroudEmbedMetres": 0.0005,
+      "geometryVsMaterialDetail": "mount thickness, axial bridge and seating are geometry; oxidation/dulling remain material/weathering response",
+      "purpose": "prevent the wire guard from reading as unsupported/floating while preserving the real axial air gap around the rest of the guard"
+    }
+  },
+  "interfaces": {
+    "rotorBehindGuard": true,
+    "guardMustNotIntersectRotor": true,
+    "minimumRotorToGuardAxialClearanceMetres": 0.015,
+    "minimumShroudToGuardAxialClearanceMetres": 0.003,
+    "guardMountsBridgeShroudGap": true,
+    "guardMountsMustOverlapWirePlane": true,
+    "shroudMustRemainCenteredOnHub": true,
+    "legacySolidFanDiscForbidden": true,
+    "legacySquareGrilleForbidden": true,
+    "rectangularRadialGuardSpokesForbidden": true
+  },
+  "materials": [
+    {
+      "id": "dark_injection_molded_fan_polymer",
+      "asset": "Assets/Art/GeneratedDetailMaterials/MAT_ACFanDarkPlastic.mat",
+      "albedoSrgb": [0.16, 0.17, 0.16],
+      "roughness": [0.62, 0.76],
+      "metallic": [0.0, 0.02],
+      "specularF0": [0.035, 0.055],
+      "normalScaleIntent": 0.45,
+      "microstructure": "subtle injection-molded polymer grain inherited from AC polymer family; no painted highlight",
+      "wetness": 0.0,
+      "uvAging": "mild surface dulling only because rotor is recessed",
+      "angularFresnelResponse": "broad dielectric edge lift; never metallic"
+    },
+    {
+      "id": "aged_galvanized_wire_guard_and_mounts",
+      "asset": "Assets/Art/GeneratedDetailMaterials/MAT_DarkGalvanizedSteel.mat",
+      "albedoSrgb": [0.30, 0.31, 0.30],
+      "roughness": [0.48, 0.72],
+      "metallic": [0.65, 1.0],
+      "specularF0": [0.55, 0.85],
+      "normalScaleIntent": 0.55,
+      "microstructure": "subtle aged zinc/steel surface; physical circular wire and mounting geometry supply the grazing highlight, never a painted line",
+      "wetness": 0.0,
+      "uvAging": "subtle oxidation/dulling",
+      "angularFresnelResponse": "metallic grazing reflection broadened by aging and circular wire curvature"
+    }
+  ],
+  "weathering": {
+    "rotor": "recess grime and mild UV exposure only",
+    "shroud": "UV dulling plus recess dust; rain exposure at outward lip",
+    "guard": "rain/UV exposure; ferrous-source aging only, no arbitrary rust",
+    "guardMounts": "same rain/UV/ferrous causality as guard because feet are exposed galvanized steel; no contact grime invented solely for visibility",
+    "causeBasedRequired": true
+  },
+  "lodPolicy": {
+    "levelsRequired": 4,
+    "LOD0": "shroud + five-blade rotor + full four-ring/eight-spoke round-wire guard + four physical guard mounts",
+    "LOD1": "shroud + rotor + full round-wire guard + guard mounts retained with canonical meshes",
+    "LOD2": "shroud + rotor retained; wire guard and mounting feet removed before they alias",
+    "LOD3": "shroud only preserves circular intake silhouette; rotor/guard/mounts removed",
+    "crossFadeRequired": true,
+    "visibleLodPopForbidden": true,
+    "severeAliasingOrShimmerForbidden": true
+  },
+  "formalBuildBinding": {
+    "requiredOrder": [
+      "QualityBlockAcFanPhysicalRefinement.ApplyToOpenScene",
+      "QualityBlockAcFanGuardRoundWireRefinement.ApplyToOpenScene",
+      "QualityBlockAcFanGuardMountInterfaceRefinement.ApplyToOpenScene",
+      "QualityBlockDanchiLodUpgrade.ApplyToOpenScene"
+    ],
+    "finalDanchiLodValidationMustDirectlyValidatePhysicalFan": true,
+    "finalDanchiLodValidationMustDirectlyValidateRoundWireGuard": true,
+    "finalDanchiLodValidationMustDirectlyValidateGuardMountInterface": true,
+    "reason": "The formal 4K chain reaches Danchi LOD generation through tree/foliage/ground preparation; physical fan, refined guard and its mounting interface must exist before proxy creation and remain direct dependencies of the final Danchi validation entrypoint."
+  },
+  "formalEvidence": {
+    "nativeCapture": "3840x2160",
+    "primaryReviewCrop": "oblique/balcony_services",
+    "secondaryReviewViews": ["hero", "grazing"],
+    "reviewAt100Percent": true,
+    "inspect": [
+      "round-wire grazing highlight rather than flat-strip highlight",
+      "polygonal specular stepping on 5 mm wire",
+      "guard/rotor/shroud axial separation",
+      "physical guard-mount seating and any unsupported/floating read",
+      "blade/guard intersection",
+      "guard repetition across fifteen balcony units",
+      "LOD1-to-LOD2 guard/mount disappearance for pop or shimmer"
+    ],
+    "actualRenderRequired": true,
+    "automaticVisualScore": 0,
+    "runtimeRenderVerification": "PENDING_UNITY_RUNTIME"
+  },
+  "criticalDefects": [
+    "visible_primitive_placeholder_geometry",
+    "obviously_painted_or_baked_highlights",
+    "materially_impossible_metallic_specular_values",
+    "repeated_module_pattern_immediately_obvious",
+    "floating_or_interpenetrating_hero_geometry",
+    "severe_aliasing_or_shimmering",
+    "visible_lod_pop",
+    "missing_required_construction_material_metadata"
+  ],
+  "paintedOrBakedHighlightsForbidden": true,
+  "visualFidelityPointsAwarded": 0,
+  "lookdevIllustration": "Assets/QA/Lookdev/ac_outdoor_fan_physical_refinement.svg"
+}

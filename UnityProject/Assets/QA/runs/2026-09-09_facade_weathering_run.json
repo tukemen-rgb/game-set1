@@ -1,0 +1,106 @@
+{
+  "schemaVersion": "1.0",
+  "runId": "2026-09-09_facade_weathering",
+  "startHead": "13b4736ccb3cdcf91550e225164d035c8af9565d",
+  "endHeadBeforeRunRecord": "b4ca2b272ef54164205c3cd023a7ce2bcacabfd1",
+  "branch": "gpt/unity-migration",
+  "baseMergePerformed": false,
+  "godotModified": false,
+  "excludedThemesObserved": false,
+  "task": "Remove visible primitive-placeholder facade weathering risk and replace it with construction-source-driven microgeometry while keeping Visual Fidelity unscored until actual Unity 4K evidence exists.",
+  "commits": [
+    {
+      "sha": "1d245e1fa522ca719ef7117e8f7c9b851c82b424",
+      "message": "Replace facade weathering primitives with causal microgeometry",
+      "substantive": true
+    },
+    {
+      "sha": "e77f6a3b61efd8e6bb1a87b8989fc8ca50e86126",
+      "message": "Add machine-readable facade weathering contract",
+      "substantive": true
+    },
+    {
+      "sha": "00b97868677abbce1560b8c9f4af33beddfeca17",
+      "message": "Enforce facade weathering on benchmark saves",
+      "substantive": true
+    },
+    {
+      "sha": "b4ca2b272ef54164205c3cd023a7ce2bcacabfd1",
+      "message": "Record facade weathering implementation readiness",
+      "substantive": false
+    }
+  ],
+  "implementation": {
+    "legacyPrimitiveWeatheringRootRemovedOnQualitySave": true,
+    "combinedWeatheringMeshGroups": 5,
+    "groups": [
+      "grade splash",
+      "window-sill and downpipe runoff",
+      "balcony drip residue",
+      "sparse rail-fixing iron-oxide runoff",
+      "AC drain-hose mineral residue"
+    ],
+    "collidersAdded": 0,
+    "physicalSourceRequirements": {
+      "windowSills": 30,
+      "balconySlabLips": 30,
+      "railBaseFixings": 210,
+      "acDrainHoses": 15
+    },
+    "materialConstraints": {
+      "metallicMaximum": 0.001,
+      "dryResidueSmoothnessMaximum": 0.25,
+      "genericWetLookAllowed": false,
+      "paintedOrBakedHighlightsAllowed": false
+    },
+    "antiRepetition": "taper/width/length/drift are deterministic per physical source; ferrous runoff is deliberately sparse rather than stamped onto every fixing",
+    "persistence": "sceneSaving gate rebuilds and validates the non-primitive pass whenever the detailed benchmark danchi is saved, including the existing native-4K preparation chain"
+  },
+  "verification": {
+    "sourceStaticReview": "PASS_WITH_RENDER_PENDING",
+    "branchDiff": "4 files changed from startHead through readiness record, all under UnityProject; no Godot files changed; branch is 4 commits ahead and 0 behind the startHead for this run",
+    "commitStatusContexts": 0,
+    "workflowRuns": 0,
+    "unityCompile": "NOT_RUN_NO_UNITY_RUNTIME",
+    "actual3840x2160Render": "NOT_AVAILABLE",
+    "actual100PercentCrops": "NOT_AVAILABLE",
+    "visualFidelityScore": null,
+    "visualFidelityStatus": "UNSCORED_NO_RENDER_EVIDENCE"
+  },
+  "implementationReadiness": {
+    "score": 93,
+    "possible": 100,
+    "changeThisRun": 0,
+    "reasonNotIncreased": "The remaining seven points are reserved for real Unity 6000.3.0f1 compile/runtime verification. Additional source coverage is not allowed to substitute for that evidence."
+  },
+  "expectedVisualScoreImpact": [
+    {
+      "category": "Weathering/context causality",
+      "direction": "positive expected",
+      "evidenceNeeded": "4K crops must show source-aligned, subtle residue rather than free-form grime or repeated rectangles"
+    },
+    {
+      "category": "Geometry/construction fidelity",
+      "direction": "positive expected",
+      "evidenceNeeded": "no built-in primitive weathering geometry may be visible; no z-fighting/intersection at facade or balcony fascia"
+    },
+    {
+      "category": "Material/PBR physical plausibility",
+      "direction": "positive expected",
+      "evidenceNeeded": "dry residue must remain rough/non-metallic and must not replace underlying concrete/metal Fresnel response"
+    },
+    {
+      "category": "Texture/microdetail/texel fidelity",
+      "direction": "positive expected",
+      "evidenceNeeded": "100 percent crops must not reveal identical streak silhouettes or a painted horizontal splash band"
+    }
+  ],
+  "criticalDefectRiskAddressed": [
+    "visible primitive-placeholder geometry in benchmark framing",
+    "obvious repeated weathering pattern",
+    "materially impossible metallic rust-stain residue",
+    "painted/baked highlight used as weathering"
+  ],
+  "nextBlocker": "Unity 6000.3.0f1 editor/runner. On first available render, stop speculative expansion and inspect hero/facade_center and facade_right, oblique/balcony_services, grazing/material_grazing and sash_rail_response for opacity, source alignment, transparent sorting, repetition and z-fighting. Score only from the resulting 3840x2160 frames and 100 percent crops.",
+  "note": "Visual Fidelity points awarded this run: 0. This record is source/readiness evidence only and must never be interpreted as a Visual Fidelity PASS."
+}

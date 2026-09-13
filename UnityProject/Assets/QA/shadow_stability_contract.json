@@ -1,0 +1,104 @@
+{
+  "schemaVersion": "1.2",
+  "pipeline": "Built-in Render Pipeline",
+  "purpose": "Reduce shadow crawling, contact detachment, jagged thin geometry and LOD instability without hiding defects in post-processing, while proving the same stable shadow state survives every generated-scene solar/environment reapplication.",
+  "qualitySettings": {
+    "shadows": "HardAndSoft",
+    "shadowResolution": "VeryHigh",
+    "shadowProjection": "stableFit",
+    "shadowCascades": 4,
+    "shadowCascade4Split": [0.10, 0.25, 0.50],
+    "shadowDistanceMeters": 72.0,
+    "shadowNearPlaneOffset": 2.0,
+    "configuredMsaaSamples": 8,
+    "minimumAcceptedConfiguredMsaaSamples": 4,
+    "lodBias": 2.0,
+    "maximumLodLevel": 0,
+    "dynamicResolutionAllowed": false,
+    "anisotropicFiltering": "ForceEnable"
+  },
+  "summerSun": {
+    "singleCoherentDirectionalSource": true,
+    "requiredActiveDirectionalLightCount": 1,
+    "requiredDirectionalLightName": "SummerSun",
+    "softShadows": true,
+    "shadowResolution": "VeryHigh",
+    "shadowStrength": 0.92,
+    "shadowBias": 0.025,
+    "shadowNormalBias": 0.38,
+    "shadowNearPlaneMeters": 0.10,
+    "solarCaptureCoherenceContract": "Assets/QA/solar_shadow_capture_coherence_contract.json",
+    "notes": "Bias is deliberately constrained: excessive bias creates peter-panning/light leaks, while insufficient bias creates self-shadow acne. Source settings and solar math are implementation evidence only; final acceptance is render-based."
+  },
+  "thinGeometry": {
+    "targets": [
+      "balcony rails",
+      "window sash and rails",
+      "drain grating bars",
+      "branches and leaf geometry",
+      "utility brackets and pipes"
+    ],
+    "strategy": [
+      "forward multisample anti-aliasing",
+      "native 3840x2160 benchmark rendering",
+      "stable directional shadow projection",
+      "animated LOD cross-fade",
+      "no post sharpen used to manufacture edge detail"
+    ],
+    "transparentGlazingCastsOpaqueShadow": false
+  },
+  "temporalAndLod": {
+    "multiLevelLodGroupsRequireCrossFade": true,
+    "animatedCrossFadeRequired": true,
+    "cameraMotionAcceptance": "No visible LOD pop, severe shadow crawl or geometry shimmer in actual moving-camera verification.",
+    "stillFrameAcceptance": "100% crops must not show objectionable stair-stepping on hero rails, sash, grating or branch silhouettes."
+  },
+  "enforcement": {
+    "configurationPass": "Assets/Editor/QualityBlockShadowStabilityUpgrade.cs",
+    "sceneSaveGate": "Assets/Editor/QualityBlockShadowStabilitySaveGate.cs",
+    "solarShadowSaveGate": "Assets/Editor/QualityBlockSolarShadowCaptureSaveGate.cs",
+    "runtimeSourceOfTruth": "QualityBlockSolarShadowRuntimeContract",
+    "mainCameraPreCullGuard": "QualityBlockSolarShadowPreRenderGuard",
+    "scenePath": "Assets/Scenes/QualityBlock1990s.unity",
+    "activationPrerequisites": ["QualityBlock1990s", "SummerSun", "PhysicalEnvironmentContext"],
+    "saveBehavior": "The legacy shadow save gate reapplies the stable shadow policy. The solar/shadow save gate then requires the physical context, sole SummerSun, runtime contract and bound MainCamera pre-cull guard before the contextualized benchmark scene can save.",
+    "captureChainRelationship": "Environment/weathering passes can reapply SummerSun during generated-scene construction. QualityBlockEnvironmentContext now reapplies the same stable shadow state at that moment; both save gates persist/validate it, and the pre-cull guard validates it again immediately before MainCamera culling for Camera.Render.",
+    "previousTransientWriterMismatch": "The environment context formerly wrote per-light bias 0.04/0.28 while the shadow pass used 0.025/0.38. The existing shadow save gate repaired this on save, so it was not an unguarded final-capture state; the new shared runtime contract removes the transient writer mismatch and adds independent pre-render verification.",
+    "visualPointsAwardedByEnforcement": 0
+  },
+  "benchmarkEvidence": {
+    "actualRenderRequired": true,
+    "nativeResolution": [3840, 2160],
+    "views": ["hero", "oblique", "grazing"],
+    "priorityCrops": [
+      "hero/facade_center",
+      "hero/ground_contact",
+      "oblique/construction_depth",
+      "oblique/balcony_services",
+      "grazing/sash_rail_response",
+      "grazing/tree_shadow_contact"
+    ],
+    "temporalSequences": ["subpixel_grazing", "lod_walk_oblique"],
+    "doNotAwardVisualPointsFromConfigurationAlone": true
+  },
+  "visualFidelityGateMapping": {
+    "lightingShadowsReflections": "Potential impact only until render review: contact integrity, shadow direction coherence, cascade stability and absence of light leaks.",
+    "temporalLodAliasingStability": "Potential impact only until render review: silhouette edge quality, shadow shimmer and LOD transitions.",
+    "criticalDefects": {
+      "severeAliasingOrShimmering": "automatic FAIL",
+      "visibleLodPop": "automatic FAIL",
+      "majorLightLeak": "automatic FAIL",
+      "inconsistentSunShadowDirection": "automatic FAIL"
+    }
+  },
+  "forbiddenShortcuts": [
+    "Painted or baked contact shadows/highlights used as a substitute for light transport",
+    "Post sharpening used to fake missing geometry or texture fidelity",
+    "Excessive blur used to conceal aliasing",
+    "Shadow bias increased until real contacts visibly detach",
+    "Transparent window planes casting opaque card shadows",
+    "Selecting the strongest directional light while silently allowing a second contradictory key",
+    "Claiming stable 4K quality without an actual Unity render"
+  ],
+  "verificationStatus": "IMPLEMENTED_SAVE_AND_PRE_CULL_GATED_UNVERIFIED_NO_UNITY_RUNNER"
+}

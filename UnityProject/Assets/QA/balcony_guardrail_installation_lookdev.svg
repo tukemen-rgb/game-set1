@@ -1,0 +1,97 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="1000" viewBox="0 0 1600 1000">
+  <rect width="1600" height="1000" fill="#f4f1e8"/>
+  <g font-family="Arial, Helvetica, sans-serif" fill="#202020">
+    <text x="70" y="72" font-size="34" font-weight="700">Circa-2000 Japanese apartment balcony guardrail — construction lookdev</text>
+    <text x="70" y="108" font-size="19">Generated fallback intent only. Period-plausible vertical-lattice family; not an exact manufacturer/SKU reproduction.</text>
+
+    <text x="90" y="170" font-size="24" font-weight="700">Front elevation / load path</text>
+    <line x1="120" y1="720" x2="1010" y2="720" stroke="#555" stroke-width="8"/>
+    <text x="1030" y="728" font-size="18">finished balcony floor</text>
+
+    <rect x="145" y="268" width="820" height="28" rx="6" fill="#777d7c" stroke="#303434" stroke-width="3"/>
+    <text x="990" y="288" font-size="18">70 mm high × 80 mm deep anodized top rail</text>
+    <line x1="130" y1="268" x2="130" y2="720" stroke="#333" stroke-width="2"/>
+    <line x1="112" y1="268" x2="148" y2="268" stroke="#333" stroke-width="2"/>
+    <line x1="112" y1="720" x2="148" y2="720" stroke="#333" stroke-width="2"/>
+    <text x="76" y="505" font-size="20" transform="rotate(-90 76 505)">1100 mm floor → guard top</text>
+
+    <!-- lower capture rail -->
+    <rect x="145" y="655" width="820" height="22" fill="#7c8180" stroke="#303434" stroke-width="2"/>
+    <text x="990" y="671" font-size="18">existing 40 mm lower capture rail; underside 70 mm above floor</text>
+
+    <!-- support posts on 0.48 m grid -->
+    <g fill="#6d7372" stroke="#303434" stroke-width="2">
+      <rect x="188" y="292" width="22" height="446"/>
+      <rect x="308" y="292" width="22" height="446"/>
+      <rect x="428" y="292" width="22" height="446"/>
+      <rect x="548" y="292" width="22" height="446"/>
+      <rect x="668" y="292" width="22" height="446"/>
+      <rect x="788" y="292" width="22" height="446"/>
+      <rect x="908" y="292" width="22" height="446"/>
+    </g>
+
+    <!-- infill bars, drawn between 120 mm centers -->
+    <g fill="#949a99">
+      <rect x="128" y="294" width="10" height="363"/>
+      <rect x="158" y="294" width="10" height="363"/>
+      <rect x="218" y="294" width="10" height="363"/>
+      <rect x="248" y="294" width="10" height="363"/>
+      <rect x="278" y="294" width="10" height="363"/>
+      <rect x="338" y="294" width="10" height="363"/>
+      <rect x="368" y="294" width="10" height="363"/>
+      <rect x="398" y="294" width="10" height="363"/>
+      <rect x="458" y="294" width="10" height="363"/>
+      <rect x="488" y="294" width="10" height="363"/>
+      <rect x="518" y="294" width="10" height="363"/>
+      <rect x="578" y="294" width="10" height="363"/>
+      <rect x="608" y="294" width="10" height="363"/>
+      <rect x="638" y="294" width="10" height="363"/>
+      <rect x="698" y="294" width="10" height="363"/>
+      <rect x="728" y="294" width="10" height="363"/>
+      <rect x="758" y="294" width="10" height="363"/>
+      <rect x="818" y="294" width="10" height="363"/>
+      <rect x="848" y="294" width="10" height="363"/>
+      <rect x="878" y="294" width="10" height="363"/>
+      <rect x="938" y="294" width="10" height="363"/>
+      <rect x="968" y="294" width="10" height="363"/>
+    </g>
+
+    <g fill="#4f5352" stroke="#303434" stroke-width="2">
+      <rect x="172" y="720" width="54" height="14" rx="2"/>
+      <rect x="292" y="720" width="54" height="14" rx="2"/>
+      <rect x="412" y="720" width="54" height="14" rx="2"/>
+      <rect x="532" y="720" width="54" height="14" rx="2"/>
+      <rect x="652" y="720" width="54" height="14" rx="2"/>
+      <rect x="772" y="720" width="54" height="14" rx="2"/>
+      <rect x="892" y="720" width="54" height="14" rx="2"/>
+    </g>
+    <text x="990" y="760" font-size="18">7 primary posts → seated base plates → anchors/slab</text>
+    <text x="990" y="797" font-size="18">29 vertical centerlines @ 120 mm pitch: 7 supports + 22 infill</text>
+    <text x="990" y="828" font-size="18">maximum calculated clear opening: 102 mm (hard ceiling: 110 mm)</text>
+
+    <text x="90" y="860" font-size="24" font-weight="700">Section / material response</text>
+    <rect x="110" y="890" width="160" height="58" rx="12" fill="#7f8584" stroke="#303434" stroke-width="3"/>
+    <rect x="155" y="944" width="70" height="28" fill="#6d7372" stroke="#303434" stroke-width="2"/>
+    <text x="300" y="912" font-size="18">top extrusion: 80 mm depth × 70 mm height, millimetric real chamfer</text>
+    <text x="300" y="940" font-size="18">PBR: oxide-coated/anodized approximation — metallic 0.0, roughness 0.50, F0≈0.045</text>
+    <text x="300" y="968" font-size="18">microdetail: extrusion/scuff normal, 0.08 m tile, mip/trilinear/aniso; no baked highlight</text>
+
+    <text x="1130" y="170" font-size="24" font-weight="700">LOD invariants</text>
+    <text x="1130" y="210" font-size="18">LOD0: chamfered + close sleeves</text>
+    <text x="1130" y="240" font-size="18">LOD1: combined chamfered assembly</text>
+    <text x="1130" y="270" font-size="18">LOD2: closed low-poly boxes</text>
+    <text x="1130" y="300" font-size="18">LOD3: top/support boxes + crossed infill</text>
+    <text x="1130" y="340" font-size="18">All levels retain:</text>
+    <text x="1150" y="372" font-size="18">• 3.55 m span</text>
+    <text x="1150" y="402" font-size="18">• 1.10 m top height</text>
+    <text x="1150" y="432" font-size="18">• all 29 vertical centerlines</text>
+    <text x="1150" y="462" font-size="18">• cross-fade, no density collapse</text>
+
+    <text x="1130" y="540" font-size="24" font-weight="700">4K evidence still required</text>
+    <text x="1130" y="578" font-size="18">Hero: proportion + dense guard read</text>
+    <text x="1130" y="608" font-size="18">Oblique: joins/base/contact/no z-fight</text>
+    <text x="1130" y="638" font-size="18">Grazing: real bevel + PBR Fresnel</text>
+    <text x="1130" y="668" font-size="18">Temporal: bar shimmer / LOD pop</text>
+    <text x="1130" y="710" font-size="18" font-weight="700">Source QA awards 0 visual points.</text>
+  </g>
+</svg>

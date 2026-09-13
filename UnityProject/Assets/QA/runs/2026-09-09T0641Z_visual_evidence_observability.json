@@ -1,0 +1,58 @@
+{
+  "schemaVersion": "1.0",
+  "runUtc": "2026-09-09T06:41:00Z",
+  "branch": "gpt/unity-migration",
+  "startHead": "d68c28aa1c078deb6470db883a3180b8e9da7750",
+  "substantiveHead": "91267128a1ff197da4184c526f5688a81bf96c5c",
+  "substantiveCommits": [
+    "de1b3d63948c53d6e45ea6de05f2ccb16fe42e0c",
+    "91267128a1ff197da4184c526f5688a81bf96c5c"
+  ],
+  "scopeSafety": {
+    "godotChanged": false,
+    "baseMerged": false,
+    "forbiddenDisasterThemeAdded": false,
+    "changedPaths": [
+      "UnityProject/Assets/Editor/QualityBlockVisualFidelityGate.cs",
+      "UnityProject/Assets/QA/visual_evidence_observability_contract.json"
+    ]
+  },
+  "work": [
+    "Added a machine-readable observability contract that maps all nine Visual Fidelity categories and all twelve critical defects to required full-frame views and native 100% crop references.",
+    "Changed the numeric Visual Fidelity evaluator so every invocation performs render-evidence provenance validation internally; direct CLI/reflection calls can no longer rely only on file existence and skip the SHA-256/pixel-exact checks.",
+    "Added per-category observedViews and observedCropRefs requirements. Generic prose is no longer sufficient to award points.",
+    "Added per-critical-defect observedViews and observedCropRefs requirements plus mandatory non-empty evidence notes even when the reviewer marks present=false.",
+    "Added deduction-rationale enforcement whenever a category is scored below its maximum weight.",
+    "Validated the observability contract against the canonical hero/oblique/grazing views and known 100% crop IDs so unknown or duplicate evidence references fail."
+  ],
+  "verification": {
+    "githubCompare": "startHead -> substantiveHead is ahead 2, behind 0; exactly two changed files and both are under UnityProject.",
+    "commitStatuses": 0,
+    "workflowRuns": 0,
+    "captures4KPresent": false,
+    "unityCompileVerified": false,
+    "native3840x2160Rendered": false,
+    "pixelExactCropsRendered": false,
+    "verificationMode": "GitHub source/static verification only; Unity runtime unavailable."
+  },
+  "implementationReadiness": {
+    "score": 93,
+    "possible": 100,
+    "status": "UNCHANGED",
+    "blocker": "unity_compile_verification"
+  },
+  "visualFidelity": {
+    "status": "UNSCORED",
+    "pointsAwardedThisRun": 0,
+    "passClaimed": false,
+    "expectedImpact": [
+      "Prevents false Geometry/Material/Lighting/Texture/Weathering/Vegetation/Period/Cinematic/Temporal category points that are not tied to an observable benchmark view or 100% crop.",
+      "Prevents a critical defect from being dismissed with an empty evidence field.",
+      "Prevents the public numeric evaluator from accidentally bypassing render provenance checks.",
+      "Does not improve the rendered pixels by itself and therefore awards no Visual Fidelity points."
+    ]
+  },
+  "criticalFinding": "The current benchmark still set can show spatial aliasing at sampled viewpoints, but a single still cannot prove temporal shimmer or visible LOD transition stability. The temporal_lod_aliasing category and the severe_aliasing_or_shimmer / visible_lod_pop critical checks therefore still need dedicated runtime motion evidence before a fully defensible 92/100 PASS can be claimed.",
+  "nextBlocker": "Implement and seal a deterministic native-4K temporal probe sequence for fine-detail subpixel motion and LOD-distance crossings, then bind that sequence to temporal_lod_aliasing and the shimmer/LOD critical checks. If a Unity runner appears first, stop speculative expansion, compile current HEAD and capture real hero/oblique/grazing evidence before any additional visual work.",
+  "note": "Implementation readiness is separate from Visual Fidelity. No category was visually scored because there is still no actual Unity render evidence."
+}

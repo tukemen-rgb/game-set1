@@ -1,0 +1,107 @@
+{
+  "schemaVersion": "1.0",
+  "runDate": "2026-09-11",
+  "branch": "gpt/unity-migration",
+  "startHead": "036c860cd6c037e2da6fc9c190179901095cc60c",
+  "substantiveWorkHead": "7ea65148522d908e84cf8bc9636b40127f679928",
+  "objective": "Convert the newly added detail-material microstructure from normalized per-primitive UV placement to deterministic manufacture-scale metric UVs with per-piece cut-origin phase diversity, because native 4K realism can regress if identical apartment modules restart the same normal/metallic pattern or if extrusion/corrugation scale changes with component dimensions.",
+  "substantiveCommits": [
+    "5a43dc17879d65ff034a5b242a76bb422f002d02",
+    "008df1cfbecf364dda66bbdc80ffc972bd7d1fee",
+    "6b41a33a40f5a848b274e1678e5e9a25b74cc82b",
+    "97a1b4cf7ea1ae9673c21a9c45320dd7cbbe5e65",
+    "8c5bca999cb05a9a7ed796570b9b400ba14b7bd6",
+    "7ea65148522d908e84cf8bc9636b40127f679928"
+  ],
+  "changes": [
+    {
+      "path": "Assets/Editor/QualityBlockDetailPhysicalUvUpgrade.cs",
+      "summary": "Adds persisted metric UV0 rebakes for every non-LOD-proxy DanchiHighDetail renderer. Chamfered components use a local orthonormal projection aligned to the longest manufactured axis; cylinders use axial metres plus near-metric circumference with whole-repeat seam closure. Each separate part receives a deterministic 8x8 FNV-derived phase at 17 mm steps."
+    },
+    {
+      "path": "Assets/Editor/QualityBlockDetailPhysicalUvQA.cs",
+      "summary": "Adds fail-closed machine/runtime validation of the contract, scene manifest, source-renderer count, six material scales, persisted physical-UV mesh identities, recomputed phase tokens, UV/tangent completeness, phase diversity, and deep chamfer-edge UV-metre isometry. The lightweight form runs on every formal 3840x2160 still/temporal pre-cull."
+    },
+    {
+      "path": "Assets/Editor/QualityBlockDetailBevelUpgrade.cs",
+      "summary": "Binds metric UV conversion directly after dimension-baked bevel geometry and before Danchi LOD proxy generation, so LOD1/2/3 inherit the same physical mesh assets rather than reintroducing normalized primitive UVs. Bevel validation now also requires physical-UV validation."
+    },
+    {
+      "path": "Assets/QA/detail_physical_uv_contract.json",
+      "summary": "Defines metre-space placement, six canonical repeats-per-metre values, deterministic phase policy, QA thresholds, native 4K crops, critical-risk mappings, zero automatic visual points and explicit limitations."
+    },
+    {
+      "path": "Assets/QA/detail_physical_uv_lookdev.svg",
+      "summary": "Lookdev diagram documenting long-axis aluminum extrusion grain, cylindrical hose wrap/axial mapping and per-module phase diversity. Explicitly non-render evidence."
+    },
+    {
+      "path": "Assets/QA/detail_material_microstructure_contract.json",
+      "summary": "Removes stale limitations claiming normalized procedural UVs and unavoidable identical material phase; now states that metric placement/phase are supplied by the physical-UV pass while actual rendered repetition and temporal stability remain unresolved until native evidence."
+    }
+  ],
+  "manufactureAndInstallationReasoning": {
+    "separate_part_phase": "Window extrusions, brackets, bolts, seals and service components are distinct manufactured/cut pieces. Their microscopic stock origin should not reset to an identical texture origin at every apartment bay; deterministic per-object phase approximates independent cut/form origins without random frame-to-frame state.",
+    "anodized_aluminum": "The micro-normal height field varies across U so its grain lines run along V. For box-like extrusions the longest available manufactured component axis is deliberately chosen as V, making the fine anodized/extrusion response run along sash/rail members.",
+    "galvanized_steel": "Metric placement keeps zinc-like mottling scale independent of bolt/bracket dimensions while deterministic phase avoids repeated hardware sharing the same visible patch origin.",
+    "epdm_rubber": "Gasket macro thickness and routing remain geometry; only fine elastomer grain is tiled in metre-space so narrow/long seals do not stretch a 0..1 texture differently.",
+    "aged_abs_ac": "Casing panel form remains geometry; fine orange-peel relief is metrically stable rather than scaling with each box face.",
+    "pipe_insulation_cover": "Pipe bends/collars remain geometry; wrap-skin microrelief uses metre-space placement so different-length segments retain a stable surface scale.",
+    "pvc_drain_hose": "The generator varies height along V to form circumferential ribs. Cylindrical UV V is axial metres, so this produces rings around the hose. U follows circumference; the wrap is rounded to an integer texture repeat to close the tangent-space normal seam."
+  },
+  "numericSourceParameters": {
+    "phaseStepMeters": 0.017,
+    "phaseBinsPerAxis": 8,
+    "materialRepeatsPerMeter": {
+      "anodized_aluminum": 14.0,
+      "galvanized_steel": 11.0,
+      "epdm_rubber": 18.0,
+      "aged_abs_ac": 12.0,
+      "pipe_insulation_cover": 8.0,
+      "pvc_drain_hose": 7.0
+    },
+    "chamferMetricEdgeErrorFractionMaximum": 0.04,
+    "minimumSourceRenderers": 400,
+    "minimumDistinctPhasePairs": 16
+  },
+  "selfAudit": [
+    "The quality-build call chain was verified source-side: QualityBlock4KCapture rebuilds GroundDetail -> FoliageOptics -> TreeDetail -> DanchiLod; DanchiLod invokes DetailBevel, and DetailBevel now applies physical UVs before it creates LOD proxies. This makes the new pass part of the normal prepared-scene path rather than an optional menu-only operation.",
+    "Source renderers explicitly exclude HD_LOD proxy descendants. LOD proxies are created after physical conversion and share the already converted mesh/material assets, avoiding phase recomputation from proxy hierarchy paths.",
+    "Reapplying the pass is deterministic: previously generated _PU/_PV mesh suffixes are stripped back to the GM_HD source identity and UVs are recomputed from geometry, not incrementally transformed from old UVs.",
+    "A stale statement in detail_material_microstructure_contract.json still claimed normalized primitive UVs and unresolved identical phase. That documentation/contract inconsistency was corrected in commit 7ea6514; actual native-pixel repetition remains explicitly unresolved.",
+    "Cylinder circumference density is intentionally allowed a bounded deviation from exact metre density because the circumference is rounded to a whole texture repeat to avoid a tangent-space normal seam. This is not self-scored and must be reviewed in balcony_services/temporal evidence.",
+    "Physical UV correctness is enforced before formal MainCamera renders through pre-cull QA and is part of Bevel validation in the prepared-scene build. Reflection probes themselves do not invoke Camera.onPreCull; although later sealed still evidence cannot pass if UV state is wrong, an explicit pre-RenderProbe physical-UV binding remains a possible source-side hardening task if no Runner appears first."
+  ],
+  "verification": {
+    "sourceReview": "PASS for repository-level call-chain, naming, deterministic phase, asset-path and metric-projection consistency. New C# was re-fetched after commit and manually audited against the existing authored detail mesh topology and LOD build order.",
+    "branchCompare": "At substantiveWorkHead the branch is 6 commits ahead / 0 behind startHead and merge-base equals startHead. All six changed files are under UnityProject/.",
+    "godotPreserved": true,
+    "baseMerged": false,
+    "forbiddenThemesIntroduced": false,
+    "unityVersionDeclared": "6000.3.0f1",
+    "githubWorkflowRunsObserved": 0,
+    "githubCommitStatusContextsObserved": 0,
+    "unity6000_3_0f1CompileVerified": false,
+    "unityRuntimeVerified": false,
+    "generatedPhysicalUvMeshesObserved": false,
+    "native3840x2160RenderProduced": false,
+    "renderVerificationPending": true,
+    "visualFidelityScored": false
+  },
+  "readiness": {
+    "implementationReadinessScore": 93,
+    "possibleScore": 100,
+    "visualFidelityStatus": "UNSCORED_UNTIL_REAL_4K_RENDER",
+    "visualFidelityPointsAwardedThisRun": 0,
+    "passClaimed": false,
+    "reasonReadinessNotRaised": "The remaining seven readiness points remain reserved for real Unity 6000.3.0f1 compile/runtime and generated-asset verification. Source UV improvements cannot substitute for Runner evidence."
+  },
+  "expectedVisualScoreImpactNotAwarded": [
+    "Texture/microdetail/texel fidelity: positive potential because microstructure scale is now tied to manufactured metres instead of normalized face dimensions.",
+    "Material/PBR physical plausibility: positive potential because anodized grain and hose corrugation have explicit orientation semantics rather than arbitrary primitive UV orientation.",
+    "Critical obvious_repetition risk: positive potential because repeated apartment components receive stable per-piece phase diversity rather than identical texture origin.",
+    "Temporal/LOD/aliasing stability: neutral-to-positive intent only. LOD proxies inherit the same physical mesh/material state, but normal-map shimmer and LOD transition visibility are actual-render decisions.",
+    "No category receives numeric Visual Fidelity points without sealed native 3840x2160 evidence."
+  ],
+  "nextBlocker": "Unity 6000.3.0f1 Runner/Editor execution. On first Runner, stop speculative expansion; confirm compilation, verify the physical-UV pass produces persisted mesh assets and at least 16 phase pairs across the prepared DanchiHighDetail source set, confirm LOD1/2/3 reference those converted meshes, then run the reflection synchronization and sealed native 4K hero/oblique/grazing packet. Inspect material_grazing, sash_rail_response and balcony_services at 100% for scale drift, repeated phase, wrong extrusion direction, cylinder seams, bevel stretching and shimmer before assigning any Visual Fidelity score.",
+  "stopPolicy": "No new commits after 2026-09-18 without new user instruction; on or after 2026-09-19 summarize rather than extending the branch."
+}

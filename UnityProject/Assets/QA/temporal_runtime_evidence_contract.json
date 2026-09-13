@@ -1,0 +1,41 @@
+{
+  "schemaVersion": "1.0",
+  "purpose": "Make temporal/LOD/aliasing review evidence prove that every authoritative prepared temporal frame used one invariant physical lighting state and the same filmic HDR-source to LDR-destination display transform as intended for native 4K review. This contract is provenance only and never awards visual points.",
+  "authoritativeGuard": "QualityBlockTemporalRuntimeEvidenceGuard",
+  "scenePath": "Assets/Scenes/QualityBlock1990s.unity",
+  "width": 3840,
+  "height": 2160,
+  "requiredTemporalContract": "Assets/QA/temporal_stability_contract.json",
+  "requiredTemporalManifest": "Assets/QA/temporal_stability_manifest.json",
+  "requiredTemporalReceipt": "Assets/QA/temporal_stability_receipt.json",
+  "requiredPreparedBinding": "Assets/QA/temporal_prepared_scene_binding.json",
+  "requiredReflectionCompletionReceipt": "Assets/QA/reflection_probe_refresh_receipt.json",
+  "requiredReflectionAsyncWaitProof": "Assets/QA/reflection_probe_async_wait_receipt.json",
+  "runtimeReceipt": "Assets/QA/temporal_runtime_evidence_receipt.json",
+  "requirements": {
+    "requireSameLightingFingerprintBeforeEveryMainCameraCull": true,
+    "requireOnePreCullLightingCheckPerTemporalFrame": true,
+    "requireFilmicTonemapForEveryTemporalFrame": true,
+    "requireHdrSourceForEveryTemporalFrame": true,
+    "requireLdrDestinationForEveryTemporalFrame": true,
+    "requireZeroFallbackBlits": true,
+    "bindSceneSha256": true,
+    "bindTemporalManifestSha256": true,
+    "bindTemporalReceiptSha256": true,
+    "bindReflectionCompletionReceiptSha256": true,
+    "bindReflectionAsyncWaitProofSha256": true,
+    "manualPixelReviewRequired": true,
+    "automaticVisualPoints": 0
+  },
+  "hardFailIf": [
+    "the physical lighting SHA-256 differs before any guarded MainCamera temporal cull",
+    "the number of guarded MainCamera pre-cull checks is not exactly the number of required temporal frames",
+    "the filmic image effect invocation count differs from the required temporal frame count",
+    "the HDR-source invocation count differs from the required temporal frame count",
+    "the LDR-destination invocation count differs from the required temporal frame count",
+    "any temporal native-4K frame uses the filmic fallback blit",
+    "the persisted scene, temporal manifest/receipt/prepared binding, or reflection completion/wait proofs no longer match their sealed SHA-256 values",
+    "the temporal runtime receipt claims automatic visual points or Visual Fidelity PASS"
+  ],
+  "visualFidelityStatus": "UNSCORED_REVIEW_REQUIRED"
+}

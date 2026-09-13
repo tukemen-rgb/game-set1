@@ -1,0 +1,95 @@
+{
+  "schemaVersion": "1.0",
+  "runDate": "2026-09-12",
+  "objective": "Close a provenance gap where byte-valid native-4K PNG/crop evidence could theoretically be re-sealed after the visual candidate changed, without a new Camera.Render. Bind scoreable render evidence to the exact persisted Unity scene/dependency/render-settings/capture-recipe candidate and invalidate stale receipts fail-closed.",
+  "startingHead": "89d4be67387181620c2872613c24eee4e25735ac",
+  "branch": "gpt/unity-migration",
+  "constraints": {
+    "preserveGodot": true,
+    "baseMergePerformed": false,
+    "earthquakeDisasterReconstructionThemesAdded": false,
+    "visualPointsMayComeOnlyFromActualRenderedEvidence": true
+  },
+  "commits": [
+    {
+      "sha": "c2741c33162ba69f7ff54c580e7aeb19618fac60",
+      "summary": "Add fail-closed render-candidate freshness QA, candidate epoch/seal/invalidation receipts, active-scene/dependency/settings/recipe fingerprinting, and stale-receipt invalidation."
+    },
+    {
+      "sha": "3f593d2a21311cc1afc5574e5c0288f8bf2d12b8",
+      "summary": "Add machine-readable render_candidate_freshness_contract.json with zero-point evidence policy and stale re-seal attack closure."
+    }
+  ],
+  "problemFound": {
+    "description": "Existing render provenance strongly bound capture/crop/manifest/receipt bytes, but byte integrity alone does not prove that those pixels correspond to the current visual candidate after scene, material/shader dependencies, project render settings, or formal capture/tonemap recipe changes.",
+    "risk": "A previously valid native-4K packet could remain byte-valid and be re-sealed without Camera.Render after a candidate mutation, allowing an obsolete image to be associated with a newer candidate.",
+    "criticalDefectRelation": "unverified_render_claim"
+  },
+  "implementation": {
+    "candidateFingerprint": [
+      "active persisted scene asset path + GUID + scene SHA-256",
+      "AssetDatabase.GetAssetDependencyHash recursive scene dependency hash",
+      "ProjectSettings/ProjectSettings.asset SHA-256",
+      "ProjectSettings/QualitySettings.asset SHA-256",
+      "ProjectSettings/GraphicsSettings.asset SHA-256",
+      "formal 4K capture/review/filmic/environment recipe source SHA-256 set",
+      "latest tracked candidate input/meta file modification UTC"
+    ],
+    "freshCaptureBinding": [
+      "captureSessionId",
+      "render_capture_receipt SHA-256",
+      "4k_capture_manifest SHA-256",
+      "candidate combined SHA-256",
+      "manifest generatedUtc must be >= candidate mutation epoch and latest tracked input write UTC"
+    ],
+    "continuousFailClosedPolicy": [
+      "dirty active scene invalidates a live receipt",
+      "candidate digest or scene identity change invalidates a live receipt",
+      "missing/mismatched candidate seal invalidates a live receipt",
+      "capture older than candidate mutation/input write invalidates a live receipt",
+      "stale action rewrites render_capture_receipt.renderProducedByUnity=false so existing provenance/scoring gates fail"
+    ],
+    "directVisualScoreAwarded": 0
+  },
+  "selfAudit": {
+    "verifiedCanonicalRecipeFilesExistOnBranch": [
+      "Assets/Editor/QualityBlockEnvironmentLightingUpgrade.cs",
+      "Assets/Scripts/Art/QualityBlockEnvironmentContext.cs"
+    ],
+    "projectSettingsRepositoryState": "Only ProjectVersion.txt is currently tracked under UnityProject/ProjectSettings. The freshness guard intentionally requires the live Unity project's ProjectSettings.asset, QualitySettings.asset and GraphicsSettings.asset at runtime; if Unity has not materialized them, the guard fails closed instead of pretending settings provenance is known.",
+    "unityProjectVersion": "6000.3.0f1",
+    "staticReview": "Source and contract were re-fetched after commit and checked for zero-point policy, receipt invalidation bridge, session/hash binding, dirty-scene handling and stale-manifest rejection.",
+    "runtimeCompileVerified": false,
+    "actualNative4KRenderVerified": false
+  },
+  "verification": {
+    "githubDiffFromStartingHeadBeforeThisRunRecord": "2 commits ahead / 0 behind; merge-base remained startingHead; both changed files were under UnityProject/ only.",
+    "unityRunner": "PENDING",
+    "unityCompile": "PENDING_RUNNER",
+    "candidateFreshnessRuntimeQA": "PENDING_RUNNER",
+    "native3840x2160HeroObliqueGrazing": "PENDING_RUNNER",
+    "pixelReview": "PENDING_RENDER",
+    "visualFidelityPointsAwardedThisRun": 0
+  },
+  "implementationReadiness": {
+    "score": 93,
+    "possible": 100,
+    "status": "IMPLEMENTATION_READINESS_ONLY",
+    "changeThisRun": 0,
+    "reason": "New evidence-integrity source exists, but no Unity 6000.3.0f1 compile/runtime proof has appeared; source coverage is not visual quality and is not credited as Visual Fidelity."
+  },
+  "visualFidelity": {
+    "status": "UNSCORED_UNTIL_REAL_4K_RENDER",
+    "pointsAwardedThisRun": 0,
+    "passClaimed": false,
+    "expectedImpact": "0 direct visual points. The change protects all nine eventual category scores from being attributed to stale pixels, with particular importance for Material/PBR, Lighting/Reflections, Cinematic Image and Temporal/LOD interpretation after render-affecting changes."
+  },
+  "nextBlocker": "Unity 6000.3.0f1 Runner/editor execution. On Runner availability, stop speculative expansion, compile first, verify ProjectSettings files are materialized, exercise fresh capture seal and stale-candidate invalidation, then capture native 3840x2160 hero/oblique/grazing plus pixel-exact 100% crops and temporal evidence before any Visual Fidelity scoring.",
+  "runnerTakeoverPlan": [
+    "Compile the branch in Unity 6000.3.0f1.",
+    "Capture one fresh native-4K packet and confirm candidate seal binds its receipt/session/manifest/current-candidate digest.",
+    "Mutate then save a render-affecting test input and confirm the previous receipt becomes renderProducedByUnity=false without manually editing evidence.",
+    "Confirm re-sealing the old PNG packet without Camera.Render is rejected because manifest generatedUtc predates the new candidate epoch/input write.",
+    "Revert the test mutation, perform the real formal prepare/capture path, then review actual pixels and score the 100-point gate only from rendered evidence."
+  ]
+}

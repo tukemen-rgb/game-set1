@@ -1,0 +1,100 @@
+{
+  "runDate": "2026-09-13",
+  "branch": "gpt/unity-migration",
+  "startingHead": "3f2c826727cbf8af70cd56fc56f371dfed689973",
+  "substantiveHeadBeforeRunRecord": "0ff172d972953a3ab87d6cfa4c2b859a8689e97c",
+  "objective": "Ensure the formal native-4K build chain actually applies and fail-closed validates the existing high-detail woody-continuity correction after generated tree regeneration, so corrected trunk/branch taper and metric bark UVs are not merely optional editor-side work.",
+  "priorityReasoning": {
+    "observedGap": "QualityBlock4KCapture enters QualityBlockGroundDetailUpgrade.BuildDetailedGround, which enters QualityBlockFoliageOpticsUpgrade.BuildFoliageOptics. That foliage build regenerated detailed tree masters but did not invoke QualityBlockTreeWoodyContinuityQA before morphology/optical processing. Formal capture also relied on foliage validation rather than directly calling the woody validator.",
+    "visualRisk": "A formally rebuilt candidate could therefore proceed with the pre-correction segmented woody geometry/UV state, increasing modular trunk/branch reads and bark-phase repetition risk in native-4K vegetation framing.",
+    "scorePriority": "This directly affects Geometry & construction fidelity, Vegetation/natural complexity and Texture/microdetail, with secondary Material/PBR and LOD stability implications. No rendered points are awarded by this source fix."
+  },
+  "changes": [
+    {
+      "commit": "a859a94203a6960a4c23a6822d5841596743cc40",
+      "path": "UnityProject/Assets/Editor/QualityBlockFoliageOpticsUpgrade.cs",
+      "summary": "Inserted QualityBlockTreeWoodyContinuityQA.ApplyToOpenScene immediately after BuildDetailedTrees + benchmark-scene reopen and before morphology/foliage optics. Updated the build log to state that continuous woody geometry is part of the built candidate while render inspection remains pending."
+    },
+    {
+      "commit": "b14fe60973b77e5cdb616df77aff74f936d0e64c",
+      "path": "UnityProject/Assets/Editor/QualityBlockFoliageOpticsUpgrade.cs",
+      "summary": "Made foliage validation transitively invoke QualityBlockTreeWoodyContinuityQA.ValidateOpenScene, causing the formal capture chain to fail closed if woody taper/UV/LOD/material continuity is absent or drifted."
+    },
+    {
+      "commit": "0ff172d972953a3ab87d6cfa4c2b859a8689e97c",
+      "path": "UnityProject/Assets/QA/tree_woody_formal_build_integration_contract.json",
+      "summary": "Added machine-readable formal-build ordering, generated-tree construction/material/UV/LOD requirements, fail-closed rules and actual-render evidence requirements. Automatic Visual Fidelity credit remains zero."
+    }
+  ],
+  "formalBuildOrderAfterChange": [
+    "QualityBlock4KCapture.PrepareAndValidateScene",
+    "QualityBlockGroundDetailUpgrade.BuildDetailedGround",
+    "QualityBlockFoliageOpticsUpgrade.BuildFoliageOptics",
+    "QualityBlockTreeDetailUpgrade.BuildDetailedTrees",
+    "reopen Assets/Scenes/QualityBlock1990s.unity",
+    "QualityBlockTreeWoodyContinuityQA.ApplyToOpenScene",
+    "QualityBlockFoliageMorphologyVariationUpgrade.ApplyToOpenScene",
+    "foliage transmission/material optical application",
+    "QualityBlockFoliageOpticsUpgrade.ValidateOpenScene",
+    "QualityBlockTreeWoodyContinuityQA.ValidateOpenScene"
+  ],
+  "staticVerification": {
+    "status": "PASS_FOR_SOURCE_INTEGRATION_ONLY",
+    "checks": [
+      "updated foliage build source contains woody-continuity apply directly after detailed-tree regeneration and scene reopen",
+      "updated foliage validator contains woody-continuity validation before foliage-specific optical checks",
+      "formal 4K capture source calls QualityBlockGroundDetailUpgrade.BuildDetailedGround",
+      "ground-detail build source calls QualityBlockFoliageOpticsUpgrade.BuildFoliageOptics",
+      "existing woody-continuity QA retains six-tree, continuous-joint, metric bark-UV, dry-dielectric bark and four-LOD source checks",
+      "Git comparison from startingHead shows only UnityProject files changed",
+      "merge base against startingHead remains startingHead; no base merge was introduced"
+    ]
+  },
+  "runtimeVerification": {
+    "status": "PENDING_UNITY_RUNTIME",
+    "githubActionsRunsObserved": 0,
+    "commitStatusContextsObserved": 0,
+    "requiredNext": [
+      "compile the updated editor scripts in Unity 6000.3.0f1",
+      "run the complete formal PrepareAndValidateScene chain from a clean editor session",
+      "confirm all six generated fallback trees receive woody correction after regeneration and before foliage morphology/optics",
+      "failure-injection: remove/replace one corrected trunk mesh or break its bark UV phase and confirm foliage/formal validation fails",
+      "capture actual 3840x2160 hero, oblique and grazing frames plus 100% vegetation crops",
+      "capture temporal LOD evidence and inspect trunk/branch silhouette, bark-phase continuity and shimmer"
+    ]
+  },
+  "scores": {
+    "implementationReadiness": 93,
+    "implementationReadinessOutOf": 100,
+    "visualFidelity": "UNSCORED_UNTIL_REAL_4K_RENDER",
+    "visualPointsAwardedThisRun": 0,
+    "visualPassClaimed": false
+  },
+  "expectedVisualScoreImpactNotCredit": {
+    "Geometry & construction fidelity": "high risk reduction: formal candidate now receives continuous woody taper/joint correction instead of depending on an optional pass",
+    "Material/PBR physical plausibility": "low-medium: corrected metric bark mapping remains bound to the dry-dielectric PBR_Bark contract",
+    "Lighting/shadows/reflections": "low: branch geometry feeding dapple/contact shadows is more structurally consistent; pixel impact unverified",
+    "Texture/microdetail/texel fidelity": "medium-high: formal candidate now receives continuous metric bark UV and phase variation",
+    "Weathering/context causality": "none directly",
+    "Vegetation/natural complexity": "high: formal tree construction retains root/trunk/branch biological hierarchy correction",
+    "Period accuracy/scene authenticity": "low indirect",
+    "Cinematic image quality/composition/color/exposure": "none directly",
+    "Temporal/LOD/aliasing stability": "medium: corrected woody identity is required to persist through retained LOD tiers; actual transition remains unrendered"
+  },
+  "criticalDefectPolicy": {
+    "riskAddressed": "modular/placeholder-like woody geometry and obvious repeated bark module risk in benchmark framing",
+    "cleared": false,
+    "reason": "Critical defects can only be cleared from actual Unity-rendered 4K/temporal evidence; source integration is insufficient."
+  },
+  "constraints": {
+    "godotPreserved": true,
+    "baseMerged": false,
+    "disasterEarthquakeReconstructionThemesAdded": false
+  },
+  "lookdev": {
+    "existingReference": "Assets/QA/tree_woody_continuity_lookdev.svg",
+    "newIllustrationRequiredThisRun": false,
+    "reason": "The existing woody-continuity lookdev already documents the corrected construction and grazing-light inspection target; this run fixes formal-build integration rather than changing the physical design."
+  },
+  "nextBlocker": "No Unity runner/runtime evidence is available. The next meaningful gate is a clean Unity 6000.3.0f1 formal-build execution followed by failure injection and real native-4K/temporal render review."
+}

@@ -1,0 +1,63 @@
+{
+  "runDate": "2026-09-11",
+  "topic": "registered_material_asset_physicality",
+  "branch": "gpt/unity-migration",
+  "startHead": "f54a1ae33ca2d12c9161cb6c8ba14dff4b22be88",
+  "substantiveWorkHead": "18b9d7501036e83186567bd647e8fcf3aeabc2b5",
+  "substantiveCommits": [
+    "56f1b7be8645200c18da537248c85d9a8e1cc46d",
+    "410828aa0ebb2b50add46577161a44d37e6cda28",
+    "18b9d7501036e83186567bd647e8fcf3aeabc2b5"
+  ],
+  "goal": "Close the gap between physically plausible values declared in material_construction_lookdev.json and the actual Unity Material assets/render bindings used by formal native-4K evidence. A registry entry alone must not be able to satisfy metadata QA while its Unity material is missing, stale, unbound, transparent, emissive, or outside its declared metallic/roughness range.",
+  "changes": [
+    {
+      "path": "Assets/QA/registered_material_asset_physicality_contract.json",
+      "summary": "Added a machine-readable fail-closed contract covering all seven registered high-value material families, canonical QA4K_/QAPreparedTemporal_ targets, actual asset existence/binding, scalar metallic/roughness range enforcement, opacity/emission rules, and zero-point/manual-pixel-review limits."
+    },
+    {
+      "path": "Assets/Editor/QualityBlockRegisteredMaterialAssetPhysicalityQA.cs",
+      "summary": "Added an InitializeOnLoad formal-camera pre-cull guard. It loads every registry Material through AssetDatabase, requires unique IDs/paths, verifies the actual shader, metallic scalar, effective roughness/smoothness scalar, finite opaque base color, non-emissive/opaque state, and at least one active benchmark renderer binding. It rejects the frame before Camera.Render if any registered material drifts."
+    },
+    {
+      "path": "Assets/QA/registered_material_asset_physicality_report.json",
+      "summary": "Defined as a manual validation output, not written from Camera.onPreCull. When Unity is available it will record actual shader/scalar/binding observations while explicitly retaining runtimeRenderVerified=false and visualFidelityPointsAwarded=0."
+    }
+  ],
+  "selfAudit": [
+    "The initial validator draft used an interpolated expression containing GetFloat(\"_Mode\") directly and referenced RenderQueue.GeometryLast. Before treating that draft as final, it was rewritten to read _Mode into a local finite scalar and to use the explicit opaque queue ceiling 2500, reducing C# lexer/API compatibility risk in Unity 6000.3.0f1.",
+    "The registry's PBR_DanchiConcrete.mat path is not present in the repository at source-review time. This is consistent with the existing generated-material workflow, so the new guard intentionally evaluates actual asset existence after Unity scene/material generation, on each formal evidence pre-cull, rather than claiming source-only existence.",
+    "A scalar pass cannot prove texture-modulated BRDF response or Fresnel appearance. The guard therefore does not clear impossible_material_physics or baked_or_painted_highlights and awards no Visual Fidelity points; grazing-light native pixels remain authoritative.",
+    "The run-start SHA was re-derived from the parent of the first substantive commit and corrected to f54a1ae33ca2d12c9161cb6c8ba14dff4b22be88; no merge/rebase was performed."
+  ],
+  "verification": {
+    "unity6000_3_0f1CompileRuntime": "PENDING_NO_RUNNER",
+    "native3840x2160Capture": "PENDING_NO_RUNNER",
+    "actualPixelReview": "PENDING_NO_RENDER",
+    "githubActions": "No workflow runs were present for gpt/unity-migration at run start.",
+    "captureDirectory": "UnityProject/Assets/QA/Captures4K was absent at run start; no actual Unity screenshots were available to score.",
+    "sourceReview": "Completed against the current branch. Existing MaterialConstructionQA validates authored registry plausibility, SceneMetadataCoverageQA validates renderer-domain metadata scope, and SceneMaterialPhysicalityUpgrade validates broad active-scene material sanity, but none bound every registered asset path and declared metallic/roughness range to its actual active Unity Material. The new guard closes that specific gap at formal render time.",
+    "godotPreserved": true,
+    "baseMergePerformed": false,
+    "forbiddenThemesAdded": false
+  },
+  "implementationReadiness": {
+    "score": 93,
+    "possible": 100,
+    "status": "UNCHANGED",
+    "reason": "This run strengthens source/runtime evidence integrity but does not provide the missing Unity 6000.3.0f1 compile/runtime verification worth the remaining 7 readiness points."
+  },
+  "visualFidelity": {
+    "status": "UNSCORED_UNTIL_REAL_4K_RENDER",
+    "pointsAwardedThisRun": 0,
+    "passClaimed": false
+  },
+  "expectedVisualScoreImpact": [
+    "Material/PBR physical plausibility (20): prevents declared lookdev ranges from drifting away from the actual materials feeding formal frames; no points until observed in sealed frontal/oblique/grazing pixels.",
+    "Geometry & construction fidelity / metadata critical path: stale registered materials that are no longer bound by any active benchmark renderer now fail formal evidence instead of surviving as metadata-only declarations.",
+    "Critical impossible_material_physics: materially impossible scalar states can no longer enter a formal QA4K_/QAPreparedTemporal_ Camera.Render through the seven registered high-value material families, but texture/Fresnel appearance still requires direct pixel review.",
+    "Critical baked_or_painted_highlights: no automatic clearance. Existing albedo-neutrality QA plus actual grazing pixels remain the authority; this run only guarantees that the reviewed pixels use the registered asset identities and physically bounded scalar material state.",
+    "Automatic Visual Fidelity impact: 0 points."
+  ],
+  "nextBlocker": "Unity 6000.3.0f1 runtime/Runner. At first availability stop speculative expansion and run Prepare Complete Native 4K Review Packet. If the new pre-cull guard reports a missing/unbound generated material or a metallic/roughness mismatch, reconcile the registry or actual material generation/binding before accepting any still. Then inspect sealed grazing/material_grazing and grazing/sash_rail_response pixels before scoring Material/PBR or clearing impossible-material/baked-highlight critical defects."
+}

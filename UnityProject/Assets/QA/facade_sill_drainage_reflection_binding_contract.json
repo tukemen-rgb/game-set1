@@ -1,0 +1,39 @@
+{
+  "schemaVersion": "1.2",
+  "purpose": "Bind the generated facade sill-drainage assembly and its physical tray edge-break refinement to one formal reflection-probe epoch across request, polling, completion and pre-still review, including Unity script/assembly reload boundaries. A genuinely missing fallback sill pass and deterministic tray/proxy refinement may be prepared before the first baseline; after arming, SessionState persists both the scene/root identity and an independent tray/proxy mesh fingerprint. All later checks are read-only and fail closed on replacement/deletion, mesh/proxy drift, authored/fallback changes, legacy-sill re-enablement, or structural/material/LOD/topology drift. This contract awards no Visual Fidelity points.",
+  "scenePath": "Assets/Scenes/QualityBlock1990s.unity",
+  "sillConstructionContractPath": "Assets/QA/facade_sill_drainage_contract.json",
+  "sillTrayEdgeBreakContractPath": "Assets/QA/facade_sill_tray_edge_break_contract.json",
+  "requirements": {
+    "prepareMissingGeneratedSillOnlyBeforeFirstReflectionBaseline": true,
+    "ensureSillTrayEdgeBreakBeforeFirstReflectionBaseline": true,
+    "freezeGeneratedRootGlobalObjectIdAfterFirstReflectionBaseline": true,
+    "freezeSillTrayMeshFingerprintAfterFirstReflectionBaseline": true,
+    "persistEpochAcrossAssemblyReloadsWithSessionState": true,
+    "validateSceneGuidAcrossEpoch": true,
+    "validateSillBeforeEveryReflectionLightingFingerprint": true,
+    "validateSillTrayEdgeBreakBeforeEveryReflectionLightingFingerprint": true,
+    "validationMustBeReadOnlyAfterEpochArm": true,
+    "authoredFallbackModeMustRemainStableAfterEpochArm": true,
+    "sillFailureAbortsReflectionEvidence": true,
+    "actualRenderRequiredForVisualPoints": true
+  },
+  "criticalDefectRisksReduced": [
+    "baked_or_painted_highlights",
+    "impossible_material_physics",
+    "visible_lod_pop",
+    "missing_construction_material_metadata"
+  ],
+  "visualFidelityPointsAwarded": 0,
+  "runtimeRenderVerified": false,
+  "limitations": [
+    "The 2 mm front edge break is a conservative benchmark reconstruction assumption, not a dimension attributed to an identified historic sash product.",
+    "This binding proves reflection-epoch coherence only; it does not prove that the reconstructed sill dimensions or edge-break scale are visually correct at benchmark distance.",
+    "Read-only post-arm validation cannot prove that drain openings read as physical recesses rather than overly dark holes in final pixels.",
+    "A stable mesh fingerprint cannot prove that anodized-aluminum Fresnel response, edge highlight width or contact shadowing are filmic under the actual midsummer lighting state.",
+    "SessionState intentionally persists until the Unity Editor process exits; a new formal epoch after source/scene edits should start from a clean Editor session rather than weakening the armed epoch in place.",
+    "A newly generated but unsaved root may not have a stable GlobalObjectId and must fail closed until the benchmark scene is persisted.",
+    "The binding cannot clear visible_lod_pop, highlight-centroid snap or severe_aliasing_or_shimmer; native-4K temporal evidence remains mandatory.",
+    "Unity 6000.3.0f1 compile/runtime behavior remains unverified until a real Runner executes mesh refinement, reflection request/poll/completion, an assembly reload boundary and pre-still validation."
+  ]
+}

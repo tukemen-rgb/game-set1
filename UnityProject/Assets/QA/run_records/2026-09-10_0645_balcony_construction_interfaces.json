@@ -1,0 +1,101 @@
+{
+  "schemaVersion": "1.0",
+  "generatedUtc": "2026-09-09T23:46:00Z",
+  "branch": "gpt/unity-migration",
+  "startHead": "c3d2cdf22c3823ad15d63674553b62f39d605db4",
+  "substantiveWorkHead": "8b10728d832bfc34ea46a9707aae49984f12374e",
+  "substantiveCommits": [
+    {
+      "sha": "2fb5dca2b5ae9e0d6aeb82b5c181caaed7aef704",
+      "message": "qa: define balcony construction interface contract"
+    },
+    {
+      "sha": "75ca66774ef67fd72e93ce3e7a949799c91ac471",
+      "message": "fix: ground balcony railing hardware on slab"
+    },
+    {
+      "sha": "8b10728d832bfc34ea46a9707aae49984f12374e",
+      "message": "qa: enforce corrected balcony interfaces before 4k render"
+    }
+  ],
+  "focus": "Geometry & construction fidelity / Material PBR plausibility / floating-interpenetrating hero-geometry critical risk",
+  "sourceDefectFound": {
+    "assembly": "generated danchi balcony slab edge + railing attachment",
+    "evidence": [
+      "BuildQualityBlock1990s places each BalconyFloor at bay-local centre Y=-0.85 m with height 0.12 m, giving a persisted generated-fallback top plane at approximately -0.79 m.",
+      "The existing high-detail pass documented that same -0.79 m top plane but centered its 0.18 m HD_BalconySlabLip at -0.79 m, so the added fascia extended roughly 90 mm above the walking-surface plane instead of downward from the edge.",
+      "HD_BalconySlabLip was assigned the anodized-aluminum detail material even though it represents added slab/fascia thickness, creating a materially impossible metallic concrete edge risk.",
+      "HD_RailBasePlate_* was centered at -0.875 m with height 0.025 m, below the slab top; HD_RailLower was centered at -0.82 m with height 0.04 m, putting its top at about -0.80 m. Both relationships were therefore buried in or below the slab rather than legible manufactured interfaces.",
+      "The low divider bracket was not explicitly seated to the slab plane, leaving a small unsupported interface risk."
+    ]
+  },
+  "implementation": {
+    "contract": "Assets/QA/balcony_construction_interface_contract.json",
+    "qaCode": "Assets/Editor/QualityBlockBalconyConstructionInterfaceQA.cs",
+    "authoritativePacket": "Assets/Editor/QualityBlockNative4KReviewPacket.cs",
+    "runtimeReport": "Assets/QA/balcony_construction_interface_runtime_report.json",
+    "manufactureInstallationReasoning": "Treat the balcony railing as manufactured post/rail hardware mechanically anchored to an RC/cementitious slab edge. The concrete fascia is mineral/dielectric and inherits the balcony-floor material; galvanized/anodized response remains on actual hardware. Base plates are seated on the resolved slab top, anchor heads have a controlled shallow embed into the plate, the lower rail is kept visibly above the slab, and the low divider bracket is grounded at the same physical contact plane.",
+    "hardSceneMetrics": {
+      "expectedGeneratedFloorTopLocalYMetres": -0.79,
+      "floorTopToleranceMetres": 0.003,
+      "fasciaHeightMetres": 0.18,
+      "basePlateHeightMetres": 0.025,
+      "boltHeightMetres": 0.020,
+      "boltEmbedTargetMetres": 0.003,
+      "boltEmbedHardRangeMetres": [0.001, 0.006],
+      "lowerRailBottomClearanceTargetMetres": 0.070,
+      "lowerRailBottomClearanceHardRangeMetres": [0.050, 0.100],
+      "contactToleranceMetres": 0.003
+    },
+    "authoritativeOrder": "The complete review packet now validates the contract, prepares the final scene, corrects and persists the balcony interfaces, revalidates them before realtime reflection rendering, revalidates immediately before native still capture, and revalidates again after still sealing before temporal evidence. Reflection capture therefore cannot certify a pre-correction geometry/material state.",
+    "automaticVisualPoints": 0
+  },
+  "research": {
+    "periodReference": "LIXIL/TOSTEM archive lists ベランダ手すりII with sales start 1996-10, supporting manufactured balcony-hand-rail hardware as period-plausible around 2000. This does not identify the benchmark building's exact manufacturer/model.",
+    "installationPrincipleReference": "LIXIL base-plate-post installation documentation shows explicit base plates, anchors, washers and bolts. It is used only to anchor the physical attachment principle; its modern dimensions are not projected backward onto the circa-2000 benchmark.",
+    "urls": [
+      "https://kinken.lixil.co.jp/e/products/csseresdet_775884/documents/technical",
+      "https://www.lixil.co.jp/support/purpose/manualsearch?pid=223242",
+      "https://www2.lixil.co.jp/rp/dfw/exsas4/torisetu/files/J14407C.pdf"
+    ]
+  },
+  "verification": {
+    "type": "GitHub source/static inspection plus manufacturer-document research only; no Unity runtime was available",
+    "branchComparison": "Start head to substantive work head is ahead by 3 and behind by 0. The only changed files are two additions and one modification under UnityProject/Assets; Godot was not modified and no base merge was performed.",
+    "sourceReview": "The new QA derives every generated bay's floor-top plane from the persisted BalconyFloor renderer bounds, refuses >3 mm fallback drift, adjusts 30 fascias, 210 base plates, 420 anchor heads, 30 lower rails and 30 low divider brackets when executed, then validates material/contact/clearance/post relationships. These counts are code-path expectations, not runtime-proven results yet.",
+    "runnerState": "Current substantive head has zero commit-status contexts and zero associated GitHub Actions workflow runs.",
+    "renderEvidenceState": "Assets/QA/Captures4K is absent. No actual Unity-rendered hero/oblique/grazing pixels, 100% crops, balcony runtime report or temporal sequence were produced or reviewed in this run.",
+    "compileState": "PENDING_UNITY_6000_3_0f1_RUNTIME"
+  },
+  "implementationReadiness": {
+    "score": 93,
+    "possible": 100,
+    "status": "UNCHANGED",
+    "reason": "The construction-interface correction materially improves source/evidence readiness, but the existing readiness model still withholds 7 points for missing Unity 6000.3.0f1 compile/runtime verification."
+  },
+  "visualFidelity": {
+    "status": "UNSCORED_UNTIL_REAL_4K_RENDER",
+    "pointsAwardedThisRun": 0,
+    "passClaimed": false,
+    "criticalDefectCleared": false
+  },
+  "expectedVisualScoreImpact": [
+    "Geometry & construction fidelity (20): removes a known source-level arrangement where post base plates and the lower rail were buried relative to the slab top, and makes the slab-edge/rail attachment stack physically inspectable in frontal/oblique/grazing evidence.",
+    "Material/PBR physical plausibility (20): prevents the added slab fascia from carrying anodized-aluminum response and instead binds it to the actual balcony-floor concrete material.",
+    "Lighting/shadows/reflections (15): physically separated plate, bolt, bracket and lower-rail interfaces can now generate coherent contact shadows and grazing highlights rather than relying on intersecting geometry; no points are awarded until this is observed in a real render.",
+    "Critical-defect integrity: floating/interpenetrating hero geometry and materially impossible metallic/specular behavior risks are reduced at source, but neither critical defect is cleared without native 3840x2160 inspection."
+  ],
+  "lookdevVerificationPriority": [
+    "hero/facade_center: verify slab fascia reads as concrete and railing attachment remains coherent across repeated bays",
+    "oblique/balcony_services: inspect slab thickness, base-plate seating, bolt-head visibility, lower-rail clearance and bracket contact at 100% pixels",
+    "grazing/sash_rail_response: verify aluminum/galvanized angular response separates from the concrete fascia without baked edge highlights",
+    "all relevant 100% crops: reject any z-fighting, floating gap, buried hardware, light leak or obviously repeated corrective artifact"
+  ],
+  "correctivePolicyIfRuntimeFails": "Do not loosen the 3 mm contact tolerance, bolt embed range or 50-100 mm lower-rail clearance to make QA pass. Use the Unity runtime report and native 100% crops to identify the incorrect assembly relationship; fix the generator/correction dimensions or reconstruct the physical assembly, rerun reflection synchronization, and recapture the same evidence.",
+  "nextBlocker": "Unity 6000.3.0f1 editor/runner compile and execution. At first availability, run Prepare Complete Native 4K Review Packet. If balcony_construction_interface_runtime_report.json or the compile fails, fix the code/assembly before any speculative expansion. If source QA passes, inspect oblique/balcony_services and grazing/sash_rail_response first and score/fix only from actual sealed pixels and temporal evidence.",
+  "constraintsPreserved": {
+    "godotUntouched": true,
+    "baseMerged": false,
+    "earthquakeDisasterReconstructionThemesAdded": false
+  }
+}

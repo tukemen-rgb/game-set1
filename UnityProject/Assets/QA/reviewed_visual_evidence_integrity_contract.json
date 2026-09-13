@@ -1,0 +1,97 @@
+{
+  "schemaVersion": "1.3",
+  "purpose": "Fail-closed schema integrity for manually reviewed Visual Fidelity evidence. This contract does not award visual points; it prevents ambiguous, duplicated or incomplete review records from reaching the numeric gate and requires current runtime diagnostics for render-only repetition, major-light-leak and temporal risks, with temporal evidence bound to the same current visual candidate as the native-4K still packet.",
+  "requiredViews": [
+    "hero",
+    "oblique",
+    "grazing"
+  ],
+  "categories": [
+    { "id": "geometry_construction", "weight": 20, "hardMinimum": 18 },
+    { "id": "material_pbr", "weight": 20, "hardMinimum": 18 },
+    { "id": "lighting_shadows_reflections", "weight": 15, "hardMinimum": 13 },
+    { "id": "texture_microdetail", "weight": 10, "hardMinimum": 9 },
+    { "id": "weathering_causality", "weight": 10, "hardMinimum": 9 },
+    { "id": "vegetation_natural_complexity", "weight": 8, "hardMinimum": 7 },
+    { "id": "period_authenticity", "weight": 7, "hardMinimum": 6 },
+    { "id": "cinematic_image", "weight": 5, "hardMinimum": 4 },
+    { "id": "temporal_lod_aliasing", "weight": 5, "hardMinimum": 4 }
+  ],
+  "criticalDefectIds": [
+    "visible_primitive_placeholder",
+    "baked_or_painted_highlights",
+    "impossible_material_physics",
+    "obvious_repetition",
+    "hero_geometry_intersection",
+    "sun_shadow_inconsistency",
+    "forbidden_disaster_theme",
+    "severe_aliasing_or_shimmer",
+    "visible_lod_pop",
+    "major_light_leak",
+    "missing_construction_material_metadata",
+    "unverified_render_claim"
+  ],
+  "rules": {
+    "rejectDuplicateViewEntries": true,
+    "rejectDuplicateCategoryEntries": true,
+    "rejectDuplicateCriticalDefectEntries": true,
+    "rejectUnknownEntries": true,
+    "requireExactlyNineCategoryEntries": true,
+    "requireExactlyTwelveCriticalDefectEntries": true,
+    "requireCategoryEvidenceText": true,
+    "requireCategoryCorrectiveActionText": true,
+    "requireDeductionTextWhenScoreBelowWeight": true,
+    "requireCriticalDefectEvidenceText": true,
+    "requireAtLeastOneObservedReferencePerCategory": true,
+    "requireAtLeastOneObservedReferencePerCriticalDefect": true,
+    "requireRenderVerifiedTrueForReviewedEvidence": true,
+    "requireCurrentRenderedRepetitionDiagnostics": true,
+    "renderedRepetitionDiagnosticsCannotClearCriticalDefect": true,
+    "requireCurrentRenderedLightLeakDiagnostics": true,
+    "renderedLightLeakDiagnosticsCannotDecideCriticalDefect": true,
+    "requireCurrentTemporalCandidateCoherence": true,
+    "temporalCandidateCoherenceCannotAwardPointsOrClearCriticalDefects": true
+  },
+  "runtimeDiagnosticPreconditions": {
+    "renderedRepetition": {
+      "owner": "QualityBlockRenderedRepetitionDiagnostics.ValidateLatestReportForScoring",
+      "reportPath": "Assets/QA/rendered_repetition_diagnostics.json",
+      "requireCurrentManifestSha256": true,
+      "requireCurrentCropSha256": true,
+      "warningOnly": true,
+      "mayAutomaticallyClearObviousRepetition": false,
+      "reason": "Static hierarchy/UV checks cannot establish whether repetition is immediately obvious in the actual post-tonemap native-4K pixels. The current rendered triage report is therefore mandatory, but the final critical-defect decision remains a direct human pixel review."
+    },
+    "renderedLightLeak": {
+      "owner": "QualityBlockRenderedLightLeakDiagnostics.ValidateLatestReportForScoring",
+      "reportPath": "Assets/QA/rendered_light_leak_diagnostics.json",
+      "requireCurrentManifestSha256": true,
+      "requireCurrentCropSha256": true,
+      "warningOnly": true,
+      "mayAutomaticallyClearMajorLightLeak": false,
+      "mayAutomaticallyAssertMajorLightLeak": false,
+      "reason": "Source geometry, light and shadow validation cannot prove the absence of a visible post-tonemap bright seam or hole. Current pixel-domain triage is mandatory, while the final major_light_leak decision remains direct human review of exact sealed pixels."
+    },
+    "temporalRuntime": {
+      "owner": "QualityBlockTemporalRuntimeEvidenceGuard.ValidateLatestReceiptForScoring",
+      "requireSealedPerFrameLightingFingerprint": true,
+      "requireFilmicHdrToLdrForEveryFrame": true,
+      "requireZeroFallback": true
+    },
+    "temporalCandidateCoherence": {
+      "owner": "QualityBlockTemporalCandidateCoherenceQA.ValidateForScoring",
+      "contractPath": "Assets/QA/temporal_candidate_coherence_contract.json",
+      "requireCurrentStillCandidateFreshness": true,
+      "requireSameCandidateCombinedSha256": true,
+      "requireSameCandidateEpoch": true,
+      "requireSamePersistedSceneSha256": true,
+      "requireTemporalGeneratedAfterCandidateMutationAndLatestTrackedInput": true,
+      "automaticVisualPoints": 0,
+      "mayClearSevereAliasingOrShimmer": false,
+      "mayClearVisibleLodPop": false
+    }
+  },
+  "visualScoreAwardedByThisQA": false,
+  "runtimeRenderVerified": false,
+  "note": "Implementation Readiness and source-side validation remain separate from Visual Fidelity. Reviewed evidence must still pass render provenance, observability, current SHA-256-bound rendered repetition and light-leak triage, temporal runtime sealing, current temporal-to-still candidate coherence and the canonical 92/100 gate. Pixel/provenance diagnostics never substitute for direct review and cannot decide their associated critical defects by themselves."
+}

@@ -1,0 +1,99 @@
+{
+  "schemaVersion": "1.0",
+  "purpose": "Bind every Visual Fidelity score to the exact native Unity-rendered 4K files and exact 100% crops that were reviewed. This contract prevents implementation/source claims or unrelated PNGs from being used as render evidence.",
+  "visualScoreAwardedByThisContract": false,
+  "visualPassThreshold": 92,
+  "requiredFiles": {
+    "captureManifest": "Assets/QA/4k_capture_manifest.json",
+    "captureReceipt": "Assets/QA/render_capture_receipt.json",
+    "reviewedEvidence": "Assets/QA/visual_fidelity_evidence.json",
+    "boundEvidenceTemplate": "Assets/QA/visual_fidelity_evidence.bound_template.json",
+    "provenanceResult": "Assets/QA/render_evidence_provenance.json"
+  },
+  "supportedWorkflow": {
+    "captureAndSeal": "QualityBlockRenderEvidenceProvenanceQA.CaptureAndSealNative4KEvidence",
+    "sealExistingRuntimeCapture": "QualityBlockRenderEvidenceProvenanceQA.SealCurrentCapture",
+    "writeBoundReviewTemplate": "QualityBlockRenderEvidenceProvenanceQA.WriteBoundEvidenceTemplate",
+    "validateProvenance": "QualityBlockRenderEvidenceProvenanceQA.ValidateEvidenceProvenance",
+    "evaluateVisualGate": "QualityBlockRenderEvidenceProvenanceQA.EvaluateEvidenceBoundVisualGate",
+    "legacyDirectEvaluatorAllowed": false,
+    "legacyDirectEvaluator": "QualityBlockVisualFidelityGate.EvaluateVisualGate",
+    "legacyEditorMenuEnabled": false,
+    "runnerRule": "Automation/CI/CLI must call EvaluateEvidenceBoundVisualGate, never the legacy direct evaluator."
+  },
+  "runtimeManifestRequirements": {
+    "renderProducedByUnity": true,
+    "visualFidelityStatusBeforeReview": "UNSCORED_REVIEW_REQUIRED",
+    "nativeResolution": [3840, 2160],
+    "requiredViews": ["hero", "oblique", "grazing"],
+    "projectColorSpace": "Linear",
+    "sourceMustIdentify": "Unity Camera.Render",
+    "generatedUtcRequired": true,
+    "unityVersionRequired": true,
+    "graphicsDeviceRequired": true,
+    "graphicsApiRequired": true,
+    "realtimeReflectionProbesRefreshedImmediatelyBeforeCapture": true,
+    "minimumRecordedMsaaSamples": 1,
+    "canonicalFramePathPattern": "Assets/QA/Captures4K/{view}_3840x2160.png",
+    "canonicalCropPathPattern": "Assets/QA/Captures4K/{view}_crop_*_100pct.png"
+  },
+  "sealedReceiptRequirements": {
+    "shaAlgorithm": "SHA-256",
+    "captureSessionIdRequired": true,
+    "manifestByteHashRequired": true,
+    "everyManifestFrameAndCropByteHashRequired": true,
+    "decodedDimensionsRequired": true,
+    "receiptMustMatchCurrentManifestBytes": true,
+    "receiptMustMatchCurrentImageBytes": true,
+    "changedOrReplacedImageAfterSeal": "FAIL_PROVENANCE"
+  },
+  "reviewedEvidenceBindingRequirements": {
+    "renderVerifiedMustBeTrueOnlyAfterHumanOrAuthorizedRenderReview": true,
+    "captureSessionIdMustEqualReceipt": true,
+    "captureManifestSha256MustEqualCurrentManifest": true,
+    "captureReceiptSha256MustEqualCurrentReceipt": true,
+    "unityVersionMustEqualManifest": true,
+    "captureFramePathsAndDimensionsMustExactlyEqualManifest": true,
+    "cropPathSetsMustExactlyEqualManifest": true,
+    "extraOrMissingRequiredView": "FAIL_PROVENANCE",
+    "extraOrMissingManifestCrop": "FAIL_PROVENANCE"
+  },
+  "true100PercentCropRequirements": {
+    "resampledFlagMustBeFalse": true,
+    "cropRectangleMustBeInsideNativeFrame": true,
+    "decodedCropDimensionsMustEqualManifest": true,
+    "verificationMethod": "Decode the native PNG and crop PNG to Color32, then compare every crop texel against the corresponding source-frame texel using the manifest x/y/width/height rectangle.",
+    "allowedPixelMismatchCount": 0,
+    "resampling": "FORBIDDEN",
+    "sharpening": "FORBIDDEN",
+    "interpolation": "FORBIDDEN",
+    "replacementCrop": "FORBIDDEN"
+  },
+  "criticalDefectMapping": [
+    {
+      "id": "claimed_render_without_actual_render",
+      "automaticFailWhen": "Runtime manifest is still a template, receipt is missing/invalid, evidence is not bound to the receipt/manifest hashes, or scoring bypasses the evidence-bound evaluator."
+    },
+    {
+      "id": "non_100_percent_or_modified_crop_evidence",
+      "automaticFailWhen": "Any crop is resampled, sharpened, replaced, stale, has altered bytes after sealing, or differs by one or more decoded Color32 texels from its source-frame rectangle."
+    }
+  ],
+  "scoringSeparation": {
+    "implementationReadinessCanAwardVisualPoints": false,
+    "provenanceValidationCanAwardVisualPoints": false,
+    "captureProductionCanAwardVisualPoints": false,
+    "numericVisualGateMayRunOnlyAfterProvenanceStatus": "VALID_FOR_VISUAL_SCORING",
+    "requiredNumericGate": "Assets/QA/visual_fidelity_gate.json",
+    "requiredCategoryEvidence": "All nine categories must contain observed render evidence, deductions and corrective actions as applicable.",
+    "requiredCriticalDefectReview": "Every configured critical defect must be explicitly reviewed against the sealed render set."
+  },
+  "lookdevAndRuntimePolicy": {
+    "frontalObliqueGrazingEvidenceRequired": true,
+    "scoreOnlyObservableProperties": true,
+    "doNotInferFromSourceCode": true,
+    "doNotInferFromImplementationReadiness": true,
+    "doNotInferFromGenerationBriefs": true,
+    "firstRealRenderAction": "Stop speculative scene expansion, seal the capture, review native frames/crops, score, then fix observed deductions/critical defects before adding new detail."
+  }
+}

@@ -1,0 +1,46 @@
+{
+  "schemaVersion": "1.1",
+  "purpose": "Fail closed before authoritative native-4K evidence if an actively rendered Unity stock primitive is large enough in the exact benchmark framing to present a credible visible primitive-placeholder risk.",
+  "criticalDefectRiskReduced": "visible_primitive_placeholder",
+  "scope": {
+    "scene": "Assets/Scenes/QualityBlock1990s.unity",
+    "root": "QualityBlock1990s",
+    "authoritativeViewSource": "QualityBlock4KCapture.Views; source-token lock must match exact 3840x2160 hero/oblique/grazing positions, targets and FOV before projection QA can run",
+    "requiredViews": ["hero", "oblique", "grazing"],
+    "nativeResolution": [3840, 2160],
+    "rendererPolicy": "Inspect active MeshFilter + Renderer pairs under the quality-block root. Authored replacement art is naturally included when active; inactive generated fallbacks are ignored.",
+    "builtInMeshes": ["Cube", "Cylinder", "Sphere", "Capsule", "Plane", "Quad"],
+    "screenStockPlaneAndQuad": true,
+    "planarCarrierPolicy": "Planar topology remains valid when physically justified. However an untouched Unity stock Plane or Quad that is visibly significant in the locked benchmark framing is treated as placeholder risk under the same projection thresholds. Legitimate decals, fabric, foliage, optical sheets and other thin carriers must use purpose-built authored/generated meshes plus applicable construction/material metadata; this gate does not forbid planar topology."
+  },
+  "projection": {
+    "basis": "Project world-space Renderer.bounds corners through camera pose/FOV values duplicated from QualityBlock4KCapture only after config QA proves the capture source still contains the exact locked values.",
+    "nearPlaneGuardMetres": 0.05,
+    "frameClipping": "Projected bounds are intersected with the 3840x2160 frame; fully off-screen or fully behind-camera objects do not count as benchmark exposure.",
+    "crossingCameraPlanePolicy": "A stock primitive with bounds spanning the benchmark camera plane is treated as visibly significant and fails closed."
+  },
+  "hardThresholds": {
+    "minimumVisibleWidthPixels": 48,
+    "minimumVisibleHeightPixels": 18,
+    "minimumVisibleAreaPixels": 1200,
+    "largeAreaAutomaticFailurePixels": 4096,
+    "logic": "FAIL a stock primitive when (visible width >= 48 AND visible height >= 18 AND visible area >= 1200) OR visible area >= 4096 OR its bounds span the camera plane. The same rule applies to Cube, Cylinder, Sphere, Capsule, Plane and Quad. These thresholds are source-side risk screening, not a substitute for pixel review."
+  },
+  "failureHandling": {
+    "correctiveAction": "Reconstruct the actual manufactured/installed assembly and replace the visible stock primitive with dimensioned physical geometry or authored/generated replacement geometry. For a legitimate planar carrier, use a purpose-built mesh with applicable construction/material metadata rather than the untouched built-in Plane/Quad. Do not evade the gate by renaming the object, shrinking a required component, hiding it only for QA, or weakening thresholds.",
+    "runtimeReport": "Assets/QA/benchmark_primitive_exposure_runtime_report.json",
+    "runtimeReportSchemaVersion": "1.1",
+    "runtimeReportStatusOnPass": "SOURCE_PREFLIGHT_PASS_NATIVE_4K_REVIEW_REQUIRED",
+    "visualFidelityPointsAwarded": 0,
+    "criticalDefectClearedBySourcePass": false
+  },
+  "renderVerification": {
+    "status": "PENDING_NATIVE_4K_PIXEL_REVIEW",
+    "requiredEvidence": [
+      "hero_3840x2160.png plus 100% crops",
+      "oblique_3840x2160.png plus 100% crops",
+      "grazing_3840x2160.png plus 100% crops"
+    ],
+    "rule": "A source-side PASS only establishes that no visibly significant active Unity stock primitive survives in the benchmark projection. It cannot clear visible_primitive_placeholder or award Geometry points until actual rendered evidence is inspected."
+  }
+}

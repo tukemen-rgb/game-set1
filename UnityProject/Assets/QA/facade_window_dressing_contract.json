@@ -1,0 +1,143 @@
+{
+  "schemaVersion": "1.0",
+  "id": "facade_window_dressing_physical_variation",
+  "scope": "Generated Unity benchmark fallback only; authored danchi replacement remains authoritative.",
+  "status": "PENDING_UNITY_RUNTIME",
+  "visualFidelityPointsAwarded": 0,
+  "manufacture_installation": {
+    "assembly": "Ordinary occupied-apartment curtain dressing behind an aluminium sliding sash, representative of late-1990s to circa-2000 Japanese public/suburban housing interiors visible from outdoors.",
+    "components": [
+      {
+        "id": "curtain_track",
+        "construction": "extruded aluminium rail with opaque factory coating",
+        "dimensions_mm": { "visible_length": 2020, "visible_height": 18, "visible_depth": 22 },
+        "mounting": "fixed to interior lintel/header immediately above curtain leaves; fasteners are occluded at benchmark exterior distance",
+        "geometry_vs_material": "Track extrusion is geometry; coating roughness and pigment are material response. No painted highlight line."
+      },
+      {
+        "id": "left_curtain_leaf",
+        "construction": "woven synthetic/cotton-blend domestic curtain, gathered on track",
+        "dimensions_mm": { "visible_width_range": [250, 930], "visible_height_range": [1290, 1410], "pleat_pitch": 55, "pleat_amplitude": 12 },
+        "mounting": "suspended from track; LOD0 carries physical vertical pleat relief",
+        "geometry_vs_material": "Macro pleats and open gap are geometry; yarn/weave is normal/albedo microstructure."
+      },
+      {
+        "id": "right_curtain_leaf",
+        "construction": "paired woven domestic curtain leaf; same cloth family as the left leaf but independently gathered",
+        "dimensions_mm": { "visible_width_range": [250, 930], "visible_height_range": [1290, 1410], "pleat_pitch": 55, "pleat_amplitude": 12 },
+        "mounting": "suspended from the same track",
+        "geometry_vs_material": "Opening asymmetry comes from physical leaf widths/positions, never from a painted dark stripe."
+      },
+      {
+        "id": "existing_room_backing",
+        "construction": "non-emissive room/curtain-depth backing already provided by facade optics",
+        "dimensions_mm": { "depth_behind_glass": 180 },
+        "mounting": "visual depth stop only; does not replace glazing or curtain geometry",
+        "geometry_vs_material": "Backing supplies room-value depth; it must not carry fake window reflections or baked highlights."
+      }
+    ],
+    "interfaces_gaps_seals": {
+      "glass_front_plane_z_m": 0.03,
+      "curtain_plane_nominal_z_m": -0.105,
+      "track_nominal_z_m": -0.112,
+      "room_backing_z_m": -0.18,
+      "center_open_gap_mm_range": [200, 1220],
+      "minimum_glass_to_cloth_clearance_mm": 120,
+      "note": "Curtain geometry is physically separated from glazing and room backing to prevent interpenetration and flat layered-card appearance."
+    },
+    "orientation": "All visible cloth and track faces are oriented toward the exterior window and inherit the sash/facade coordinate frame.",
+    "exposure_aging": {
+      "environment": "Interior daytime surface behind glazing; low direct weather exposure, repeated summer UV through glass, household dust and handling.",
+      "cause_based_changes": [
+        "slight UV desaturation toward exposed folds over years",
+        "minor lower-hem dust accumulation",
+        "softening/polish at handled draw edges"
+      ],
+      "excluded": [
+        "exterior rain streaks on cloth",
+        "rust on fabric",
+        "random disaster damage",
+        "painted-in sun highlights or window reflections"
+      ]
+    }
+  },
+  "materials_finish": [
+    {
+      "id": "curtain_fabric_0_to_3",
+      "surface_class": "dry dielectric textile",
+      "albedo_linear_rgb": {
+        "families": [
+          [0.78, 0.76, 0.68],
+          [0.70, 0.68, 0.61],
+          [0.82, 0.81, 0.75],
+          [0.62, 0.64, 0.63]
+        ],
+        "rule": "Only pigment/yarn variation is encoded. No folds, shadows, highlights or sky reflection are painted into albedo."
+      },
+      "roughness": { "dry_range": [0.87, 0.91], "implementation_smoothness_range": [0.09, 0.126] },
+      "metallic": 0.0,
+      "specular_f0": 0.04,
+      "normal_scale": 0.36,
+      "microstructure": { "texture_resolution_px": 512, "physical_tile_m": 0.18, "features": ["warp yarn", "weft yarn", "subtle slub"], "macro_pleat_geometry_pitch_m": 0.055, "macro_pleat_geometry_amplitude_m": 0.012 },
+      "wetness": "Interior benchmark state is dry. No wetness darkening or gloss boost is allowed.",
+      "uv_aging": "Very mild desaturation is permissible as a future causal layer, but is not baked as directional lighting.",
+      "angular_fresnel_response": "Textile remains low-gloss; dielectric Fresnel is weak frontally and increases only physically toward grazing angles. Glazing in front remains the dominant specular layer."
+    },
+    {
+      "id": "curtain_track_coated_aluminium",
+      "surface_class": "opaque dielectric coating over aluminium extrusion",
+      "albedo_linear_rgb": [0.76, 0.76, 0.72],
+      "roughness": 0.62,
+      "metallic": 0.0,
+      "specular_f0": 0.04,
+      "normal_scale": 0.0,
+      "microstructure": "Sub-millimetre coating texture is below benchmark need; track silhouette and section are geometry.",
+      "wetness": "Interior dry state only.",
+      "uv_aging": "Possible slight yellowing/chalking after long exposure through glazing; not directionally painted.",
+      "angular_fresnel_response": "Coating gives modest dielectric edge response; exposed-metal metallic values are prohibited because the visible surface is coating."
+    }
+  ],
+  "variation_logic": {
+    "approved_manufactured_repetition": [
+      "same sash dimensions across repeated housing bays",
+      "same curtain-track extrusion section",
+      "paired curtain construction"
+    ],
+    "prohibited_clone_repetition": [
+      "all thirty apartments showing the same curtain opening",
+      "same cloth family and same left/right gathering dimensions repeated conspicuously",
+      "identical room-value rectangle in every visible bay",
+      "a repeating baked highlight/reflection pattern"
+    ],
+    "deterministic_layout_rules": {
+      "apartment_count": 30,
+      "curtain_material_families": 4,
+      "center_gap_m_range": [0.20, 1.22],
+      "left_right_gather_asymmetry_fraction": [-0.16, 0.16],
+      "height_m_range": [1.29, 1.41],
+      "minimum_unique_lod0_layout_signatures": 18,
+      "maximum_exact_layout_repetitions": 3,
+      "reason": "Occupant behavior varies while mass-produced exterior construction remains regular."
+    }
+  },
+  "lod": {
+    "lod0": { "screen_relative_transition": 0.22, "cloth": "dedicated physically pleated mesh with metre-derived UV scale", "track": "full extrusion" },
+    "lod1": { "screen_relative_transition": 0.10, "cloth": "two lower-cost planes preserving physical open gap", "track": "full extrusion" },
+    "lod2": { "screen_relative_transition": 0.045, "cloth": "two planes preserving opening silhouette", "track": "omitted as sub-pixel" },
+    "lod3": { "screen_relative_transition": 0.018, "cloth": "two planes preserving large-scale occupancy value", "track": "omitted" },
+    "transition": "animated cross-fade; visible pop is a critical render-review defect"
+  },
+  "lookdev": {
+    "required_views": ["frontal", "oblique", "grazing"],
+    "generation_brief": "4K macro lookdev sheet of an ordinary circa-2000 Japanese apartment aluminium sliding window seen from outside in midsummer daylight. Show two depth-separated clear glass leaves, an interior coated-aluminium curtain track, two dry woven off-white/beige curtain leaves with 55 mm gathered pleats and a naturally asymmetric opening, and a non-emissive dim room backing 180 mm behind glass. Include frontal, 35-degree oblique and 75-degree grazing views plus 100% crops. Sun/sky reflections must exist only on glass through real light transport; fabric must remain rough and dielectric with visible weave but no painted highlight. No disaster, damage, renovation or reconstruction cues.",
+    "render_checks": [
+      "curtain geometry clearly behind glass rather than coplanar",
+      "glass reflection remains dominant over fabric specular",
+      "30-bay facade does not read as cloned window cards",
+      "cloth weave does not shimmer or become moire at distance",
+      "LOD transition does not visibly close/open the curtain gap"
+    ]
+  },
+  "runtimeRenderVerified": false,
+  "verification": "PENDING_UNITY_RUNTIME"
+}

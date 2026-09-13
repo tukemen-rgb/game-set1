@@ -1,0 +1,109 @@
+{
+  "schemaVersion": "1.0.0",
+  "runUtc": "2026-09-10T10:04:54Z",
+  "topic": "generated tree woody continuity and physical bark mapping",
+  "constraints": {
+    "branch": "gpt/unity-migration",
+    "startHead": "67b2cc2b5239773626ee156cf917273bf4c6a3b2",
+    "preserveGodot": true,
+    "baseMergePerformed": false,
+    "excludedThemes": ["earthquake", "disaster", "reconstruction"],
+    "visualFidelityScoringRequiresActualRender": true
+  },
+  "sourceAudit": {
+    "finding": "The generated fallback trees had biologically implausible reverse radius steps at modular woody joints and every reused woody mesh restarted normalized UV0 at 0..1. With one shared bark material, this could expose both pipe-like section rings and exact repeated bark phase in native 4K vegetation crops.",
+    "legacyTrunkReverseRadiusJumpsM": [0.040343, 0.034214, 0.028086, 0.021957, 0.015829, 0.009700],
+    "legacyPrimaryBranchAtoBReverseRadiusJumpM": 0.014400,
+    "legacyUvMode": "normalized 0..1 V restarted independently on every trunk/branch/twig/root module",
+    "riskToGate": [
+      "Geometry & construction fidelity: segmented reverse-taper rings can read as assembled pipe sections rather than continuous woody growth.",
+      "Texture/microdetail/texel fidelity: identical UV restarts can make bark repetition immediately obvious.",
+      "Vegetation/natural complexity: modular continuity defects weaken the biological hierarchy even when branch counts are high.",
+      "Material/PBR physical plausibility: bark needs one dry dielectric response and physically coherent map registration rather than texture tricks hiding geometry seams."
+    ]
+  },
+  "implemented": {
+    "contract": "Assets/QA/tree_woody_continuity_contract.json",
+    "qaAndCorrection": "Assets/Editor/QualityBlockTreeWoodyContinuityQA.cs",
+    "lookdev": "Assets/QA/tree_woody_continuity_lookdev.svg",
+    "metadataRegistry": "Assets/QA/scene_metadata_coverage_contract.json",
+    "authoritativePacket": "Assets/Editor/QualityBlockNative4KReviewPacket.cs",
+    "geometry": [
+      "Preserve the existing generated biological centerlines and art-slot ownership, but regenerate woody segment meshes with circular endpoint rings whose mating radii agree.",
+      "Seven trunk sections taper from the existing approximately 0.31 m base radius to the existing 0.115 m crown target without the old outward radius jumps.",
+      "Each of seven primary branch A/B pairs now uses A-end radius equal to B-start radius; B keeps downstream taper.",
+      "Root flares, secondary branches and twigs retain hierarchy and deterministic non-primitive mesh construction.",
+      "Endpoint irregularity fades to zero at construction joints, preventing a procedural bark silhouette wobble from reopening the mating ring."
+    ],
+    "textureMaterial": [
+      "Woody UV0 is expressed in metric cylindrical coordinates instead of normalized per-module coordinates.",
+      "Trunk V accumulates continuously through all seven sections; primary A/B V also continues across its joint.",
+      "Six trees receive deterministic distinct bark phase offsets, with at least five distinct trunk starts required.",
+      "PBR_Bark albedo/normal/metallic-smoothness channels are synchronized to 0.55 cycles/m, about 1.818 m physical tile length and about 563.2 texels/m for the 1024 px source.",
+      "Bark metallic is forced to 0, normal scale to 0.85, emission off; mipmaps, trilinear sampling, anisotropy >=8, normal-map semantics and linear metallic-smoothness import are fail-closed."
+    ],
+    "lod": [
+      "Retained LOD proxies are rebound to the exact corrected source mesh and bark material rather than retaining legacy normalized-UV geometry.",
+      "Four-level animated cross-fade remains mandatory; smaller biological tiers may disappear only according to the existing LOD hierarchy."
+    ],
+    "metadata": "The Trees scene domain now explicitly links the woody continuity contract and states continuous trunk/primary joints, visible root flare, metric bark, dry dielectric response and geometry-vs-material responsibilities. Replacement-slot metadata also links the same contract.",
+    "captureEnforcement": "The Complete Native 4K Review Packet applies/persists woody continuity after benchmark/PBR rebuilding and revalidates it before reflection synchronization, immediately before still Camera.Render, and again before temporal capture. Source QA never sets a Visual Fidelity score."
+  },
+  "selfAuditCorrections": [
+    "The first QA revision used an index-from-end expression for the final trunk section. It was replaced with conventional array indexing to reduce Unity compiler-version risk.",
+    "Root-flare grade validation originally referenced the art-slot component transform; it now uses the generated fallback-root world Y datum that actually owns the detailed tree master.",
+    "Source/proxy mesh rebinding originally copied the source material before the source was explicitly reset to bark. The hardened path now assigns corrected mesh and bark material together to source and every retained proxy, then validates identity."
+  ],
+  "substantiveWorkHead": "ff37d9780faf8e2403c759eec0544a59b98a22c7",
+  "substantiveCommits": [
+    "aa271b63901cd60532102fd2b7039e284fca4253",
+    "b13199e1e7ad3f60f34264083793524969c00b66",
+    "06476d222f448826ed19941d197beba933842498",
+    "3762172c6c2c7b10cdbc6b36bb67808a2b99afa8",
+    "f59720fb182cab00dd828a85dbc1918536166f29",
+    "ff37d9780faf8e2403c759eec0544a59b98a22c7"
+  ],
+  "verification": {
+    "level": "SOURCE_STATIC_ONLY",
+    "gitCompare": "startHead..substantiveWorkHead is ahead_by=6, behind_by=0, merge base remains startHead; changed files are limited to UnityProject/Assets/Editor and UnityProject/Assets/QA.",
+    "staticChecksPerformed": [
+      "Recomputed legacy trunk and primary A/B radius discontinuities from QualityBlockTreeDetailUpgrade construction parameters.",
+      "Reviewed global generated texture-sampling QA: Standard map registration follows _MainTex and does not impose the old bark 2.8 tiling value.",
+      "Reviewed physical texel-density QA: metric UV0 combined with 0.55 material tiling is measured in world area and remains subject to the 256 texel/m source floor and 512 texel/m preferred hero target.",
+      "Reviewed scene material physicality QA: it has no conflicting hard-coded PBR_Bark tiling requirement.",
+      "Verified source change set contains no Godot path and no base merge in the run comparison."
+    ],
+    "unity6000_3_0f1Compile": "PENDING",
+    "native3840x2160Render": "PENDING",
+    "hundredPercentCrops": "PENDING",
+    "temporalEvidence": "PENDING",
+    "criticalDefectsCleared": false,
+    "visualFidelityPointsAwarded": 0
+  },
+  "implementationReadiness": {
+    "score": 93,
+    "possible": 100,
+    "status": "UNCHANGED",
+    "reason": "The seven remaining readiness points are reserved for real Unity 6000.3.0f1 compile/runtime evidence; source-side vegetation hardening does not substitute for that evidence."
+  },
+  "visualFidelity": {
+    "status": "UNSCORED",
+    "passClaimed": false,
+    "pointsAwardedThisRun": 0,
+    "expectedScoreImpactOnlyAfterRenderedEvidence": [
+      "Vegetation/natural complexity: possible recovery by removing pipe-like woody joints and cloned bark phase if the actual hero/oblique pixels confirm natural continuity.",
+      "Geometry & construction fidelity: possible recovery if trunk/primary unions render without visible reverse steps, gaps or interpenetration.",
+      "Texture/microdetail/texel fidelity: possible recovery if metric bark mapping removes immediately obvious repeats without introducing stretch, seam, moire or shimmer.",
+      "Material/PBR physical plausibility: possible recovery if grazing bark remains rough dielectric with no metallic flash or baked-light appearance.",
+      "Temporal/LOD/aliasing stability: no credit until retained corrected meshes are observed across actual LOD transitions."
+    ]
+  },
+  "requiredRenderedEvidenceWhenRunnerAppears": [
+    "oblique/vegetation_grounding native 3840x2160 plus 100% crop: root flare, grade contact, continuous trunk taper and bark phase",
+    "grazing/tree_shadow_contact native 3840x2160 plus 100% crop: branch unions, bark roughness/Fresnel and contact shadow",
+    "hero full frame: natural tree silhouette and absence of immediately obvious cloned bark modules",
+    "prepared temporal evidence: bark/leaf shimmer plus LOD0/1/2/3 continuity and pop"
+  ],
+  "nextBlocker": "Unity 6000.3.0f1 editor/runner compile and real native 3840x2160 execution. At first runner availability, stop speculative expansion, run Prepare Complete Native 4K Review Packet, and review the actual vegetation crops/temporal sequence. Any visible modular ring, bark restart, floating root flare, metallic bark flash, severe shimmer or LOD pop remains a critical/deductible rendered defect and must be fixed rather than waived.",
+  "recordingNote": "This run-record commit is bookkeeping and is intentionally excluded from substantiveCommits to avoid a self-referential commit hash."
+}

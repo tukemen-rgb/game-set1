@@ -1,0 +1,33 @@
+{
+  "schemaVersion": "1.1",
+  "status": "IMPLEMENTATION_READY_RENDER_PENDING",
+  "purpose": "Fail closed before and throughout realtime reflection-probe synchronization unless the prepared DanchiHighDetail source set and all retained LOD proxies still use the canonical manufacturing-scale physical UV meshes, deterministic per-piece phase identities and identical material/render state. ReflectionProbe.RenderProbe does not invoke the formal MainCamera pre-cull guard, so this binding prevents stale normalized UVs or LOD-proxy drift from contaminating the cubemap baseline. It awards zero Visual Fidelity points.",
+  "scenePath": "Assets/Scenes/QualityBlock1990s.unity",
+  "detailPhysicalUvContractPath": "Assets/QA/detail_physical_uv_contract.json",
+  "detailLodPhysicalUvBindingContractPath": "Assets/QA/detail_lod_physical_uv_binding_contract.json",
+  "requirements": {
+    "validateDetailPhysicalUvBeforeEveryReflectionLightingFingerprint": true,
+    "validateDetailLodPhysicalUvBindingBeforeEveryReflectionLightingFingerprint": true,
+    "reflectionFingerprintUsedBeforeRenderProbeRequest": true,
+    "reflectionFingerprintRevalidatedOnEveryEditorPoll": true,
+    "reflectionFingerprintRevalidatedAtCompletion": true,
+    "reflectionFingerprintRevalidatedImmediatelyBeforeStillCapture": true,
+    "physicalUvValidationMustBeReportFreeDuringFingerprinting": true,
+    "physicalUvFailureAbortsReflectionEvidence": true,
+    "actualRenderRequiredForVisualPoints": true
+  },
+  "criticalDefectRisksReduced": [
+    "obvious_repetition",
+    "severe_aliasing_or_shimmer"
+  ],
+  "visualFidelityPointsAwarded": 0,
+  "implementationReadinessScore": 93,
+  "visualFidelityStatus": "UNSCORED_UNTIL_REAL_4K_RENDER",
+  "runtimeRenderVerified": false,
+  "limitations": [
+    "This binding proves only that source and retained LOD proxy physical-UV/render-state contracts are valid whenever reflection evidence is fingerprinted; it cannot prove that repeated phase, cylinder seams, cross-fade discontinuity or micro-normal shimmer are invisible in final pixels.",
+    "Reflection coherence does not convert source validation into Visual Fidelity credit. Native 3840x2160 still and temporal evidence plus 100 percent crops remain authoritative.",
+    "The cylindrical circumference policy intentionally permits bounded texel-density deviation to close the tangent-space wrap seam; only real rendered evidence can determine whether that compromise is visually acceptable.",
+    "Unity 6000.3.0f1 compilation, generated physical-UV asset production, LOD cross-fade behavior and runtime reflection synchronization remain unverified until an actual Runner executes the packet."
+  ]
+}

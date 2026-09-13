@@ -1,0 +1,201 @@
+{
+  "schemaVersion": "1.1",
+  "contractId": "balcony-drainage-waterproofing-v1.1",
+  "scope": "Generated fallback balcony drainage, physical floor fall and waterproofing interfaces for the 30-bay five-storey danchi benchmark.",
+  "intent": "Replace the physically implausible condition of a bare balcony slab with no drainage fall, terminal drainage or waterproofing interfaces. The assembly is a conservative benchmark reconstruction, not a claim about the exact original building specification.",
+  "externalReferenceBasis": [
+    {
+      "manufacturer": "Kaneso",
+      "reference": "KWB-M / KWB-C balcony and roof drain families",
+      "url": "https://www.kaneso.co.jp/seihin/KWB-M.htm",
+      "usedFor": "Sheet-waterproof-compatible balcony drain / strainer construction and nominal 50 mm outlet plausibility."
+    },
+    {
+      "manufacturer": "Kaneso",
+      "reference": "EDSMD-1 / EPMDF-1 balcony-corridor drain families",
+      "url": "https://www.kaneso.co.jp/seihin/EDSMD-1.htm",
+      "usedFor": "80 mm-class drainage-channel width around nominal 50 mm balcony drains."
+    },
+    {
+      "reference": "Japanese balcony drainage practice summary",
+      "url": "https://www.jp-wat.com/column/biz/kankyo/balcony/",
+      "usedFor": "1:50 balcony floor fall as a conservative benchmark drainage reconstruction. This is used as a modeling assumption only, not as proof of the original building detail."
+    },
+    {
+      "manufacturer": "Tajima Roofing",
+      "reference": "Oltac Ace balcony/veranda liquid-applied urethane waterproof systems",
+      "url": "https://bousui.tajima.jp/category/coating/oltac_ace/",
+      "usedFor": "Conventional multi-coat balcony/veranda urethane waterproof layer plus protective topcoat as the material-system basis. Exact historic product, colour and microsurface are not claimed."
+    }
+  ],
+  "benchmarkAssumptions": {
+    "bayCount": 30,
+    "balconySlabNominalWidthM": 3.65,
+    "balconySlabNominalDepthM": 1.15,
+    "slidingOpeningNominalWidthM": 2.15,
+    "nominalOutletDiameterM": 0.05,
+    "channelWidthM": 0.085,
+    "channelCentreFromBalconyCentreZM": 0.43,
+    "drainGrateOuterSizeM": 0.11,
+    "waterproofUpstandHeightM": 0.10,
+    "waterproofMembraneNominalBuildUpM": 0.003,
+    "renderedTerminationProfileDepthM": 0.008,
+    "thresholdTurnWidthM": 2.20,
+    "thresholdTurnDepthM": 0.08,
+    "floorFallRatio": "1:50",
+    "floorFallRenderedRunM": 0.84,
+    "floorFallRenderedDropM": 0.0168,
+    "floorFallRearZM": -0.46,
+    "floorFallFrontZM": 0.38,
+    "floorFallRenderedWidthM": 3.45,
+    "floorFallFrontTopAboveSlabM": 0.0015,
+    "floorFallRearTopAboveSlabM": 0.0183,
+    "floorFallIsGeometryNotPaintedNormal": true,
+    "drainSidePattern": "bay parity alternates left/right; vertically aligned by bay to communicate service routing without random placement"
+  },
+  "manufactureAndInstallation": {
+    "components": [
+      {
+        "id": "rear_waterproof_upstands",
+        "construction": "Dry liquid-applied waterproof layer/protective topcoat returned up the rear wall at both sides of the sliding opening, with a thin rendered termination build-up.",
+        "dimensions": "100 mm visible upstand; nominal waterproof build-up 3 mm; rendered termination depth 8 mm to remain geometrically legible at 4K.",
+        "mounting": "Bonded/terminated to the concrete substrate behind the balcony finish; no floating gap.",
+        "interfaces": "Meets rear wall and floor plane; does not cover the sliding opening itself.",
+        "orientation": "Vertical rear-wall returns, exterior-facing balcony side.",
+        "exposure": "Rain and UV exposed but dry in the benchmark capture.",
+        "aging": "Minor UV/chalking belongs to roughness/albedo microvariation only; no peeling, failure, disaster or reconstruction state.",
+        "geometryVsMaterial": "Upstand/termination thickness is geometry. Chalking and fine topcoat relief are material-scale only."
+      },
+      {
+        "id": "threshold_waterproof_turn",
+        "construction": "Continuous waterproof turn beneath the sliding-window threshold.",
+        "dimensions": "2.20 m wide, 80 mm deep, approximately 12 mm rendered interface thickness.",
+        "mounting": "Continuous to rear substrate and floor waterproof field.",
+        "interfaces": "Below sash threshold, between the two rear upstands.",
+        "orientation": "Horizontal/rear interface.",
+        "exposure": "Recessed, intermittently rain exposed, dry at capture.",
+        "aging": "Low dirt loading relative to the open slab; no wet sheen.",
+        "geometryVsMaterial": "Threshold turn and edge break are geometry; residue is material-scale."
+      },
+      {
+        "id": "formed_floor_fall",
+        "construction": "The balcony walking field is represented as a formed screed/substrate fall carrying the dry waterproof finish, not as a flat slab with a painted gradient or normal-map illusion.",
+        "dimensions": "3.45 m wide; 0.84 m rendered run; 16.8 mm top-surface drop, equal to a 1:50 fall. Front top is 1.5 mm above the slab datum and rear top is 18.3 mm above it; the concealed lower face remains just above the slab to avoid z-fighting in the benchmark fallback.",
+        "mounting": "Continuously bonded/formed over the concrete balcony slab between the rear threshold turn and terminal channel.",
+        "interfaces": "Rear edge starts immediately beyond the threshold waterproof turn; front edge terminates immediately before the channel liner so the surface physically falls toward the drain catchment.",
+        "orientation": "Broad plane falls in +Z from the facade side toward the terminal drainage channel; no lateral random tilt.",
+        "exposure": "Foot traffic, UV and rain exposed, but fully dry for the midsummer benchmark capture.",
+        "aging": "Fine chalking/soil belongs to material-scale response and future cause-based weathering; no ponding stain is invented without rendered evidence.",
+        "geometryVsMaterial": "The 1:50 macro fall and edge thickness are geometry. Fine topcoat micro-normal, roughness breakup, chalking and Fresnel response remain material-scale."
+      },
+      {
+        "id": "terminal_drainage_channel",
+        "construction": "Shallow terminal channel/liner near the balcony outer edge, feeding the local drain. The broad floor fall is actual geometry and is not faked with a painted normal gradient.",
+        "dimensions": "85 mm channel width; spans the usable bay width; shallow 3 mm rendered liner surface.",
+        "mounting": "Bonded to/formed at slab finish before the front guardrail zone.",
+        "interfaces": "Continuous with the drain strainer and immediately downstream of the rendered 1:50 floor fall.",
+        "orientation": "Horizontal, parallel to balcony front edge.",
+        "exposure": "Rain exposed, dry at benchmark capture.",
+        "aging": "Any future residue must be source-attributed to drainage concentration; no random dark stripe.",
+        "geometryVsMaterial": "Channel termination and lip are geometry. Water staining is a separate cause-based weathering layer."
+      },
+      {
+        "id": "coated_drain_strainer",
+        "construction": "Square coated-metal strainer above an embedded drain body. The concealed outlet/body below the floor is represented in metadata rather than exposed geometry.",
+        "dimensions": "110 mm square external grate; nominal 50 mm outlet; millimetric frame/slat thickness.",
+        "mounting": "Flush/semi-flush in the channel with no floating offset.",
+        "interfaces": "Overlaps the terminal channel and remains entirely inside the balcony slab footprint.",
+        "orientation": "Horizontal grate, near one side of each bay.",
+        "exposure": "Rain/foot-traffic exposed, dry at capture.",
+        "aging": "Coating may be slightly dulled; exposed surface remains dielectric because resin coating covers the metal substrate.",
+        "geometryVsMaterial": "Open-frame/slat silhouette is geometry; coating microtexture is material response."
+      }
+    ],
+    "broadFloorFallPolicy": "The benchmark now contains an actual sloped floor surface. It is implementation evidence only until native 3840x2160 pixels demonstrate the slope reads naturally without aliasing, floating seams, repetition or implausible drainage geometry."
+  },
+  "materials": {
+    "MAT_BalconyWaterproofingDry": {
+      "surface": "aged dry exterior urethane waterproof/protective topcoat over the formed balcony substrate",
+      "albedoSrgb": [0.245, 0.255, 0.245],
+      "roughnessTarget": 0.72,
+      "smoothnessRange": [0.22, 0.34],
+      "metallic": 0.0,
+      "dielectricF0Approx": 0.04,
+      "normalScale": 0.18,
+      "microstructure": "1024 px deterministic tileable isotropic micro-normal + bounded smoothness breakup at a 0.50 m sampling period; no macro runoff signal and no baked highlight",
+      "microstructureContract": "Assets/QA/balcony_surface_microstructure_contract.json",
+      "wetness": 0.0,
+      "uvAging": "subtle desaturation/chalking only; no catastrophic failure",
+      "angularFresnel": "ordinary dielectric Fresnel; no painted edge highlight"
+    },
+    "MAT_BalconyDrainCoatedCast": {
+      "surface": "resin-coated cast-metal drain strainer",
+      "albedoSrgb": [0.20, 0.22, 0.20],
+      "roughnessTarget": 0.66,
+      "metallic": 0.0,
+      "dielectricF0Approx": 0.04,
+      "normalScale": 0.0,
+      "microstructure": "fine coating texture; substrate metal does not make the coated top surface metallic",
+      "wetness": 0.0,
+      "uvAging": "minor dulling only",
+      "angularFresnel": "coated dielectric Fresnel; no baked/specular-painted highlight"
+    }
+  },
+  "geometryPolicy": {
+    "visibleUnityPrimitiveMeshesForbidden": true,
+    "dimensionBakedChamferedSourceRequired": true,
+    "combinedAssemblyMeshesRequired": true,
+    "floorFallUsesPurposeBuiltSixFaceMesh": true,
+    "floorFallMetricUv0Required": true,
+    "collidersForbiddenOnDetailRoot": true,
+    "rendererBudgetMaximum": 90,
+    "expectedWaterproofAssemblyRenderers": 30,
+    "expectedFloorFallRenderers": 30,
+    "expectedDrainGrateRenderers": 30
+  },
+  "lodPolicy": {
+    "policy": "Construction-critical drainage/waterproofing uses one low-cost canonical assembly shared across every Danchi LOD state rather than being switched by the DanchiHighDetail renderer-subset LODGroup.",
+    "reason": "A stable shared assembly avoids a floor-profile or grate/channel disappearance during LOD transitions; actual temporal pixels must still verify that the millimetric grate, slope edges and micro-normal response do not shimmer.",
+    "sharedAcrossLod0Lod1Lod2Lod3": true,
+    "actualTemporalVerificationRequired": true
+  },
+  "weatheringPolicy": {
+    "causeBasedOnly": true,
+    "benchmarkState": "dry midsummer Japanese daylight",
+    "wetnessMustRemainZero": true,
+    "futureDrainResidueRequiresDrainCatchmentAttribution": true,
+    "disasterDamageForbidden": true
+  },
+  "lookdevGenerationBrief": "Oblique 100 percent crop of one ordinary Japanese apartment balcony in dry midsummer light. Show the threshold turn at the facade, a subtly readable 1:50 floor fall across 0.84 m, the 85 mm terminal channel and one 110 mm coated drain grate. The macro fall must be visible only through true perspective, contact shadow and grazing reflection. The waterproof topcoat may show subtle isotropic micro-normal and roughness breakup, but no exaggerated texture, painted gradient, wet sheen, distress damage or disaster cues. Include a grazing-light variant specifically to judge whether the 16.8 mm drop and microsurface read as construction/material rather than a warped or procedurally noisy plane.",
+  "formalEvidencePolicy": {
+    "nativeResolutionRequired": [3840, 2160],
+    "views": ["hero", "oblique", "grazing"],
+    "required100PercentCrops": ["oblique/balcony_services", "oblique/construction_depth", "grazing/material_grazing"],
+    "temporalCases": ["temporal/subpixel_grazing", "temporal/lod_transition"],
+    "automaticVisualPoints": 0,
+    "renderVerificationStatus": "pending_real_unity_runtime"
+  },
+  "visualFidelityRelevance": {
+    "geometry_and_construction_fidelity": "direct",
+    "material_pbr_physical_plausibility": "direct",
+    "texture_microdetail_texel_fidelity": "direct through the separate balcony microsurface contract",
+    "lighting_shadows_reflections": "supporting because a true sloped plane and physical micro-normal change grazing response",
+    "weathering_context_causality": "direct because residue now has a physical gravity path to a terminal channel",
+    "period_accuracy_scene_authenticity": "supporting",
+    "temporal_lod_aliasing_stability": "risk_must_be_observed"
+  },
+  "criticalDefects": [
+    "visible_primitive_placeholder_geometry",
+    "obviously_painted_baked_highlights",
+    "materially_impossible_metallic_specular_values",
+    "obvious_repetition",
+    "floating_or_interpenetrating_hero_geometry",
+    "inconsistent_sun_shadow_direction",
+    "disaster_theme",
+    "severe_aliasing_or_shimmer",
+    "visible_lod_pop",
+    "major_light_leak",
+    "missing_required_construction_material_metadata",
+    "claiming_render_quality_without_actual_render"
+  ]
+}

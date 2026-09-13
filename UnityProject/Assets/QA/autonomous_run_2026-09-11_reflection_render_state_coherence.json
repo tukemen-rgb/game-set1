@@ -1,0 +1,105 @@
+{
+  "schemaVersion": "1.0",
+  "runDate": "2026-09-11",
+  "startHead": "3d0eb49a1391c7b5fb53f7fa0969f95a2029e4be",
+  "substantiveWorkHead": "0e2d5099887a802d7ffbcbc198223e5ce8b26812",
+  "branch": "gpt/unity-migration",
+  "baseMerged": false,
+  "godotModified": false,
+  "forbiddenThemesIntroduced": false,
+  "substantiveCommits": [
+    "f9343601980f5f34d494b1fee54c7a49bba29c34",
+    "5a147764011a00040a10e4e4261028699bac0281",
+    "213186f1e04184a0ad9b01b863adce127562af99",
+    "ad25bdfcfa7b2748754b8a1e83b9e646b4bebe3c",
+    "030b7bbc21a6796fcc58fe1f754c3aa7349895ff",
+    "0e2d5099887a802d7ffbcbc198223e5ce8b26812"
+  ],
+  "focus": "Close the evidence-integrity gap where realtime reflection cubemaps could be completed under one renderable geometry/material/texture state and reused for native-4K stills after that state changed while the physical SummerSun/sky hash remained identical.",
+  "problemFound": {
+    "summary": "The existing asynchronous reflection waiter hashed SummerSun, sky, ambient SH, reflection/fog and global shadow/LOD settings at request, every Editor poll, completion and pre-still, but did not bind active renderer transforms, mesh state, material state or texture bindings. A stable lighting hash therefore did not by itself prove that the cubemap and still described the same renderable scene/material state.",
+    "visualGateRisk": [
+      "material_pbr",
+      "lighting_shadows_reflections",
+      "texture_microdetail",
+      "weathering_causality",
+      "geometry_construction",
+      "cinematic_image"
+    ],
+    "criticalDefectRisk": [
+      "baked_or_painted_highlights",
+      "impossible_material_physics",
+      "obvious_repetition",
+      "hero_geometry_intersection",
+      "major_light_leak",
+      "unverified_render_claim"
+    ]
+  },
+  "implementation": {
+    "contract": "Assets/QA/reflection_render_state_coherence_contract.json",
+    "fingerprint": "Assets/Editor/QualityBlockReflectionRenderStateFingerprint.cs",
+    "materialOverrideGuard": "Assets/Editor/QualityBlockReflectionMaterialOverrideGuard.cs",
+    "integration": "Assets/Editor/QualityBlockReflectionLightingStateFingerprint.cs",
+    "outerFingerprintSchema": "reflection-lighting-state-v2",
+    "innerFingerprintSchema": "reflection-render-state-v1",
+    "algorithm": "SHA-256",
+    "boundState": [
+      "benchmark scene AssetDatabase dependency hash",
+      "active renderer deterministic hierarchy/type identity",
+      "renderer world transforms, bounds, shadow/probe/sorting/motion-vector state",
+      "shared mesh identity, asset dependency hash, vertex/submesh/index/bounds invariants and bounded vertex samples for runtime meshes",
+      "ordered shared materials with current Editor serialization, shader/keyword/render-queue/GI/instancing state and asset dependency hash",
+      "common PBR/detail texture bindings, dimensions, mip/filter/wrap/aniso state, UV scale/offset and texture dependency hashes"
+    ],
+    "sourcePhysicalityPrecondition": [
+      "QualityBlockSceneMaterialPhysicalityUpgrade.ValidateOpenScene",
+      "QualityBlockTextureSamplingUpgrade.ValidateOpenScene",
+      "QualityBlockPhysicalTexelDensityQA.ValidateOpenScene",
+      "QualityBlockAlbedoLightingNeutralityQA.ValidateGeneratedBaseAlbedos",
+      "QualityBlockSceneMetadataCoverageQA.ValidateOpenScene",
+      "QualityBlockBenchmarkPrimitiveExposureQA.ValidateOpenScene"
+    ],
+    "hiddenOverridePolicy": "Active Renderer MaterialPropertyBlock overrides are rejected from formal reflection/still evidence until arbitrary override payloads are explicitly fingerprinted. This prevents shared-material hashing from leaving an untracked per-renderer shader override channel.",
+    "existingWaiterReuse": "The inner render-state SHA-256 is folded into QualityBlockReflectionLightingStateFingerprint. Therefore the existing QualityBlockReflectionProbeAwaiter request/every-observed-Editor-poll/completion/pre-still equality checks now fail closed on either physical-lighting drift or renderable scene/material drift without weakening the existing async RenderID proof."
+  },
+  "verification": {
+    "githubSourceReview": true,
+    "headCommitStatusContextsAtRunStart": 0,
+    "headWorkflowRunsAtRunStart": 0,
+    "unityApiDocumentationChecked": [
+      "Unity 6 Renderer.motionVectorGenerationMode",
+      "Unity 6 Renderer.probeAnchor",
+      "Unity Renderer.HasPropertyBlock / SetPropertyBlock semantics",
+      "Unity 6 Mesh.GetBaseVertex",
+      "Unity Texture mipmapCount and sampling properties"
+    ],
+    "unityCompileVerified": false,
+    "unityRuntimeVerified": false,
+    "native3840x2160CaptureProduced": false,
+    "actualRenderStateHashObserved": false,
+    "visualFidelityPointsAwarded": 0,
+    "visualFidelityStatus": "UNSCORED"
+  },
+  "limitations": [
+    "No Unity 6000.3.0f1 runner/editor artifact exists yet, so API compatibility and runtime cost are not claimed as verified.",
+    "Runtime procedural mesh protection uses identity/count/bounds plus a bounded deterministic 64-vertex sample rather than hashing every vertex on every Editor poll; actual pixels remain authoritative for subtle unsampled in-place deformation.",
+    "Arbitrary shader globals/native-plugin state outside the recorded scene/material/texture scope is not claimed to be cryptographically covered.",
+    "MaterialPropertyBlock is therefore rejected rather than partially fingerprinted.",
+    "Hash equality proves evidence-state coherence only; it does not prove physically correct Fresnel, texture quality, geometry quality or cinematography."
+  ],
+  "implementationReadiness": {
+    "score": 93,
+    "possible": 100,
+    "changeThisRun": 0,
+    "reason": "The only reserved readiness points remain the 7-point actual Unity compile/runtime verification blocker. This run strengthens evidence coherence but does not satisfy that blocker."
+  },
+  "expectedVisualScoreImpact": [
+    "Material/PBR 20: prevents a reflection cubemap from being accepted after shared material/shader/texture state changed before still capture; actual points remain pixel-reviewed only.",
+    "Lighting/shadows/reflections 15: extends the existing SummerSun/sky/ambient coherence proof so reflected scene content and material response are also state-identical across the async probe boundary.",
+    "Texture/microdetail 10: binds texture assignment, dependency hash and sampling state across probe/still evidence.",
+    "Geometry/construction 20: binds active renderer transforms, bounds and mesh invariants, reducing stale-cubemap risk after geometry movement/replacement.",
+    "Weathering 10 and Cinematic 5: prevents stable lighting from masking a changed residue/material state before final evidence.",
+    "Automatic Visual Fidelity impact: 0 points because no actual Unity pixels exist."
+  ],
+  "nextBlocker": "Unity 6000.3.0f1 compile/runtime. At first Runner availability stop speculative expansion and run Prepare Complete Native 4K Review Packet. First verify that reflection-lighting-state-v2 remains identical across request, every observed poll, completion and pre-still without exceeding the 30 second probe wait. If the new property-block guard fails, inspect whether any intentional benchmark renderer uses MaterialPropertyBlock and explicitly fingerprint its exact override payload before permitting it; do not disable the guard. Then inspect sealed 3840x2160 hero/oblique/grazing pixels and 100% crops before assigning any Visual Fidelity points."
+}

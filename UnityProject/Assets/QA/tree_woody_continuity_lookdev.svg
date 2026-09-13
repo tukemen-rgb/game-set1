@@ -1,0 +1,85 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="1000" viewBox="0 0 1600 1000">
+  <rect width="1600" height="1000" fill="#f4f1e8"/>
+  <style>
+    text { font-family: Arial, Helvetica, sans-serif; fill:#202522; }
+    .title { font-size:34px; font-weight:700; }
+    .h { font-size:23px; font-weight:700; }
+    .t { font-size:18px; }
+    .small { font-size:15px; fill:#465049; }
+    .wood { fill:#7d5c3d; stroke:#3d3024; stroke-width:3; }
+    .root { fill:#856546; stroke:#3d3024; stroke-width:3; }
+    .line { stroke:#28322c; stroke-width:3; fill:none; }
+    .dim { stroke:#58655d; stroke-width:2; fill:none; marker-start:url(#a); marker-end:url(#a); }
+    .uv { stroke:#3d6653; stroke-width:2; fill:none; }
+    .bad { stroke:#8d3328; stroke-width:5; fill:none; }
+    .good { stroke:#2e6550; stroke-width:5; fill:none; }
+  </style>
+  <defs>
+    <marker id="a" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto">
+      <path d="M8,0 L0,4 L8,8 z" fill="#58655d"/>
+    </marker>
+  </defs>
+
+  <text x="70" y="70" class="title">Generated Tree — Woody Continuity / Metric Bark Lookdev</text>
+  <text x="70" y="104" class="small">Source/runtime construction target only. Native 3840×2160 pixels remain the Visual Fidelity authority.</text>
+
+  <text x="75" y="165" class="h">A. Trunk + grade interface</text>
+  <line x1="80" y1="755" x2="640" y2="755" class="line"/>
+  <text x="85" y="785" class="small">finished grade / existing cause-based tree-pit interface</text>
+
+  <!-- tapered trunk silhouette -->
+  <path d="M310 755 C285 710 278 650 290 590 C300 525 302 445 315 355 C325 285 337 225 349 185
+           L402 185 C411 235 422 294 430 355 C442 447 446 530 452 590 C458 650 454 710 435 755 Z" class="wood"/>
+  <!-- root flares -->
+  <path d="M320 715 C275 727 216 742 142 753 C208 758 282 758 341 748 Z" class="root"/>
+  <path d="M424 714 C478 728 541 742 604 753 C548 759 483 758 406 747 Z" class="root"/>
+  <path d="M344 724 C320 741 292 752 255 760 C304 757 347 756 374 746 Z" class="root" opacity="0.88"/>
+  <path d="M402 722 C432 739 460 750 501 759 C454 757 415 754 384 745 Z" class="root" opacity="0.88"/>
+
+  <!-- section reference lines -->
+  <g stroke="#d4c7b5" stroke-width="2" stroke-dasharray="6 6">
+    <line x1="292" y1="674" x2="449" y2="674"/><line x1="292" y1="591" x2="452" y2="591"/>
+    <line x1="300" y1="508" x2="445" y2="508"/><line x1="307" y1="425" x2="441" y2="425"/>
+    <line x1="315" y1="342" x2="428" y2="342"/><line x1="329" y1="259" x2="416" y2="259"/>
+  </g>
+  <text x="470" y="300" class="t">7 generator sections remain as draw/LOD units</text>
+  <text x="470" y="329" class="t">but every mating ring has identical radius</text>
+  <text x="470" y="358" class="t">and ≤ 2 mm center/radius mismatch QA.</text>
+  <path d="M445 338 C505 330 530 325 575 325" class="good"/>
+
+  <line x1="270" y1="755" x2="270" y2="185" class="dim"/>
+  <text x="128" y="468" class="t" transform="rotate(-90 128 468)">continuous biological taper; no reverse-radius rings</text>
+  <line x1="300" y1="735" x2="445" y2="735" class="dim"/>
+  <text x="317" y="720" class="small">base radius ≈ 0.31 m</text>
+  <line x1="347" y1="205" x2="404" y2="205" class="dim"/>
+  <text x="452" y="210" class="small">top target radius ≈ 0.115 m</text>
+
+  <text x="75" y="850" class="h">Root rule</text>
+  <text x="75" y="882" class="t">Root flare stays visible and broadens into grade; radial roots terminate within −10…+120 mm of the tree anchor.</text>
+  <text x="75" y="912" class="t">No “telephone-pole” trunk entry, no floating root star, no painted contact shadow.</text>
+
+  <text x="770" y="165" class="h">B. Primary branch union</text>
+  <path d="M850 530 C842 455 850 350 866 240 L935 240 C945 350 947 455 934 545 Z" class="wood"/>
+  <path d="M914 410 C990 392 1068 350 1140 302 L1171 340 C1094 397 1010 445 927 458 Z" class="wood"/>
+  <path d="M1162 320 C1235 282 1314 245 1387 225 L1398 251 C1322 278 1248 314 1171 351 Z" class="wood"/>
+  <circle cx="1166" cy="335" r="10" fill="#2e6550"/>
+  <text x="1030" y="485" class="t">A end radius = B start radius</text>
+  <text x="1030" y="514" class="t">A/B center gap ≤ 2 mm</text>
+  <text x="1030" y="543" class="small">Legacy source audit: A ended at 80.6 mm while B restarted at 95 mm (+14.4 mm).</text>
+
+  <text x="770" y="625" class="h">C. Bark UV / PBR response</text>
+  <rect x="790" y="660" width="720" height="220" rx="12" fill="#e8e1d3" stroke="#657068" stroke-width="2"/>
+  <path d="M835 830 C850 795 842 748 858 700" class="uv"/><path d="M890 830 C904 790 895 749 912 700" class="uv"/>
+  <path d="M947 830 C960 792 950 747 969 700" class="uv"/><path d="M1004 830 C1018 793 1008 746 1027 700" class="uv"/>
+  <path d="M1060 830 C1074 791 1065 745 1085 700" class="uv"/>
+  <line x1="820" y1="764" x2="1100" y2="764" stroke="#8d3328" stroke-width="3" stroke-dasharray="8 7"/>
+  <text x="1125" y="708" class="t">Metric cylindrical UV0</text>
+  <text x="1125" y="738" class="t">0.55 cycles/m ≈ 1.818 m physical tile</text>
+  <text x="1125" y="768" class="t">1024 px ≈ 563 texels/m</text>
+  <text x="1125" y="798" class="t">V continues through trunk + primary A/B joints</text>
+  <text x="1125" y="828" class="t">6 deterministic tree phases; ≥5 distinct required</text>
+  <text x="1125" y="858" class="t">Albedo / normal / mask use identical scale + offset</text>
+
+  <text x="770" y="925" class="small">Bark: dry dielectric • metallic ≤0.02 • F0 target ≈0.04 • roughness target 0.95 • normal scale 0.85 • wetness 0.</text>
+  <text x="770" y="953" class="small">Grazing highlights must come from the BRDF/Fresnel response, never painted edge light. LOD0/1/2/3 retained woody proxies share the corrected mesh.</text>
+</svg>

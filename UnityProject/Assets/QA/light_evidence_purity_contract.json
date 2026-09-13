@@ -1,0 +1,38 @@
+{
+  "schemaVersion": "1.1",
+  "status": "PENDING_REAL_UNITY_4K_RENDER",
+  "scenePath": "Assets/Scenes/QualityBlock1990s.unity",
+  "authoritativeSunName": "SummerSun",
+  "width": 3840,
+  "height": 2160,
+  "formalTargetPrefixes": [
+    "QA4K_",
+    "QAPreparedTemporal_"
+  ],
+  "requirements": {
+    "builtInRenderPipelineOnly": true,
+    "exactlyOneActiveDirectionalLight": true,
+    "renderSettingsSunMustMatch": true,
+    "activeArtificialLightsForbidden": true,
+    "lightCommandBuffersForbidden": true,
+    "includeDisabledLightsInCommandBufferAudit": true,
+    "authoritativeSunCookieForbidden": true,
+    "authoritativeSunFlareForbidden": true,
+    "authoritativeSunVertexLightingForbidden": true,
+    "authoritativeSunMustLightAllLayers": true,
+    "validateAtPreCullPreRenderAndPostRender": true,
+    "lightStateMustRemainStableAcrossFrame": true,
+    "actualRenderRequiredForVisualPoints": true,
+    "manualPixelReviewRequired": true
+  },
+  "criticalFailMappings": [
+    "sun_shadow_inconsistency",
+    "major_light_leak",
+    "severe_aliasing_or_shimmer",
+    "unverified_render_claim"
+  ],
+  "runtimeRenderVerified": false,
+  "visualFidelityPointsAwarded": 0,
+  "visualFidelityStatus": "UNSCORED_REVIEW_REQUIRED",
+  "note": "Evidence-integrity contract only. Formal native-4K and prepared-temporal frames reject all Light-attached CommandBuffers, reject active artificial lights, require the sole active directional key to be SummerSun, forbid a sun cookie/flare/ForceVertex path or a reduced culling mask, and require one stable light/global-shadow state from pre-cull through post-render. Critical mappings use the exact canonical Visual Fidelity Gate IDs. This does not prove visual quality and cannot clear any critical defect without actual rendered pixels."
+}

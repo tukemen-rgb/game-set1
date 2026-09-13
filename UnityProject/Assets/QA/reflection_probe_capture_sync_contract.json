@@ -1,0 +1,190 @@
+{
+  "schemaVersion": "1.1",
+  "status": "PENDING_REAL_UNITY_4K_RENDER",
+  "purpose": "Prevent native-4K benchmark evidence from being captured against stale, merely-requested, unfinished, or lighting-incoherent realtime reflection cubemaps. The exact physical sun/sky/ambient/shadow/GI state must remain SHA-256-identical from probe request through every observed Editor polling boundary, completion and immediate pre-still validation. The fingerprint also binds rendering-affecting light-mode, indirect-energy, subtractive-shadow, pixel-light and shadowmask state so values that remain individually legal cannot drift between cubemap and still. This contract is implementation/evidence integrity only and cannot award Visual Fidelity points.",
+  "visualFidelityCategoryImpact": [
+    "lighting_shadows_reflections",
+    "material_pbr_physical_plausibility",
+    "cinematic_image_quality_composition_color_exposure"
+  ],
+  "unityApiBasis": {
+    "renderProbe": "ReflectionProbe.RenderProbe returns a RenderID for the requested cubemap refresh.",
+    "completionCheck": "ReflectionProbe.IsFinishedRendering(RenderID) is the completion check for a requested probe render; completion is observed during later EditorApplication.update callbacks rather than assumed in the RenderProbe call stack.",
+    "timeSlicing": "ReflectionProbeTimeSlicingMode.NoTimeSlicing renders the probe entirely in one frame; one frame is not treated as proof of same-call-stack completion.",
+    "realtimeTexture": "ReflectionProbe.realtimeTexture is the realtime cubemap resource used by the probe.",
+    "ambientProbe": "RenderSettings.ambientProbe is included in the lighting fingerprint so a DynamicGI sky-fill update cannot silently persist between reflection rendering and still capture.",
+    "dynamicGiIndirectScale": "DynamicGI.indirectScale scales realtime and baked lightmap contribution, so the exact value is fingerprinted across probe request/poll/completion/pre-still boundaries.",
+    "solarGuard": "QualityBlockSolarShadowCaptureCoherenceQA validates the sole SummerSun, physical solar datum, global shadow state and pre-cull guard before lighting hashes are accepted.",
+    "lightPurityOverlap": "The reflection fingerprint repeats rendering-affecting state already observed by QualityBlockLightEvidencePurityQA where that state can legally vary while remaining valid, preventing a legal request-state from silently differing from a legal still-state."
+  },
+  "requiredSceneState": {
+    "probeRoot": "PhysicalReflectionEnvironment",
+    "probeCount": 2,
+    "probeNames": [
+      "ReflectionProbe_DanchiFacade",
+      "ReflectionProbe_ParkGround"
+    ],
+    "mode": "Realtime",
+    "refreshMode": "ViaScripting",
+    "timeSlicingMode": "NoTimeSlicing",
+    "resolution": 512,
+    "textureDimension": "Cube",
+    "hdrRequired": true,
+    "boxProjectionRequired": true
+  },
+  "completionObservation": {
+    "mechanism": "EditorApplication.update",
+    "requireLaterEditorUpdate": true,
+    "timeoutSeconds": 30,
+    "requestPlayerLoopUpdateWhileWaiting": true,
+    "repaintSceneViewWhileWaiting": true,
+    "sameCallStackIsFinishedRenderingCheckIsSufficient": false,
+    "reason": "RenderProbe schedules a render identified by RenderID. The capture pipeline must allow Unity to advance the frame that performs a NoTimeSlicing probe render before accepting completion."
+  },
+  "lightingStateBinding": {
+    "validator": "QualityBlockSolarShadowCaptureCoherenceQA.ValidateOpenScene",
+    "fingerprintImplementation": "QualityBlockReflectionLightingStateFingerprint.BuildCurrentSha256",
+    "fingerprintAlgorithm": "SHA-256",
+    "validateBeforeProbeRequest": true,
+    "validateEveryEditorPollWhileWaiting": true,
+    "validateAfterProbeCompletion": true,
+    "validateImmediatelyBeforeStillCapture": true,
+    "requireRequestCompletionMatch": true,
+    "requireCompletionStillMatch": true,
+    "includeSummerSunTransformAndPbrLightState": true,
+    "includeAuthoritativeSunRenderModeAndBounceState": true,
+    "includeProceduralSkyMaterialState": true,
+    "includeAmbientProbeCoefficients": true,
+    "includeRenderSettingsReflectionAndFogState": true,
+    "includeSubtractiveShadowColor": true,
+    "includeGlobalShadowAndLodSettings": true,
+    "includePixelLightAndShadowmaskState": true,
+    "includeDynamicGiIndirectScale": true,
+    "actualRenderRequiredForVisualPoints": true,
+    "reason": "A completed cubemap is still invalid evidence if its illumination differs from the still. The hash binds direct sun, physical sky, diffuse sky fill, reflection/fog policy, DynamicGI indirect-light scale, subtractive shadow color, pixel-light/shadowmask policy and shadow/LOD settings across the asynchronous boundary and every observable Editor polling boundary while the RenderIDs are in flight."
+  },
+  "preCaptureAlgorithm": [
+    "Build, save, reopen and validate the final benchmark scene before requesting any realtime probe refresh.",
+    "Validate solar/shadow capture coherence and the physical sky/reflection environment.",
+    "Compute the request SHA-256 lighting-state fingerprint before RenderProbe, including SummerSun transform/PBR/render-mode/bounce state, procedural sky material, RenderSettings reflection/fog/subtractive-shadow state, ambient SH coefficients, DynamicGI.indirectScale and global pixel-light/shadowmask/shadow/LOD settings.",
+    "Find and sort the two registered benchmark probes deterministically by name.",
+    "Force NoTimeSlicing immediately before still capture.",
+    "Call RenderProbe() for each probe and retain its returned RenderID; reject negative RenderIDs.",
+    "Return control to the Unity Editor and poll completion on subsequent EditorApplication.update callbacks instead of treating the RenderProbe call itself as a completed render frame.",
+    "At every observed EditorApplication.update polling boundary while RenderIDs are in flight, recompute the complete lighting fingerprint and require equality with the request hash before checking probe completion.",
+    "While waiting, request PlayerLoop progression and SceneView repaint; abort after 30 seconds if completion cannot be proven.",
+    "Require RenderID >= 0 and IsFinishedRendering(RenderID) == true for every probe before any benchmark Camera.Render is accepted.",
+    "Require realtimeTexture to be non-null, created, Cube-dimensional, and exactly 512x512 per face.",
+    "After both RenderIDs complete, treat the matching fingerprint from that completion poll as the completion lighting fingerprint and require exact request/completion equality.",
+    "Write reflection_probe_refresh_receipt.json only after all probes are complete and every observed lighting hash matched.",
+    "Write schema-1.1 reflection_probe_async_wait_receipt.json containing Editor poll count, lighting-fingerprint poll count, elapsed wait, RenderIDs, SHA-256 of the exact reflection completion receipt, fingerprint algorithm, request lighting hash and completion lighting hash.",
+    "Require the async wait proof to be current-Unity/current-scene, at least one later Editor poll, one lighting check per Editor poll, no older than two minutes, hash-bound to the current reflection completion receipt and lighting-stable across probe rendering.",
+    "Immediately before still capture, recompute the complete lighting fingerprint and require it to equal the completion hash; then validate both receipts without rebuilding scene geometry/materials or lighting.",
+    "Capture hero/oblique/grazing only after all synchronization, solar-shadow and lighting-fingerprint checks pass.",
+    "Abort native-4K capture if any requested probe, wait proof, solar state or lighting fingerprint is unproven."
+  ],
+  "runtimeReceipt": {
+    "path": "Assets/QA/reflection_probe_refresh_receipt.json",
+    "schemaVersion": "1.0",
+    "generatedOnlyByUnityRuntimePath": true,
+    "requiredFields": [
+      "generatedUtc",
+      "unityVersion",
+      "graphicsDevice",
+      "scenePath",
+      "requestedProbeCount",
+      "completedProbeCount",
+      "allFinishedBeforeBenchmarkCapture",
+      "probes[].name",
+      "probes[].renderId",
+      "probes[].finished",
+      "probes[].textureReady",
+      "probes[].actualWidth",
+      "probes[].actualHeight",
+      "probes[].textureDimension"
+    ],
+    "visualScoreAuthority": "none"
+  },
+  "asyncWaitProof": {
+    "path": "Assets/QA/reflection_probe_async_wait_receipt.json",
+    "schemaVersion": "1.1",
+    "requiredObservationMechanism": "EditorApplication.update",
+    "minimumEditorPollCount": 1,
+    "maximumAgeMinutesAtStillCapture": 2,
+    "bindsRuntimeReceiptWith": "SHA-256",
+    "requiredFields": [
+      "generatedUtc",
+      "unityVersion",
+      "scenePath",
+      "observationMechanism",
+      "editorPollCount",
+      "lightingFingerprintPollCount",
+      "elapsedSeconds",
+      "timeoutSeconds",
+      "renderIds[]",
+      "allFinishedAndTextureReady",
+      "reflectionReceiptSha256",
+      "lightingFingerprintAlgorithm",
+      "requestLightingStateSha256",
+      "completionLightingStateSha256",
+      "lightingStateStableAcrossProbeRender"
+    ],
+    "visualScoreAuthority": "none"
+  },
+  "criticalFailurePolicy": {
+    "captureMustAbortWhen": [
+      "probe_count_or_identity_drift",
+      "negative_render_id",
+      "render_not_finished_after_editor_progression",
+      "reflection_wait_timeout",
+      "missing_or_uncreated_realtime_texture",
+      "wrong_cubemap_resolution",
+      "wrong_texture_dimension",
+      "missing_async_wait_proof",
+      "async_wait_proof_has_no_later_editor_poll",
+      "async_wait_proof_missing_per_poll_lighting_checks",
+      "async_wait_proof_is_stale",
+      "async_wait_proof_runtime_receipt_sha256_mismatch",
+      "solar_shadow_contract_invalid_before_probe_request",
+      "lighting_state_changed_during_probe_render",
+      "ambient_probe_changed_during_probe_render",
+      "dynamic_gi_indirect_scale_changed_during_probe_or_before_still",
+      "lighting_state_changed_between_probe_completion_and_still_capture",
+      "scene_rebuilt_after_probe_sync_before_still_capture"
+    ],
+    "mapsToVisualGateCriticalDefects": [
+      "sun_shadow_inconsistency",
+      "major_light_leak",
+      "unverified_render_claim"
+    ],
+    "reason": "A stale, unfinished or differently illuminated reflection cubemap can make glass, aluminum, painted steel and wetness response appear plausible while not corresponding to the current sky/sun/ambient/GI/shadow state. Such pixels are not valid evidence for the lighting or material categories."
+  },
+  "prohibitedClaims": [
+    "Do not treat calling RenderProbe() alone as proof that the cubemap finished.",
+    "Do not treat an IsFinishedRendering check in the same RenderProbe call stack as sufficient evidence when Unity has not advanced a rendering frame.",
+    "Do not accept a reflection completion receipt unless a fresh schema-1.1 async-wait proof is SHA-256-bound to that exact receipt.",
+    "Do not accept a completed reflection cubemap unless request, every observed polling-boundary state and completion physical-lighting fingerprints are identical.",
+    "Do not capture a still if the immediately recomputed physical-lighting fingerprint differs from the completed-probe fingerprint.",
+    "Do not rebuild the benchmark after synchronization and then reuse old completion/wait receipts.",
+    "Do not set probesRefreshedImmediatelyBeforeCapture=true unless later-update completion/texture checks and lighting-coherence checks succeeded for the exact scene state being captured.",
+    "Do not infer visual quality from successful synchronization or lighting-hash receipts.",
+    "Do not award Lighting, Material/PBR or Cinematic points until the actual sealed 3840x2160 frames and 100% crops are reviewed."
+  ],
+  "expectedVisualScoreImpactAfterRealRender": {
+    "lighting_shadows_reflections": "reduces risk that local reflections encode a different sun/sky/ambient/GI-energy or legal-but-different global light/shadow policy from the still; points remain reviewer-observed only",
+    "material_pbr": "makes angular/Fresnel review of glass and metal correspond to the exact physical environment, indirect-energy and light-policy state used by the still",
+    "cinematic_image": "prevents exposure/color review from being contaminated by stale or differently illuminated specular/indirect energy",
+    "automaticPoints": 0
+  },
+  "verification": {
+    "sourceImplemented": true,
+    "unityCompileVerified": false,
+    "runtimeReceiptGenerated": false,
+    "asyncWaitProofGenerated": false,
+    "lightingFingerprintObservedInUnity": false,
+    "native4kRenderVerified": false,
+    "visualFidelityPointsAwarded": 0,
+    "visualFidelityStatus": "UNSCORED",
+    "note": "Real Unity execution is mandatory. Until then this is Implementation Readiness only."
+  }
+}

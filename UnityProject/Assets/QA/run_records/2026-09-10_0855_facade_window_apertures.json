@@ -1,0 +1,165 @@
+{
+  "schemaVersion": "1.0",
+  "generatedUtc": "2026-09-10T01:55:00Z",
+  "branch": "gpt/unity-migration",
+  "startHead": "c94b5388adc8ded3730697c6b2ace2ddc732d993",
+  "substantiveWorkHead": "349a459f5e9d00746cce200a41c7af20417eede0",
+  "substantiveCommits": [
+    {
+      "sha": "ebe417e1dc0569efc7249c961cacddca91d3838a",
+      "message": "qa: define facade aperture installation contract"
+    },
+    {
+      "sha": "960b2f91fc299f8e0a849c82890075ef6db6f229",
+      "message": "docs: add facade aperture lookdev schematic"
+    },
+    {
+      "sha": "f3a7da65e667b555e990233308aad082d06c68da",
+      "message": "fix: reconstruct facade around real window apertures"
+    },
+    {
+      "sha": "370cdc64b3a76f849e8e4912352f47088949dd10",
+      "message": "qa: define world-aligned facade UV contract"
+    },
+    {
+      "sha": "dae9668379ff4a5b160ef453ff22a9442c2302d6",
+      "message": "fix: bake world-aligned physical UVs for facade shell"
+    },
+    {
+      "sha": "349a459f5e9d00746cce200a41c7af20417eede0",
+      "message": "qa: gate native capture on real facade apertures"
+    }
+  ],
+  "focus": "Geometry & construction fidelity / Material-PBR plausibility / lighting-occlusion integrity / texture repetition risk at apartment window apertures",
+  "sourceDefectFound": {
+    "assembly": "generated RC apartment facade + sliding-sash optical stack",
+    "evidence": [
+      "BuildQualityBlock1990s creates MainBlock as one opaque 26.0 x 13.2 x 8.4 m Cube centered at z=-11.5 m, so its exterior front plane is z=-7.30 m and it contains no geometric apartment-window apertures.",
+      "The base Window_* blocks are centered at z=-7.34 m, but QualityBlockFacadeOpticsUpgrade disables those Window renderers and places the replacement apartment glass leaves at approximately z=-7.31 m and z=-7.324 m.",
+      "Because MainBlock remained opaque, the replacement transparent glazing was at/behind the front surface of one solid wall volume rather than installed inside an actual opening. Source geometry therefore could occlude/fill the glazing and could not produce a physically credible RC reveal, frame-to-wall joint, recess occlusion or interior depth at oblique/grazing views.",
+      "A naive fix that subdivides the front wall into repeated modules while keeping each piece's default 0..1 UV plus the original MainBlock-sized material tiling would restart the same concrete texture pattern per piece and distort physical texture scale. That would trade the aperture defect for an obvious repeated-module/texel-scale defect."
+    ]
+  },
+  "implementation": {
+    "constructionContract": "Assets/QA/facade_aperture_installation_contract.json",
+    "constructionQaCode": "Assets/Editor/QualityBlockFacadeApertureConstructionQA.cs",
+    "physicalUvContract": "Assets/QA/facade_aperture_uv_contract.json",
+    "physicalUvQaCode": "Assets/Editor/QualityBlockFacadeAperturePhysicalUvQA.cs",
+    "lookdevIllustration": "Assets/QA/facade_window_aperture_lookdev.svg",
+    "authoritativePacket": "Assets/Editor/QualityBlockNative4KReviewPacket.cs",
+    "runtimeReport": "Assets/QA/facade_aperture_installation_runtime_report.json",
+    "manufactureInstallationReasoning": "Treat the fallback as an RC facade with repeated factory-made sliding aluminum sash assemblies installed into real rectangular rough openings. Disable only the original MainBlock renderer so its gameplay collider can remain. Reconstruct a closed RC shell plus a front wall tiled around thirty rough openings; seat a narrow dark dielectric perimeter seal between opening and existing sash; keep the two glass leaves on their already-separated depth planes and the non-emissive interior backing deeper inside. The wall/opening/sash/seal/glass/backing interfaces are geometry or physically separate materials, never a single painted wall rectangle.",
+    "controlledDimensionsMetres": {
+      "building": [26.0, 13.2, 8.4],
+      "frontFacadePlaneZ": -7.3,
+      "frontShellDepth": 0.22,
+      "bayPitch": 4.15,
+      "floorPitch": 2.55,
+      "roughOpening": [2.4, 1.8],
+      "existingFrameOuter": [2.36, 1.76],
+      "nominalFrameOpeningClearanceEachSide": 0.02,
+      "perimeterSealVisibleWidth": 0.014,
+      "perimeterSealDepth": 0.012,
+      "existingSlidingGlassDepthSeparation": 0.014
+    },
+    "generatedGeometry": {
+      "expectedApartmentOpenings": 30,
+      "frontFacadeCellParts": 120,
+      "perimeterSealParts": 120,
+      "apartmentGlassPanesRequired": 60,
+      "outerShell": "back + left/right ends + roof + base; all generated through QualityBlockDetailMeshLibrary chamfered meshes rather than stock Unity Cube primitives",
+      "mainBlockPolicy": "Renderer disabled; existing Collider retained for gameplay continuity",
+      "clearOpeningQa": "For every apartment window a Danchi-local rough-opening clear-core volume is transformed into scene space and may not intersect any enabled front-facade wall renderer. Each L/R glass leaf must remain behind z=-7.30 m and ahead of the reconstructed shell back plane."
+    },
+    "physicalUvReasoning": "All non-seal aperture-shell meshes are persisted with UV0 derived from absolute Danchi-local metres, using the dominant face normal to select X/Y, Z/Y or X/Z projection. A 2.4 m macro tile is baked into UV0 instead of resetting 0..1 on every wall part. The copied facade material therefore uses scale 1 for albedo/normal/metallic-smoothness maps and 2.4/0.22 for the detail-normal scale. The phase QA requires at least twenty distinct quantized UV phases across thirty repeated left-pier samples so bay-to-bay geometry cannot simply restart the same concrete patch.",
+    "nominalFacadeMacroTexelDensity": {
+      "sourceTexturePixels": 1024,
+      "macroTileMetres": 2.4,
+      "nominalTexelsPerMetre": 426.6667,
+      "interpretation": "Above the existing 256 texel/m hard source floor but below the 512 texel/m preferred hero target. This is not a Texture/Microdetail score and remains subject to the existing scene-level physical texel-density gate plus native 100% crop review."
+    },
+    "materialReasoning": "The installation contract separately records painted RC, aged/anodized aluminum sash, clear dielectric float glass and EPDM/rubber seal albedo, roughness, metallic or F0, normal scale, microstructure, wetness, UV aging and angular/Fresnel response. Painted RC and seals are fail-closed at metallic <=0.001. The aperture shell reuses the existing lighting-neutral two-scale facade PBR set; glazing remains metallic 0 and its grazing reflection must arise from BRDF/reflection probes rather than painted highlights.",
+    "lodReasoning": "LOD0 must preserve actual aperture/reveal depth, seal, sash silhouette and both glazing planes. Later LODs may simplify microgeometry but may never close the opening or return the facade to a painted-window rectangle. Visible transition pop remains a temporal critical defect and cannot be cleared by source QA.",
+    "authoritativeOrder": "Complete Native 4K Review Packet now validates both contracts, builds the final scene, reconstructs and saves the real aperture shell, bakes/saves physical UVs, validates both states, then applies balcony/AC interface corrections and source preflights. Realtime reflection probes are rendered only after this persisted facade state. Aperture and UV QA are repeated immediately before Camera.Render after asynchronous reflection completion and again after still sealing before temporal capture.",
+    "automaticVisualPoints": 0
+  },
+  "staticAudit": {
+    "importantDesignCorrectionWithinRun": "Aperture reconstruction was not considered complete merely by replacing one opaque wall with many repeated wall rectangles. The existing facade material was authored for a 26 m-wide MainBlock and would be physically wrong if restarted on each small wall piece. A second world-aligned UV bake/contract was added in the same run so the final prepared shell keeps one absolute physical coordinate field and distinct module phase.",
+    "renderCriticalRisksReducedButNotCleared": [
+      "opaque MainBlock visually covering transparent apartment glazing",
+      "missing RC reveal / frame-to-wall installation interface",
+      "missing perimeter seal metadata/geometry",
+      "obvious per-module concrete texture restart",
+      "stock-primitive-looking replacement wall geometry"
+    ],
+    "countsStatus": "CODE_PATH_EXPECTATION_ONLY_NOT_RUNTIME_PROVEN"
+  },
+  "research": {
+    "usePolicy": "Historical/public manufacturer sources are used only to establish period and construction plausibility. Modern manuals/specifications are not treated as circa-2000 product dimensions, and the controlled fallback dimensions in this run are explicitly modeling assumptions derived from the existing scene geometry rather than claims for one named historical sash product.",
+    "references": [
+      {
+        "title": "UR都市機構 技術・研究：ING REPORT 建 / 公共住宅の建具・材料仕様変遷",
+        "url": "https://www.ur-net.go.jp/rd_portal/pnf/ing_report_ken/index.html",
+        "relevance": "Historical UR material documents the transition of exterior fittings from timber/steel toward aluminum and standardized public-housing components, supporting aluminum sliding sash as period-plausible context."
+      },
+      {
+        "title": "UR都市機構 ING REPORT 建 PDF",
+        "url": "https://www.ur-net.go.jp/rd_portal/pnf/ing_report_ken/lrmhph000000jm50-att/ing_ken.pdf",
+        "relevance": "Search-indexed historical context for exterior fittings and aluminum sash development; not used for exact dimensions in this run."
+      },
+      {
+        "title": "LIXIL 金属製品 取扱・施工説明書ダウンロード",
+        "url": "https://www2.lixil.co.jp/rp/dfw/lixila1330ex/metalproductinfo/ui/description/DescTop.aspx",
+        "relevance": "Modern manufacturer repository used only as generic evidence that sash assemblies are installed/manufactured systems with dedicated interfaces; no modern product dimensions were projected backward."
+      },
+      {
+        "title": "国土交通省 公共建築工事標準仕様書（建築工事編）",
+        "url": "https://www.mlit.go.jp/gobuild/kenchiku_hyoushi.html",
+        "relevance": "Current public-building specification context only; not a historical dimensional source for the benchmark."
+      }
+    ]
+  },
+  "verification": {
+    "type": "GitHub source/static inspection only; no Unity editor/runtime execution was available in this run",
+    "branchComparison": "Start head to substantive work head is ahead by 6 and behind by 0. All new/modified paths are under UnityProject/Assets/Editor or UnityProject/Assets/QA. Godot is untouched and no base merge occurred.",
+    "projectEditorVersion": "6000.3.0f1",
+    "workflowState": "No GitHub Actions workflow runs exist for gpt/unity-migration at the end of substantive work.",
+    "commitStatusState": "No commit status contexts exist on substantiveWorkHead.",
+    "compileState": "PENDING_UNITY_6000_3_0f1_RUNTIME",
+    "renderEvidenceState": "No actual 3840x2160 hero/oblique/grazing images, 100% crops, aperture runtime report, physical-UV runtime validation output or temporal evidence were generated/reviewed in this run.",
+    "visualScoringPolicy": "No Geometry, Material/PBR, Lighting, Texture, Period or other Visual Fidelity points can be self-awarded from these source changes. The evidence-bound 100-point gate remains authoritative."
+  },
+  "implementationReadiness": {
+    "score": 93,
+    "possible": 100,
+    "status": "UNCHANGED",
+    "reason": "The run fixes a high-impact source construction/occlusion defect and makes repeated facade texturing physically safer, but the existing readiness model still withholds 7 points for missing Unity 6000.3.0f1 compile/runtime verification."
+  },
+  "visualFidelity": {
+    "status": "UNSCORED_UNTIL_REAL_4K_RENDER",
+    "pointsAwardedThisRun": 0,
+    "passClaimed": false,
+    "criticalDefectCleared": false
+  },
+  "expectedVisualScoreImpact": [
+    "Geometry & construction fidelity (20): replaces transparent window planes embedded against one opaque MainBlock surface with thirty real rough-opening voids, RC reveal depth, perimeter interface and retained manufactured sash/glass geometry.",
+    "Material/PBR physical plausibility (20): preserves separate painted RC, aluminum, glass and rubber response with explicit albedo/roughness/metallic-F0/normal/microstructure/wetness/UV/Fresnel metadata instead of encoding the opening as a flat wall/window color treatment.",
+    "Lighting/shadows/reflections (15): a true opening/reveal can receive causal contact shadow, occlusion and grazing/reflection behavior; realtime reflection probes are regenerated only after the corrected persisted facade exists. No points are awarded until this is observed.",
+    "Texture/microdetail/texel fidelity (10): the aperture shell uses absolute Danchi-local 2.4 m macro UVs and 0.22 m detail scale rather than restarting the same facade patch per module. Nominal 426.7 texel/m exceeds the hard source floor but is below the preferred 512 texel/m hero target, so native crop review remains necessary.",
+    "Period accuracy/scene authenticity (7): a repeated aluminum sliding-sash public-housing facade is historically plausible from UR's documented fittings/material evolution, but no exact manufacturer/date/dimension is asserted and no score is awarded without the rendered scene read.",
+    "Critical-defect integrity: source risk for opaque-wall glazing, missing installation metadata, obvious module texture repetition, primitive-looking replacement wall geometry and facade light/occlusion inconsistency is reduced but not cleared without native rendered evidence."
+  ],
+  "lookdevVerificationPriority": [
+    "hero/facade_center 100% crop: verify every visible apartment window reads as a recessed opening with glass/interior depth rather than a tinted rectangle laid over an opaque wall; check for repeated concrete phase or seams",
+    "oblique/construction_depth 100% crop: inspect the 0.22 m RC reveal, frame-to-opening clearance/seal, sill/frame seating and absence of wall/glass interpenetration or light leak",
+    "grazing/sash_rail_response 100% crop: verify RC, aluminum, glass and dark seal separate through physical roughness/Fresnel/reflection response with no painted rim highlight and no periodic grazing sparkle",
+    "temporal/subpixel + LOD walk: reject texture swimming, UV seam shimmer, opening closure, sash disappearance or visible LOD pop introduced by later simplification"
+  ],
+  "correctivePolicyIfRuntimeFails": "Do not re-enable the opaque MainBlock renderer, widen/close openings, reset repeated modules to arbitrary 0..1 UVs or lower physical-texel/repetition thresholds merely to pass QA. Use the runtime report and sealed native crops to identify the wrong reveal/seal/UV/material interface, correct the generator or authored replacement, rerun reflection synchronization, and recapture the same benchmark evidence.",
+  "nextBlocker": "Unity 6000.3.0f1 editor/runner compile and execution. At first availability, stop speculative expansion and run Prepare Complete Native 4K Review Packet. If compilation, facade_aperture_installation_runtime_report.json, facade physical-UV QA, physical texel-density QA or reflection synchronization fails, fix that concrete API/geometry/UV defect first. If source/runtime QA passes, inspect hero/facade_center and oblique/construction_depth at 100% before scoring any category, then use grazing and temporal evidence to reject baked highlight, repetition, shimmer or LOD-pop defects.",
+  "constraintsPreserved": {
+    "godotUntouched": true,
+    "baseMerged": false,
+    "earthquakeDisasterReconstructionThemesAdded": false
+  }
+}

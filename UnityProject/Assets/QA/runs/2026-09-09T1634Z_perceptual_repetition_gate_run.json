@@ -1,0 +1,59 @@
+{
+  "runUtc": "2026-09-09T16:34:00Z",
+  "focus": "Critical repeated-pattern risk: reject perceptual near-clones that differ only by visually irrelevant procedural jitter.",
+  "startHead": "6f217ce411b2fcb9fc8e62b4f3aebec664f98b3a",
+  "substantiveWorkHead": "b63916130e816cbec62b01b884b3f60dadd0e9d6",
+  "substantiveCommits": [
+    "e5c382c9bbfe3dae55c009e908f0e2f27a5aaddc",
+    "f55e654df780878268bb0be7e932923e4128b748",
+    "b63916130e816cbec62b01b884b3f60dadd0e9d6"
+  ],
+  "changedPaths": [
+    "UnityProject/Assets/Editor/QualityBlockSceneRepetitionQA.cs",
+    "UnityProject/Assets/QA/scene_repetition_contract.json",
+    "UnityProject/Assets/Editor/QualityBlockNative4KReviewPacket.cs",
+    "UnityProject/Assets/QA/implementation_readiness.json",
+    "UnityProject/Assets/QA/runs/2026-09-09T1634Z_perceptual_repetition_gate_run.json"
+  ],
+  "verification": {
+    "branchCompareBeforeBookkeeping": {
+      "base": "6f217ce411b2fcb9fc8e62b4f3aebec664f98b3a",
+      "head": "b63916130e816cbec62b01b884b3f60dadd0e9d6",
+      "aheadBy": 3,
+      "behindBy": 0,
+      "changedFilesOnlyUnderUnityProject": true
+    },
+    "sourceInspection": "PASS for intended fail-closed logic and contract synchronization; no Unity compilation was possible in this run.",
+    "captures4KDirectoryPresent": false,
+    "unity6000_3_0f1CompileVerified": false,
+    "actualRenderedEvidenceReviewed": false
+  },
+  "implementationReadinessScore": 93,
+  "visualFidelityStatus": "UNSCORED_UNTIL_REAL_4K_RENDER",
+  "visualFidelityPointsAwarded": 0,
+  "changes": [
+    "Retained fine 5 mm / 1 degree hierarchy fingerprinting for exact clone detection.",
+    "Added coarse natural-assembly signature: renderer centers normalized to root span and quantized at 0.08, rotation at 12 degrees, relative scale at 0.08, mesh complexity in 16-vertex buckets, generated numeric suffixes ignored.",
+    "Generated tree masters require at least ceil(60 percent) coarse-unique signatures and no more than two coarse near-clones.",
+    "Six ecology patches require at least four coarse-unique signatures and no coarse signature more than twice.",
+    "Authentic manufactured repetition remains allowed; the gate targets natural/occupant/context variation rather than randomizing real construction dimensions.",
+    "Complete Native 4K Review Packet re-runs the fine plus coarse anti-repetition preflight after the exact still set is captured and sealed."
+  ],
+  "expectedVisualScoreImpact": [
+    "Vegetation/natural complexity: reduces risk of cloned crown silhouettes and understory rhythms being classified as unique through tiny procedural jitter.",
+    "Critical repeated texture/module pattern: stronger source-side rejection, but NOT cleared without actual native 4K inspection.",
+    "Period authenticity and construction fidelity: manufactured modular repetition remains causally valid and is not randomized merely for visual noise."
+  ],
+  "criticalDefectCoverage": {
+    "defect": "immediately_obvious_repeated_texture_or_module_pattern",
+    "sourceSideRiskReduced": true,
+    "cleared": false,
+    "reasonNotCleared": "Only actual 3840x2160 hero/oblique/grazing frames, required 100% crops and temporal evidence can determine whether repetition is visibly obvious."
+  },
+  "constraints": {
+    "godotPreserved": true,
+    "baseMerged": false,
+    "earthquakeDisasterReconstructionThemesAdded": false
+  },
+  "nextBlocker": "Unity 6000.3.0f1 editor/runner compile and native 3840x2160 execution. On first runner availability, run Prepare Complete Native 4K Review Packet. If coarse anti-clone QA fails, change procedural tree/ecology structure at a perceptible scale rather than weakening the thresholds. If it passes, stop speculative expansion and score/fix actual rendered deductions or critical defects."
+}

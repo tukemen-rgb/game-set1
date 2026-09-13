@@ -1,0 +1,109 @@
+{
+  "schemaVersion": "1.0",
+  "runDate": "2026-09-12",
+  "branch": "gpt/unity-migration",
+  "startHead": "5bc60669ed561326a0a0aead5a20a5cecc1f1c46",
+  "objective": "Increase trustworthiness of the future native-4K Visual Fidelity evidence by proving the actual OnRenderImage transfer state for every hero/oblique/grazing still, rather than relying on buffer class plus only the last sRGB observation.",
+  "problemFound": {
+    "summary": "The pre-cull display-transfer guard checked each camera target's sRGB flag, and HDR runtime QA counted HDR sources/LDR destinations, but runtime telemetry only retained lastSourceSrgb/lastDestinationSrgb for the final still. Therefore the image-effect execution path did not independently prove scene-linear HDR input and sRGB LDR output for each of the three authoritative stills.",
+    "risk": "A transfer-state drift affecting one still could undermine exposure/color/material review while leaving the existing HDR/LDR format counters satisfied.",
+    "visualGateCategoriesAtRisk": [
+      "Cinematic image quality/composition/color/exposure",
+      "Lighting/shadows/reflections",
+      "Material/PBR physical plausibility"
+    ]
+  },
+  "changes": [
+    {
+      "commit": "3f43313bd1a7e5729a3b8199143e920caa072cd5",
+      "message": "qa: track per-still display transfer state",
+      "files": [
+        "UnityProject/Assets/Scripts/Art/QualityBlockFilmicTonemap.cs"
+      ],
+      "details": [
+        "Added linearHdrSourceInvocationCount and srgbLdrDestinationInvocationCount runtime counters.",
+        "A source invocation contributes to the stricter counter only when it is HDR and source.sRGB is false.",
+        "A destination invocation contributes to the stricter counter only when it is LDR and destination.sRGB is true.",
+        "Counters are reset with the existing authoritative capture telemetry and exposed read-only to QA."
+      ]
+    },
+    {
+      "commit": "2b09825d0d2357715a3c9eae4766bbb6d4dbfb2f",
+      "message": "qa: require linear HDR to sRGB LDR on every still",
+      "files": [
+        "UnityProject/Assets/Editor/QualityBlockHdrTonemapRuntimeQA.cs"
+      ],
+      "details": [
+        "Authoritative capture now fails unless all 3/3 stills report linear HDR sources and sRGB LDR destinations.",
+        "Last-frame source/destination sRGB state remains an additional sanity check rather than the sole transfer observation.",
+        "Runtime receipt schema advanced to 1.2 and records both stricter counters plus everyStillHadLinearHdrSource/everyStillHadSrgbLdrDestination.",
+        "Added independent receipt-file validation so persisted runtime evidence can be checked without pretending it is a visual score."
+      ]
+    },
+    {
+      "commit": "bec81cd007d77672cbd8ed27599cbf02d95dd2b7",
+      "message": "qa: codify per-still display transfer evidence",
+      "files": [
+        "UnityProject/Assets/QA/hdr_tonemap_capture_contract.json"
+      ],
+      "details": [
+        "Machine-readable contract now requires per-still scene-linear HDR input and sRGB LDR output.",
+        "Receipt schema and failure policy explicitly reject any canonical still that misses the transfer state."
+      ]
+    },
+    {
+      "commit": "14f9678b57e0d960d25ad45270c29f593d62ecff",
+      "message": "qa: bind display transfer to per-still runtime counters",
+      "files": [
+        "UnityProject/Assets/QA/display_transfer_integrity_contract.json"
+      ],
+      "details": [
+        "Display-transfer contract now documents the runtime telemetry bridge between the pre-cull target guard and the HDR-tonemap receipt.",
+        "No source-side pass awards visual points or clears visible defects."
+      ]
+    }
+  ],
+  "verification": {
+    "staticSourceReview": "PASS_BY_INSPECTION",
+    "contractTokenCompatibility": "PASS_BY_INSPECTION",
+    "unityCompile": "PENDING_RUNNER",
+    "unityRuntime": "PENDING_RUNNER",
+    "native3840x2160Render": "PENDING_RUNNER",
+    "actualPixelReview": "PENDING_RUNNER",
+    "githubActionsRunsObservedBeforeRecordCommit": 0,
+    "commitStatusContextsObservedBeforeRecordCommit": 0,
+    "godotModified": false,
+    "baseMerged": false,
+    "forbiddenThemeAdded": false
+  },
+  "scoring": {
+    "implementationReadiness": 93,
+    "implementationReadinessPossible": 100,
+    "visualFidelityStatus": "UNSCORED_UNTIL_REAL_4K_RENDER",
+    "visualFidelityPointsAwardedThisRun": 0,
+    "passClaimed": false,
+    "expectedVisualScoreImpactIfRuntimeEvidencePassesAndPixelsSupportIt": {
+      "primary": [
+        "Cinematic image quality/composition/color/exposure",
+        "Lighting/shadows/reflections",
+        "Material/PBR physical plausibility"
+      ],
+      "reason": "The change does not improve scene pixels by itself; it prevents incorrectly transferred pixels from being accepted as trustworthy evidence for these categories."
+    }
+  },
+  "criticalDefectPolicy": {
+    "claimed_render_without_actual_render": "NOT_CLEARED",
+    "obviously_painted_or_baked_highlights": "NOT_CLEARED_BY_SOURCE_QA",
+    "materially_impossible_metallic_specular": "NOT_CLEARED_BY_SOURCE_QA",
+    "severe_aliasing_or_shimmer": "NOT_CLEARED",
+    "visible_lod_pop": "NOT_CLEARED",
+    "major_light_leak": "NOT_CLEARED"
+  },
+  "nextBlocker": "A Unity 6000.3.0f1-capable runner/editor session is still required. On first runtime availability, stop speculative expansion, compile, execute the native review packet, require 3/3 linear-HDR and 3/3 sRGB-LDR transfer observations, then inspect hero/oblique/grazing 3840x2160 frames plus 100% crops before assigning any Visual Fidelity score.",
+  "notes": [
+    "Godot remains preserved and untouched.",
+    "No base merge was performed.",
+    "No earthquake, disaster, or reconstruction content was introduced.",
+    "The runtime receipt is evidence plumbing only and cannot substitute for pixel review."
+  ]
+}

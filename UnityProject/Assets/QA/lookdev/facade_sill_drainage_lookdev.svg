@@ -1,0 +1,82 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="1000" viewBox="0 0 1600 1000">
+  <rect width="1600" height="1000" fill="#11151a"/>
+  <style>
+    .t{font-family:Arial,Helvetica,sans-serif;fill:#edf1f5}
+    .h{font-size:34px;font-weight:700}
+    .s{font-size:20px}
+    .n{font-size:17px;fill:#bcc7d1}
+    .metal{fill:#89939a;stroke:#dbe2e8;stroke-width:3}
+    .cut{fill:#11151a;stroke:#f0b35c;stroke-width:3}
+    .dim{stroke:#7dc4ff;stroke-width:2;fill:none}
+    .water{stroke:#70b7dd;stroke-width:4;fill:none;stroke-dasharray:10 8}
+    .guide{stroke:#5c6872;stroke-width:2;fill:none}
+  </style>
+
+  <text x="70" y="70" class="t h">Facade sliding-sash sill drainage — construction lookdev</text>
+  <text x="70" y="105" class="t n">Benchmark dimensional study • source-side illustration only • real 3840×2160 pixels remain authoritative</text>
+
+  <text x="75" y="165" class="t s">A. Oblique section — interior at left, exterior +Z at right</text>
+  <line x1="90" y1="500" x2="735" y2="500" class="guide"/>
+  <polygon points="210,345 560,368 560,406 210,383" class="metal"/>
+  <rect x="180" y="255" width="115" height="105" rx="6" class="metal"/>
+  <rect x="556" y="366" width="34" height="90" rx="4" class="metal"/>
+  <rect x="552" y="446" width="92" height="24" rx="5" class="metal"/>
+  <path d="M250 330 C340 335 450 348 535 360" class="water"/>
+  <path d="M535 360 C558 365 570 381 570 402" class="water"/>
+  <path d="M570 405 L570 430" class="water"/>
+  <path d="M570 430 C585 442 610 442 628 450" class="water"/>
+  <text x="185" y="235" class="t n">existing lower sash frame</text>
+  <text x="245" y="325" class="t n">sloped 20 mm tray</text>
+  <text x="590" y="390" class="t n">segmented skirt</text>
+  <text x="650" y="460" class="t n">projecting drip nose</text>
+  <text x="350" y="535" class="t n">8 mm outward fall across 195 mm tray depth</text>
+
+  <line x1="210" y1="420" x2="560" y2="420" class="dim"/>
+  <line x1="210" y1="410" x2="210" y2="430" class="dim"/>
+  <line x1="560" y1="410" x2="560" y2="430" class="dim"/>
+  <text x="320" y="448" class="t n">195 mm</text>
+
+  <text x="825" y="165" class="t s">B. Front elevation — physical drain openings</text>
+  <rect x="855" y="250" width="660" height="125" rx="3" class="metal"/>
+  <rect x="1011" y="250" width="24" height="125" class="cut"/>
+  <rect x="1335" y="250" width="24" height="125" class="cut"/>
+  <rect x="840" y="375" width="690" height="34" rx="5" class="metal"/>
+  <text x="875" y="235" class="t n">exterior skirt</text>
+  <text x="955" y="440" class="t n">continuous drip nose below openings</text>
+
+  <line x1="1011" y1="210" x2="1035" y2="210" class="dim"/>
+  <line x1="1011" y1="200" x2="1011" y2="220" class="dim"/>
+  <line x1="1035" y1="200" x2="1035" y2="220" class="dim"/>
+  <text x="976" y="192" class="t n">50 mm opening</text>
+  <line x1="855" y1="485" x2="1515" y2="485" class="dim"/>
+  <line x1="855" y1="475" x2="855" y2="495" class="dim"/>
+  <line x1="1515" y1="475" x2="1515" y2="495" class="dim"/>
+  <text x="1142" y="515" class="t n">2460 mm overall</text>
+
+  <text x="75" y="625" class="t s">C. LOD continuity rule</text>
+  <rect x="90" y="670" width="255" height="120" rx="8" class="guide"/>
+  <rect x="385" y="670" width="255" height="120" rx="8" class="guide"/>
+  <rect x="680" y="670" width="255" height="120" rx="8" class="guide"/>
+  <rect x="975" y="670" width="255" height="120" rx="8" class="guide"/>
+  <text x="115" y="710" class="t s">LOD0</text>
+  <text x="115" y="743" class="t n">5 renderers</text>
+  <text x="115" y="770" class="t n">tray + 3 skirt + nose</text>
+  <text x="410" y="710" class="t s">LOD1</text>
+  <text x="410" y="743" class="t n">1 combined renderer</text>
+  <text x="410" y="770" class="t n">same silhouette + openings</text>
+  <text x="705" y="710" class="t s">LOD2</text>
+  <text x="705" y="743" class="t n">1 combined renderer</text>
+  <text x="705" y="770" class="t n">same silhouette + openings</text>
+  <text x="1000" y="710" class="t s">LOD3</text>
+  <text x="1000" y="743" class="t n">1 combined renderer</text>
+  <text x="1000" y="770" class="t n">same silhouette + openings</text>
+  <path d="M345 730 L385 730 M640 730 L680 730 M935 730 L975 730" class="dim"/>
+  <text x="1260" y="708" class="t n">No slab fallback</text>
+  <text x="1260" y="738" class="t n">No texture-only holes</text>
+  <text x="1260" y="768" class="t n">No painted highlight</text>
+
+  <text x="75" y="865" class="t s">Native-4K review targets</text>
+  <text x="75" y="902" class="t n">Frontal: drain gaps read as geometry • Oblique: frame seating + recess depth • Grazing: continuous anodized highlight + edge rolloff</text>
+  <text x="75" y="934" class="t n">Temporal oblique: LOD0→1→2→3 must show no silhouette snap, drain-hole disappearance, highlight jump or shimmer</text>
+  <text x="75" y="966" class="t n">Darkness inside openings must come from physical recess/occlusion. Wetness is 0 for the dry benchmark.</text>
+</svg>

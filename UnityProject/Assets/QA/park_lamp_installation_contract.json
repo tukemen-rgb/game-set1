@@ -1,0 +1,128 @@
+{
+  "schemaVersion": "1.0",
+  "id": "park_lamp_installation_interface",
+  "purpose": "Machine-readable manufacture/install/material/LOD contract for the benchmark-visible circa-2000 neighborhood park lamp. Source-side compliance is implementation readiness only; Visual Fidelity points require actual native Unity renders.",
+  "periodIntent": "ordinary Japanese neighborhood/municipal park globe lamp plausible around 2000; not a claim of one exact manufacturer model",
+  "referenceBasis": [
+    {
+      "authority": "Panasonic",
+      "topic": "lighting-pole taper as a construction class",
+      "source": "https://jpn.faq.panasonic.com/app/answers/detail/a_id/101310/",
+      "useInModel": "supports the general physical principle that lighting poles may taper continuously from a larger base diameter to a smaller top diameter; the source describes steel road-lighting poles and is not treated as historical dimensional evidence for this fictional concrete park pole"
+    },
+    {
+      "authority": "Panasonic",
+      "topic": "luminaire-to-pole interface",
+      "source": "https://jpn.faq.panasonic.com/app/answers/detail/a_id/110067/",
+      "useInModel": "supports modeling the pole-top/luminaire connection as a real diameter/insertion interface rather than a floating decorative head; no exact product compatibility is claimed"
+    },
+    {
+      "authority": "Shizuoka City",
+      "topic": "ordinary Japanese neighborhood park globe-lamp morphology",
+      "source": "https://www.city.shizuoka.lg.jp/shisetsu/s0000626.html",
+      "useInModel": "visual-morphology reference only: a simple tall pole with a retained globe is a real municipal-park form; the current photograph is not used as proof of a 2000 product specification"
+    }
+  ],
+  "assembly": {
+    "root": "HD_Lamp",
+    "orientation": "local +Y is vertical; the service cover faces local +Z toward the benchmark-camera side",
+    "exposure": "full midsummer sun and rain; upper cap and globe receive direct exposure, while the lowest 0.20 m above grade receives splash/capillary darkening",
+    "manufacture": "continuous tapered spun/precast-concrete visual pole shell; curved weather-sealed service cover; inserted painted-metal top adapter; lower and upper globe retainers plus weather cap; separately lathed aged dielectric globe",
+    "installationSequence": [
+      "concrete pole continues 0.08 m below visible grade so the hero shell cannot float",
+      "pole tapers continuously from 0.190 m diameter at grade to 0.125 m diameter at the 3.92 m top",
+      "curved EPDM gasket follows the pole surface around the service opening zone",
+      "curved painted service cover bears on the gasket; four small cover fasteners are retained only at LOD0",
+      "painted adapter stem inserts 0.002 m into the pole top and 0.002 m into the lower globe retainer",
+      "lower retainer overlaps the lower diffuser neck by 0.005 m",
+      "upper retainer overlaps the upper diffuser neck by 0.005 m",
+      "weather cap bears directly on the upper retainer"
+    ],
+    "components": [
+      {"name": "continuous concrete pole", "bottomBelowGradeMetres": 0.08, "topYMetres": 3.92, "gradeDiameterMetres": 0.190, "topDiameterMetres": 0.125, "geometry": "tapered lathed/frustum shell, 32/24/16/12 radial segments in LOD0/1/2/3"},
+      {"name": "causal moisture zone", "visibleHeightAboveGradeMetres": 0.20, "geometry": "same continuous pole surface via a lower material submesh; never a protruding ring"},
+      {"name": "curved service-cover gasket", "centerYMetres": 0.86, "heightMetres": 0.28, "halfAngleDegrees": 33.0, "radialThicknessMetres": 0.0015, "material": "EPDM dielectric"},
+      {"name": "curved service cover", "centerYMetres": 0.86, "heightMetres": 0.26, "halfAngleDegrees": 30.0, "radialThicknessMetres": 0.003, "material": "painted steel dielectric"},
+      {"name": "service-cover fasteners", "count": 4, "headDiameterMetres": 0.008, "headHeightMetres": 0.004, "lod": "LOD0 only"},
+      {"name": "pole-top boot", "diameterMetres": 0.142, "heightMetres": 0.030, "centerYMetres": 3.935},
+      {"name": "adapter stem", "diameterMetres": 0.065, "bottomYMetres": 3.918, "topYMetres": 4.267},
+      {"name": "lower diffuser retainer", "diameterMetres": 0.235, "bottomYMetres": 4.265, "topYMetres": 4.310},
+      {"name": "aged globe diffuser", "centerYMetres": 4.43, "bottomYMetres": 4.305, "topYMetres": 4.560, "maximumDiameterMetres": 0.430, "geometry": "existing topology-aware lathed PhysicalDiffuser"},
+      {"name": "upper diffuser retainer", "diameterMetres": 0.235, "bottomYMetres": 4.555, "topYMetres": 4.580},
+      {"name": "weather cap", "diameterMetres": 0.270, "bottomYMetres": 4.580, "topYMetres": 4.596}
+    ],
+    "interfaces": {
+      "poleAdapterOverlapTargetMetres": 0.002,
+      "adapterLowerRetainerOverlapTargetMetres": 0.002,
+      "lowerRetainerDiffuserOverlapTargetMetres": 0.005,
+      "upperRetainerDiffuserOverlapTargetMetres": 0.005,
+      "upperRetainerCapGapTargetMetres": 0.0,
+      "serviceCoverGasketRadialOverlapTargetMetres": 0.0005,
+      "maximumInterfaceGapMetres": 0.003,
+      "maximumUnintendedPenetrationMetres": 0.008
+    },
+    "geometryVsMaterialDetail": {
+      "geometry": ["continuous pole taper", "below-grade embed", "service gasket and curved cover", "LOD0 fastener heads", "top boot", "adapter stem", "lower/upper globe retainers", "weather cap", "lathed globe silhouette"],
+      "material": ["concrete fine aggregate/pinholes", "lowest-zone capillary/splash darkening", "paint orange-peel/chalking", "EPDM matte response", "globe frosting/wiping haze", "fine fastener oxidation"],
+      "forbiddenMaterialShortcuts": ["painted contact shadow", "painted sun hotspot", "fake rim highlight", "metallic concrete", "emissive daytime globe"]
+    },
+    "causeBasedAging": [
+      "lowest 0.20 m of concrete may darken/roughen from splash and capillary moisture without changing macro geometry",
+      "sun-exposed paint may chalk slightly while sheltered underside regions remain darker",
+      "globe may show diffuse UV haze and wiping micro-scratches but no directional baked highlight",
+      "retainer/cap runoff edges may collect fine contamination; random full-surface dirt is forbidden"
+    ]
+  },
+  "materials": {
+    "concrete": {"albedoLinearRgb": [0.49, 0.485, 0.46], "roughness": [0.80, 0.93], "metallic": 0.0, "specularF0Target": 0.04, "normalScale": 0.55, "microstructure": "millimetric aggregate/pinholes", "wetness": "cause-based only at splash/capillary zone", "uvAging": "minor tone drift", "angularFresnel": "broad dielectric"},
+    "contactConcrete": {"albedoLinearRgb": [0.395, 0.39, 0.37], "roughness": [0.86, 0.96], "metallic": 0.0, "specularF0Target": 0.04, "normalScale": 0.60, "microstructure": "same mineral substrate with moisture/splash roughness", "wetness": "highest at grade", "uvAging": "subordinate to moisture", "angularFresnel": "broad dielectric"},
+    "paintedSteel": {"albedoLinearRgb": [0.105, 0.305, 0.39], "roughness": [0.60, 0.76], "metallic": 0.0, "specularF0Target": 0.04, "normalScale": 0.25, "microstructure": "fine orange-peel/chalking", "wetness": "dry benchmark default", "uvAging": "slight chalking", "angularFresnel": "dielectric"},
+    "exposedFastenerSteel": {"albedoLinearRgb": [0.34, 0.355, 0.36], "roughness": [0.26, 0.42], "metallic": 1.0, "normalScale": 0.22, "microstructure": "fine oxidation/machining variance", "wetness": "localized only", "uvAging": "not applicable", "angularFresnel": "metal reflection from actual environment"},
+    "epdm": {"albedoLinearRgb": [0.025, 0.027, 0.026], "roughness": 0.92, "metallic": 0.0, "specularF0Target": 0.04, "normalScale": 0.15, "microstructure": "fine matte rubber grain", "wetness": "localized runoff film only", "uvAging": "slight greying/chalking", "angularFresnel": "weak broad dielectric"},
+    "diffuser": {"albedoLinearRgb": [0.71, 0.73, 0.68], "roughness": [0.36, 0.52], "metallic": 0.0, "specularF0Target": 0.04, "normalScale": 0.18, "microstructure": "frosted polymer/glass-like scattering proxy plus subtle wiping haze", "wetness": "dry benchmark default", "uvAging": "slight diffuse haze", "angularFresnel": "dielectric; highlights/reflections must arise from lighting", "emission": 0.0}
+  },
+  "lod": {
+    "requiredLodCount": 4,
+    "physicalPoleRadialSegments": [32, 24, 16, 12],
+    "serviceCoverArcSegments": [12, 10, 8, 6],
+    "persistentThroughAllLods": ["PhysicalPole", "LampServiceGasket", "LampServiceCover", "LampPoleTopBoot", "LampAdapterStem", "LampLowerRetainer", "PhysicalDiffuser", "LampUpperRetainer", "LampWeatherCap"],
+    "lod0Only": ["LampServiceBolt_0", "LampServiceBolt_1", "LampServiceBolt_2", "LampServiceBolt_3"],
+    "crossFade": "animated",
+    "criticalFail": "visible silhouette/material-class pop or detached head/service-cover hardware"
+  },
+  "qaRules": {
+    "legacyRenderersMustBeDisabled": ["PoleLower", "PoleUpper", "GroundMoistureBand", "Neck", "Cap", "Diffuser", "DiffuserCrown"],
+    "generatedColliderCount": 0,
+    "dielectricMetallicMax": 0.05,
+    "bareMetalMetallicMinAfterMicrodetail": 0.95,
+    "epdmRoughnessMin": 0.85,
+    "daytimeGeneratedLightIntensityMax": 0.001,
+    "poleBottomYRangeMetres": [-0.12, -0.04],
+    "poleTopYToleranceMetres": 0.004,
+    "minimumPoleHeightMetres": 3.98,
+    "maximumServiceCoverPositiveGapMetres": 0.003,
+    "maximumHeadInterfaceGapMetres": 0.003,
+    "criticalAutomaticFail": [
+      "visible primitive-placeholder geometry in benchmark framing",
+      "floating/interpenetrating hero geometry",
+      "materially impossible metallic/specular values",
+      "painted/baked highlight",
+      "visible LOD pop",
+      "missing required construction/material metadata",
+      "daytime emissive or lit park globe",
+      "excluded non-ordinary-scene theme"
+    ]
+  },
+  "renderVerification": {
+    "status": "PENDING_UNITY_RUNTIME",
+    "visualFidelityPointsAwarded": 0,
+    "requiredEvidence": [
+      "native 3840x2160 benchmark frame where the lamp is visible",
+      "100% crop showing continuous pole taper and grade contact without a protruding fake moisture ring",
+      "100% crop showing curved service cover/gasket bearing and real cover fasteners where resolvable",
+      "oblique/grazing evidence showing concrete, painted retainers, exposed fasteners and aged dielectric globe separate by actual Fresnel/roughness",
+      "temporal sequence traversing lamp LOD thresholds without silhouette/material-class pop"
+    ],
+    "scoringRule": "source-side QA cannot award Geometry, Material/PBR, Weathering, Period Accuracy or Temporal/LOD points"
+  }
+}

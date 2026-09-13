@@ -1,0 +1,90 @@
+{
+  "schemaVersion": "1.0",
+  "runId": "2026-09-12_facade_glass_edge_construction",
+  "branch": "gpt/unity-migration",
+  "startHead": "c93a5968d901bcd7088a23e3f793e1a01dc11c17",
+  "substantiveWorkHeadBeforeRecord": "0f3d2639f7d93a1fb346ca85ad176c8be01b509e",
+  "substantiveCommits": [
+    "9d33106f45be33db423d4725f6ae6004f798c149",
+    "5bf3501286e64721e2241e8f38fc606cf7066e99",
+    "199bf0a9631240764bf7a4a075a93fd1eb5fe6c5",
+    "384c583bddccefc264264e2e483c8aeb44ffd4c9",
+    "ad6a5907c78b8716b178609abbf1dcf3b58ac05b",
+    "2e81ed5e61dabc146ce715e456929ce2fcfc7b2a",
+    "27f491e76ec88a4c3325d1932b37c97e4ef4d70d",
+    "0f3d2639f7d93a1fb346ca85ad176c8be01b509e"
+  ],
+  "goal": "Increase geometry/construction and dielectric glazing plausibility at oblique/grazing 4K views by replacing zero-thickness visual construction with a physically dimensioned 4 mm perimeter edge cue, while preserving the existing real-time transparent front surface and avoiding a duplicate broad transparent rear layer.",
+  "sourceFinding": {
+    "problem": "The generated fallback contract already described nominal 4 mm clear float glass, but the runtime construction used GM_FacadeOpticalPlane: one zero-thickness broad quad per visible pane. At oblique/grazing angles this left the construction thickness unrepresented even though the material contract implied it.",
+    "existingAssembly": "30 apartment openings use two 1030 x 1460 mm sliding optical panes with 14 mm depth separation; five stair openings use 1120 x 1180 mm optical panes. Total visible panes: 65.",
+    "chosenFix": "Retain the existing broad front optical plane as the real-time transmission/Fresnel surface and add only four perimeter quads extending 4 mm inward. This creates real geometric edge orientation without a second broad transparent sheet that would compound fallback alpha/reflection sorting.",
+    "realTimeCost": "8 triangles per pane, 520 added triangles total for 65 panes; the edge shell is intentionally retained across viewing distance rather than removed and creating a grazing construction pop."
+  },
+  "implementation": [
+    "Added QualityBlockFacadeGlassThicknessUpgrade with a canonical edge-only 16-vertex/8-triangle mesh spanning exactly 4 mm inward from each existing facade optical plane.",
+    "Each edge shell is a child of its source pane with zero local translation, identity rotation, unit scale, no collider, no shadow casting, and the exact same MAT_WindowClearGlass material as the broad front optical surface.",
+    "Bound generation to EditorSceneManager.sceneSaving for the benchmark scene. The existing preparation order rebuilds facade optics, then QualityBlockEnvironmentLightingUpgrade saves the scene; this save boundary creates/serializes the edges before later realtime reflection synchronization.",
+    "Added a machine-readable construction/material contract covering components, dimensions/thickness, mounting, interfaces, orientation, dry midsummer exposure, aging boundaries, geometry-vs-material ownership, LOD policy, required native-4K evidence and canonical critical-defect IDs.",
+    "Added full material metadata for tint/albedo proxy, IOR reference, dielectric F0 reference, metallic, roughness/smoothness, alpha proxy, normal scale, microstructure, wetness, UV aging and angular Fresnel behavior.",
+    "Added QualityBlockFacadeGlassThicknessContractQA to bind the metadata numerically back to the canonical MAT_WindowClearGlass asset instead of merely checking that descriptive JSON exists.",
+    "Added QualityBlockFacadeGlassThicknessFormalQA to fail closed before benchmark MainCamera culling if construction, topology, material binding or metadata validation fails.",
+    "Added a non-render SVG lookdev illustration documenting the 4 mm section, real construction ownership, dry midsummer light response and forbidden painted-border/metallic/duplicate-layer shortcuts."
+  ],
+  "selfAudit": [
+    {
+      "finding": "Initial machine contract omitted an explicit albedo/tint numeric field even though the mandatory material reasoning requires albedo as well as roughness/metallic/normal/microstructure/wetness/aging/Fresnel.",
+      "correction": "Added albedoTintProxyRgba=[0.72,0.81,0.84,0.18] and a strict contract QA that checks those values plus the rest of the material metadata."
+    },
+    {
+      "finding": "Descriptive material metadata alone could drift away from the actual MAT_WindowClearGlass asset.",
+      "correction": "Bound contract QA to the real material asset: shader identity, RGBA tint, metallic, smoothness-range membership, premultiplied transparency/ZWrite and non-emissive state must agree before formal rendering."
+    },
+    {
+      "finding": "A closed transparent box would be more geometrically literal but would introduce a second broad rear transparent layer in the current Standard-alpha fallback, increasing reflection/transparency sorting error and risking a visually stronger but less physically credible result.",
+      "correction": "Kept one broad optical face and modeled only the four physical perimeter orientation changes. Contract explicitly forbids the duplicate broad rear surface for this fallback."
+    }
+  ],
+  "verification": {
+    "level": "GitHub/source review only",
+    "unityVersionTarget": "6000.3.0f1",
+    "unityCompileExecuted": false,
+    "unityRuntimeExecuted": false,
+    "native3840x2160RenderProduced": false,
+    "visualFidelityScored": false,
+    "githubActionsRunsObserved": 0,
+    "notes": "No Unity Runner or authoritative screenshot appeared during this run. Source APIs and existing preparation order were audited, but sceneSaving callback behavior, generated mesh serialization, transparent-edge sorting and actual 4K appearance remain runtime/render verification pending."
+  },
+  "implementationReadiness": {
+    "score": 93,
+    "possible": 100,
+    "changeThisRun": 0,
+    "reason": "This run materially strengthens source-side glazing construction and QA but does not satisfy the existing missing Unity 6000.3.0f1 compile/runtime verification block worth the remaining 7 points."
+  },
+  "visualFidelity": {
+    "status": "UNSCORED_UNTIL_REAL_4K_RENDER",
+    "pointsAwardedThisRun": 0,
+    "passClaimed": false,
+    "expectedScoreImpactOnly": [
+      "Geometry & construction fidelity (20): positive candidate impact from real 4 mm pane-edge geometry and explicit sash/interface construction rather than a zero-thickness plane; no points until visible pixels confirm scale/seating.",
+      "Material/PBR physical plausibility (20): positive candidate impact from edge geometry sharing the same canonical nonmetallic dielectric material plus hard metadata-to-asset binding; no points until actual reflection/transmission response is observed.",
+      "Lighting/shadows/reflections (15): positive candidate impact because grazing response can now come from physical edge orientation rather than a painted border; actual probe/reflection balance remains unobserved.",
+      "Cinematic image quality (5): possible improvement to oblique/grazing construction read; unscored.",
+      "Temporal/LOD/aliasing stability (5): neutral/risk pending. Thin 4 mm edges may shimmer at distance, so temporal evidence is mandatory before treating this as positive."
+    ]
+  },
+  "mandatoryPixelReviewWhenRunnerAppears": [
+    "oblique/construction_depth 3840x2160 + 100% crop: pane seating, actual perceived thickness, no floating/interpenetrating edge.",
+    "grazing/sash_rail_response 3840x2160 + 100% crop: physical edge/Fresnel cue, no painted border, no duplicate-transparent-layer look.",
+    "grazing/material_grazing 3840x2160 + 100% crop: nonmetallic glass, reflection/transparency sorting, highlight continuity.",
+    "hero/facade_center 3840x2160 + 100% crop: no immediately obvious repeated bright window outline.",
+    "Temporal sequence at 100%: thin-edge shimmer/aliasing and any distance-dependent construction pop."
+  ],
+  "constraintsPreserved": {
+    "godotModified": false,
+    "baseMerged": false,
+    "forbiddenDisasterThemeIntroduced": false,
+    "changesScopedToUnityProject": true
+  },
+  "nextBlocker": "Unity 6000.3.0f1 Runner/Editor compile and actual prepared-scene execution. At first Runner availability stop speculative expansion, verify sceneSaving generates the canonical edge mesh and 65 edge children before reflection synchronization, confirm full contract/formal pre-cull QA passes, then capture and review the required native 4K crops plus temporal pixels before assigning any Visual Fidelity points."
+}

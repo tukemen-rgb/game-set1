@@ -1,0 +1,74 @@
+{
+  "schemaVersion": "1.0",
+  "runId": "2026-09-11-temporal-runtime-evidence",
+  "branch": "gpt/unity-migration",
+  "startHead": "efcc2f6039d145f2582409a6473bf85f893756ec",
+  "substantiveWorkHead": "4b5e9607c30008dbf4fcdc30f8315240c51ee408",
+  "substantiveCommits": [
+    "f8244d1e46854d66aef7366369477b8336062643",
+    "49035737eff7045f65880cf4343aee579da1567e",
+    "49c3411284216aa0b21dd7e3a40af75a3b84b9f9",
+    "770391927d621b0d460fb0628a6a0ee09917fb92",
+    "29c5230af70e3b085a116fd950f223870785e131",
+    "5df876b777fb6020b69389ba0597ab6e33fb1490",
+    "0d091972e31d968222e3c99db6323891e8824750",
+    "b90f3d434af9cea7f2a3b66ff3dca317e2c95934",
+    "d53cf8eda3067cef353d8162800c9d24c4da1ab6",
+    "4b5e9607c30008dbf4fcdc30f8315240c51ee408"
+  ],
+  "constraints": {
+    "godotPreserved": true,
+    "baseMergePerformed": false,
+    "forbiddenDisasterThemesIntroduced": false,
+    "visualPassClaimedWithoutRender": false
+  },
+  "changeSummary": [
+    "Added QualityBlockTemporalRuntimeEvidenceGuard and a machine-readable temporal_runtime_evidence_contract. The authoritative temporal sequence now starts only from the persisted, reflection-synchronized benchmark scene.",
+    "The runtime guard captures the physical-lighting SHA-256 before the sequence and revalidates it in MainCamera.onPreCull once for every required temporal Camera.Render. A missing/extra MainCamera render or lighting drift fails closed.",
+    "The guard resets QualityBlockFilmicTonemap telemetry after the three stills, then requires render, native-4K, filmic-tonemap, HDR-source and LDR-destination invocation counts all to equal the temporal frame count with zero fallback blits.",
+    "The temporal runtime receipt is SHA-256-bound to the persisted scene, temporal manifest, temporal receipt, prepared temporal binding, reflection completion receipt and asynchronous reflection wait proof. It records zero automatic visual points and UNSCORED_REVIEW_REQUIRED.",
+    "QualityBlockNative4KReviewPacket wraps prepared temporal capture in Begin/CompleteAndSeal with Abort on failure, so runtime evidence is generated in the canonical packet rather than as an optional side path.",
+    "QualityBlockReviewedVisualEvidenceIntegrityQA now requires the latest temporal runtime receipt before reviewed evidence can reach the core numeric gate. QualityBlockVisualFidelityGate already invokes this reviewed-evidence validator internally, including direct runner/reflection calls.",
+    "QualityBlockFilmicTonemap now counts HDR-source and non-HDR-destination observations per invocation. Still-image HDR QA was strengthened from last-frame-only format evidence to exactly three HDR-source plus three LDR-destination observations for hero/oblique/grazing."
+  ],
+  "selfAudit": [
+    "The first temporal runtime contract commit misspelled requireFilmicTonemapForEveryTemporalFrame as requireFilmicTonmapForEveryTemporalFrame. This would have made the new contract validator fail closed immediately; the field was corrected before finalizing the run.",
+    "The first runtime guard version checked HDR/LDR format only on the final temporal invocation, matching the prior still QA pattern. This was insufficient to prove every frame. The filmic component was extended with per-invocation HDR-source/LDR-destination counters, and both temporal and still QA now require exact per-frame/per-still totals.",
+    "Source inspection confirms the existing prepared temporal capture already writes actual 3840x2160 frames/crops and a no-rebuild reflection binding; this run did not duplicate that functionality. It adds the missing runtime lighting/display-transform proof around that existing path."
+  ],
+  "sourceVerification": {
+    "mode": "GitHub source/static inspection only",
+    "compareBase": "efcc2f6039d145f2582409a6473bf85f893756ec",
+    "compareHead": "4b5e9607c30008dbf4fcdc30f8315240c51ee408",
+    "aheadBy": 10,
+    "behindBy": 0,
+    "mergeBaseUnchangedFromRunStart": true,
+    "changedFiles": 7,
+    "godotFilesChanged": 0,
+    "unityCompileVerified": false,
+    "native4KRenderVerified": false,
+    "temporalRuntimeReceiptGenerated": false,
+    "reasonRuntimeReceiptNotGenerated": "No Unity 6000.3.0f1 runner/editor execution is available in this source-only run. The receipt is deliberately generated only by real guarded Camera.Render execution."
+  },
+  "implementationReadiness": {
+    "score": 93,
+    "possible": 100,
+    "status": "IMPLEMENTATION_READINESS_ONLY",
+    "remainingBlocker": "unity_compile_verification"
+  },
+  "visualFidelity": {
+    "status": "UNSCORED_UNTIL_REAL_4K_RENDER_AND_REVIEW",
+    "pointsAwardedThisRun": 0,
+    "passClaimed": false,
+    "criticalDefectClearedFromPixels": false
+  },
+  "expectedVisualScoreImpact": [
+    "Temporal/LOD/aliasing stability 5: prevents temporal evidence from being accepted if frame count, lighting state or filmic display-transform execution differs across the sequence. Actual shimmer, aliasing and LOD pop remain pixel-review only.",
+    "Lighting/shadows/reflections 15: temporal frames cannot silently use a different SummerSun/sky/ambient/shadow fingerprint from the synchronized evidence state.",
+    "Cinematic image quality 5: temporal evidence must use the intended HDR-to-LDR filmic path on every frame, so exposure/tonemap review is not mixed with raw/fallback frames.",
+    "Material/PBR physical plausibility 20: reflection/specular behavior reviewed across temporal motion is evidence-bound to the same physical lighting state; no material points are awarded without pixels.",
+    "Automatic Visual Fidelity impact: 0 points. These are provenance and fail-closed runtime requirements, not observed image quality."
+  ],
+  "nextBlocker": "Unity 6000.3.0f1 editor/runner compile and real native capture. At first runner availability, run Prepare Complete Native 4K Review Packet. The first acceptance criteria are: no compile errors; exactly one guarded MainCamera pre-cull lighting check per temporal frame; identical physical-lighting SHA-256 for all temporal culls; HDR-source count == LDR-destination count == filmic/native-4K render count == required temporal frame count; fallback count == 0; and valid SHA-256 bindings to the same prepared scene/reflection/temporal evidence. Then inspect the actual 100% temporal crops for shimmer, aliasing and LOD pop before assigning any Visual Fidelity points.",
+  "recordingNote": "This run-record commit and any implementation_readiness bookkeeping commit are intentionally excluded from substantiveCommits to avoid self-referential commit hashes."
+}

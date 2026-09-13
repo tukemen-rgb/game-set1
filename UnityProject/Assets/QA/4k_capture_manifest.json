@@ -1,0 +1,82 @@
+{
+  "schemaVersion": "1.1",
+  "generatedUtc": "",
+  "unityVersion": "",
+  "graphicsDevice": "",
+  "graphicsApi": "",
+  "projectColorSpace": "",
+  "width": 3840,
+  "height": 2160,
+  "source": "QualityBlock4KCapture runtime output required",
+  "renderProducedByUnity": false,
+  "visualFidelityStatus": "UNSCORED_NO_RENDER_YET",
+  "cropPolicy": "Pixel-exact source-texel crops; no resampling or sharpening.",
+  "reflectionEnvironment": {
+    "skyboxMaterial": "MAT_MidsummerProceduralSky",
+    "ambientMode": "Skybox",
+    "defaultReflectionMode": "Skybox",
+    "defaultReflectionResolution": 1024,
+    "reflectionIntensity": 0.86,
+    "localRealtimeProbeCount": 2,
+    "probesRefreshedImmediatelyBeforeCapture": false
+  },
+  "sunState": {
+    "coherentAcrossAllViews": true,
+    "latitudeDegrees": 35.6,
+    "dayOfYear": 213,
+    "solarTimeHours": 14.0,
+    "elevationDegrees": 0.0,
+    "azimuthDegrees": 0.0,
+    "directionToSun": [0.0, 0.0, 0.0]
+  },
+  "captures": [
+    {
+      "viewId": "hero",
+      "assetPath": "Assets/QA/Captures4K/hero_3840x2160.png",
+      "width": 3840,
+      "height": 2160,
+      "cameraPosition": [2.8, 2.2, 18.5],
+      "cameraTarget": [-7.6, 4.0, -7.8],
+      "fieldOfView": 44.0,
+      "msaaSamples": 0,
+      "cropRecords": [
+        { "id": "facade_center", "assetPath": "Assets/QA/Captures4K/hero_crop_facade_center_1280x720_100pct.png", "x": 1280, "y": 500, "width": 1280, "height": 720, "resampled": false },
+        { "id": "ground_contact", "assetPath": "Assets/QA/Captures4K/hero_crop_ground_contact_1280x720_100pct.png", "x": 1280, "y": 80, "width": 1280, "height": 720, "resampled": false },
+        { "id": "facade_right", "assetPath": "Assets/QA/Captures4K/hero_crop_facade_right_1280x720_100pct.png", "x": 2100, "y": 500, "width": 1280, "height": 720, "resampled": false },
+        { "id": "rooftop_period_hardware", "assetPath": "Assets/QA/Captures4K/hero_crop_rooftop_period_hardware_1280x720_100pct.png", "x": 1280, "y": 1440, "width": 1280, "height": 720, "resampled": false }
+      ]
+    },
+    {
+      "viewId": "oblique",
+      "assetPath": "Assets/QA/Captures4K/oblique_3840x2160.png",
+      "width": 3840,
+      "height": 2160,
+      "cameraPosition": [18.0, 3.4, 12.5],
+      "cameraTarget": [-6.0, 4.0, -8.3],
+      "fieldOfView": 42.0,
+      "msaaSamples": 0,
+      "cropRecords": [
+        { "id": "construction_depth", "assetPath": "Assets/QA/Captures4K/oblique_crop_construction_depth_1280x720_100pct.png", "x": 1180, "y": 500, "width": 1280, "height": 720, "resampled": false },
+        { "id": "balcony_services", "assetPath": "Assets/QA/Captures4K/oblique_crop_balcony_services_1280x720_100pct.png", "x": 1900, "y": 560, "width": 1280, "height": 720, "resampled": false },
+        { "id": "vegetation_grounding", "assetPath": "Assets/QA/Captures4K/oblique_crop_vegetation_grounding_1280x720_100pct.png", "x": 1900, "y": 80, "width": 1280, "height": 720, "resampled": false },
+        { "id": "rooftop_reception_oblique", "assetPath": "Assets/QA/Captures4K/oblique_crop_rooftop_reception_oblique_1280x720_100pct.png", "x": 1280, "y": 1440, "width": 1280, "height": 720, "resampled": false }
+      ]
+    },
+    {
+      "viewId": "grazing",
+      "assetPath": "Assets/QA/Captures4K/grazing_3840x2160.png",
+      "width": 3840,
+      "height": 2160,
+      "cameraPosition": [-22.0, 3.0, 7.0],
+      "cameraTarget": [-8.2, 3.8, -7.8],
+      "fieldOfView": 38.0,
+      "msaaSamples": 0,
+      "cropRecords": [
+        { "id": "material_grazing", "assetPath": "Assets/QA/Captures4K/grazing_crop_material_grazing_1280x720_100pct.png", "x": 1280, "y": 520, "width": 1280, "height": 720, "resampled": false },
+        { "id": "sash_rail_response", "assetPath": "Assets/QA/Captures4K/grazing_crop_sash_rail_response_1280x720_100pct.png", "x": 2050, "y": 560, "width": 1280, "height": 720, "resampled": false },
+        { "id": "tree_shadow_contact", "assetPath": "Assets/QA/Captures4K/grazing_crop_tree_shadow_contact_1280x720_100pct.png", "x": 520, "y": 100, "width": 1280, "height": 720, "resampled": false }
+      ]
+    }
+  ],
+  "note": "Template only. The two rooftop period-authenticity crops are now canonical capture records so runtime sealing/provenance covers them with the same native frame session. renderProducedByUnity remains false and probesRefreshedImmediatelyBeforeCapture remains false until QualityBlock4KCapture actually runs in Unity. This file is not visual_fidelity_evidence.json and cannot award a Visual Fidelity score."
+}

@@ -1,0 +1,101 @@
+{
+  "schemaVersion": "1.0",
+  "runId": "2026-09-10_1837_slide_chute_fabrication",
+  "branch": "gpt/unity-migration",
+  "startHead": "4054a8afa20dcad58f5992b198d7aae4648fc911",
+  "substantiveHead": "63548c364327699c1cdd899a68e31ca8d18b5f11",
+  "mergeBaseAgainstStart": "4054a8afa20dcad58f5992b198d7aae4648fc911",
+  "aheadByBeforeRunRecord": 5,
+  "behindByBeforeRunRecord": 0,
+  "constraints": {
+    "preserveGodot": true,
+    "baseMergePerformed": false,
+    "excludedThemesIntroduced": false,
+    "visualTarget": "plausible high-quality 4K live-action stills while remaining real-time Unity"
+  },
+  "priorityReasoning": {
+    "target": "HD_Slide/LOD0..3/PhysicalChute",
+    "observedSourceRisk": "The previous physical chute improved gross thickness but was assembled from separate running-sheet and side-sheet surfaces. Its side-sheet volumes lacked a single manifold sheet-solid topology, leaving grazing/end-on risk from open longitudinal/end edges and coincident shell interfaces.",
+    "scoreCategoriesAtRisk": [
+      "Geometry & construction fidelity",
+      "Material/PBR physical plausibility",
+      "Lighting/shadows/reflections",
+      "Texture/microdetail/texel fidelity",
+      "Temporal/LOD/aliasing stability"
+    ],
+    "criticalDefectsTargeted": [
+      "visible primitive-placeholder geometry in benchmark framing",
+      "floating/interpenetrating hero geometry",
+      "major light leak",
+      "visible LOD pop",
+      "missing required construction/material metadata"
+    ]
+  },
+  "changes": [
+    {
+      "commit": "fa3e100d1776fcc7b57e6a6a1fd9bc0b23fe518c",
+      "summary": "Added slide_chute_fabrication_contract.json with manufacture sequence, dimensions, PBR response, hard topology limits, LOD policy and zero-credit render policy."
+    },
+    {
+      "commit": "a09b762e1c54f99cb7641106e321e2c757198616",
+      "summary": "Added technical SVG lookdev showing 920 mm width, 2 mm sheet, 140 mm side walls, head/runout load path and R750 minimum transition envelope."
+    },
+    {
+      "commit": "5a21faaddacfc256e3dd43f8ffae55fa907d92d5",
+      "summary": "Added QualityBlockSlideChuteFabricationQA: rebuilds each PhysicalChute as one indexed watertight U-section sheet solid, caps both ends, validates zero boundary/non-manifold edges, cross-section dimensions, end/running-surface winding, curve radius, material binding, collider count and LOD binding."
+    },
+    {
+      "commit": "0a82bb735b669fb717c76e09c56778ead4fbb624",
+      "summary": "Integrated chute contract/application into the benchmark save gate after shared furniture microdetail and before final QA; legacy chute renderers remain disabled."
+    },
+    {
+      "commit": "63548c364327699c1cdd899a68e31ca8d18b5f11",
+      "summary": "Integrated chute contract/runtime validation into the complete Native 4K review packet before probes, immediately before Camera.Render, and again before temporal capture."
+    }
+  ],
+  "constructionState": {
+    "chuteWidthMetres": 0.92,
+    "sheetThicknessMetres": 0.002,
+    "sideWallHeightMetres": 0.14,
+    "head": {"zMetres": 0.18, "yMetres": 1.99},
+    "runout": {"zMetres": 4.38, "yMetres": 0.15},
+    "lodLongitudinalSegments": [96, 48, 24, 12],
+    "minimumAllowedCurveRadiusMetres": 0.75,
+    "sourceMathMinimumCurveRadiusMetresApprox": 2.788,
+    "material": "PBR_SlideStainless",
+    "materialClass": "SUS304 metallic",
+    "gameplayColliderAdded": false
+  },
+  "verification": {
+    "sourceReview": "PASS_WITHOUT_VISUAL_CREDIT",
+    "independentSourceMath": {
+      "uSectionPolygonOrientation": "counter-clockwise along +tangent",
+      "expectedBoundaryEdges": 0,
+      "expectedNonManifoldEdges": 0,
+      "headCapOutwardWinding": true,
+      "runoutCapOutwardWinding": true,
+      "runningSurfaceUpwardWinding": true,
+      "minimumCurveRadiusMetresApprox": 2.788
+    },
+    "githubCommitStatusContextsOnSubstantiveHead": 0,
+    "githubWorkflowRunsOnSubstantiveHead": 0,
+    "unity6000_3_0f1Compile": "NOT_RUN_NO_RUNNER_EVIDENCE",
+    "unityRuntimeQa": "PENDING",
+    "native3840x2160": "PENDING",
+    "pixelExactCrops": "PENDING",
+    "temporalEvidence": "PENDING"
+  },
+  "scores": {
+    "implementationReadiness": 93,
+    "implementationReadinessMax": 100,
+    "visualFidelity": "UNSCORED",
+    "visualFidelityPointsAwardedThisRun": 0,
+    "visualPassClaimed": false,
+    "criticalDefectClearedFromPixels": false
+  },
+  "expectedVisualScoreImpact": {
+    "policy": "No automatic credit. If native evidence proves the intended result, this work is expected to reduce Geometry/Lighting/Temporal deductions caused by open/coplanar chute-shell edges and LOD fallback risk.",
+    "estimatedRecoveryPotentialOnlyAfterRenderReview": "approximately 0.5-1.5 points across Geometry/Material/Lighting/Temporal depending on benchmark visibility; this is not awarded now"
+  },
+  "nextBlocker": "A real Unity 6000.3.0f1 runner or actual benchmark screenshots. When available, stop speculative expansion and inspect the slide in oblique and grazing 100% crops for thin sheet thickness, closed head/runout edges, bearing contact, environment-driven stainless reflections, aliasing and LOD pop before assigning any Visual Fidelity score."
+}

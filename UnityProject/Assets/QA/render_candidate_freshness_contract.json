@@ -1,0 +1,82 @@
+{
+  "schemaVersion": "1.0",
+  "purpose": "Prevent a byte-valid but stale Unity 4K render packet from being scored after the persisted benchmark scene, recursive render dependencies, project render settings, or formal capture/tonemap recipe changes. This is provenance/readiness enforcement only and awards zero Visual Fidelity points.",
+  "visualScoreAwardedByThisQA": false,
+  "criticalDefectRelation": "unverified_render_claim",
+  "enforcementBridge": {
+    "existingProvenanceInvariant": "QualityBlockRenderEvidenceProvenanceQA requires render_capture_receipt.renderProducedByUnity=true before bound evidence/template/scoring can validate.",
+    "staleCandidateAction": "Set render_capture_receipt.renderProducedByUnity=false, delete the candidate seal, and write a reason receipt. Native 4K recapture is required.",
+    "whyFailClosed": "Old PNG/crop bytes may remain internally valid and pixel-exact but cannot represent the current visual candidate after render-affecting state changes."
+  },
+  "projectRenderSettingPaths": [
+    "ProjectSettings/ProjectSettings.asset",
+    "ProjectSettings/QualitySettings.asset",
+    "ProjectSettings/GraphicsSettings.asset"
+  ],
+  "formalRenderRecipePaths": [
+    "Assets/Editor/QualityBlock4KCapture.cs",
+    "Assets/Editor/QualityBlockNative4KReviewPacket.cs",
+    "Assets/Scripts/Art/QualityBlockFilmicTonemap.cs",
+    "Assets/Shaders/NewTownFilmicTonemap.shader",
+    "Assets/Editor/QualityBlockEnvironmentLightingUpgrade.cs",
+    "Assets/Scripts/Art/QualityBlockEnvironmentContext.cs"
+  ],
+  "candidateFingerprint": {
+    "activePersistedScene": [
+      "asset path",
+      "AssetDatabase GUID",
+      "scene-file SHA-256",
+      "AssetDatabase.GetAssetDependencyHash recursive dependency hash"
+    ],
+    "projectRenderSettings": "SHA-256 for every canonical path above",
+    "formalRenderRecipe": "SHA-256 for every canonical path above",
+    "latestInputWriteUtc": "Maximum file/meta write UTC across active-scene recursive dependencies plus canonical settings/recipe inputs",
+    "combinedDigest": "SHA-256 over canonical scene identity/hash/dependency hash and sorted canonical settings/recipe byte hashes"
+  },
+  "rules": {
+    "invalidateReceiptWhenCandidateChanges": true,
+    "invalidateReceiptWhenSceneIsDirty": true,
+    "forbidResealingFramesOlderThanLatestCandidateMutation": true,
+    "requireSceneByteHash": true,
+    "requireRecursiveAssetDependencyHash": true,
+    "requireProjectRenderSettingsHashes": true,
+    "requireFormalRenderRecipeHashes": true,
+    "requireCaptureSessionBinding": true,
+    "requireReceiptByteHashBinding": true,
+    "reuseExistingRenderProducedByUnityFailClosedGate": true
+  },
+  "freshCaptureSealRequirements": {
+    "receiptImportTrigger": "AssetPostprocessor observes Assets/QA/render_capture_receipt.json after the existing receipt writer refreshes the AssetDatabase.",
+    "activeSceneMustBePersistedAndClean": true,
+    "manifestMustBeRuntimeUnityRender": true,
+    "receiptManifestShaMustMatchCurrentManifest": true,
+    "manifestGeneratedUtcMustNotPrecedeCandidateEpoch": true,
+    "manifestGeneratedUtcMustNotPrecedeLatestTrackedInputWrite": true,
+    "sealMustBindCaptureSessionId": true,
+    "sealMustBindReceiptSha256": true,
+    "sealMustBindManifestSha256": true,
+    "sealMustBindCandidateCombinedSha256": true
+  },
+  "continuousFreshnessPolicy": {
+    "domainReloadBootstrap": true,
+    "projectChangedSignal": true,
+    "hierarchyChangedSignal": true,
+    "pollSeconds": 5,
+    "dirtySceneMeansStale": true,
+    "candidateFingerprintMismatchMeansStale": true,
+    "missingCandidateSealWithLiveReceiptMeansStale": true,
+    "captureOlderThanMutationOrInputWriteMeansStale": true
+  },
+  "resealAttackClosed": {
+    "scenario": "Scene/material/shader/settings/recipe changes after capture, then Seal Existing Native 4K Capture is called without Camera.Render.",
+    "expectedResult": "FAIL_CLOSED because 4k_capture_manifest.generatedUtc predates the advanced candidate epoch/latest tracked input write; the newly written receipt is immediately invalidated instead of binding stale PNGs to the new candidate."
+  },
+  "visualEvidencePolicy": {
+    "sourceOrCandidateHashCanAwardPoints": false,
+    "candidateFreshnessCanClearRenderOnlyCriticalDefects": false,
+    "actual3840x2160PixelsStillRequired": true,
+    "pixelExact100PercentCropsStillRequired": true,
+    "humanOrAuthorizedPixelReviewStillRequired": true,
+    "visualFidelityStatusBeforeActualReview": "UNSCORED_UNTIL_REAL_4K_RENDER"
+  }
+}

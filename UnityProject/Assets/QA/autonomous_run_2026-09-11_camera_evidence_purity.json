@@ -1,0 +1,81 @@
+{
+  "schemaVersion": "1.0",
+  "generatedUtc": "2026-09-11T01:55:00Z",
+  "branch": "gpt/unity-migration",
+  "startHead": "a13186c9cda0cad514902e9ec92c9b8bddbce0e0",
+  "substantiveWorkHead": "fc2e397fef1ffb533bfb60f6eb10a2db5682db06",
+  "substantiveCommits": [
+    "c149e13e79c938325568508b547ae798718bf485",
+    "8df69c3add5a50ba8d8a39b9d7f8d4e51230fb7e",
+    "a45eb08a6dfc912a14b728903a9bb86b51dc00e9",
+    "253bbdfbc1529d11b1c2eeb8f95d6e8057839ea8",
+    "9bff6da2247c16b25b0e389c73bfb45d758a4c4b",
+    "26d739d5b855393dbdffcf43c75c9ccd50a52ed2",
+    "fc2e397fef1ffb533bfb60f6eb10a2db5682db06"
+  ],
+  "workstream": "formal_camera_and_output_evidence_purity",
+  "problem": "The benchmark already fixed a restrained filmic transform and runtime HDR-to-LDR telemetry, but source preflight did not fail closed on an additional enabled OnRenderImage effect, camera-attached CommandBuffer injection, an implicit project-level rendering path, a partial camera viewport, or formal camera/target state drift between pre-cull and completion of a Camera.Render. Reflection/render-state coherence was also proven around the asynchronous probe wait, but not re-proven at both ends of every formal still/temporal frame.",
+  "implemented": [
+    "Added Assets/QA/camera_evidence_purity_contract.json with a zero-point, actual-render-required contract for the canonical QualityCamera tagged MainCamera, native 3840x2160 formal targets, Built-in Forward perspective rendering, HDR/MSAA permission, no dynamic resolution, Skybox clear, full viewport, one approved filmic image effect, and no camera CommandBuffers.",
+    "Added QualityBlockCameraEvidencePurityQA as an InitializeOnLoad fail-closed guard over Camera.onPreCull, Camera.onPreRender and Camera.onPostRender for QA4K_ and QAPreparedTemporal_ targets only.",
+    "The guard rejects any enabled MonoBehaviour on the formal camera that declares an OnRenderImage(RenderTexture,RenderTexture) callback unless it is the single QualityBlockFilmicTonemap instance. This prevents bloom, sharpening, local contrast or replacement post effects from hiding render-visible defects in formal evidence.",
+    "The guard enumerates all CameraEvent values and rejects camera-attached CommandBuffers, preventing hidden camera-stage compositing/injection in formal evidence.",
+    "The guard SHA-256 fingerprints the exact formal camera pose/projection/render settings, relevant global quality state, GL invert-culling state, filmic transform identity/parameters, and render-target identity/format/sRGB/MSAA/depth/mip state at pre-cull; the same hash is required at pre-render and post-render.",
+    "Every formal frame revalidates the accepted asynchronous reflection wait proof at pre-cull and post-render. Because that proof includes reflection-lighting-state-v2, a formal frame fails closed if physical lighting or the bound renderer/mesh/material/texture state no longer matches the cubemap state.",
+    "QualityBlockCinematicImageUpgrade now explicitly applies and validates RenderingPath.Forward, perspective projection, a full 0,0,1,1 viewport and Skybox clear in addition to the existing HDR/MSAA/no-dynamic-resolution/filmic requirements, and invokes camera evidence purity during cinematic source preflight."
+  ],
+  "selfAudit": [
+    {
+      "finding": "Initial camera-purity draft incorrectly treated MainCamera as the GameObject name.",
+      "evidence": "BuildQualityBlock1990s.BuildCamera creates a GameObject named QualityCamera and tags it MainCamera.",
+      "correction": "Changed both the machine-readable contract and guard to require object name QualityCamera, tag MainCamera, and identity equality with Camera.main."
+    },
+    {
+      "finding": "Initial draft used float.IsFinite, which was unnecessary API-surface risk for Unity compilation.",
+      "correction": "Replaced it with explicit !float.IsNaN && !float.IsInfinity helper."
+    },
+    {
+      "finding": "Cinematic Apply previously left renderingPath dependent on existing/project state and did not lock the viewport.",
+      "correction": "Apply now writes explicit Forward, perspective and full viewport before formal capture preparation."
+    }
+  ],
+  "sourceVerification": {
+    "unityRuntimeAvailable": false,
+    "native4KCaptureAvailable": false,
+    "githubActionsRunnerAvailable": false,
+    "method": "GitHub source/API review only; no Unity compile/runtime claims are made.",
+    "branchComparisonAtSubstantiveHead": {
+      "aheadBy": 7,
+      "behindBy": 0,
+      "mergeBaseMatchesStartHead": true
+    },
+    "godotModified": false,
+    "baseMerged": false,
+    "forbiddenThemeAdded": false,
+    "apiReview": "Unity 6 Camera callback and Camera CommandBuffer documentation were checked for the callback/command-buffer APIs used. Runtime callback order/behavior is still reserved for the first Unity 6000.3.0f1 verification run."
+  },
+  "implementationReadiness": {
+    "score": 93,
+    "possible": 100,
+    "status": "SOURCE_PIPELINE_READY_RUNTIME_COMPILE_PENDING"
+  },
+  "visualFidelity": {
+    "status": "UNSCORED_UNTIL_REAL_4K_RENDER",
+    "pointsAwardedThisRun": 0,
+    "passClaimed": false
+  },
+  "expectedVisualScoreImpact": [
+    "Cinematic image 5: reduces the risk that formal evidence is beautified by an undeclared post effect, command-buffer composite, partial viewport or project-level render-path drift. No points are awarded without pixels.",
+    "Lighting/shadows/reflections 15: every formal still/temporal frame now re-proves the accepted reflection/lighting/render-state binding before culling and after scene rendering. This improves evidence coherence, not observed lighting quality.",
+    "Material/PBR 20 and Texture/microdetail 10: post-wait material/texture/renderable-state drift during a formal frame is rejected through the bound reflection wait proof. Angular response and texel quality still require actual crops.",
+    "Temporal/LOD/aliasing 5: formal temporal frames share the same locked camera/output configuration at pre-cull/pre-render/post-render, reducing false stability evidence caused by camera-setting changes. Shimmer/LOD pop still require actual frame review.",
+    "Critical defects: the guard makes it harder to conceal visible aliasing, light leaks, painted highlights, repetition or geometry defects with hidden camera postprocessing. It cannot clear any critical defect without actual pixels.",
+    "Automatic Visual Fidelity impact: 0 points."
+  ],
+  "knownLimitations": [
+    "No Unity 6000.3.0f1 editor/runner has compiled or executed the new callback guard yet.",
+    "There is not yet a dedicated persisted camera-purity runtime receipt bound into visual_fidelity_evidence.json; enforcement is live through InitializeOnLoad callbacks and source preflight. Existing HDR/temporal receipts still provide independent render invocation provenance.",
+    "The current guard rejects Camera-attached CommandBuffers but does not yet inventory CommandBuffers attached to individual Lights. Light-stage injection remains a future source-integrity audit item unless actual pixels/runner evidence becomes available first."
+  ],
+  "nextBlocker": "Unity 6000.3.0f1 compile/runtime. At first Runner availability stop speculative expansion and execute Prepare Complete Native 4K Review Packet. Verify the camera-purity guard observes every QA4K_/QAPreparedTemporal_ render without false positives, rejects a deliberately injected extra image effect/Camera CommandBuffer in a controlled QA test if safe to do so, and that reflection-lighting-state-v2 still matches pre-cull through post-render. Then inspect sealed 3840x2160 hero/oblique/grazing frames and 100% crops before assigning any Visual Fidelity score."
+}

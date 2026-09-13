@@ -1,0 +1,83 @@
+{
+  "schemaVersion": "1.0",
+  "generatedUtc": "2026-09-11T05:46:00Z",
+  "runId": "2026-09-11-material-map-range-binding",
+  "branch": "gpt/unity-migration",
+  "startHead": "d5e67b163e99ab8a5e3f3a029249de9c76dafae2",
+  "substantiveWorkHead": "50f9e18bd034b9f847402a4f87f4b0dd46aa48ce",
+  "substantiveCommits": [
+    "2d57d7ff8f435d2bfce92032008e638dc31e225c",
+    "50f9e18bd034b9f847402a4f87f4b0dd46aa48ce"
+  ],
+  "objective": "Correct a false physicality assumption in the newly added registry-to-Unity material guard: on Unity Standard materials with an active metallic/smoothness map, _GlossMapScale is a control multiplier rather than the final roughness, and the metallic/smoothness texture channels must be evaluated before comparing the actual material response inputs to the authored physical ranges.",
+  "changes": [
+    {
+      "path": "Assets/Editor/QualityBlockRegisteredMaterialAssetPhysicalityQA.cs",
+      "summary": "Replaced scalar-only mapped-material evaluation with a fail-closed Standard-shader path that reads active _MetallicGlossMap red-channel extrema for metallic and the selected metallic/albedo alpha extrema multiplied by _GlossMapScale for smoothness, converts that smoothness interval to roughness, and requires the full effective range to remain inside the authored registry range. Source-channel decoding is cached by AssetDatabase dependency hash plus file size/time so repeated formal pre-cull checks do not repeatedly decode unchanged maps. The report now records min/max effective metallic and roughness plus their source semantics."
+    },
+    {
+      "path": "Assets/QA/registered_material_asset_physicality_contract.json",
+      "summary": "Raised the contract to schema 1.1 and made texture-aware metallic/roughness evaluation, Standard map-channel semantics, source-channel inspectability, full-range containment, and dependency-hash caching mandatory. Unsupported mapped texture formats remain fail-closed rather than silently reverting to misleading scalar checks."
+    }
+  ],
+  "sourceAudit": {
+    "canonicalGenerator": "Assets/Editor/QualityBlockPbrUpgrade.cs",
+    "registry": "Assets/QA/material_construction_lookdev.json",
+    "findings": [
+      "The generated PBR library writes MetallicSmoothness PNGs with metallic in R and smoothness in A, enables _METALLICGLOSSMAP and sets _GlossMapScale=1.",
+      "The previous guard treated mapped roughness as 1-_GlossMapScale. For PBR_DanchiConcrete this evaluates to 0 even though the texture actually encodes a roughness field around 0.82-0.94; that would incorrectly block the first Runner rather than detect material drift.",
+      "PBR_DanchiConcrete uses profile roughness 0.88 with +/-0.06 height-driven variation before 8-bit smoothness encoding, giving an intended roughness envelope of approximately 0.82-0.94, which is consistent with the registry range 0.78-0.94 before source quantization tolerance.",
+      "Unity Standard metallic workflow documentation states that a metallic texture uses red for metallic and alpha for smoothness, with smoothness optionally sourced from albedo alpha; the new QA follows those semantics only when the active shader is exactly Standard."
+    ]
+  },
+  "verification": {
+    "level": "SOURCE_GITHUB_AND_DOCUMENTATION_ONLY",
+    "unityCompileVerified": false,
+    "unityRuntimeVerified": false,
+    "native4kRenderVerified": false,
+    "actualPixelReviewPerformed": false,
+    "githubWorkflowRunsObservedAtStart": 0,
+    "githubCommitStatusContextsObservedAfterSubstantiveWork": 0,
+    "branchCompareAfterSubstantiveWork": {
+      "aheadBy": 2,
+      "behindBy": 0,
+      "mergeBase": "d5e67b163e99ab8a5e3f3a029249de9c76dafae2"
+    },
+    "selfAudit": [
+      "Mapped Standard metallic evaluation is source-channel based only when _METALLICGLOSSMAP is actually enabled; an assigned but inactive map falls back to the scalar path and is reported as such.",
+      "Mapped Standard roughness honors _SmoothnessTextureChannel: metallic-map alpha is the default source and albedo alpha is used when the material selects it.",
+      "The mapped roughness comparison uses the entire decoded alpha extrema interval after _GlossMapScale, not a midpoint, so a small physically impossible patch cannot be hidden by an acceptable average.",
+      "Mapped non-Standard shaders are rejected because their channel semantics cannot be inferred safely from Standard conventions.",
+      "PNG/JPG/JPEG source decoding is intentionally fail-closed. Adding another texture container requires an explicit reviewable decoder path rather than silently claiming its values are known."
+    ]
+  },
+  "knownLimitations": [
+    "Source/GitHub inspection cannot prove the revised C# compiles under Unity 6000.3.0f1; the missing Runner remains the blocker.",
+    "Source-image channel extrema do not include GPU compression, mip filtering, anisotropic filtering, derivative behavior or final BRDF/Fresnel appearance; sealed native-4K grazing-light pixels remain authoritative.",
+    "This run does not yet force the registry physicality guard to execute before realtime ReflectionProbe.RenderProbe; formal MainCamera pre-cull remains fail-closed, and the reflection render-state fingerprint still prevents state drift, but pre-probe physicality validation is a useful next source-side integration if no Runner appears first.",
+    "A passing numeric range check cannot clear impossible_material_physics or baked_or_painted_highlights without direct review of the canonical rendered grazing crops."
+  ],
+  "implementationReadiness": {
+    "score": 93,
+    "possible": 100,
+    "status": "SOURCE_PIPELINE_READY_RUNTIME_PENDING",
+    "reasonNoIncrease": "The run fixes a correctness defect in source-side material validation but the remaining 7 readiness points stay reserved for actual Unity 6000.3.0f1 compile/runtime verification."
+  },
+  "visualFidelity": {
+    "status": "UNSCORED_UNTIL_REAL_4K_RENDER",
+    "pointsAwardedThisRun": 0,
+    "passClaimed": false,
+    "expectedScoreImpactAfterRealRender": [
+      "Material/PBR physical plausibility: prevents texture-driven metallic or smoothness fields from escaping the authored physical ranges while also avoiding a false failure caused by misreading _GlossMapScale as final roughness.",
+      "Texture/microdetail fidelity: validates the material map channel field as a full range rather than ignoring its variation; actual texel quality and repetition still require rendered evidence.",
+      "Critical impossible_material_physics: reduces source/runtime risk from mapped metallic/smoothness values that are physically outside the declared material family, but cannot clear the critical defect without actual pixels.",
+      "Cinematic and lighting categories receive no direct points; final angular response, highlights and reflections remain render-only evidence."
+    ]
+  },
+  "constraints": {
+    "godotModified": false,
+    "baseMerged": false,
+    "earthquakeDisasterReconstructionThemesAdded": false
+  },
+  "nextBlocker": "Unity 6000.3.0f1 Runner/Editor compile and runtime. When available, stop speculative expansion and first run the registered material physicality contract against the generated PBR scene. Confirm PBR_DanchiConcrete reports source-driven metallic 0 and roughness approximately 0.82-0.94 rather than scalar roughness 0, then execute Prepare Complete Native 4K Review Packet and score only sealed 3840x2160 hero/oblique/grazing pixels and 100% crops. If no Runner appears first, the next safe integration is to invoke this physicality guard before realtime reflection probe requests so an invalid material state never enters the cubemap baseline."
+}

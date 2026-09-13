@@ -1,0 +1,53 @@
+{
+  "schemaVersion": "1.0",
+  "status": "PENDING_REAL_UNITY_4K_RENDER",
+  "purpose": "Bind every human-review still view, 100% crop and temporal probe reference to the canonical evidence identities actually produced by the Unity capture pipeline. This contract closes configuration-drift gaps but never substitutes for pixel review.",
+  "bindingRules": {
+    "requireExactViewSetEquality": true,
+    "requireExactCropReferenceSetEquality": true,
+    "requireCanonicalCropPathDerivedFromViewAndCropId": true,
+    "requireExactTemporalProbeSetEquality": true,
+    "rejectDuplicateReferences": true,
+    "rejectOrphanRequirementReferences": true
+  },
+  "stillReferencePolicy": {
+    "manifestPath": "Assets/QA/4k_capture_manifest.json",
+    "observabilityPath": "Assets/QA/visual_evidence_observability_contract.json",
+    "cropReferenceFormat": "viewId/cropId",
+    "canonicalCropPathFormat": "Assets/QA/Captures4K/{viewId}_crop_{cropId}_{width}x{height}_100pct.png",
+    "requireResampledFalse": true,
+    "notes": [
+      "The allowed review view set must equal the manifest viewId set; neither extra review aliases nor unreviewable manifest views are allowed.",
+      "The allowed review crop set must equal the manifest viewId/cropId set, and each id must resolve to exactly one canonical dimension-bearing file path.",
+      "Pixel-exact bytes, dimensions and SHA-256 sealing remain the responsibility of render-evidence provenance QA."
+    ]
+  },
+  "temporalReferencePolicy": {
+    "temporalContractPath": "Assets/QA/temporal_stability_contract.json",
+    "referenceFormat": "probe id",
+    "requireTemporalCategoryRefsEqualCompleteProbeSet": true,
+    "notes": [
+      "The allowed temporal-review reference set must equal the canonical temporal probe id set.",
+      "Sealed frame/crop byte provenance remains the responsibility of temporal runtime evidence QA."
+    ]
+  },
+  "scoringPolicy": {
+    "requireRuntimeManifestProducedByUnity": true,
+    "requiredPreScoreManifestStatus": "UNSCORED_REVIEW_REQUIRED",
+    "actualPixelReviewStillRequired": true,
+    "implementationReadinessMaySubstitute": false,
+    "automaticVisualPoints": 0,
+    "automaticCriticalDefectClearance": false
+  },
+  "verification": {
+    "native4kRenderVerified": false,
+    "visualFidelityPointsAwarded": 0,
+    "visualFidelityStatus": "UNSCORED_NO_RENDER_YET",
+    "pending": [
+      "Unity 6000.3.0f1 compile/import of the new validator",
+      "runtime manifest rewrite from an actual 3840x2160 capture session",
+      "sealed still and temporal evidence validation",
+      "100% pixel review before any Visual Fidelity scoring"
+    ]
+  }
+}

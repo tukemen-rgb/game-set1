@@ -1,0 +1,146 @@
+{
+  "schemaVersion": "1.0",
+  "id": "scene_material_physicality_bindings",
+  "status": "PENDING_UNITY_RUNTIME",
+  "visualFidelityPointsAwarded": 0,
+  "criticalDefectRiskReduced": "materially_impossible_metallic_specular_values",
+  "scope": "Actual Unity material assets and active benchmark renderer bindings for camera-facing danchi construction. This contract supplements material_construction_lookdev.json and facade_optics_contract.json; it does not replace rendered evidence.",
+  "target": "late-1990s-to-circa-2000 Kanto Japanese new-town fallback, midsummer daylight, built-in Standard shader fallback",
+  "crossReferences": [
+    "Assets/QA/material_construction_lookdev.json",
+    "Assets/QA/facade_optics_contract.json",
+    "Assets/QA/park_furniture_microdetail_contract.json"
+  ],
+  "physicalMaterialBindings": [
+    {
+      "assetPath": "Assets/Art/GeneratedDetailMaterials/MAT_AgedAluminum.mat",
+      "surfaceClass": "aged anodized aluminium extrusion",
+      "manufacture": "extruded aluminium rail/sash member with anodized oxide finish",
+      "finish": "low-satin silver-gray, fine extrusion direction, no painted edge highlight",
+      "albedoSrgbReference": [0.55, 0.57, 0.56],
+      "roughnessRange": [0.38, 0.58],
+      "implementationSmoothnessRange": [0.42, 0.62],
+      "metallicRange": [0.70, 1.00],
+      "specularF0Reference": 0.72,
+      "normalAmplitudeMm": 0.08,
+      "microstructureScaleMm": 0.45,
+      "wetAlbedoMultiplier": 0.93,
+      "wetRoughnessMultiplier": 0.72,
+      "uvAging": "oxide dulling/water spotting only; no directional lighting baked into pigment",
+      "angularFresnelResponse": "subdued metallic reflection frontally, stronger but broadened edge response at grazing angles",
+      "geometryVsMaterial": "extrusion section, joints, plates and fasteners are geometry; extrusion grain/oxidation are material response"
+    },
+    {
+      "assetPath": "Assets/Art/GeneratedDetailMaterials/MAT_DarkGalvanizedSteel.mat",
+      "surfaceClass": "weathered galvanized steel hardware",
+      "manufacture": "formed/pressed zinc-coated ferrous hardware and fasteners",
+      "finish": "darkened low-satin galvanized surface",
+      "albedoSrgbReference": [0.30, 0.31, 0.30],
+      "roughnessRange": [0.48, 0.72],
+      "implementationSmoothnessRange": [0.28, 0.52],
+      "metallicRange": [0.75, 1.00],
+      "specularF0Reference": 0.68,
+      "normalAmplitudeMm": 0.12,
+      "microstructureScaleMm": 0.80,
+      "wetAlbedoMultiplier": 0.88,
+      "wetRoughnessMultiplier": 0.62,
+      "uvAging": "zinc oxidation and localized coating breach only",
+      "angularFresnelResponse": "compact metallic response with oxidized broadening; never paint-like or chrome",
+      "geometryVsMaterial": "plate/clamp/bolt dimensions and stand-off gaps are geometry; zinc microtexture/oxidation are material response"
+    },
+    {
+      "assetPath": "Assets/Art/GeneratedDetailMaterials/MAT_AgedDownpipePVC.mat",
+      "surfaceClass": "aged rigid PVC-U rainwater downpipe",
+      "manufacture": "extruded rigid unplasticized PVC drainage/rainwater pipe; mechanically retained by separate galvanized stand-off clamps",
+      "finish": "medium gray high-roughness weathered polymer, non-metallic and non-emissive",
+      "albedoSrgbReference": [0.31, 0.315, 0.30],
+      "roughnessRange": [0.65, 0.92],
+      "implementationSmoothnessRange": [0.08, 0.35],
+      "metallicRange": [0.00, 0.05],
+      "specularF0Reference": 0.04,
+      "normalAmplitudeMm": 0.10,
+      "microstructureScaleMm": 0.60,
+      "wetAlbedoMultiplier": 0.80,
+      "wetRoughnessMultiplier": 0.58,
+      "uvAging": "mild chalking/bleaching on exposed face; broad runoff belongs to causal weathering",
+      "angularFresnelResponse": "weak dielectric front response with modest grazing lift; must never read as galvanized metal",
+      "geometryVsMaterial": "pipe diameter, clamp stand-off and wall gap are geometry; polymer grain/chalking are material response",
+      "researchBasis": {
+        "source": "Sekisui Chemical / Eslon rain-gutter history",
+        "url": "https://www.eslontimes.com/kenzai/history/",
+        "relevance": "Documents rigid PVC rain-gutter commercialization in Japan from 1957 and long-term adoption, supporting PVC-U as a period-plausible circa-2000 fallback rather than the previous concrete material assignment.",
+        "limitation": "Exact pipe manufacturer/model for this fictional benchmark remains unverified; this is period-plausible fallback construction, not a claim about a specific real housing complex."
+      }
+    },
+    {
+      "assetPath": "Assets/Art/GeneratedFacadeOptics/MAT_FacadePaintedRC_Main.mat",
+      "surfaceClass": "painted reinforced-concrete exterior",
+      "manufacture": "RC substrate plus cementitious leveling/render and aged exterior protective coating",
+      "finish": "matte dielectric mineral-looking coating",
+      "roughnessRange": [0.79, 0.93],
+      "implementationSmoothnessRange": [0.00, 0.30],
+      "metallicRange": [0.00, 0.05],
+      "specularF0Reference": 0.04,
+      "normalAmplitudeMm": 0.55,
+      "microstructureScaleMm": 3.0,
+      "wetAlbedoMultiplier": 0.82,
+      "wetRoughnessMultiplier": 0.58,
+      "uvAging": "UV chalking and rain exposure are causal layers, not painted light",
+      "angularFresnelResponse": "broad diffuse response with slight dielectric grazing lift only",
+      "geometryVsMaterial": "slab lip/edge break is geometry; coating aggregate/chalking are material response"
+    }
+  ],
+  "assemblyBindings": [
+    {
+      "objects": ["RailTop_*", "Rail_*", "HD_WindowFrame_*", "HD_WindowSashStile_*", "HD_WindowSillDrip", "HD_RailMid", "HD_RailLower"],
+      "requiredMaterial": "MAT_AgedAluminum.mat",
+      "reason": "These visible members are aluminium extrusion/sash/rail parts; mixed mid-metallic values create neither believable dielectric coating nor believable metal reflection."
+    },
+    {
+      "objects": ["HD_RailBasePlate_*", "HD_RailBolt_*", "HD_DownpipeClamp_*", "HD_DownpipeClampBolt_*"],
+      "requiredMaterial": "MAT_DarkGalvanizedSteel.mat",
+      "reason": "Anchorage and clamp hardware is zinc-coated ferrous metal with metallic reflection broadened by oxidation."
+    },
+    {
+      "objects": ["RainGutter"],
+      "requiredMaterial": "MAT_AgedDownpipePVC.mat",
+      "reason": "The full-height visible drainage pipe previously inherited a concrete material shared with structural masses. The pipe body is now a distinct PVC-U assembly while clamps remain metal."
+    },
+    {
+      "objects": ["HD_BalconySlabLip"],
+      "requiredMaterial": "MAT_FacadePaintedRC_Main.mat",
+      "reason": "The lip is part of the reinforced-concrete balcony slab silhouette and must not inherit the aluminium rail material."
+    }
+  ],
+  "interfacesAndExposure": {
+    "downpipe": "Pipe stands off the facade through galvanized clamps at roughly 1.55 m spacing. Rainwater exposure and UV affect the exterior face; wall-facing recess stays dirtier. Pipe/clamp contact is geometry and contact shadow, not an albedo stripe.",
+    "balconyLip": "Lip continues the concrete slab edge and receives rain/sun exposure; drip residue may occur only beneath the physical ledge.",
+    "rail": "Manufactured aluminium members repeat regularly; base plates/bolts introduce material and contact-response differences without randomizing construction."
+  },
+  "qa": {
+    "paintedOrBakedHighlightsForbidden": true,
+    "activeEmissionForbidden": true,
+    "allActiveStandardMetallicAndSmoothnessMustBeFiniteAndNormalized": true,
+    "minimumExpectedBindingCounts": {
+      "RailTop_*": 30,
+      "Rail_*": 210,
+      "HD_WindowFrame_*": 120,
+      "HD_WindowSashStile_*": 60,
+      "HD_WindowSillDrip": 30,
+      "HD_RailBasePlate_*": 210,
+      "HD_RailBolt_*": 420,
+      "HD_BalconySlabLip": 30,
+      "HD_DownpipeClamp_*": 8,
+      "HD_DownpipeClampBolt_*": 8,
+      "RainGutter": 1
+    },
+    "visualReviewRequired": [
+      "hero/facade_center",
+      "oblique/construction_depth",
+      "grazing/material_grazing",
+      "grazing/sash_rail_response"
+    ]
+  },
+  "runtimeRenderVerification": "PENDING_UNITY_RUNTIME",
+  "visualFidelityPassClaimed": false
+}

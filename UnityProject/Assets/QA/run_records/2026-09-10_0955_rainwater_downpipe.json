@@ -1,0 +1,141 @@
+{
+  "schemaVersion": "1.0",
+  "generatedUtc": "2026-09-10T02:55:00Z",
+  "branch": "gpt/unity-migration",
+  "startHead": "cf3ba51cc1a032fe97fceb691e97f1147260ecc6",
+  "substantiveWorkHead": "714b4a685161d9a15fe1e365251a2fa885982c95",
+  "substantiveCommits": [
+    {"sha":"725bbc04db73a6ff77d0f510cac8738c1cbce26f","message":"qa: define physical rainwater downpipe installation contract"},
+    {"sha":"3e198207769edc788f66e28f6d24c1312728ae14","message":"docs: add rainwater downpipe construction lookdev"},
+    {"sha":"da00b830052c54aae2f8e978418d25ce4b9beb6a","message":"feat: reconstruct physical rainwater downpipe installation"},
+    {"sha":"317e7cef4b103acc100772ad6202de79de6057be","message":"qa: gate native capture on installed rainwater drainage"},
+    {"sha":"1e533cc9c180ced149d79ed38cd1ee8ff9c118b8","message":"fix: make rainwater joints hollow and close bracket interfaces"},
+    {"sha":"c17ca39232a4d45ba9d7167943cc54b152a423d7","message":"qa: require hollow drainage interfaces and closed brackets"},
+    {"sha":"4bcfccb508a94a43c23fef86219a0bcb3177163f","message":"qa: bind physical materials before native construction capture"},
+    {"sha":"714b4a685161d9a15fe1e365251a2fa885982c95","message":"fix: correct hollow drainage mesh normals and interface QA"}
+  ],
+  "focus": "Geometry/construction fidelity, material/PBR plausibility, weathering causality and temporal LOD integrity for the camera-right apartment rainwater leader",
+  "sourceDefectFound": {
+    "assembly": "RainGutter + HD_DownpipeClamp_* generated rainwater hardware",
+    "evidence": [
+      "The legacy RainGutter was generated as a long cylinder and the separate HD_DownpipeClamp_* detail was positioned independently rather than reconstructed from one wall/pipe installation interface.",
+      "The existing material-physicality pass already identified RainGutter as PVC-U and clamp hardware as galvanized, but the official native review packet did not explicitly apply that binding pass before downstream construction QA consumed the material assets.",
+      "A first implementation audit found an approximately 11 mm empty source-geometry gap between the newly proposed wall plate and its standoff arm; this would have preserved a floating-bracket risk despite adding more detail.",
+      "The first implementation also used capped solid cylinders for coupler sleeves, pipe bands and the receiver. Those parts are sleeves/restraints and should surround the pipe rather than intersect it as hidden solid caps.",
+      "A second implementation audit found the first annular-mesh quad winding pointed the outer sleeve normals inward. The final substantive commit reverses outer/inner/top/bottom winding explicitly and keeps source validation tied to deterministic annular mesh identity."
+    ]
+  },
+  "implementation": {
+    "contract": "Assets/QA/rainwater_downpipe_installation_contract.json",
+    "qaCode": "Assets/Editor/QualityBlockRainwaterDownpipeInstallationQA.cs",
+    "lookdevIllustration": "Assets/QA/Lookdev/rainwater_downpipe_installation.svg",
+    "authoritativePacket": "Assets/Editor/QualityBlockNative4KReviewPacket.cs",
+    "runtimeReport": "Assets/QA/rainwater_downpipe_installation_runtime_report.json",
+    "manufactureInstallationReasoning": "Retain one continuous macro PVC-U pipe silhouette but reconstruct observable installation interfaces: hollow section-joint sleeves, hollow pipe bands, wall standoff arms, wall anchor plates/fastener heads, a roof-line return/collar and a hollow ground receiver. The pipe is held proud of the facade by explicit restraint rather than visually floating. Hardware materials remain physically separate from the dielectric pipe.",
+    "controlledDimensionsMetres": {
+      "pipeOutsideDiameter": 0.075,
+      "pipeBottom": 0.16,
+      "pipeTop": 12.92,
+      "pipeCentreX": 4.45,
+      "pipeCentreZ": -7.18,
+      "facadeReferencePlaneZ": -7.30,
+      "pipeRearSurfaceToFacade": 0.0825,
+      "couplerOutsideDiameter": 0.084,
+      "couplerInsideDiameter": 0.0765,
+      "pipeBandOutsideDiameter": 0.084,
+      "pipeBandInsideDiameter": 0.077,
+      "wallPlateDepth": 0.008,
+      "standoffNominalDepth": 0.074,
+      "groundReceiverOutsideDiameter": 0.115,
+      "groundReceiverInsideDiameter": 0.080,
+      "groundReceiverPipeInsertion": 0.020
+    },
+    "interfaceMathStaticAudit": {
+      "pipeRearClearanceMetres": 0.0825,
+      "couplerRadialClearanceEachSideMetres": 0.00075,
+      "bandRadialClearanceEachSideMetres": 0.001,
+      "receiverRadialClearanceEachSideMetres": 0.0025,
+      "plateToArmDesignedOverlapMetres": 0.002,
+      "armToBandDesignedOverlapMetres": 0.002,
+      "hardMaximumPositiveInterfaceGapMetres": 0.003,
+      "hardMaximumControlledOverlapMetres": 0.006
+    },
+    "geometryVsMaterial": "Outside diameter, hollow socket/band/receiver construction, wall stand-off, anchor plate, fastener, roof offset and receiver insertion are geometry. PVC extrusion/scuff scale, mild chalking, galvanized microstructure, water spotting and localized dirt films remain PBR/microdetail. Painted/baked highlights remain forbidden.",
+    "materialReasoning": {
+      "pvc": "MAT_AgedDownpipePVC: rough dielectric, metallic approximately 0, smoothness target 0.18, nominal dielectric F0 approximately 0.04, no emission; UV chalking and water/dirt response remain cause-based.",
+      "galvanizedHardware": "MAT_DarkGalvanizedSteel: metallic workflow 0.75-1.0, smoothness target 0.40 with broad rough-metal angular response; no painted white glints."
+    },
+    "weatheringReasoning": "Drain-runoff metadata follows the actual leader; wall-side recesses/coupler lower lips retain more grime, ferrous residue is localized to real metal restraint/fastener sources, and ground-splash intensity increases only near the receiver. No disaster/damage narrative is introduced.",
+    "lodReasoning": "The macro RainGutter body remains outside DanchiHighDetail so it cannot disappear at accessory LOD transitions. Hollow joints/bands/standoffs/plates/collar/receiver are source LOD0 and retain construction forms through LOD1 according to existing classification; millimetre fasteners are LOD0-only; LOD2/3 preserve only the macro pipe silhouette. Existing Danchi four-level animated cross-fade remains mandatory and visible pop can be cleared only from sealed temporal evidence.",
+    "nativePacketChange": "The official Complete Native 4K Review Packet now applies scene material physicality immediately after final scene preparation, then reconstructs/validates rainwater installation before reflection probes. Rainwater QA repeats after asynchronous reflection completion immediately before Camera.Render and again after still sealing before prepared-scene temporal capture.",
+    "automaticVisualPoints": 0
+  },
+  "research": {
+    "policy": "Current manufacturer/retailer sources are used only for generic Japanese rainwater construction principles and order-of-magnitude dimensions. They are not claimed to identify the exact circa-2000 product represented by the scene.",
+    "references": [
+      {
+        "title": "Panasonic 大型たてとい Chic Line",
+        "url": "https://sumai.panasonic.jp/amatoi/o_gata/lineup/chicline/",
+        "use": "Current rigid-PVC/VU comparison confirms a 60 mm class outside diameter with 1.8 mm wall thickness as a real Japanese rainwater-pipe scale reference. The scene-controlled 75 mm diameter remains a modeling decision, not a copied product specification."
+      },
+      {
+        "title": "CAINZ T字でんでん 60",
+        "url": "https://www.cainz.com/g/4935967162156.html",
+        "use": "Current Japanese round 60 mm rainwater restraint hardware and ZAM metal establish the separate pipe-band/restraint construction principle."
+      },
+      {
+        "title": "KIRII / Panasonic 控金具 打込み L=80",
+        "url": "https://ec.kirii.co.jp/shop/g/gB133200307250/",
+        "use": "Current listing establishes a separate wall-restraint concept with an approximately 80 mm driven member for a 60 mm round leader; used only as generic mounting evidence."
+      }
+    ]
+  },
+  "verification": {
+    "type": "GitHub source/static audit only; Unity editor/runtime was not available",
+    "branchComparison": "startHead -> substantiveWorkHead is ahead by 8 and behind by 0; only UnityProject/Assets/Editor and UnityProject/Assets/QA paths changed",
+    "godotPreserved": true,
+    "baseMerged": false,
+    "earthquakeDisasterReconstructionThemesAdded": false,
+    "workflowRunsOnSubstantiveHead": 0,
+    "commitStatusContextsOnSubstantiveHead": 0,
+    "captureDirectoryState": "Assets/QA/Captures4K not present on branch",
+    "compileState": "PENDING_UNITY_6000_3_0f1_RUNTIME",
+    "runtimeReportState": "PENDING_UNITY_RUNTIME",
+    "renderEvidenceState": "NO_ACTUAL_3840x2160_HERO_OBLIQUE_GRAZING_OR_100_PERCENT_CROPS_REVIEWED",
+    "temporalEvidenceState": "PENDING_UNITY_RUNTIME",
+    "staticChecks": [
+      "Source arithmetic gives 82.5 mm pipe-to-wall rear clearance, 74 mm standoff depth, controlled 2 mm overlap at both bracket interfaces and 20 mm pipe insertion into the receiver.",
+      "Annular geometry now has separate outer wall, inner wall, top annulus and bottom annulus with explicit outward/inward/up/down triangle winding; runtime normal/render verification remains pending.",
+      "The material binding pass is now executed before rainwater construction QA so required PVC-U and galvanized material assets/bindings cannot be deferred until after capture."
+    ],
+    "visualScoringPolicy": "No visual category points or critical-defect clearance are awarded from source QA."
+  },
+  "implementationReadiness": {
+    "score": 93,
+    "possible": 100,
+    "status": "UNCHANGED",
+    "reason": "This run meaningfully reduces construction/material/LOD source risk but does not supply the missing Unity 6000.3.0f1 compile/runtime evidence that the existing readiness model withholds."
+  },
+  "visualFidelity": {
+    "status": "UNSCORED_UNTIL_REAL_4K_RENDER",
+    "pointsAwardedThisRun": 0,
+    "passClaimed": false,
+    "criticalDefectCleared": false
+  },
+  "expectedVisualScoreImpact": [
+    "Geometry & construction fidelity (20): replaces a visually detached pipe/hardware concept with explicit hollow joints, restrained stand-off, anchors, roof return and receiver insertion; no points until rendered.",
+    "Material/PBR physical plausibility (20): actual PVC-U and galvanized bindings are normalized before reflection/capture and the pipe remains dielectric while brackets remain rough metal.",
+    "Weathering/context causality (10): rain runoff, recess grime, ferrous-source residue and ground splash are tied to actual installation components rather than arbitrary dirt placement.",
+    "Lighting/shadows/reflections (15): physical stand-off and hollow interfaces can generate real contact/occlusion/grazing response once probes and 4K rendering run.",
+    "Temporal/LOD/aliasing stability (5): the macro pipe does not participate in accessory culling; small hardware reduces through the existing four-level cross-fade path, but visible-pop clearance still requires temporal pixels.",
+    "Critical defect risk: floating/interpenetrating hero geometry, impossible material response, missing construction metadata and visible LOD pop risk are reduced at source, not cleared."
+  ],
+  "nextRunnerPriority": [
+    "Run Unity 6000.3.0f1 Complete Native 4K Review Packet without weakening any gate.",
+    "If rainwater runtime QA fails, fix construction dimensions/mesh/material code rather than tolerances.",
+    "Inspect oblique/construction_depth and hero/facade_right at 100% for band-to-pipe clearance, wall-plate seating, standoff continuity, roof collar connection and receiver insertion.",
+    "Inspect grazing/material_grazing for PVC dielectric versus galvanized rough-metal Fresnel separation and for any inverted-normal/dark-face artifact in hollow rings.",
+    "Inspect ground-contact evidence for receiver/pipe end geometry and causal splash/damp response.",
+    "Review the full temporal subpixel/LOD sequences for downpipe accessory shimmer or visible disappearance; then fix the largest observed deduction/critical defect first."
+  ]
+}

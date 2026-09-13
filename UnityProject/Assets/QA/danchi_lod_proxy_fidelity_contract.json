@@ -1,0 +1,72 @@
+{
+  "schemaVersion": "1.0",
+  "contractId": "danchi_lod_proxy_fidelity",
+  "purpose": "Prevent material, lighting-probe, transform or renderer-state discontinuities when DanchiHighDetail cross-fades from physical source renderers to LOD1/2/3 proxies. This is implementation/runtime readiness QA only and awards no Visual Fidelity points without native rendered evidence.",
+  "formalEvidencePolicy": {
+    "formalCameraReadOnlyValidation": true,
+    "repairDuringCaptureForbidden": true,
+    "requiredTargets": ["QA4K_*", "QATemporal_*", "QAPreparedTemporal_*"],
+    "native3840x2160StillRequiredForScoring": true,
+    "sealedTemporalEvidenceRequiredForScoring": true
+  },
+  "sourceClassificationPolicy": {
+    "clothesSupportToken": "ClothesBracket",
+    "clothesSupportRetainedThroughLod": 2,
+    "specificRuleMustPrecedeGenericBracketRule": true,
+    "rationale": "The 340 mm clothes-pole support arm remains facade-depth silhouette geometry after the smaller receiver and mounting hardware become sub-pixel."
+  },
+  "proxyStatePolicy": {
+    "worldPositionToleranceM": 0.0005,
+    "worldRotationToleranceDeg": 0.05,
+    "lossyScaleTolerance": 0.001,
+    "requireIdenticalMeshReference": true,
+    "requireIdenticalMaterialReferences": true,
+    "requireLayerParity": true,
+    "requireStaticFlagParity": true,
+    "requireShadowCastingParity": true,
+    "requireReceiveShadowsParity": true,
+    "requireLightProbeUsageParity": true,
+    "requireReflectionProbeUsageParity": true,
+    "requireProbeAnchorParity": true,
+    "requireMotionVectorModeParity": true,
+    "requireOcclusionPolicyParity": true,
+    "requireSortingParity": true,
+    "requireMaterialPropertyBlockParity": true,
+    "materialPropertyBlockScopes": ["renderer-wide", "per-material-index"],
+    "pbrOverrideFamiliesChecked": ["base-color", "metallic", "smoothness", "normal-scale", "occlusion", "emission", "wetness", "foliage-variation", "exposure-bias", "major-texture-bindings"]
+  },
+  "temporalIntent": {
+    "fadeMode": "CrossFade",
+    "animateCrossFading": true,
+    "preventAlbedoRoughnessWetnessJump": true,
+    "preventReflectionProbeJump": true,
+    "preventShadowStateJump": true,
+    "preventClothesSupportSilhouettePop": true
+  },
+  "failureInjection": [
+    "move one LOD proxy by more than 0.5 mm and require FAIL before formal capture",
+    "replace one proxy mesh or material and require FAIL",
+    "change one proxy reflection/light-probe policy or probe anchor and require FAIL",
+    "clear a source-derived proxy MaterialPropertyBlock while the source retains one and require FAIL",
+    "change a proxy motion-vector/occlusion/sorting state and require FAIL",
+    "classify HD_ClothesBracket_* only through LOD1 and require FAIL through the clothes-hardware closure/LOD policy",
+    "leave any declared LOD renderer outside its canonical HD_LOD1/2/3_Proxy root and require FAIL"
+  ],
+  "criticalDefectRiskReduced": [
+    "visible_lod_pop",
+    "severe_aliasing_or_shimmer",
+    "material_discontinuity_across_lod",
+    "reflection_lighting_discontinuity_across_lod",
+    "unverified_render_claim"
+  ],
+  "visualFidelityPointsAwarded": 0,
+  "implementationReadinessOnly": true,
+  "runtimeRenderVerification": "PENDING_UNITY_RUNTIME",
+  "expectedVisualScoreImpactIfRenderedCleanly": {
+    "materialPbrPhysicalPlausibility": "small-to-medium",
+    "lightingShadowsReflections": "small-to-medium",
+    "temporalLodAliasingStability": "medium-to-large",
+    "cinematicImageQuality": "small"
+  },
+  "forbiddenThemes": ["earthquake", "disaster", "reconstruction"]
+}

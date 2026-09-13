@@ -18,7 +18,11 @@ public static class QualityBlockNative4KReviewPacket
 
         QualityBlockVisualGateIntegrityQA.ValidateContract();
         QualityBlockVisualFidelityGate.ValidateGateConfig();
-        QualityBlockShadowStabilityUpgrade.ValidateOpenScene();
+        // A clean runner has not yet established the deterministic benchmark QualitySettings. Judge
+        // only the contract at this stage; the rebuilt/reopened scene is validated immediately after
+        // PrepareSceneForSynchronizedCapture below. This prevents machine defaults from blocking the
+        // very rebuild that establishes the authoritative shadow/MSAA/LOD state.
+        QualityBlockNative4KCleanSessionPreflightQA.ValidateContractConfigOnly();
         QualityBlockSolarShadowCaptureCoherenceQA.ValidateContractConfigOnly();
         QualityBlockLightEvidencePurityQA.ValidateContractConfigOnly();
         QualityBlockRenderedImageDiagnostics.ValidateContractConfigOnly();
@@ -68,6 +72,7 @@ public static class QualityBlockNative4KReviewPacket
         // the two locked rooftop 100% crops must never point at an empty roof while still appearing
         // valid in the capture manifest. Both worn-path corrections run immediately after this step.
         QualityBlock4KCapture.PrepareSceneForSynchronizedCapture();
+        QualityBlockNative4KCleanSessionPreflightQA.ValidatePreparedBaseline();
         QualityBlockPeriodAuthenticityUpgrade.ApplyToOpenScene();
         QualityBlockPeriodAuthenticityUpgrade.ValidateOpenScene();
         QualityBlockGroundPathPlazaTerminationQA.ApplyAndPersist();

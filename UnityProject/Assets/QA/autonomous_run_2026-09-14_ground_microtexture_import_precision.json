@@ -1,0 +1,78 @@
+{
+  "schemaVersion": "1.0.0",
+  "runDate": "2026-09-14",
+  "branch": "gpt/unity-migration",
+  "startingHead": "5a5f4be8deb8b9f8e1def8e2ab7554c2f823c650",
+  "headBeforeRunRecord": "448a234ed35f10f1575e0e2bad0b3e4cf01b89f0",
+  "objective": "Reduce native-4K ground texel/PBR risk by preserving approved physical-data precision through Unity import without awarding visual points before real rendered pixels exist.",
+  "investigation": {
+    "selectedIssue": "QualityBlockGroundMicrodetailUpgrade authors four 1024x1024 physical micro-surface sets with millimetre-scale normal relief and bounded metallic/smoothness signals, but its generated normal and metallic/smoothness maps are imported using CompressedHQ. Existing ground microdetail validation checks texture type, linear masks, resolution, bindings and metric scale, while generic texture-sampling QA addresses mips/filtering/aniso but does not make these eight physical-data maps uncompressed or reject Standalone overrides.",
+    "risk": "Block compression or a platform override can quantize tangent-space normal orientation and metallic/smoothness values before frontal/oblique/grazing native-4K evidence is produced. This can flatten subtle zinc/cast/mineral relief, alter highlight width and increase grazing instability even when the source PNG and material ranges are correct.",
+    "scopeDecision": "Only the eight normal and metallic/smoothness physical-data maps are forced lossless. Ground albedo maps remain outside this requirement to avoid paying uncompressed memory cost for a lower-frequency colour signal that does not carry the same normal/roughness precision risk."
+  },
+  "changes": [
+    {
+      "commit": "05fb9c2afb8d02013a5119e191a8a4a709172f4f",
+      "path": "UnityProject/Assets/QA/ground_microdetail_contract.json",
+      "summary": "Upgraded the machine-readable ground contract to v1.1.0 with an explicit import-precision policy: Uncompressed, Crunch off, no Standalone override, >=1024, mipmapped, Repeat, Trilinear, anisotropy>=8, linear physical data, canonical NormalMap/Default types, source alpha preservation, formal read-only pre-cull and zero automatic Visual Fidelity points. Added corresponding failure injections."
+    },
+    {
+      "commit": "448a234ed35f10f1575e0e2bad0b3e4cf01b89f0",
+      "path": "UnityProject/Assets/Editor/QualityBlockGroundMicrotextureImportPrecisionQA.cs",
+      "summary": "Added preparation-time repair and formal-camera read-only/fail-closed validation for four ground normals plus four metallic/smoothness maps. Reimports covered physical-data maps as Uncompressed, disables Crunch and Standalone override, preserves 1024 runtime dimensions/mips/Repeat/Trilinear/aniso, enforces linear data and texture-type semantics, and reasserts precision after generated-source imports."
+    }
+  ],
+  "formalEvidenceBehavior": {
+    "preparation": "May repair covered importer state after generated texture imports and after the benchmark scene is saved.",
+    "formalPreCull": "Read-only. QA4K_, QATemporal_ and QAPreparedTemporal_ target captures are blocked if any covered importer/runtime texture is noncanonical.",
+    "visualScoring": "No automatic points. Actual 3840x2160 frontal/oblique/grazing frames, 100-percent ground/material crops and temporal grazing evidence remain mandatory for visual credit.",
+    "albedoPolicy": "Ground albedo stays outside the Uncompressed requirement; this gate is intentionally scoped to high-value physical-data precision."
+  },
+  "failureInjection": [
+    "CompressedHQ on any covered normal or metallic/smoothness map",
+    "Crunch enabled",
+    "Standalone platform override enabled",
+    "maxTextureSize below 1024",
+    "mipmaps disabled",
+    "Bilinear or Point filtering",
+    "anisotropy below 8",
+    "sRGB enabled on physical data",
+    "ground normal imported as Default instead of NormalMap",
+    "metallic/smoothness map imported with noncanonical type",
+    "source alpha discarded"
+  ],
+  "verification": {
+    "repositoryDiff": "2 substantive files changed from starting head before this run record; UnityProject/Assets/Editor and UnityProject/Assets/QA only; no Godot paths changed.",
+    "compareStatusBeforeRunRecord": "ahead",
+    "commitsAheadBeforeRunRecord": 2,
+    "commitsBehindBeforeRunRecord": 0,
+    "mergeBase": "5a5f4be8deb8b9f8e1def8e2ab7554c2f823c650",
+    "sourceReview": "New QA source was re-read from branch after commit; contract tokens and eight explicit generated texture paths align with Ground_GalvanizedSteel, Ground_CastIron, Ground_MineralJoint and Ground_DampConcrete naming used by the generator.",
+    "unityCompileRuntime": "PENDING_UNITY_RUNTIME",
+    "native4kRender": "PENDING_UNITY_RUNTIME",
+    "githubActionsRunsAtCheck": 0,
+    "commitStatusContextsAtCheck": 0,
+    "visualFidelityStatus": "UNSCORED_UNTIL_REAL_4K_RENDER",
+    "visualFidelityPointsAdded": 0,
+    "visualPassClaimed": false
+  },
+  "implementationReadiness": {
+    "score": 93,
+    "outOf": 100,
+    "reason": "Import precision coverage improved and formal evidence is fail-closed, but Unity 6000.3.0f1 compile/runtime, importer failure injection execution and actual native-4K rendered evidence remain unavailable."
+  },
+  "expectedVisualScoreImpactNotAwarded": {
+    "textureMicrodetailTexelFidelity": "medium-to-large",
+    "materialPbrPhysicalPlausibility": "medium",
+    "lightingShadowsReflections": "small-to-medium",
+    "temporalLodAliasingStability": "small-to-medium",
+    "note": "Expected impact is a prioritization estimate only, not a Visual Fidelity score."
+  },
+  "constraints": {
+    "godotPreserved": true,
+    "baseMerged": false,
+    "excludedThemesAdded": false,
+    "earthquakeDisasterReconstructionThemes": "absent"
+  },
+  "nextBlocker": "Unity 6000.3.0f1 Runner/runtime. When available, stop speculative expansion; execute each import failure injection, regenerate/reimport all four ground physical-data sets, verify the formal gate blocks noncanonical state, then capture fresh 3840x2160 frontal/oblique/grazing evidence plus 100% ground/material crops and temporal grazing evidence. Score only observed pixels."
+}

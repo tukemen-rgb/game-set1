@@ -194,8 +194,13 @@ Shader "NewTown/FoliageTransmission"
                 UNITY_LIGHT_ATTENUATION(attenuation, i, i.worldPos);
 
                 half3 ambient = ShadeSH9(half4(normalWS, 1.0h));
-                half exposureMultiplier = saturate(1.0h + _ExposureBias + _LeafVariation);
-                half3 albedo = tex.rgb * exposureMultiplier;
+
+                // Exposure and deterministic cluster variation are signed physical/context terms.
+                // Do not clamp the multiplier to 1 before applying it: that would preserve darkening
+                // while deleting every positive canopy/leaf-value response. The assigned formal range
+                // is modest (roughly 0.85-1.12 multiplier); clamp only the resulting albedo channels.
+                half exposureMultiplier = 1.0h + _ExposureBias + _LeafVariation;
+                half3 albedo = saturate(tex.rgb * exposureMultiplier);
 
                 half smoothness = saturate(tex2D(_MetallicGlossMap, i.uv).a * _SmoothnessScale);
                 half perceptualRoughness = clamp(1.0h - smoothness, 0.45h, 0.95h);

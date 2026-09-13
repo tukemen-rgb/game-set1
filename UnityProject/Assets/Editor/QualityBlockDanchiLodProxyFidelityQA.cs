@@ -9,8 +9,9 @@ using UnityEngine.SceneManagement;
 
 /// <summary>
 /// Fail-closed integrity gate for the DanchiHighDetail LOD proxies. A cross-fade is only visually useful
-/// if the proxy is the same physical/material state as its source at the transition boundary; otherwise
-/// probe sampling, per-renderer PBR overrides, transforms or shadow settings can visibly jump.
+/// if the proxy is the same physical/material/visibility/GI state as its source at the transition boundary;
+/// otherwise hidden geometry, baked/realtime lighting, probe sampling, per-renderer PBR overrides,
+/// vertex-stream shading, transforms or shadow settings can visibly jump.
 /// This class validates only. Native rendered evidence is still required for any Visual Fidelity score.
 /// </summary>
 [InitializeOnLoad]
@@ -23,6 +24,8 @@ public static class QualityBlockDanchiLodProxyFidelityQA
     private const float PositionToleranceM = 0.0005f;
     private const float RotationToleranceDeg = 0.05f;
     private const float ScaleTolerance = 0.001f;
+    private const float LightmapVectorTolerance = 0.0001f;
+    private const float ScaleInLightmapTolerance = 0.0001f;
     private static int lastFormalValidationFrame = -1;
     private static bool validating;
 
@@ -61,7 +64,7 @@ public static class QualityBlockDanchiLodProxyFidelityQA
         string json = File.ReadAllText(absolute);
         string[] requiredTokens =
         {
-            "\"schemaVersion\": \"1.0\"",
+            "\"schemaVersion\": \"1.1\"",
             "\"contractId\": \"danchi_lod_proxy_fidelity\"",
             "\"formalCameraReadOnlyValidation\": true",
             "\"repairDuringCaptureForbidden\": true",
@@ -70,9 +73,17 @@ public static class QualityBlockDanchiLodProxyFidelityQA
             "\"worldPositionToleranceM\": 0.0005",
             "\"worldRotationToleranceDeg\": 0.05",
             "\"lossyScaleTolerance\": 0.001",
+            "\"requireEffectiveVisibilityParity\": true",
+            "\"requireRendererEnabledParity\": true",
+            "\"requireLightProbeProxyVolumeOverrideParity\": true",
+            "\"requireRenderingLayerMaskParity\": true",
+            "\"requireAdditionalVertexStreamsParity\": true",
+            "\"requireReceiveGiParity\": true",
+            "\"requireRuntimeLightmapStateParity\": true",
             "\"requireMaterialPropertyBlockParity\": true",
             "\"preventAlbedoRoughnessWetnessJump\": true",
-            "\"preventReflectionProbeJump\": true",
+            "\"preventGiLightmapJump\": true",
+            "\"preventVisibilityPop\": true",
             "\"visualFidelityPointsAwarded\": 0",
             "\"implementationReadinessOnly\": true",
             "\"runtimeRenderVerification\": \"PENDING_UNITY_RUNTIME\"",
@@ -153,7 +164,8 @@ public static class QualityBlockDanchiLodProxyFidelityQA
             QualityBlockDanchiLodUpgrade.ValidateOpenScene();
             Debug.Log(
                 $"Danchi LOD proxy-fidelity QA passed structurally for {sources.Length} physical sources and {allProxyReferences.Count} proxies. " +
-                "Transform/mesh/material/probe/shadow/MPB continuity is source-consistent; native temporal evidence is still required and Visual Fidelity remains UNSCORED.");
+                "Transform/mesh/material/visibility/GI/lightmap/probe/shadow/vertex-stream/MPB continuity is source-consistent; " +
+                "native temporal evidence is still required and Visual Fidelity remains UNSCORED.");
         }
         finally
         {
@@ -197,16 +209,39 @@ public static class QualityBlockDanchiLodProxyFidelityQA
             GameObjectUtility.GetStaticEditorFlags(source.gameObject) != GameObjectUtility.GetStaticEditorFlags(proxy.gameObject))
             throw new InvalidOperationException($"LOD{level} layer/static-state drift: {proxy.gameObject.name}");
 
+        if (source.enabled != proxy.enabled ||
+            source.gameObject.activeInHierarchy != proxy.gameObject.activeInHierarchy)
+            throw new InvalidOperationException(
+                $"LOD{level} effective visibility drift can reintroduce hidden/legacy geometry: {proxy.gameObject.name}");
+
         if (source.shadowCastingMode != proxy.shadowCastingMode ||
             source.receiveShadows != proxy.receiveShadows ||
             source.lightProbeUsage != proxy.lightProbeUsage ||
             source.reflectionProbeUsage != proxy.reflectionProbeUsage ||
             source.probeAnchor != proxy.probeAnchor ||
+            source.lightProbeProxyVolumeOverride != proxy.lightProbeProxyVolumeOverride ||
+            source.renderingLayerMask != proxy.renderingLayerMask ||
             source.motionVectorGenerationMode != proxy.motionVectorGenerationMode ||
             source.allowOcclusionWhenDynamic != proxy.allowOcclusionWhenDynamic ||
             source.sortingLayerID != proxy.sortingLayerID ||
             source.sortingOrder != proxy.sortingOrder)
-            throw new InvalidOperationException($"LOD{level} renderer/probe/temporal state drift: {proxy.gameObject.name}");
+            throw new InvalidOperationException($"LOD{level} renderer/probe/lighting/temporal state drift: {proxy.gameObject.name}");
+
+        if (source.additionalVertexStreams != proxy.additionalVertexStreams)
+            throw new InvalidOperationException(
+                $"LOD{level} additional vertex-stream drift can change normals/tangents/colors/UV material response: {proxy.gameObject.name}");
+
+        if (source.receiveGI != proxy.receiveGI ||
+            Mathf.Abs(source.scaleInLightmap - proxy.scaleInLightmap) > ScaleInLightmapTolerance ||
+            source.stitchLightmapSeams != proxy.stitchLightmapSeams)
+            throw new InvalidOperationException($"LOD{level} MeshRenderer GI authoring-state drift: {proxy.gameObject.name}");
+
+        if (source.lightmapIndex != proxy.lightmapIndex ||
+            source.realtimeLightmapIndex != proxy.realtimeLightmapIndex ||
+            Vector4.Distance(source.lightmapScaleOffset, proxy.lightmapScaleOffset) > LightmapVectorTolerance ||
+            Vector4.Distance(source.realtimeLightmapScaleOffset, proxy.realtimeLightmapScaleOffset) > LightmapVectorTolerance)
+            throw new InvalidOperationException(
+                $"LOD{level} runtime lightmap assignment drift can create a GI/contact/light-leak jump: {proxy.gameObject.name}");
 
         ValidatePropertyBlocks(source, proxy, level);
     }

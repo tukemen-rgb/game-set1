@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Text.RegularExpressions;
 using UnityEditor;
 using UnityEngine;
 
@@ -16,6 +17,10 @@ public static class QualityBlockCaptureResolveIntegrityQA
     private const string CaptureSourcePath = "Assets/Editor/QualityBlock4KCapture.cs";
     private const string ScenePath = "Assets/Scenes/QualityBlock1990s.unity";
     private const string FormalTargetPrefix = "QA4K_";
+
+    private static readonly Regex GraphicsBlitCall = new Regex(
+        @"Graphics\s*\.\s*Blit\s*\(",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
     static QualityBlockCaptureResolveIntegrityQA()
     {
@@ -58,10 +63,9 @@ public static class QualityBlockCaptureResolveIntegrityQA
         RequireSource(source, "RenderTexture.active = msaaTarget", "ReadPixels must consume the canonical resolved camera target directly");
         RequireSource(source, "no post-tonemap Graphics.Blit", "runtime manifest must disclose the no-shader-copy evidence path");
 
-        if (source.Contains("Graphics.Blit(msaaTarget", StringComparison.Ordinal) ||
-            source.Contains("Graphics.Blit (msaaTarget", StringComparison.Ordinal))
+        if (GraphicsBlitCall.IsMatch(source))
             throw new InvalidOperationException(
-                "Canonical 4K capture reintroduced a shader-based Graphics.Blit after the approved filmic transform. " +
+                "Canonical 4K capture contains a shader-based Graphics.Blit call after/beside the approved filmic transform. " +
                 "Formal evidence requires fixed-function MSAA resolve plus direct ReadPixels.");
     }
 

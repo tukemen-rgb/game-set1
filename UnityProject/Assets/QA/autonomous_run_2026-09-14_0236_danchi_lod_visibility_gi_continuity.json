@@ -1,0 +1,83 @@
+{
+  "runDateLocal": "2026-09-14T02:36:57+07:00",
+  "branch": "gpt/unity-migration",
+  "startHead": "9a9391506d53627a91227ba9af9d93efe100bb45",
+  "substantiveCommits": [
+    {
+      "sha": "3c4a8d0487a0b5a2b5b7b424bc0f2e70ef619b31",
+      "message": "Preserve Danchi LOD visibility and GI renderer state"
+    },
+    {
+      "sha": "8441c9e4629ce0ea7bc950d1c5672b3825343b54",
+      "message": "Expand Danchi LOD visibility and GI continuity contract"
+    },
+    {
+      "sha": "923cd1133bdc7350bcf752e8cf67a7fefc832035",
+      "message": "Enforce Danchi LOD visibility and GI state continuity"
+    }
+  ],
+  "finding": {
+    "type": "lod_proxy_visibility_and_gi_state_discontinuity_risk",
+    "summary": "The existing Danchi LOD proxy generator copied mesh/material, probe anchor, motion-vector/occlusion/sorting state and MaterialPropertyBlocks, but a newly-created proxy still defaulted to active/enabled and did not preserve rendering-layer, Light Probe Proxy Volume, additional vertex streams, MeshRenderer GI authoring state, or baked/realtime lightmap assignment. A retained physical source that was intentionally disabled/inactive could therefore reappear only at LOD1+, and a source using alternate vertex/GI/lightmap state could shade differently during CrossFade.",
+    "observedSourceEvidence": [
+      "CreateProxyRenderer created each proxy GameObject active with a newly-added MeshRenderer enabled by default; source.enabled and source active-in-hierarchy state were not copied.",
+      "CreateProxyRenderer did not copy renderingLayerMask or lightProbeProxyVolumeOverride.",
+      "CreateProxyRenderer did not copy additionalVertexStreams, receiveGI, scaleInLightmap or stitchLightmapSeams.",
+      "CreateProxyRenderer did not copy lightmapIndex/lightmapScaleOffset or realtimeLightmapIndex/realtimeLightmapScaleOffset.",
+      "The prior proxy-fidelity QA did not compare any of those states, so formal evidence could not fail closed on these discontinuities."
+    ]
+  },
+  "implementation": {
+    "parentLodGenerator": [
+      "Copy source MeshRenderer.enabled and effective active-in-hierarchy visibility to each retained LOD proxy so disabled/inactive legacy or alternate geometry cannot reappear at distance.",
+      "Copy renderingLayerMask and lightProbeProxyVolumeOverride in addition to the existing light/reflection probe usage and probe anchor state.",
+      "Copy additionalVertexStreams so source normals/tangents/colors/UV overrides remain identical across LOD transitions.",
+      "Copy receiveGI, scaleInLightmap and stitchLightmapSeams to preserve GI authoring intent.",
+      "Copy baked/realtime lightmap index and scale-offset for immediate same-session continuity; do not trust that copy after scene reload because Unity's lightmapping system owns those transient Editor/runtime assignments."
+    ],
+    "formalQa": [
+      "danchi_lod_proxy_fidelity_contract.json advanced to schemaVersion 1.1 and now machine-enforces visibility, rendering-layer, LPPV, vertex-stream, GI and runtime-lightmap parity.",
+      "QA4K_*, QATemporal_* and QAPreparedTemporal_* pre-cull remains read-only/fail-closed; no repair occurs during formal capture.",
+      "Formal validation now rejects renderer-enabled/effective-visibility drift, rendering-layer/LPPV drift, additionalVertexStreams drift, ReceiveGI/scale/stitch drift, and baked/realtime lightmap index or UV scale-offset drift.",
+      "Native 3840x2160 and sealed temporal evidence remain mandatory before any Visual Fidelity point can be awarded."
+    ],
+    "assetReasoning": "No new assembly geometry or material was authored in this run, so manufacture/installation metadata and lookdev are unchanged. This run closes renderer-state continuity for already reconstructed physical assemblies rather than inventing speculative asset detail."
+  },
+  "verification": {
+    "githubCompareBeforeRunRecord": "startHead -> 923cd1133bdc7350bcf752e8cf67a7fefc832035 is ahead 3, behind 0; merge-base remains startHead; only UnityProject/Assets/Editor and UnityProject/Assets/QA changed.",
+    "godotChanged": false,
+    "baseMerged": false,
+    "forbiddenThemeAdded": false,
+    "commitStatusContexts": 0,
+    "workflowRuns": 0,
+    "unityProjectVersion": "6000.3.0f1",
+    "unityCompileRuntime": "PENDING",
+    "native3840x2160Render": "PENDING",
+    "actualPixelReview": "PENDING",
+    "apiSurfaceSanityCheck": "Unity 6 documentation confirms Renderer.lightmapIndex/lightmapScaleOffset and MeshRenderer ReceiveGI/additionalVertexStreams APIs. Unity also documents that editor/runtime lightmap index/scale-offset assignment is owned by the lightmapping system after scene load, which is why formal pre-cull revalidation is required instead of treating the generation-time copy as durable evidence.",
+    "failureInjectionPending": [
+      "disable one retained physical source while forcing its LOD proxy enabled and require FAIL before formal capture",
+      "place one retained source under an inactive parent while leaving its proxy active and require FAIL",
+      "change one proxy renderingLayerMask or Light Probe Proxy Volume override and require FAIL",
+      "replace one proxy additionalVertexStreams reference and require FAIL",
+      "change one proxy receiveGI, scaleInLightmap or stitchLightmapSeams value and require FAIL",
+      "change one proxy baked or realtime lightmap index/scale-offset and require FAIL",
+      "retain prior transform/mesh/material/probe/MPB/motion-vector/LOD-classifier failure injections"
+    ]
+  },
+  "scores": {
+    "implementationReadiness": 93,
+    "visualFidelity": "UNSCORED_UNTIL_REAL_4K_RENDER",
+    "visualFidelityPointsAwardedThisRun": 0,
+    "passClaimed": false
+  },
+  "expectedVisualScoreImpactIfRenderedCleanly": {
+    "geometryConstructionFidelity": "small",
+    "materialPbrPhysicalPlausibility": "small-to-medium",
+    "lightingShadowsReflections": "medium",
+    "temporalLodAliasingStability": "medium-to-large",
+    "cinematicImageQuality": "small-to-medium"
+  },
+  "nextBlocker": "A Unity 6000.3.0f1 Runner is required to compile the expanded Renderer/MeshRenderer API usage, rebuild and save/reopen DanchiHighDetail, execute visibility/GI/lightmap failure injections, then capture native 3840x2160 frontal/oblique/grazing stills, 100% construction/material crops and sealed lod_walk_oblique temporal evidence. If Runner/screenshots appear, stop speculative expansion and score/fix the actual rendered evidence first.",
+  "forbiddenThemes": ["earthquake", "disaster", "reconstruction"]
+}

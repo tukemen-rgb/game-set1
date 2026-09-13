@@ -1,0 +1,72 @@
+{
+  "schemaVersion": "1.0",
+  "scenePath": "Assets/Scenes/QualityBlock1990s.unity",
+  "fingerprintAlgorithm": "SHA-256",
+  "purpose": "Bind global render/quality policy and active renderer texture residency to the exact realtime-reflection and native-4K evidence epoch. This prevents a legal scene/material/light state from being rendered with a different Built-in graphics tier, quality profile, render pipeline, texture mip limit or camera-dependent texture-streaming state.",
+  "visualFidelityCategoriesSupported": [
+    "Material/PBR physical plausibility",
+    "Lighting/shadows/reflections",
+    "Texture/microdetail/texel fidelity",
+    "Cinematic image quality/composition/color/exposure",
+    "Temporal/LOD/aliasing stability"
+  ],
+  "criticalDefectRisksReduced": [
+    "severe_aliasing_or_shimmering",
+    "visible_lod_pop",
+    "claiming_render_quality_without_actual_render"
+  ],
+  "requirements": {
+    "requireBuiltInRenderPipeline": true,
+    "requireLinearColorSpace": true,
+    "requireGlobalTextureMipmapLimitZero": true,
+    "forbidRendererBoundTextureStreaming": true,
+    "forbidEffectiveRendererBoundMipmapLimitGroups": true,
+    "includeCurrentQualityLevel": true,
+    "includeActiveGraphicsTier": true,
+    "includeSerializedGraphicsSettings": true,
+    "includeSerializedQualitySettings": true,
+    "includePipelineAssetIdentity": true,
+    "includeRendererBoundTextureResidencyState": true,
+    "requireSameHashAtReflectionRequestEveryObservedPollCompletionAndPreStill": true,
+    "actualRenderRequiredForVisualPoints": true
+  },
+  "fullResolutionResidencyRule": {
+    "globalTextureMipmapLimit": 0,
+    "rendererBoundStreamingMipmaps": "forbidden",
+    "mipmapLimitGroupRule": "A renderer-bound mipmapped Texture2D may not participate in a mipmap-limit group unless ignoreMipmapLimit=true. Formal 100% crops must not inherit a group-level down-resolution policy.",
+    "reason": "Unity 6 can omit highest-resolution texture mips through global or group limits while Texture2D width/height still report the original dimensions. Streaming textures can also change resident mip levels from camera state. Both can silently change native 4K microdetail without changing material bindings."
+  },
+  "pipelineRule": {
+    "active": "Built-in Render Pipeline",
+    "defaultRenderPipelineAsset": null,
+    "qualityOverrideRenderPipelineAsset": null,
+    "reason": "Realtime ReflectionProbe.RenderProbe and formal Camera.Render must use one rendering pipeline. Switching pipeline or Built-in tier settings between probe request and still capture invalidates reflection/material evidence."
+  },
+  "fingerprintPayload": [
+    "Unity version",
+    "current quality level index/name",
+    "active GraphicsTier",
+    "Linear color-space state",
+    "global texture mipmap limit",
+    "texture-streaming global controls",
+    "current/default/quality-override render-pipeline asset identity and dependency hash",
+    "serialized GraphicsSettings project state SHA-256",
+    "serialized QualitySettings project state SHA-256",
+    "ordered active renderer/material/property Texture2D bindings with dimensions, mip count, ignoreMipmapLimit, mipmapLimitGroup, requested mip level, asset GUID/dependency hash and importer streaming state"
+  ],
+  "failureInjection": [
+    "Set QualitySettings.globalTextureMipmapLimit to 1 after realtime reflection request; the next observed reflection poll must fail rather than accepting half-resolution texture evidence.",
+    "Enable streamingMipmaps on one renderer-bound texture; source validation must fail before formal capture.",
+    "Assign a mipmap-limit group to one renderer-bound texture without ignoreMipmapLimit; source validation must fail.",
+    "Change the active quality level or Built-in graphics-tier settings after reflection request; the fingerprint must change and invalidate the evidence epoch.",
+    "Assign an SRP asset through GraphicsSettings or the quality-level override; formal render-policy validation must fail before reflection/still evidence is accepted."
+  ],
+  "runtimeVerificationPending": [
+    "Unity 6000.3.0f1 compilation",
+    "reflection-request/poll/completion/pre-still failure injection",
+    "native 3840x2160 hero/oblique/grazing captures and 100% crops",
+    "temporal inspection for mip transition shimmer or residency changes"
+  ],
+  "visualFidelityPointsAwarded": 0,
+  "runtimeRenderVerified": false
+}

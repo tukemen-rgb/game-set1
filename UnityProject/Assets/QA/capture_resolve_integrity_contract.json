@@ -1,0 +1,43 @@
+{
+  "schemaVersion": "1.0",
+  "captureSourcePath": "Assets/Editor/QualityBlock4KCapture.cs",
+  "scenePath": "Assets/Scenes/QualityBlock1990s.unity",
+  "formalTargetPrefix": "QA4K_",
+  "requirements": {
+    "bindTextureMSMustBeFalse": true,
+    "fixedFunctionResolveRequiredWhenMsaaGreaterThanOne": true,
+    "postTonemapGraphicsBlitForbidden": true,
+    "readPixelsFromCanonicalResolvedSurface": true,
+    "pixelExactCropPolicyRequired": true,
+    "actualUnityRenderRequiredForVisualPoints": true,
+    "visualPointsAwardedByThisGateMustRemainZero": true
+  },
+  "riskMapping": {
+    "primaryVisualCategories": [
+      "Texture/microdetail/texel fidelity",
+      "Cinematic image quality/composition/color/exposure"
+    ],
+    "secondaryVisualCategories": [
+      "Material/PBR physical plausibility",
+      "Temporal/LOD/aliasing stability"
+    ],
+    "criticalDefectsProtected": [
+      "severe_aliasing_or_shimmer",
+      "unverified_render_claim"
+    ]
+  },
+  "verification": {
+    "sourceGuard": "QualityBlockCaptureResolveIntegrityQA validates the canonical capture source contains bindMS=false, fixed-function ResolveAntiAliasedSurface, direct readback from the canonical target, and no Graphics.Blit(msaaTarget, ...) shader-copy path.",
+    "runtimeGuard": "At formal QA4K_ Camera.onPreCull, bindTextureMS must be false and the target must remain non-mipmapped.",
+    "requiredFailureInjection": [
+      "Set the formal target descriptor bindMS/bindTextureMS true and require failure before the frame is accepted.",
+      "Replace fixed-function ResolveAntiAliasedSurface with Graphics.Blit and require source-contract failure.",
+      "Reintroduce a second post-tonemap render target and require source-contract failure before provenance sealing."
+    ],
+    "requiredRealEvidence": "Fresh Unity 6000.3.0f1 native 3840x2160 hero/oblique/grazing captures plus 100% crops and temporal evidence. Inspect fine sash rails, foliage edges, wire guards, concrete microdetail and smooth sky gradients for resolve/filter/gamma artifacts.",
+    "runtimeVerificationPending": true
+  },
+  "runtimeVerified": false,
+  "visualFidelityPointsAwarded": 0,
+  "note": "Evidence-path integrity only. This contract cannot award Visual Fidelity points and cannot substitute for actual rendered pixel review."
+}

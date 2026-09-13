@@ -1,0 +1,69 @@
+{
+  "schemaVersion": "1.0",
+  "runId": "2026-09-13_sash_latch_reload_stable_reflection_binding",
+  "branch": "gpt/unity-migration",
+  "startHead": "f4992c3ca9c4a6c56d6cfdfe88751f7594cb660a",
+  "headBeforeRunRecord": "921bcfc59e364f7dc9425b0b8f78d6df2b0a3625",
+  "substantiveCommits": [
+    "f395b0aca6f5457ca2c617a402882a7e95b3209b",
+    "f2f6670d1f941c572b8cc83f3df959571cba8f38",
+    "71e47dee839d8e59d1b16b63ac145b7b775a7963",
+    "921bcfc59e364f7dc9425b0b8f78d6df2b0a3625"
+  ],
+  "problemFound": "The canonical facade sash-latch builder froze its formal root only in static fields using GetInstanceID(). A script/domain reload resets those fields. The central reflection fingerprint could therefore call the parent preparation path again and reinterpret a deleted/replaced but structurally valid latch root as a new baseline. Render-state hashing tracks hierarchy and render payload, but intentionally does not establish persistent scene-object identity, so a byte/structure-equivalent replacement root could evade that identity question.",
+  "implemented": [
+    "Added QualityBlockFacadeSashLatchReflectionBindingQA as a dedicated formal evidence wrapper.",
+    "The first clean-session reflection baseline may delegate deterministic preparation to the existing parent latch builder; after arm, all wrapper checks are read-only.",
+    "Persisted epoch state with UnityEditor.SessionState so script/assembly reload does not reset the formal sash-latch evidence boundary.",
+    "Frozen benchmark scene GUID, authored/fallback mode, an epoch token and the generated latch root stable GlobalObjectId.",
+    "Post-arm root deletion, stable-identity replacement, scene GUID change or authored/fallback mode change now aborts reflection evidence instead of auto-repairing/re-arming.",
+    "Delegated the existing sash-latch structural/material/LOD/weathering validator at every reflection-lighting fingerprint evaluation.",
+    "Upgraded reflection_material_physicality_binding_contract.json to schema 1.7 and routed the central reflection binding through the reload-stable wrapper after curve/LOD asset refinement preparation.",
+    "Added a machine-readable sash-latch reflection-binding contract with zero automatic Visual Fidelity points and explicit runtime limitations."
+  ],
+  "verification": {
+    "repositoryStatic": [
+      "Branch compare from startHead to headBeforeRunRecord: ahead_by=4, behind_by=0, merge_base=startHead.",
+      "Changed files before run record are restricted to four UnityProject paths: two Editor QA sources and two QA contracts.",
+      "New wrapper contract requires SessionState persistence, stable GlobalObjectId, scene GUID continuity, stable authored/fallback mode, read-only post-arm validation and actual render for visual points.",
+      "Central reflection-material binding schema is 1.7 and explicitly calls QualityBlockFacadeSashLatchReflectionBindingQA.EnsurePreparedForFormalEvidence plus ValidateForReflectionEvidence.",
+      "GitHub Actions workflow runs on gpt/unity-migration remain 0; commit status contexts remain 0."
+    ],
+    "unityCompileRuntime": "PENDING_UNITY_RUNTIME",
+    "native4kFrames": "NOT_PRODUCED",
+    "hundredPercentCrops": "NOT_PRODUCED",
+    "temporalEvidence": "NOT_PRODUCED",
+    "visualFidelityScored": false
+  },
+  "implementationReadiness": {
+    "score": 93,
+    "outOf": 100,
+    "status": "IMPLEMENTATION_READINESS_ONLY",
+    "remainingBlocker": "Real Unity 6000.3.0f1 compile/runtime execution, failure injection, native 3840x2160 captures, 100% crops and temporal evidence."
+  },
+  "visualFidelity": {
+    "status": "UNSCORED_UNTIL_REAL_4K_RENDER",
+    "pointsAwardedThisRun": 0,
+    "passClaimed": false,
+    "expectedImpactOnly": {
+      "geometryConstructionFidelity": "medium evidence-integrity improvement: the same persisted 30-window hardware root must survive the reflection epoch",
+      "materialPbrPhysicalPlausibility": "small-to-medium evidence-integrity improvement through repeated canonical latch material validation",
+      "temporalLodAliasingStability": "medium evidence-integrity improvement: replacement root/LOD state cannot inherit an old reflection epoch after assembly reload",
+      "otherCategories": "no source-side visual points assigned"
+    }
+  },
+  "constraints": {
+    "godotPreserved": true,
+    "baseMergePerformed": false,
+    "forbiddenThemeContentAdded": false,
+    "earthquakeDisasterReconstructionThemeExcluded": true
+  },
+  "nextRunnerProcedure": [
+    "Use a clean Unity 6000.3.0f1 Editor session and execute the complete native-4K review packet until the first reflection fingerprint arms the sash-latch wrapper.",
+    "Record the persisted latch root GlobalObjectId/epoch token, trigger a script recompile/domain reload without changing scene content, then prove the wrapper remains armed and read-only and validation still passes.",
+    "After another controlled reload boundary, replace FacadeSashLatchHardware with a structurally equivalent duplicate and prove stable-GlobalObjectId mismatch aborts before ReflectionProbe.RenderProbe rather than re-arming.",
+    "Independently delete the latch root and switch authored/fallback mode; each must fail closed without rebuilding after epoch arm.",
+    "Restart a clean Editor session for the real candidate, obtain fresh reflection probes, then capture hero/oblique/grazing at 3840x2160 plus required 100% sash crops and temporal LOD evidence.",
+    "Only then score the 100-point Visual Fidelity Gate from actual pixels; do not infer a PASS from this source/evidence-integrity work."
+  ]
+}

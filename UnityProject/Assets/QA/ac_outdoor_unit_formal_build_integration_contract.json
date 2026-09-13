@@ -1,0 +1,187 @@
+{
+  "schema_version": "1.0",
+  "scene_path": "Assets/Scenes/QualityBlock1990s.unity",
+  "branch_policy": "Formal generated-Danchi candidates must reconstruct and validate the complete outdoor-unit installation before fan-face replacement and before any Danchi LOD proxy is generated. This source/scene contract awards zero Visual Fidelity points without actual native render evidence.",
+  "source_files": [
+    "Assets/Editor/QualityBlockDanchiLodUpgrade.cs",
+    "Assets/Editor/QualityBlockAcOutdoorUnitInstallationQA.cs",
+    "Assets/Editor/QualityBlockAcFanPhysicalRefinement.cs",
+    "Assets/Editor/QualityBlockAcFanGuardRoundWireRefinement.cs",
+    "Assets/Editor/QualityBlockAcFanGuardMountInterfaceRefinement.cs",
+    "Assets/QA/ac_outdoor_unit_installation_contract.json",
+    "Assets/QA/ac_outdoor_fan_physical_refinement_contract.json"
+  ],
+  "expected_generated_units": 15,
+  "formal_build_order": [
+    "QualityBlockDetailBevelUpgrade.BuildBeveledDetailedQualityBlock",
+    "QualityBlockAcOutdoorUnitInstallationQA.ApplyAndPersist",
+    "reopen Assets/Scenes/QualityBlock1990s.unity from the persisted installation state",
+    "QualityBlockAcFanPhysicalRefinement.ApplyToOpenScene",
+    "QualityBlockAcFanGuardRoundWireRefinement.ApplyToOpenScene",
+    "QualityBlockAcFanGuardMountInterfaceRefinement.ApplyToOpenScene",
+    "QualityBlockDanchiLodUpgrade.ApplyToOpenScene",
+    "QualityBlockDanchiLodUpgrade.ValidateOpenScene"
+  ],
+  "ordering_reason": [
+    "The installation pass must see the legacy HD_AC_FanDisc, HD_AC_FanHub and grille children because those casing-mounted details are translated with the mechanically corrected chassis elevation.",
+    "The installation pass reconstructs refrigerant lines and the condensate drain from the moved unit-side interfaces to fixed wall/slab interfaces; applying it after fan replacement would leave the formal build dependent on ordering accidents.",
+    "Physical rotor/shroud, circular-wire guard and guard-to-shroud mounting feet are then authored against the corrected persisted unit location.",
+    "LOD proxy generation is last so every proxy is derived from the same mechanically valid source assembly rather than from a partly corrected or late-overlay state."
+  ],
+  "manufacture_installation_reconstruction": {
+    "components": [
+      "separate condenser casing/chassis",
+      "two slab-seated mounting plates",
+      "two support/vibration feet",
+      "visible mount bolts",
+      "paired insulated refrigerant lines",
+      "fixed facade penetration collar and clips",
+      "low condensate drain hose",
+      "finite-depth fan rotor/shroud",
+      "four-ring/eight-spoke 5 mm round-wire guard",
+      "four physical galvanized guard mounting feet"
+    ],
+    "locked_interface_dimensions_m": {
+      "balcony_floor_top_local_y": -0.79,
+      "mount_plate_height": 0.018,
+      "support_foot_height": 0.045,
+      "casing_height": 0.48,
+      "casing_to_foot_embed_target": 0.006,
+      "casing_to_foot_embed_range": [0.002, 0.010],
+      "support_contact_tolerance": 0.003,
+      "drain_terminal_clearance_target": 0.010,
+      "drain_terminal_clearance_range": [0.005, 0.020],
+      "refrigerant_joint_tolerance": 0.004,
+      "guard_wire_diameter": 0.005,
+      "guard_mount_controlled_shroud_embed": 0.0005
+    },
+    "interfaces_and_load_path": [
+      "balcony slab -> mounting plate -> support foot -> condenser chassis",
+      "condenser unit-side refrigerant outlets -> continuous bent/segmented insulated lines -> fixed wall collar",
+      "condenser low drain outlet -> descending hose -> terminal held positively above balcony surface",
+      "fan guard -> four galvanized mounting feet -> molded intake shroud"
+    ],
+    "orientation_exposure_aging": [
+      "casing front/top are midsummer sun/rain exposed while grille recesses remain darker through geometry and occlusion rather than painted shading",
+      "plates/feet/fasteners are slab-contact and splash-zone hardware; oxidation/grime is localized by contact and exposure causality",
+      "refrigerant insulation ages more strongly near the exposed unit than at the sheltered wall interface",
+      "drain wetness/residue is permitted only near the low condensate outlet/discharge path",
+      "guard and guard mounts inherit ferrous/UV/rain exposure; arbitrary rust added only for visibility is forbidden"
+    ],
+    "geometry_vs_material_detail": {
+      "geometry_required": [
+        "slab/plate/foot/chassis seating and gaps",
+        "fastener heads",
+        "pipe bends and endpoint continuity",
+        "wall collar and clips",
+        "drain fall and terminal clearance",
+        "fan rotor/shroud depth",
+        "round guard wire cross-section",
+        "guard mounting-foot bridge and seating"
+      ],
+      "material_microdetail_only": [
+        "plastic/coating chalking",
+        "galvanized dulling and fine zinc mottling",
+        "insulation wrap/compression texture",
+        "fine polymer hose skin/corrugation",
+        "micro-scratches",
+        "localized cause-based wetness/grime"
+      ],
+      "forbidden_shortcuts": [
+        "painted contact shadows",
+        "painted metallic edge highlights",
+        "albedo-only pipe joints",
+        "floating supports or guard mounts hidden by dark material",
+        "weathering decals used to conceal interpenetration"
+      ]
+    }
+  },
+  "material_physicality": {
+    "aged_ac_plastic": {
+      "albedo_linear": [0.42, 0.58],
+      "roughness": [0.70, 0.82],
+      "metallic": [0.0, 0.0],
+      "dielectric_f0": [0.035, 0.055],
+      "normal_scale": [0.10, 0.20],
+      "wetness": "normally dry; exposure-driven rain spotting only",
+      "uv_aging": "mild warm/chalked sun-facing shift",
+      "angular_response": "broad dielectric edge response; no painted hot edge"
+    },
+    "galvanized_hardware": {
+      "albedo_linear": [0.08, 0.20],
+      "roughness": [0.60, 0.78],
+      "metallic": [0.45, 0.70],
+      "normal_scale": [0.10, 0.18],
+      "wetness": "localized exposure-driven darkening only",
+      "uv_aging": "minimal hue shift; oxidation primarily changes roughness/value",
+      "angular_response": "metallic grazing response dulled by oxidation; round guard curvature is physical geometry"
+    },
+    "pipe_insulation": {
+      "albedo_linear": [0.30, 0.46],
+      "roughness": [0.78, 0.88],
+      "metallic": [0.0, 0.0],
+      "dielectric_f0": [0.035, 0.050],
+      "normal_scale": [0.12, 0.24],
+      "wetness": "small rain-darkened patches only on exposed runs",
+      "uv_aging": "sun-facing yellow/grey desaturation",
+      "angular_response": "weak broad dielectric grazing response"
+    },
+    "drain_hose": {
+      "albedo_linear": [0.10, 0.18],
+      "roughness": [0.82, 0.90],
+      "metallic": [0.0, 0.0],
+      "dielectric_f0": [0.035, 0.050],
+      "normal_scale": [0.15, 0.30],
+      "wetness": "darker terminal region allowed only from condensate causality",
+      "uv_aging": "mild desaturation/chalking",
+      "angular_response": "weak polymer edge response"
+    }
+  },
+  "formal_validation_direct_dependencies": [
+    "QualityBlockAcOutdoorUnitInstallationQA.ValidateOpenScene",
+    "QualityBlockAcFanPhysicalRefinement.ValidateOpenScene",
+    "QualityBlockAcFanGuardRoundWireRefinement.ValidateOpenScene",
+    "QualityBlockAcFanGuardMountInterfaceRefinement.ValidateOpenScene"
+  ],
+  "lod_policy": {
+    "lod0": "complete construction master including supports, bolts, service lines, fan/shroud, round-wire guard and guard mounts",
+    "lod1": "retain support/service silhouettes, fan hub, round-wire guard and guard mounts; micro fasteners may drop",
+    "lod2": "thin support/service/guard hardware may drop before sub-pixel shimmer; medium fan rotor and macro intake/casing read remain subject to the existing classifier",
+    "lod3": "only macro/silhouette features retained by the Danchi classifier; no exposed primitive placeholder is permitted in benchmark framing",
+    "transition": "animated cross-fade required; native temporal evidence required before awarding stability points"
+  },
+  "critical_defect_mapping": [
+    "floating/interpenetrating hero geometry",
+    "visible primitive-placeholder geometry in benchmark framing",
+    "materially impossible metallic/specular values",
+    "missing required construction/material metadata",
+    "visible LOD pop",
+    "severe aliasing/shimmering",
+    "major light leak"
+  ],
+  "failure_injection_when_runner_available": [
+    "delete one support foot or plate and require final Danchi validation failure",
+    "offset one casing vertically outside the 2-10 mm chassis/foot embed and require failure",
+    "break one refrigerant segment joint beyond 4 mm and require failure",
+    "move one drain endpoint outside the 5-20 mm positive slab-clearance range and require failure",
+    "remove one wall/service interface component and require construction validation failure",
+    "after a clean formal baseline, mutate a validated installation renderer/transform and require reflection/render-state evidence binding failure rather than repair"
+  ],
+  "required_render_evidence": {
+    "native_resolution": "3840x2160",
+    "views": ["frontal", "oblique", "grazing-light"],
+    "crops_100_percent": ["oblique/balcony_services", "frontal/outdoor_unit_support_and_service_interface"],
+    "inspect": [
+      "slab/plate/foot/chassis contact and support gap",
+      "pipe continuity and wall penetration",
+      "drain fall/clearance",
+      "dielectric casing versus galvanized hardware grazing response",
+      "guard/shroud/mount contact",
+      "15-unit repetition",
+      "LOD transition pop and wire/service-line shimmer"
+    ]
+  },
+  "automatic_visual_points": 0,
+  "visual_fidelity_status_until_render": "UNSCORED_UNTIL_REAL_4K_RENDER",
+  "runtime_verification": "PENDING_UNITY_RUNNER"
+}

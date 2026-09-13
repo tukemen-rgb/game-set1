@@ -21,7 +21,7 @@
     <line x1="151" y1="545" x2="315" y2="545" stroke="#333" stroke-width="2"/>
     <line x1="151" y1="535" x2="151" y2="555" stroke="#333" stroke-width="2"/>
     <line x1="315" y1="535" x2="315" y2="555" stroke="#333" stroke-width="2"/>
-    <text x="185" y="575" font-size="16">nominal arm 420 mm</text>
+    <text x="175" y="575" font-size="16">pivot-to-receiver centerline 340 mm</text>
 
     <text x="610" y="170" font-size="24" font-weight="700">B. Front / pole-axis relationship</text>
     <rect x="650" y="235" width="20" height="360" fill="#b7b7b1"/>

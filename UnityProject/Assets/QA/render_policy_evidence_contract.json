@@ -11,9 +11,9 @@
     "Temporal/LOD/aliasing stability"
   ],
   "criticalDefectRisksReduced": [
-    "severe_aliasing_or_shimmering",
+    "severe_aliasing_or_shimmer",
     "visible_lod_pop",
-    "claiming_render_quality_without_actual_render"
+    "unverified_render_claim"
   ],
   "requirements": {
     "requireBuiltInRenderPipeline": true,

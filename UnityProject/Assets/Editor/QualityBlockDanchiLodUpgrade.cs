@@ -141,6 +141,13 @@ public static class QualityBlockDanchiLodUpgrade
             throw new InvalidOperationException(
                 $"Physical-scale classification is incomplete: micro={microCount}, macro={macroCount}.");
 
+        MeshRenderer[] clothesSupportArms = sources
+            .Where(r => r.gameObject.name.IndexOf("HD_ClothesBracket_", StringComparison.OrdinalIgnoreCase) >= 0)
+            .ToArray();
+        if (clothesSupportArms.Length > 0 && clothesSupportArms.Any(r => RetainedThroughLod(r.gameObject.name) != 2))
+            throw new InvalidOperationException(
+                "Clothes support arms must classify as medium-detail geometry and remain through LOD2 before any downstream closure pass.");
+
         if (Mathf.Abs(lods[0].screenRelativeTransitionHeight - Lod0Transition) > 0.0001f ||
             Mathf.Abs(lods[1].screenRelativeTransitionHeight - Lod1Transition) > 0.0001f ||
             Mathf.Abs(lods[2].screenRelativeTransitionHeight - Lod2Transition) > 0.0001f ||
@@ -220,6 +227,24 @@ public static class QualityBlockDanchiLodUpgrade
         renderer.receiveShadows = source.receiveShadows;
         renderer.lightProbeUsage = source.lightProbeUsage;
         renderer.reflectionProbeUsage = source.reflectionProbeUsage;
+        renderer.probeAnchor = source.probeAnchor;
+        renderer.motionVectorGenerationMode = source.motionVectorGenerationMode;
+        renderer.allowOcclusionWhenDynamic = source.allowOcclusionWhenDynamic;
+        renderer.sortingLayerID = source.sortingLayerID;
+        renderer.sortingOrder = source.sortingOrder;
+
+        // Preserve renderer-local material state across LODs. Losing MaterialPropertyBlocks at the
+        // transition can create a visible albedo/roughness/wetness jump even when mesh/material assets
+        // are identical. Copy both renderer-wide and per-material-index blocks fail-closed by construction.
+        var propertyBlock = new MaterialPropertyBlock();
+        source.GetPropertyBlock(propertyBlock);
+        renderer.SetPropertyBlock(propertyBlock);
+        for (int materialIndex = 0; materialIndex < source.sharedMaterials.Length; materialIndex++)
+        {
+            propertyBlock.Clear();
+            source.GetPropertyBlock(propertyBlock, materialIndex);
+            renderer.SetPropertyBlock(propertyBlock, materialIndex);
+        }
         return renderer;
     }
 
@@ -243,6 +268,11 @@ public static class QualityBlockDanchiLodUpgrade
         if (ContainsAny(n, "Bolt", "Fastener", "Washer", "Nut", "Seal", "Handle", "Clip", "GrilleBar"))
             return 0;
 
+        // The 340 mm clothes-pole support arm remains a facade-depth silhouette at medium distance.
+        // Classify it before the generic "Bracket" token below; otherwise the specific policy is unreachable.
+        if (ContainsAny(n, "ClothesBracket"))
+            return 2;
+
         // Small manufactured attachments and service hardware. The circular wire guard and its mounting
         // feet remain only through LOD1 so sub-pixel wire/hardware does not turn into shimmer at medium distance.
         if (ContainsAny(n, "BasePlate", "Bracket", "Receiver", "Track", "Collar", "Clamp", "Pipe", "Hose",
@@ -250,7 +280,7 @@ public static class QualityBlockDanchiLodUpgrade
             return 1;
 
         // Components that continue to create facade depth/parallax at medium distance.
-        if (ContainsAny(n, "Divider", "SashStile", "FanDisc", "FanRotor", "ClothesBracket", "StairWindow"))
+        if (ContainsAny(n, "Divider", "SashStile", "FanDisc", "FanRotor", "StairWindow"))
             return 2;
 
         // Large edges/openings and the condenser inlet shroud control the long-distance facade read.

@@ -1,0 +1,35 @@
+{
+  "schemaVersion": "1.0",
+  "purpose": "Keep a clean Unity runner from rejecting the formal native-4K packet before the deterministic scene rebuild has had a chance to establish the benchmark QualitySettings, camera, sun and LOD state.",
+  "scenePath": "Assets/Scenes/QualityBlock1990s.unity",
+  "initialPreflight": {
+    "mode": "CONTRACT_ONLY_BEFORE_REBUILD",
+    "forbidPreparedSceneStateValidation": true,
+    "reason": "ProjectSettings/QualitySettings.asset is not repository-authored on this branch, so clean-session QualitySettings before the generated benchmark rebuild are not evidence and must not be required to match the capture policy."
+  },
+  "postRebuildBaseline": {
+    "required": true,
+    "shadowStabilityValidator": "QualityBlockShadowStabilityUpgrade.ValidateOpenScene",
+    "solarShadowValidator": "QualityBlockSolarShadowCaptureCoherenceQA.ValidateOpenScene",
+    "mustRunBeforeAnyPostBuildEvidenceMutation": true,
+    "mustRunBeforeReflectionRequest": true
+  },
+  "requiredContracts": [
+    "Assets/QA/shadow_stability_contract.json",
+    "Assets/QA/solar_shadow_capture_coherence_contract.json"
+  ],
+  "failureInjection": [
+    "Launch from a clean editor session with default/low QualitySettings: contract-only preflight must not fail before the deterministic rebuild.",
+    "After rebuild set QualitySettings.shadowCascades != 4: prepared-baseline validation must fail.",
+    "After rebuild set QualitySettings.antiAliasing < 4: prepared-baseline validation must fail.",
+    "After rebuild alter the sole SummerSun direction or add a second directional light: prepared-baseline validation must fail."
+  ],
+  "visualFidelityGateMapping": {
+    "lightingShadowsReflections": "Expected positive impact only by making the intended VeryHigh 4-cascade shadow state reachable on a clean runner; no visual points without rendered evidence.",
+    "temporalLodAliasingStability": "Expected positive impact only by making the intended MSAA/high-LOD/cross-fade state reachable on a clean runner; no visual points without rendered evidence.",
+    "criticalDefects": ["sun_shadow_inconsistency", "severe_aliasing_or_shimmer", "visible_lod_pop", "major_light_leak"]
+  },
+  "visualFidelityPointsAwarded": 0,
+  "runtimeRenderVerified": false,
+  "verificationStatus": "IMPLEMENTED_STATIC_UNVERIFIED_NO_UNITY_RUNNER"
+}

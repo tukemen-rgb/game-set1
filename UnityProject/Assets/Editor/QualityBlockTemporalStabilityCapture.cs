@@ -21,6 +21,8 @@ public static class QualityBlockTemporalStabilityCapture
     private const string ReceiptPath = "Assets/QA/temporal_stability_receipt.json";
     private const int Width = 3840;
     private const int Height = 2160;
+    private const string CanonicalCaptureSource =
+        "Unity Camera.Render -> canonical MSAA RenderTexture -> in-place fixed-function resolve -> direct Texture2D.ReadPixels";
 
     private static readonly Vector3 GrazingPosition = new Vector3(-22.0f, 3.0f, 7.0f);
     private static readonly Vector3 GrazingTarget = new Vector3(-8.2f, 3.8f, -7.8f);
@@ -32,7 +34,8 @@ public static class QualityBlockTemporalStabilityCapture
     {
         TemporalContract contract = LoadJson<TemporalContract>(ContractPath);
         ValidateContract(contract);
-        Debug.Log("Temporal stability contract valid: native 3840x2160, sealed subpixel-grazing and LOD-walk sequences, zero automatic visual points.");
+        QualityBlockTemporalDisplayTransferIntegrityQA.ValidateContractConfigOnly();
+        Debug.Log("Temporal stability contract valid: native 3840x2160, canonical sRGB fixed-function resolve, sealed subpixel-grazing and LOD-walk sequences, zero automatic visual points.");
     }
 
     [MenuItem("NewTown/QA/Capture + Seal Temporal Stability Evidence")]
@@ -40,6 +43,7 @@ public static class QualityBlockTemporalStabilityCapture
     {
         TemporalContract contract = LoadJson<TemporalContract>(ContractPath);
         ValidateContract(contract);
+        QualityBlockTemporalDisplayTransferIntegrityQA.ValidateContractConfigOnly();
         PrepareAndValidateScene();
         EditorSceneManager.OpenScene(ScenePath, OpenSceneMode.Single);
         QualityBlockEnvironmentLightingUpgrade.ValidateOpenScene();
@@ -86,7 +90,7 @@ public static class QualityBlockTemporalStabilityCapture
 
         var manifest = new TemporalManifest
         {
-            schemaVersion = "1.0",
+            schemaVersion = "1.1",
             captureSessionId = sessionId,
             generatedUtc = DateTime.UtcNow.ToString("O"),
             unityVersion = Application.unityVersion,
@@ -95,7 +99,7 @@ public static class QualityBlockTemporalStabilityCapture
             projectColorSpace = QualitySettings.activeColorSpace.ToString(),
             width = Width,
             height = Height,
-            source = "Unity Camera.Render -> MSAA RenderTexture -> single-sample resolve -> Texture2D.ReadPixels",
+            source = CanonicalCaptureSource,
             renderProducedByUnity = true,
             visualFidelityStatus = "UNSCORED_REVIEW_REQUIRED",
             lodBias = QualitySettings.lodBias,
@@ -111,7 +115,7 @@ public static class QualityBlockTemporalStabilityCapture
         string manifestSha = Sha256File(AbsolutePath(ManifestPath));
         var receipt = new TemporalReceipt
         {
-            schemaVersion = "1.0",
+            schemaVersion = "1.1",
             captureSessionId = sessionId,
             sealedUtc = DateTime.UtcNow.ToString("O"),
             manifestAssetPath = ManifestPath,
@@ -145,7 +149,7 @@ public static class QualityBlockTemporalStabilityCapture
             receipt.manifestSha256,
             ReceiptPath,
             Sha256File(AbsolutePath(ReceiptPath)));
-        Debug.Log("Latest temporal stability evidence is sealed and pixel-exact. This validation awards zero Visual Fidelity points.");
+        Debug.Log("Latest temporal stability evidence is sealed, display-transfer coherent and pixel-exact. This validation awards zero Visual Fidelity points.");
     }
 
     public static void ValidateTemporalEvidenceForScoring(
@@ -157,6 +161,7 @@ public static class QualityBlockTemporalStabilityCapture
     {
         TemporalContract contract = LoadJson<TemporalContract>(ContractPath);
         ValidateContract(contract);
+        QualityBlockTemporalDisplayTransferIntegrityQA.ValidateContractConfigOnly();
 
         if (string.IsNullOrWhiteSpace(captureSessionId))
             throw new InvalidOperationException("Temporal evidence has no captureSessionId.");
@@ -178,16 +183,25 @@ public static class QualityBlockTemporalStabilityCapture
             throw new InvalidOperationException("Temporal evidence receipt SHA-256 does not match the review reference.");
 
         TemporalReceipt receipt = LoadJson<TemporalReceipt>(receiptAssetPath);
+        if (!string.Equals(receipt.schemaVersion, "1.1", StringComparison.Ordinal))
+            throw new InvalidOperationException("Temporal receipt predates the canonical display-transfer/resolve contract and must be recaptured.");
         if (receipt.captureSessionId != captureSessionId)
             throw new InvalidOperationException("Temporal receipt captureSessionId does not match the review reference.");
         if (receipt.manifestAssetPath != manifestAssetPath || !EqualsSha(receipt.manifestSha256, actualManifestSha))
             throw new InvalidOperationException("Temporal receipt does not seal the current manifest.");
 
         TemporalManifest manifest = LoadJson<TemporalManifest>(manifestAssetPath);
+        if (!string.Equals(manifest.schemaVersion, "1.1", StringComparison.Ordinal))
+            throw new InvalidOperationException("Temporal manifest predates the canonical display-transfer/resolve contract and must be recaptured.");
         if (manifest.captureSessionId != captureSessionId)
             throw new InvalidOperationException("Temporal manifest captureSessionId does not match the review reference.");
         if (!manifest.renderProducedByUnity || manifest.width != Width || manifest.height != Height)
             throw new InvalidOperationException("Temporal manifest is not verified native 3840x2160 Unity render evidence.");
+        if (!string.Equals(manifest.projectColorSpace, "Linear", StringComparison.OrdinalIgnoreCase))
+            throw new InvalidOperationException("Temporal evidence was not captured in Linear project color space.");
+        if (!string.Equals(manifest.source, CanonicalCaptureSource, StringComparison.Ordinal))
+            throw new InvalidOperationException(
+                "Temporal evidence does not declare the canonical in-place fixed-function resolve/direct-readback path. Recapture is required.");
         if (manifest.probes == null || manifest.probes.Length != contract.probes.Length)
             throw new InvalidOperationException("Temporal manifest does not contain every required probe sequence.");
         if (manifest.fourLevelLodGroupCount < 1 || manifest.animatedCrossFadeFourLevelGroupCount < 1)
@@ -254,13 +268,11 @@ public static class QualityBlockTemporalStabilityCapture
             msaaSamples = msaaSamples,
             useMipMap = false,
             autoGenerateMips = false,
+            bindMS = false,
             sRGB = QualitySettings.activeColorSpace == ColorSpace.Linear,
         };
-        var resolveDescriptor = msaaDescriptor;
-        resolveDescriptor.msaaSamples = 1;
 
         var msaaTarget = new RenderTexture(msaaDescriptor) { name = $"QATemporal_{spec.id}_{index:00}_MSAA" };
-        var resolvedTarget = new RenderTexture(resolveDescriptor) { name = $"QATemporal_{spec.id}_{index:00}_Resolved" };
         var fullFrame = new Texture2D(Width, Height, TextureFormat.RGB24, false, false);
         RenderTexture previousActive = RenderTexture.active;
 
@@ -270,11 +282,11 @@ public static class QualityBlockTemporalStabilityCapture
         try
         {
             msaaTarget.Create();
-            resolvedTarget.Create();
             cam.targetTexture = msaaTarget;
             cam.Render();
-            Graphics.Blit(msaaTarget, resolvedTarget);
-            RenderTexture.active = resolvedTarget;
+            if (msaaSamples > 1)
+                msaaTarget.ResolveAntiAliasedSurface();
+            RenderTexture.active = msaaTarget;
             fullFrame.ReadPixels(new Rect(0, 0, Width, Height), 0, 0, false);
             fullFrame.Apply(false, false);
             WritePng(fullAssetPath, fullFrame);
@@ -286,9 +298,7 @@ public static class QualityBlockTemporalStabilityCapture
             RenderTexture.active = previousActive;
             UnityEngine.Object.DestroyImmediate(fullFrame);
             msaaTarget.Release();
-            resolvedTarget.Release();
             UnityEngine.Object.DestroyImmediate(msaaTarget);
-            UnityEngine.Object.DestroyImmediate(resolvedTarget);
         }
 
         return new FrameRecord
@@ -504,6 +514,7 @@ public static class QualityBlockTemporalStabilityCapture
             msaaSamples = 8,
             useMipMap = false,
             autoGenerateMips = false,
+            bindMS = false,
         };
         int supported = SystemInfo.GetRenderTextureSupportedMSAASampleCount(descriptor);
         if (supported >= 8) return 8;

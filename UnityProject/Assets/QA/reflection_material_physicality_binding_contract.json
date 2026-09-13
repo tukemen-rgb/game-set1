@@ -1,11 +1,12 @@
 {
-  "schemaVersion": "1.6",
-  "purpose": "Fail closed before and throughout realtime reflection-probe synchronization unless the machine-readable material registry still matches actual active Unity Material assets, the persisted facade glazing gasket remains structurally/materially valid, the physical facade sill-drainage pass is prepared once before the first baseline then frozen read-only, the deterministic smooth LOD0 sash-latch crescent assets plus curve-preserving LOD1/LOD2/LOD3 proxies are prepared before the first probe baseline then remain unchanged, and the period-plausible metal crescent-latch replacement is prepared before the first probe baseline then remains unchanged. This protects the cubemap baseline from physically invalid/stale materials and from MainCamera-only facade-interface or LOD state; it does not award Visual Fidelity points.",
+  "schemaVersion": "1.7",
+  "purpose": "Fail closed before and throughout realtime reflection-probe synchronization unless the machine-readable material registry still matches actual active Unity Material assets, the persisted facade glazing gasket remains structurally/materially valid, the physical facade sill-drainage pass is prepared once before the first baseline then frozen read-only, the deterministic smooth LOD0 sash-latch crescent assets plus curve-preserving LOD1/LOD2/LOD3 proxies are prepared before the first probe baseline then remain unchanged, and the period-plausible metal crescent-latch replacement is prepared once then bound by SessionState, scene GUID and stable GlobalObjectId across script/assembly reloads. This protects the cubemap baseline from physically invalid/stale materials and from MainCamera-only facade-interface or LOD state; it does not award Visual Fidelity points.",
   "scenePath": "Assets/Scenes/QualityBlock1990s.unity",
   "materialPhysicalityContractPath": "Assets/QA/registered_material_asset_physicality_contract.json",
   "facadeGlazingGasketContractPath": "Assets/QA/facade_glazing_gasket_contract.json",
   "facadeSillDrainageReflectionContractPath": "Assets/QA/facade_sill_drainage_reflection_binding_contract.json",
   "facadeSashLatchContractPath": "Assets/QA/facade_sash_latch_contract.json",
+  "facadeSashLatchReflectionContractPath": "Assets/QA/facade_sash_latch_reflection_binding_contract.json",
   "facadeSashLatchCurveContractPath": "Assets/QA/facade_sash_latch_curve_refinement_contract.json",
   "facadeSashLatchLodContinuityContractPath": "Assets/QA/facade_sash_latch_lod_continuity_contract.json",
   "facadeSashLatchFarLodContinuityContractPath": "Assets/QA/facade_sash_latch_far_lod_continuity_contract.json",
@@ -22,6 +23,8 @@
     "validateFacadeSashLatchFarLodContinuityBeforeEveryReflectionLightingFingerprint": true,
     "ensureFacadeSashLatchBeforeFirstReflectionBaseline": true,
     "validateFacadeSashLatchBeforeEveryReflectionLightingFingerprint": true,
+    "persistFacadeSashLatchEpochAcrossAssemblyReloads": true,
+    "freezeFacadeSashLatchStableGlobalObjectIdAfterEpochArm": true,
     "reflectionFingerprintUsedBeforeRenderProbeRequest": true,
     "reflectionFingerprintRevalidatedOnEveryEditorPoll": true,
     "reflectionFingerprintRevalidatedAtCompletion": true,
@@ -56,7 +59,8 @@
     "The curve refinement binding proves that the exact 32-ring swept LOD0 crescent asset set is present before the first probe baseline and unchanged after epoch arm; it cannot prove that 32 rings are visually sufficient, that the 10 mm section is proportionate, or that grazing highlights are free of faceting/shimmer.",
     "The first LOD-continuity binding proves that LOD1 keeps a 16-ring crescent with the same physical curve envelope as LOD0 and remains unchanged after epoch arm; it cannot prove that the 32-to-16-ring cross-fade is perceptually invisible, free of shimmer or free of highlight snap in motion.",
     "The far-LOD binding proves that phase-specific LOD2 and LOD3 payloads keep 8-ring and 5-ring swept crescents plus stable plate/keeper envelopes instead of broad slab/sliver substitutes; it cannot prove that 16-to-8-to-5-ring transitions are perceptually invisible or free of subpixel highlight shimmer.",
-    "The sash-latch binding proves that the old rubber handle renderers are disabled and the metal lock/receiver/LOD state is stable after the first pre-probe preparation; it cannot prove the reconstructed dimensions look proportionate or that the small hardware avoids aliasing at 4K.",
+    "The sash-latch construction validator proves that the old rubber handle renderers are disabled and the metal lock/receiver/LOD/material state is internally valid; it cannot prove the reconstructed dimensions look proportionate or that small hardware avoids aliasing at 4K.",
+    "The sash-latch reflection wrapper proves that the same persisted generated root identity remains bound after script/assembly reloads and that authored/fallback mode and scene GUID remain unchanged; it cannot prove pixel quality or make a replacement root equivalent to the original baseline.",
     "A passing binding cannot clear impossible_material_physics, visible_lod_pop, severe_aliasing_or_shimmer or any other critical defect without sealed native-4K rendered evidence and required frontal/oblique/grazing review.",
     "Unity compile/runtime behavior remains unverified until a real Unity 6000.3.0f1 Runner executes the packet."
   ]

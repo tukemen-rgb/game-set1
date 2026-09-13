@@ -1,0 +1,67 @@
+{
+  "runDateLocal": "2026-09-14T00:48:00+07:00",
+  "branch": "gpt/unity-migration",
+  "startHead": "8500a5167400e096e0c8dae42c50b9b32db1bbb7",
+  "substantiveCommits": [
+    {
+      "sha": "70435df9d25636cdc471cb4d8dc56d43560b3c9c",
+      "message": "Add clothes hardware LOD closure contract"
+    },
+    {
+      "sha": "623ed718245f3f9cbc2ea8fc2f3b43c664c5d191",
+      "message": "Close clothes hardware over Danchi LOD chain"
+    }
+  ],
+  "finding": {
+    "type": "formal_lod_chain_integration_gap",
+    "summary": "The previous clothes-support refinement can add plate/pivot/anchor renderers after a Danchi LODGroup already exists, while its own validation requires every refined source renderer to belong to LOD0. Separately, the parent Danchi classifier checks the generic token 'Bracket' before its later ClothesBracket medium-tier clause, so HD_ClothesBracket_* currently resolves to retainedThrough=1 and the intended 340 mm support-arm silhouette never reaches LOD2. This is a source-level clean-run/temporal-readiness defect, not a rendered Visual Fidelity score.",
+    "observedSourceEvidence": [
+      "QualityBlockClothesDryingHardwareRefinement.ApplyToOpenScene creates new plate/pivot/anchor renderers and a manifest but does not rebuild the Danchi LODGroup before its validator checks LOD0 ownership.",
+      "QualityBlockDanchiLodUpgrade.RetainedThroughLod matches 'Bracket' in the small-attachment tier before the later ClothesBracket medium-detail condition, making that later condition unreachable for HD_ClothesBracket_* under the current source order."
+    ]
+  },
+  "implementation": {
+    "newEditorQa": "Assets/Editor/QualityBlockClothesDryingHardwareLodClosure.cs",
+    "newContract": "Assets/QA/clothes_drying_hardware_lod_closure_contract.json",
+    "behavior": [
+      "After benchmark scene serialization, detect refined hardware with stale/missing LOD ownership and rebuild the parent Danchi LOD from all current physical source renderers.",
+      "Promote exactly 60 support-arm proxies into LOD2 when the upstream classifier has not already done so; accept a future upstream classifier fix without adding duplicates.",
+      "Enforce exact clothes-hardware tier counts: LOD0 arm/receiver/plate/pivot/anchor=60/60/60/60/120; LOD1=60/60/60/60/0; LOD2=60/0/0/0/0; LOD3=0/0/0/0/0.",
+      "Keep formal QA4K/QATemporal/QAPreparedTemporal Camera.onPreCull paths read-only and fail closed; no LOD repair is allowed inside formal evidence capture.",
+      "Preserve parent animated CrossFade and reuse the existing clothes-hardware construction/material/lookdev authority."
+    ]
+  },
+  "verification": {
+    "githubCompare": "startHead -> 623ed718245f3f9cbc2ea8fc2f3b43c664c5d191 is ahead 2, behind 0; merge-base remains startHead; changed paths are UnityProject/Assets/Editor and UnityProject/Assets/QA only.",
+    "godotChanged": false,
+    "baseMerged": false,
+    "forbiddenThemeAdded": false,
+    "commitStatusContexts": 0,
+    "workflowRuns": 0,
+    "unityCompileRuntime": "PENDING",
+    "native3840x2160Render": "PENDING",
+    "actualPixelReview": "PENDING",
+    "failureInjectionPending": [
+      "remove one source clothes renderer from LOD0",
+      "remove one support-arm proxy from LOD2",
+      "retain receiver/base-plate/pivot/anchor in LOD2",
+      "retain any clothes hardware in LOD3",
+      "duplicate an LOD2 support-arm proxy",
+      "disable parent CrossFade/animateCrossFading",
+      "delete the clothes-hardware manifest"
+    ]
+  },
+  "scores": {
+    "implementationReadiness": 93,
+    "visualFidelity": "UNSCORED_UNTIL_REAL_4K_RENDER",
+    "visualFidelityPointsAwardedThisRun": 0,
+    "passClaimed": false
+  },
+  "expectedVisualScoreImpactIfRenderedCleanly": {
+    "geometryConstructionFidelity": "small-to-medium",
+    "temporalLodAliasingStability": "medium-to-large",
+    "cinematicImageQuality": "small"
+  },
+  "nextBlocker": "A Unity 6000.3.0f1 Runner is still required to compile the new Editor code, execute the sceneSaved closure, prove the exact LOD0/1/2/3 counts and failure injections, then capture native 3840x2160 frontal/oblique/grazing frames, 100% clothes-receiver crops and temporal oblique evidence. Do not award Visual Fidelity points before those rendered pixels exist.",
+  "forbiddenThemes": ["earthquake", "disaster", "reconstruction"]
+}

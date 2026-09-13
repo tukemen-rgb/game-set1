@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "1.0.0",
+  "schemaVersion": "1.1.0",
   "generatorVersion": "ground-microdetail-v1.0.0",
   "visualTarget": "Native-4K close-up stability with real-metre texture scale and physically plausible micro-normal/roughness response; no baked highlights or arbitrary dirt.",
   "runtimeRenderVerified": false,
@@ -8,6 +8,25 @@
     "projection": "dominant-normal planar projection on generated high-detail meshes",
     "reason": "prevents a 24 mm frame lip and 588 mm grate bar from sharing identical 0..1 per-face texture scale",
     "scope": "Assets/Art/GeneratedDetailMeshes/GM_HD_*"
+  },
+  "importPrecisionPolicy": {
+    "scope": "generated ground micro-normal and metallic/smoothness physical-data maps only; albedo remains outside this uncompressed requirement",
+    "textureCompression": "Uncompressed",
+    "crunchedCompression": false,
+    "standalonePlatformOverrideAllowed": false,
+    "minimumMaxTextureSize": 1024,
+    "mipmapsRequired": true,
+    "filterMode": "Trilinear",
+    "wrapMode": "Repeat",
+    "minimumAnisotropy": 8,
+    "sRGB": false,
+    "normalTextureType": "NormalMap",
+    "metallicSmoothnessTextureType": "Default",
+    "alphaSource": "FromInput",
+    "rationale": "The approved maps carry millimetre-scale normal orientation and bounded metallic/smoothness variation. Block compression or platform overrides can quantize these physical-data signals before native-4K grazing evidence is produced.",
+    "formalPreCullBehavior": "read-only fail-closed validation; no importer repair during QA4K_, QATemporal_ or QAPreparedTemporal_ capture",
+    "visualFidelityPointsAwarded": 0,
+    "runtimeRenderVerification": "PENDING_UNITY_RUNTIME"
   },
   "profiles": [
     {
@@ -63,6 +82,8 @@
     "All generated microdetail maps are deterministic and tileable.",
     "Normal maps must import as TextureImporterType.NormalMap with mipmaps and trilinear filtering.",
     "Metallic/smoothness masks must import in linear space; R=metallic and A=smoothness for Unity Standard shader.",
+    "All generated ground normal and metallic/smoothness physical-data maps must remain Uncompressed with Crunch disabled and no Standalone platform override.",
+    "Physical-data maps must remain at least 1024x1024, mipmapped, Repeat, Trilinear and anisotropy >= 8.",
     "Material texture tiling must derive from the recorded physical tile size and metric UVs, not object dimensions.",
     "Macro dirt, rust streaks, splash and runoff are prohibited from these maps and belong to cause-based weathering.",
     "No material may contain a painted/baked sun highlight.",
@@ -70,9 +91,20 @@
     "Galvanized steel and cast iron retain metallic response without chrome-like smoothness.",
     "Visual Fidelity points remain unavailable until actual 3840x2160 Unity renders and 100-percent crops are reviewed."
   ],
+  "failureInjection": [
+    "Set any generated ground normal or metallic/smoothness map to CompressedHQ.",
+    "Enable Crunch compression on any generated ground physical-data map.",
+    "Enable a Standalone platform override on any generated ground physical-data map.",
+    "Reduce maxTextureSize below 1024.",
+    "Disable mipmaps or change Repeat/Trilinear sampling.",
+    "Reduce anisotropy below 8.",
+    "Enable sRGB on a normal or metallic/smoothness physical-data map.",
+    "Import a generated ground normal map as Default rather than NormalMap.",
+    "Discard source alpha from a metallic/smoothness map."
+  ],
   "expectedVisualScoreImpact": {
-    "textureMicrodetailTexelFidelity": "direct positive impact expected; fixes inconsistent per-face texel scale and scalar-only hero ground materials",
-    "materialPbrPhysicalPlausibility": "direct positive impact expected through normal/roughness/metallic variation constrained to recorded physical ranges",
+    "textureMicrodetailTexelFidelity": "direct positive impact expected; fixes inconsistent per-face texel scale and protects subtle normal/mask signals from block-compression quantization",
+    "materialPbrPhysicalPlausibility": "direct positive impact expected through normal/roughness/metallic variation constrained to recorded physical ranges and preserved through import",
     "temporalAliasingStability": "mipmapped trilinear/aniso sampling is intended to reduce high-frequency shimmer, but real render evidence is still required"
   },
   "verificationStatus": "IMPLEMENTED_NOT_RENDER_VERIFIED"

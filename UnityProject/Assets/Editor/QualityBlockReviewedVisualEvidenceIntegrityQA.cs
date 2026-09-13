@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
 using UnityEditor;
 using UnityEngine;
 
@@ -10,13 +11,15 @@ using UnityEngine;
 ///
 /// The numeric gate validates score ranges and observability, while render provenance binds the review
 /// to exact Unity pixels. This layer closes a different ambiguity class: duplicated/unknown entries,
-/// missing corrective actions, and incomplete review records that could otherwise be silently consumed
-/// through FirstOrDefault-style lookup. It awards zero Visual Fidelity points.
+/// missing corrective actions, mathematically inconsistent deductions, and incomplete review records
+/// that could otherwise be silently consumed through FirstOrDefault-style lookup. It awards zero
+/// Visual Fidelity points.
 /// </summary>
 public static class QualityBlockReviewedVisualEvidenceIntegrityQA
 {
     private const string ContractPath = "Assets/QA/reviewed_visual_evidence_integrity_contract.json";
     private const string EvidencePath = "Assets/QA/visual_fidelity_evidence.json";
+    private const string ScoreArithmeticSchemaVersion = "1.0";
 
     private static readonly string[] CanonicalViews =
     {
@@ -64,8 +67,9 @@ public static class QualityBlockReviewedVisualEvidenceIntegrityQA
                 "Reviewed visual evidence does not exist yet. Capture, seal and review real Unity 4K evidence first.",
                 EvidencePath);
 
+        string evidenceJson = File.ReadAllText(EvidencePath);
         QualityBlockVisualFidelityGate.VisualEvidence evidence =
-            JsonUtility.FromJson<QualityBlockVisualFidelityGate.VisualEvidence>(File.ReadAllText(EvidencePath));
+            JsonUtility.FromJson<QualityBlockVisualFidelityGate.VisualEvidence>(evidenceJson);
         if (evidence == null)
             throw new InvalidOperationException("visual_fidelity_evidence.json could not be parsed.");
         if (!evidence.renderVerified)
@@ -74,6 +78,7 @@ public static class QualityBlockReviewedVisualEvidenceIntegrityQA
 
         ValidateCaptureEntries(evidence.captures);
         ValidateCategoryEntries(evidence.categories);
+        ValidateScoreArithmetic(evidenceJson, evidence.categories);
         ValidateCriticalDefectEntries(evidence.criticalDefects);
 
         // missing_construction_material_metadata is a named automatic FAIL but it is not something
@@ -110,6 +115,7 @@ public static class QualityBlockReviewedVisualEvidenceIntegrityQA
         Debug.Log(
             "Reviewed Visual Fidelity evidence integrity valid: exact hero/oblique/grazing entries, exact nine categories, " +
             "exact twelve critical-defect reviews, no duplicates/unknown IDs, complete evidence/corrective-action text, " +
+            "explicit integer deductionPoints with score + deductionPoints == category weight for every category, " +
             "machine-revalidated construction/material metadata, current SHA-256-bound native-4K repetition and light-leak triage reports, " +
             "temporal evidence bound to the same current still candidate SHA/epoch/scene, and a sealed per-frame temporal lighting + filmic HDR->LDR runtime receipt. " +
             "Pixel/provenance diagnostics remain non-scoring; this QA awards 0 Visual Fidelity points and direct pixel review/provenance/numeric gate still decide eligibility/PASS.");
@@ -123,9 +129,9 @@ public static class QualityBlockReviewedVisualEvidenceIntegrityQA
         IntegrityContract contract = JsonUtility.FromJson<IntegrityContract>(File.ReadAllText(ContractPath));
         if (contract == null)
             throw new InvalidOperationException("Reviewed-evidence integrity contract could not be parsed.");
-        if (!string.Equals(contract.schemaVersion, "1.3", StringComparison.Ordinal))
+        if (!string.Equals(contract.schemaVersion, "1.4", StringComparison.Ordinal))
             throw new InvalidOperationException(
-                $"Unexpected reviewed-evidence integrity schemaVersion '{contract.schemaVersion}'. Expected 1.3.");
+                $"Unexpected reviewed-evidence integrity schemaVersion '{contract.schemaVersion}'. Expected 1.4.");
         if (contract.runtimeRenderVerified)
             throw new InvalidOperationException(
                 "Reviewed-evidence integrity contract may not claim runtime render verification.");
@@ -137,6 +143,7 @@ public static class QualityBlockReviewedVisualEvidenceIntegrityQA
         ValidateContractCategories(contract.categories);
         RequireExactSet(contract.criticalDefectIds, CanonicalCriticalDefectIds,
             "integrity contract criticalDefectIds");
+        ValidateScoreArithmeticContract(contract.scoreArithmetic);
 
         IntegrityRules rules = contract.rules;
         if (rules == null ||
@@ -149,6 +156,9 @@ public static class QualityBlockReviewedVisualEvidenceIntegrityQA
             !rules.requireCategoryEvidenceText ||
             !rules.requireCategoryCorrectiveActionText ||
             !rules.requireDeductionTextWhenScoreBelowWeight ||
+            !rules.requireScoreArithmeticSchemaVersion ||
+            !rules.requireExplicitIntegerDeductionPointsPerCategory ||
+            !rules.requireScorePlusDeductionPointsEqualsWeight ||
             !rules.requireCriticalDefectEvidenceText ||
             !rules.requireAtLeastOneObservedReferencePerCategory ||
             !rules.requireAtLeastOneObservedReferencePerCriticalDefect ||
@@ -223,6 +233,61 @@ public static class QualityBlockReviewedVisualEvidenceIntegrityQA
         }
     }
 
+    private static void ValidateScoreArithmetic(
+        string evidenceJson,
+        QualityBlockVisualFidelityGate.CategoryEvidence[] categories)
+    {
+        if (string.IsNullOrWhiteSpace(evidenceJson))
+            throw new InvalidOperationException("Reviewed evidence JSON is blank; numeric score arithmetic cannot be proven.");
+
+        DeductionEvidenceDocument arithmetic = JsonUtility.FromJson<DeductionEvidenceDocument>(evidenceJson);
+        if (arithmetic == null ||
+            !string.Equals(arithmetic.scoreArithmeticSchemaVersion, ScoreArithmeticSchemaVersion, StringComparison.Ordinal))
+            throw new InvalidOperationException(
+                $"Reviewed evidence must declare scoreArithmeticSchemaVersion='{ScoreArithmeticSchemaVersion}'. " +
+                "Legacy or unversioned score packets require explicit re-review; no score arithmetic is inferred.");
+
+        if (arithmetic.categories == null || arithmetic.categories.Length != CanonicalCategories.Length)
+            throw new InvalidOperationException(
+                $"Score arithmetic packet must contain exactly {CanonicalCategories.Length} category entries, got {arithmetic.categories?.Length ?? 0}.");
+
+        MatchCollection explicitDeductionFields = Regex.Matches(
+            evidenceJson,
+            "\"deductionPoints\"\\s*:\\s*-?\\d+\\s*(?=[,}])",
+            RegexOptions.CultureInvariant);
+        if (explicitDeductionFields.Count != CanonicalCategories.Length)
+            throw new InvalidOperationException(
+                $"Reviewed evidence must contain exactly one explicit integer deductionPoints field per category " +
+                $"({CanonicalCategories.Length} total), got {explicitDeductionFields.Count}. Missing fields are never inferred as zero.");
+
+        string[] arithmeticIds = arithmetic.categories.Select(x => x == null ? null : x.id).ToArray();
+        RequireExactSet(arithmeticIds, CanonicalCategories.Select(x => x.id).ToArray(),
+            "score arithmetic category IDs");
+
+        if (categories == null || categories.Length != CanonicalCategories.Length)
+            throw new InvalidOperationException("Canonical reviewed category entries are unavailable for score arithmetic validation.");
+
+        foreach (CategorySpec spec in CanonicalCategories)
+        {
+            DeductionCategoryEvidence arithmeticCategory = arithmetic.categories.Single(
+                x => string.Equals(x.id, spec.id, StringComparison.Ordinal));
+            QualityBlockVisualFidelityGate.CategoryEvidence reviewedCategory = categories.Single(
+                x => string.Equals(x.id, spec.id, StringComparison.Ordinal));
+
+            if (arithmeticCategory.score != reviewedCategory.score)
+                throw new InvalidOperationException(
+                    $"Category '{spec.id}' score arithmetic parser disagrees with reviewed score: " +
+                    $"{arithmeticCategory.score} vs {reviewedCategory.score}.");
+            if (arithmeticCategory.deductionPoints < 0 || arithmeticCategory.deductionPoints > spec.weight)
+                throw new InvalidOperationException(
+                    $"Category '{spec.id}' deductionPoints {arithmeticCategory.deductionPoints} is outside 0..{spec.weight}.");
+            if (reviewedCategory.score + arithmeticCategory.deductionPoints != spec.weight)
+                throw new InvalidOperationException(
+                    $"Category '{spec.id}' score arithmetic is inconsistent: score {reviewedCategory.score} + " +
+                    $"deductionPoints {arithmeticCategory.deductionPoints} != weight {spec.weight}.");
+        }
+    }
+
     private static void ValidateCriticalDefectEntries(QualityBlockVisualFidelityGate.CriticalDefectEvidence[] criticalDefects)
     {
         if (criticalDefects == null || criticalDefects.Length != CanonicalCriticalDefectIds.Length)
@@ -273,6 +338,20 @@ public static class QualityBlockReviewedVisualEvidenceIntegrityQA
         }
     }
 
+    private static void ValidateScoreArithmeticContract(ScoreArithmeticContract arithmetic)
+    {
+        if (arithmetic == null ||
+            !string.Equals(arithmetic.evidenceSchemaVersion, ScoreArithmeticSchemaVersion, StringComparison.Ordinal) ||
+            !string.Equals(arithmetic.equation, "score + deductionPoints == category.weight", StringComparison.Ordinal) ||
+            arithmetic.deductionPointsMinimum != 0 ||
+            !arithmetic.requireDeductionPointsAtMostCategoryWeight ||
+            !string.Equals(arithmetic.missingDeductionPointsPolicy, "FAIL_REVIEW_REQUIRED", StringComparison.Ordinal) ||
+            !string.Equals(arithmetic.legacyEvidencePolicy, "FAIL_REVIEW_REQUIRED", StringComparison.Ordinal) ||
+            arithmetic.visualPointsAwardedAutomatically != 0)
+            throw new InvalidOperationException(
+                "Reviewed-evidence numeric score-arithmetic contract drifted or was weakened.");
+    }
+
     private static void RequireExactSet(string[] actual, string[] expected, string label)
     {
         if (actual == null)
@@ -311,6 +390,7 @@ public static class QualityBlockReviewedVisualEvidenceIntegrityQA
         public CategoryRule[] categories;
         public string[] criticalDefectIds;
         public IntegrityRules rules;
+        public ScoreArithmeticContract scoreArithmetic;
         public bool visualScoreAwardedByThisQA;
         public bool runtimeRenderVerified;
     }
@@ -335,6 +415,9 @@ public static class QualityBlockReviewedVisualEvidenceIntegrityQA
         public bool requireCategoryEvidenceText;
         public bool requireCategoryCorrectiveActionText;
         public bool requireDeductionTextWhenScoreBelowWeight;
+        public bool requireScoreArithmeticSchemaVersion;
+        public bool requireExplicitIntegerDeductionPointsPerCategory;
+        public bool requireScorePlusDeductionPointsEqualsWeight;
         public bool requireCriticalDefectEvidenceText;
         public bool requireAtLeastOneObservedReferencePerCategory;
         public bool requireAtLeastOneObservedReferencePerCriticalDefect;
@@ -345,5 +428,32 @@ public static class QualityBlockReviewedVisualEvidenceIntegrityQA
         public bool renderedLightLeakDiagnosticsCannotDecideCriticalDefect;
         public bool requireCurrentTemporalCandidateCoherence;
         public bool temporalCandidateCoherenceCannotAwardPointsOrClearCriticalDefects;
+    }
+
+    [Serializable]
+    private sealed class ScoreArithmeticContract
+    {
+        public string evidenceSchemaVersion;
+        public string equation;
+        public int deductionPointsMinimum;
+        public bool requireDeductionPointsAtMostCategoryWeight;
+        public string missingDeductionPointsPolicy;
+        public string legacyEvidencePolicy;
+        public int visualPointsAwardedAutomatically;
+    }
+
+    [Serializable]
+    private sealed class DeductionEvidenceDocument
+    {
+        public string scoreArithmeticSchemaVersion;
+        public DeductionCategoryEvidence[] categories;
+    }
+
+    [Serializable]
+    private sealed class DeductionCategoryEvidence
+    {
+        public string id;
+        public int score;
+        public int deductionPoints;
     }
 }

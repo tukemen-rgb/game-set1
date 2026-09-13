@@ -40,6 +40,9 @@ public static class QualityBlockNative4KReviewPacket
         QualityBlockBalconyConstructionInterfaceQA.ValidateContractConfigOnly();
         QualityBlockBalconyGuardrailInstallationQA.ValidateContractConfigOnly();
         QualityBlockAcOutdoorUnitInstallationQA.ValidateContractConfigOnly();
+        QualityBlockAcFanPhysicalRefinement.ValidateContractConfigOnly();
+        QualityBlockAcFanGuardRoundWireRefinement.ValidateContractConfigOnly();
+        QualityBlockAcFanGuardMountInterfaceRefinement.ValidateContractConfigOnly();
         QualityBlockRainwaterDownpipeInstallationQA.ValidateContractConfigOnly();
         QualityBlockFutonBalconyDrapeQA.ValidateContractConfigOnly();
         QualityBlockGroundPathPlazaTerminationQA.ValidateContractConfigOnly();
@@ -102,13 +105,15 @@ public static class QualityBlockNative4KReviewPacket
         QualityBlockBalconyGuardrailInstallationQA.ApplyAndPersist();
         QualityBlockBalconyGuardrailInstallationQA.ValidateOpenScene();
 
-        // Remaining building construction interfaces. Futon drapes run after guardrail reconstruction so
-        // the actual final top rail is their physical installation datum. Once all causal hosts are final,
-        // rebuild facade residue and apply the optically feathered dry-dielectric shader. The optical pass
-        // must be last among these host-changing operations so a later parent rebuild cannot restore the
-        // old hard-edged uniform-alpha Standard material before reflection/still/temporal evidence.
-        QualityBlockAcOutdoorUnitInstallationQA.ApplyAndPersist();
+        // The Danchi formal build has already corrected the mechanically installed AC stack before
+        // replacing the legacy fan disc/lattice with physical rotor/shroud/round-wire guard/mounts.
+        // Re-running the legacy installation mutator here would require components deliberately removed
+        // by that refinement and could destroy the exact assembly we intend to render. From this point
+        // forward AC state is read-only: validate installation plus the complete refined fan assembly.
         QualityBlockAcOutdoorUnitInstallationQA.ValidateOpenScene();
+        QualityBlockAcFanPhysicalRefinement.ValidateOpenScene();
+        QualityBlockAcFanGuardRoundWireRefinement.ValidateOpenScene();
+        QualityBlockAcFanGuardMountInterfaceRefinement.ValidateOpenScene();
         QualityBlockRainwaterDownpipeInstallationQA.ApplyAndPersist();
         QualityBlockRainwaterDownpipeInstallationQA.ValidateOpenScene();
         QualityBlockFutonBalconyDrapeQA.ApplyAndPersist();
@@ -150,6 +155,10 @@ public static class QualityBlockNative4KReviewPacket
         // checked here so a hidden Light command buffer/cookie/flare cannot enter the cubemap baseline.
         QualityBlockVegetationRootZoneInterfaceQA.ValidateOpenScene();
         QualityBlockFacadeWeatheringOpticalRefinementQA.ValidateOpenScene();
+        QualityBlockAcOutdoorUnitInstallationQA.ValidateOpenScene();
+        QualityBlockAcFanPhysicalRefinement.ValidateOpenScene();
+        QualityBlockAcFanGuardRoundWireRefinement.ValidateOpenScene();
+        QualityBlockAcFanGuardMountInterfaceRefinement.ValidateOpenScene();
         QualityBlockSolarShadowCaptureCoherenceQA.ValidateOpenScene();
         QualityBlockLightEvidencePurityQA.ValidateOpenScene();
         QualityBlockReflectionProbeAwaiter.Begin(FinishAfterReflectionSynchronization);
@@ -158,7 +167,7 @@ public static class QualityBlockNative4KReviewPacket
             "Native-4K review packet entered reflection synchronization after final material binding, an explicitly installed four-way-stayed year-2000 rooftop reception assembly, " +
             "corrected WornPathA/plaza termination, a corrected curved/tapered WornPathB branch through a two-module ParkPathEast opening, continuous tree taper/metric bark UVs, " +
             "a 2.32 m mature-root-zone interface with local support-grade curb modules and grounded understory, true facade/stair apertures, corrected balcony slab/base interfaces, " +
-            "four-LOD guardrails, AC/rainwater/futon interfaces, source-anchored facade residue with optically feathered dry-dielectric edges, a verified continuous-taper park-lamp installation, " +
+            "four-LOD guardrails, a mechanically installed AC assembly with physical rotor/shroud/round-wire guard/mounts, rainwater/futon interfaces, source-anchored facade residue with optically feathered dry-dielectric edges, a verified continuous-taper park-lamp installation, " +
             "a watertight 2 mm fabricated stainless slide chute, and a SHA-256-bound physical sun/sky/ambient/shadow state with light-side command-buffer/cookie/flare injection forbidden. Visual Fidelity remains UNSCORED.");
     }
 
@@ -182,6 +191,9 @@ public static class QualityBlockNative4KReviewPacket
         QualityBlockStairTowerShellJointQA.ValidateOpenScene();
         QualityBlockBalconyGuardrailInstallationQA.ValidateOpenScene();
         QualityBlockAcOutdoorUnitInstallationQA.ValidateOpenScene();
+        QualityBlockAcFanPhysicalRefinement.ValidateOpenScene();
+        QualityBlockAcFanGuardRoundWireRefinement.ValidateOpenScene();
+        QualityBlockAcFanGuardMountInterfaceRefinement.ValidateOpenScene();
         QualityBlockRainwaterDownpipeInstallationQA.ValidateOpenScene();
         QualityBlockFutonBalconyDrapeQA.ValidateOpenScene();
         QualityBlockParkFurnitureUpgrade.ValidateOpenScene();
@@ -220,6 +232,9 @@ public static class QualityBlockNative4KReviewPacket
         QualityBlockStairTowerShellJointQA.ValidateOpenScene();
         QualityBlockBalconyGuardrailInstallationQA.ValidateOpenScene();
         QualityBlockAcOutdoorUnitInstallationQA.ValidateOpenScene();
+        QualityBlockAcFanPhysicalRefinement.ValidateOpenScene();
+        QualityBlockAcFanGuardRoundWireRefinement.ValidateOpenScene();
+        QualityBlockAcFanGuardMountInterfaceRefinement.ValidateOpenScene();
         QualityBlockRainwaterDownpipeInstallationQA.ValidateOpenScene();
         QualityBlockFutonBalconyDrapeQA.ValidateOpenScene();
         QualityBlockParkFurnitureUpgrade.ValidateOpenScene();

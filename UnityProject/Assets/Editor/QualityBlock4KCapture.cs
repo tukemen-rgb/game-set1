@@ -142,13 +142,15 @@ public static class QualityBlock4KCapture
         WriteManifest(captured.ToArray());
         AssetDatabase.Refresh();
         Debug.Log(
-            "Native 4K evidence capture completed for hero/oblique/grazing views with pixel-exact crops, proven pre-capture physical reflections, and proven runtime HDR->LDR filmic execution. " +
+            "Native 4K evidence capture completed for hero/oblique/grazing views with pixel-exact crops, fixed-function MSAA resolve, proven pre-capture physical reflections, and proven runtime HDR->LDR filmic execution. " +
             "Visual Fidelity remains UNSCORED until the rendered files are reviewed and evidence is entered.");
     }
 
     [MenuItem("NewTown/QA/Validate 4K Capture Contract")]
     public static void ValidateCaptureContract()
     {
+        QualityBlockCaptureResolveIntegrityQA.ValidateContractConfigOnly();
+
         if (Views.Length != 3)
             throw new InvalidOperationException($"Expected exactly three visual-gate views, got {Views.Length}.");
 
@@ -180,7 +182,7 @@ public static class QualityBlock4KCapture
         RequireLockedCrop("hero", "rooftop_period_hardware", 1280, 1440, 1280, 720);
         RequireLockedCrop("oblique", "rooftop_reception_oblique", 1280, 1440, 1280, 720);
 
-        Debug.Log("4K capture contract valid: 3840x2160, hero/oblique/grazing, pixel-exact 100% crops including sealed rooftop period-authenticity evidence.");
+        Debug.Log("4K capture contract valid: 3840x2160, hero/oblique/grazing, fixed-function MSAA resolve, pixel-exact 100% crops including sealed rooftop period-authenticity evidence.");
     }
 
     private static void RequireLockedCrop(string viewId, string cropId, int x, int y, int width, int height)
@@ -255,13 +257,11 @@ public static class QualityBlock4KCapture
             msaaSamples = msaaSamples,
             useMipMap = false,
             autoGenerateMips = false,
+            bindMS = false,
             sRGB = QualitySettings.activeColorSpace == ColorSpace.Linear,
         };
-        var resolveDescriptor = msaaDescriptor;
-        resolveDescriptor.msaaSamples = 1;
 
         var msaaTarget = new RenderTexture(msaaDescriptor) { name = $"QA4K_{view.id}_MSAA" };
-        var resolvedTarget = new RenderTexture(resolveDescriptor) { name = $"QA4K_{view.id}_Resolved" };
         var fullFrame = new Texture2D(Width, Height, TextureFormat.RGB24, false, false)
         {
             name = $"QA4K_{view.id}_Readback"
@@ -274,12 +274,21 @@ public static class QualityBlock4KCapture
         try
         {
             msaaTarget.Create();
-            resolvedTarget.Create();
+            if (msaaTarget.bindTextureMS)
+                throw new InvalidOperationException(
+                    $"Formal capture target {msaaTarget.name} unexpectedly exposes raw multisample storage. bindTextureMS must remain false.");
+
             cam.targetTexture = msaaTarget;
             cam.Render();
-            Graphics.Blit(msaaTarget, resolvedTarget);
 
-            RenderTexture.active = resolvedTarget;
+            // Preserve camera output without a shader copy. Graphics.Blit samples through a shader and can
+            // introduce an unnecessary sRGB decode/encode/filtering stage after the approved filmic transform.
+            // Resolve the multisampled surface with Unity's native fixed-function path, in-place, then read
+            // the resolved surface directly. A 1x target requires no resolve.
+            if (msaaSamples > 1)
+                msaaTarget.ResolveAntiAliasedSurface();
+
+            RenderTexture.active = msaaTarget;
             fullFrame.ReadPixels(new Rect(0, 0, Width, Height), 0, 0, false);
             fullFrame.Apply(false, false);
             WritePng(fullAssetPath, fullFrame);
@@ -306,9 +315,7 @@ public static class QualityBlock4KCapture
             RenderTexture.active = previousActive;
             UnityEngine.Object.DestroyImmediate(fullFrame);
             msaaTarget.Release();
-            resolvedTarget.Release();
             UnityEngine.Object.DestroyImmediate(msaaTarget);
-            UnityEngine.Object.DestroyImmediate(resolvedTarget);
         }
 
         return new CaptureRecord
@@ -332,6 +339,7 @@ public static class QualityBlock4KCapture
             msaaSamples = 8,
             useMipMap = false,
             autoGenerateMips = false,
+            bindMS = false,
         };
         int supported = SystemInfo.GetRenderTextureSupportedMSAASampleCount(descriptor);
         if (supported >= 8) return 8;
@@ -371,7 +379,7 @@ public static class QualityBlock4KCapture
 
         var manifest = new CaptureManifest
         {
-            schemaVersion = "1.1",
+            schemaVersion = "1.2",
             generatedUtc = DateTime.UtcNow.ToString("O"),
             unityVersion = Application.unityVersion,
             graphicsDevice = SystemInfo.graphicsDeviceName,
@@ -379,7 +387,7 @@ public static class QualityBlock4KCapture
             projectColorSpace = QualitySettings.activeColorSpace.ToString(),
             width = Width,
             height = Height,
-            source = "Unity Camera.Render -> MSAA RenderTexture -> single-sample resolve -> Texture2D.ReadPixels",
+            source = "Unity Camera.Render -> MSAA RenderTexture (bindTextureMS=false) -> fixed-function RenderTexture.ResolveAntiAliasedSurface in-place -> Texture2D.ReadPixels; no post-tonemap Graphics.Blit",
             renderProducedByUnity = true,
             visualFidelityStatus = "UNSCORED_REVIEW_REQUIRED",
             cropPolicy = "Pixel-exact source-texel crops; no resampling or sharpening.",

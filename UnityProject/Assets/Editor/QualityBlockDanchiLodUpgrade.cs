@@ -33,9 +33,13 @@ public static class QualityBlockDanchiLodUpgrade
         QualityBlockDetailBevelUpgrade.BuildBeveledDetailedQualityBlock();
         EditorSceneManager.OpenScene(ScenePath, OpenSceneMode.Single);
 
-        // Fan-face reconstruction, round-wire correction and physical guard mounts must all precede
-        // proxy generation. This keeps the manufactured assembly inside one four-level LOD contract
-        // rather than allowing floating or late-overlay service geometry into formal evidence.
+        // The installation correction must run while the legacy casing-mounted fan/grille children
+        // still exist: it seats slab -> plate -> foot -> chassis, moves those casing-mounted details,
+        // and reconstructs the paired refrigerant lines and drain against the fixed wall/slab interfaces.
+        // Persist and reopen that mechanically valid state before replacing the fan face, then generate
+        // LOD proxies only after every outdoor-unit construction refinement is complete.
+        QualityBlockAcOutdoorUnitInstallationQA.ApplyAndPersist();
+        EditorSceneManager.OpenScene(ScenePath, OpenSceneMode.Single);
         QualityBlockAcFanPhysicalRefinement.ApplyToOpenScene();
         QualityBlockAcFanGuardRoundWireRefinement.ApplyToOpenScene();
         QualityBlockAcFanGuardMountInterfaceRefinement.ApplyToOpenScene();
@@ -45,7 +49,7 @@ public static class QualityBlockDanchiLodUpgrade
         EditorSceneManager.SaveOpenScenes();
         AssetDatabase.SaveAssets();
         AssetDatabase.Refresh();
-        Debug.Log("Four-level danchi detail LOD hierarchy built with physical outdoor-AC fan faces, round-wire guards and seated mounting feet. Runtime transition/render verification remains pending.");
+        Debug.Log("Four-level danchi detail LOD hierarchy built after full outdoor-AC support/service installation correction, physical fan reconstruction, round-wire guard refinement and seated guard mounting. Runtime transition/render verification remains pending.");
     }
 
     [MenuItem("NewTown/Geometry/Apply Danchi Detail LOD Pass Only")]
@@ -159,8 +163,10 @@ public static class QualityBlockDanchiLodUpgrade
                 $"LOD proxy renderer ownership mismatch: proxies={proxyRendererCount}, declared={lod1Count + lod2Count + lod3Count}.");
 
         // This validation method is also the final Danchi-specific entrypoint used by the formal 4K
-        // preparation chain. Keep AC construction/material/metadata, round-wire topology and its
-        // physical shroud-mount interface direct dependencies so later refactors fail closed.
+        // preparation chain. Keep the complete outdoor-unit support/service installation, fan construction,
+        // round-wire topology and physical shroud-mount interface as direct dependencies so later refactors
+        // fail closed instead of accepting a visually refined but mechanically floating/disconnected unit.
+        QualityBlockAcOutdoorUnitInstallationQA.ValidateOpenScene();
         QualityBlockAcFanPhysicalRefinement.ValidateOpenScene();
         QualityBlockAcFanGuardRoundWireRefinement.ValidateOpenScene();
         QualityBlockAcFanGuardMountInterfaceRefinement.ValidateOpenScene();
@@ -169,8 +175,8 @@ public static class QualityBlockDanchiLodUpgrade
             $"Danchi detail LOD validation passed structurally: renderers " +
             $"LOD0={lod0Count}, LOD1={lod1Count}, LOD2={lod2Count}, LOD3={lod3Count}; " +
             $"physical tiers micro/fine/medium/macro={microCount}/{fineCount}/{mediumCount}/{macroCount}; " +
-            "outdoor-AC rotor/shroud/round-wire-guard/mount construction is directly validated. " +
-            "Actual cross-fade timing, wire aliasing, shadow continuity and silhouette transitions still require Unity render inspection.");
+            "outdoor-AC slab/plate/foot/chassis support, service-line/drain interfaces, rotor/shroud, round-wire guard and guard mounts are directly validated. " +
+            "Actual cross-fade timing, wire aliasing, shadow continuity, contact read and silhouette transitions still require Unity render inspection.");
     }
 
     private static void RemoveExistingLodArtifacts(GameObject root)

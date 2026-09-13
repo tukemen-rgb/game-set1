@@ -1,0 +1,79 @@
+{
+  "runDate": "2026-09-13",
+  "branch": "gpt/unity-migration",
+  "startHead": "c1baacb6e871cd0e47ba9bd447fa3a86e4b9a811",
+  "objective": "Prevent Unity texture compression from destroying the subtle 7.9 m neutral facade anti-repetition signal before formal 4K render evidence.",
+  "finding": {
+    "sourceAmplitude": "The approved macro field spans sRGB 0.49 to 0.516, only about 6.63 8-bit code values peak-to-peak.",
+    "priorRisk": "Source-pixel SHA-256/pixel QA proves the PNG is correct, but the existing generator requested CompressedHQ at import. Platform block compression can quantize or spatially block a low-amplitude field after source validation, so source correctness alone did not prove runtime texel fidelity.",
+    "resolution": "Added a preparation upgrade that forces the benchmark macro field to Uncompressed import, disables Crunch and Standalone overrides, preserves 1024 resolution/mipmaps/Repeat/Trilinear/aniso>=8, reasserts the state after source imports, and keeps formal pre-cull validation read-only and fail-closed."
+  },
+  "substantiveCommits": [
+    {
+      "sha": "66eb003c10e308663813484a52b8bb5bb8762868",
+      "message": "Preserve facade macro texture precision"
+    },
+    {
+      "sha": "83f5a9c3d14a7f4af30bb309888cf60cf7ad8749",
+      "message": "Add facade macro import precision contract"
+    }
+  ],
+  "filesChangedBeforeRunRecord": [
+    "UnityProject/Assets/Editor/QualityBlockFacadeMacroPrecisionUpgrade.cs",
+    "UnityProject/Assets/QA/facade_macro_import_precision_contract.json"
+  ],
+  "formalEvidenceBehavior": {
+    "targets": ["QA4K_*", "QATemporal_*", "QAPreparedTemporal_*"],
+    "requiredCompression": "Uncompressed",
+    "crunchAllowed": false,
+    "sourceResolution": "1024x1024",
+    "mipmaps": "required",
+    "filtering": "Trilinear",
+    "wrap": "Repeat",
+    "minimumAnisotropy": 8,
+    "standalonePlatformOverrideAllowed": false,
+    "forceFastCompressorAllowed": false,
+    "preCullMutation": false,
+    "visualPointsAwarded": 0
+  },
+  "verification": {
+    "repositoryStaticReview": "PASS",
+    "unityApiVerification": "Unity 6 documentation confirms TextureImporterCompression.Uncompressed disables texture compression and EditorUserBuildSettings.overrideTextureCompression can override individual import settings; formal guard rejects ForceFastCompressor.",
+    "branchComparison": "2 commits ahead / 0 behind startHead before run record; merge-base remains startHead.",
+    "godotChanged": false,
+    "baseMerged": false,
+    "prohibitedThemeAdded": false,
+    "commitStatuses": 0,
+    "workflowRuns": 0,
+    "unityCompile": "PENDING_UNITY_RUNTIME",
+    "unityRender": "PENDING_UNITY_RUNTIME",
+    "native4KFrames": "NOT_AVAILABLE",
+    "visualFidelityScored": false
+  },
+  "failureInjectionPlan": [
+    "set TextureImporter.textureCompression to CompressedHQ -> formal capture must fail",
+    "enable Crunch compression -> formal capture must fail",
+    "set Standalone platform override -> formal capture must fail",
+    "reduce maxTextureSize below 1024 -> formal capture must fail",
+    "disable mipmaps or set Bilinear filtering -> formal capture must fail",
+    "reduce anisotropy below 8 -> formal capture must fail",
+    "set EditorUserBuildSettings.overrideTextureCompression to ForceFastCompressor -> formal capture must fail"
+  ],
+  "implementationReadiness": {
+    "score": 93,
+    "outOf": 100,
+    "status": "IMPLEMENTATION_READINESS_ONLY"
+  },
+  "visualFidelity": {
+    "status": "UNSCORED_UNTIL_REAL_4K_RENDER",
+    "pointsAwardedThisRun": 0,
+    "passClaimed": false
+  },
+  "expectedVisualScoreImpactNotAwarded": {
+    "Texture/microdetail/texel fidelity": "medium: preserves the subtle authored macro signal instead of risking block-compression flattening/contouring",
+    "Material/PBR physical plausibility": "small-to-medium: keeps neutral diffuse breakup faithful to authored reflectance instead of compression artifacts",
+    "Cinematic image quality/composition/color/exposure": "small: reduces visible macroblocking/contouring on broad facade gradients",
+    "Temporal/LOD/aliasing stability": "small: mipmaps/trilinear/aniso remain mandatory while compression artifacts are removed"
+  },
+  "nextBlocker": "Unity 6000.3.0f1 runtime/render evidence is still unavailable. When a Runner appears, stop speculative expansion, compile this upgrade, run the compression/override failure injections, then capture fresh 3840x2160 hero/oblique/grazing frames plus 100% facade-center/material-grazing crops and temporal evidence before awarding any Visual Fidelity points."
+}

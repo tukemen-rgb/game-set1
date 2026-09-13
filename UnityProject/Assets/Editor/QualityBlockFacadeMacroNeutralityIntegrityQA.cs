@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Security.Cryptography;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
@@ -23,8 +24,7 @@ public static class QualityBlockFacadeMacroNeutralityIntegrityQA
     private const float MinSrgb = 0.490f;
     private const float MaxSrgb = 0.516f;
 
-    private static long cachedWriteTicks = -1;
-    private static long cachedLength = -1;
+    private static string cachedContentHash;
     private static bool cachedSourceValid;
 
     static QualityBlockFacadeMacroNeutralityIntegrityQA()
@@ -115,12 +115,11 @@ public static class QualityBlockFacadeMacroNeutralityIntegrityQA
             throw new InvalidOperationException(
                 $"Facade macro source texture is missing: {TexturePath}. Run the facade macro anti-repetition preparation before formal capture.");
 
-        var info = new FileInfo(TexturePath);
-        long ticks = info.LastWriteTimeUtc.Ticks;
-        if (cachedSourceValid && ticks == cachedWriteTicks && info.Length == cachedLength)
+        byte[] png = File.ReadAllBytes(TexturePath);
+        string contentHash = Sha256Hex(png);
+        if (cachedSourceValid && string.Equals(contentHash, cachedContentHash, StringComparison.Ordinal))
             return;
 
-        byte[] png = File.ReadAllBytes(TexturePath);
         var texture = new Texture2D(2, 2, TextureFormat.RGBA32, false, false);
         try
         {
@@ -158,8 +157,8 @@ public static class QualityBlockFacadeMacroNeutralityIntegrityQA
                             $"Facade macro source differs from the approved neutral procedural field at ({x},{y}). " +
                             $"Expected RGBA=({expected},{expected},{expected},255), got ({actual.r},{actual.g},{actual.b},{actual.a}). " +
                             "Formal evidence is blocked because colored/baked-light content cannot be ruled out.");
-                    observedMin = Math.Min(observedMin, expected);
-                    observedMax = Math.Max(observedMax, expected);
+                    if (expected < observedMin) observedMin = expected;
+                    if (expected > observedMax) observedMax = expected;
                     sum += expected;
                 }
             }
@@ -176,8 +175,16 @@ public static class QualityBlockFacadeMacroNeutralityIntegrityQA
             UnityEngine.Object.DestroyImmediate(texture);
         }
 
-        cachedWriteTicks = ticks;
-        cachedLength = info.Length;
+        cachedContentHash = contentHash;
         cachedSourceValid = true;
+    }
+
+    private static string Sha256Hex(byte[] bytes)
+    {
+        using (SHA256 sha = SHA256.Create())
+        {
+            byte[] digest = sha.ComputeHash(bytes);
+            return BitConverter.ToString(digest).Replace("-", string.Empty).ToLowerInvariant();
+        }
     }
 }

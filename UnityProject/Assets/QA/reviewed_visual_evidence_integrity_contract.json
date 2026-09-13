@@ -1,6 +1,6 @@
 {
-  "schemaVersion": "1.3",
-  "purpose": "Fail-closed schema integrity for manually reviewed Visual Fidelity evidence. This contract does not award visual points; it prevents ambiguous, duplicated or incomplete review records from reaching the numeric gate and requires current runtime diagnostics for render-only repetition, major-light-leak and temporal risks, with temporal evidence bound to the same current visual candidate as the native-4K still packet.",
+  "schemaVersion": "1.4",
+  "purpose": "Fail-closed schema integrity for manually reviewed Visual Fidelity evidence. This contract does not award visual points; it prevents ambiguous, duplicated, mathematically inconsistent or incomplete review records from reaching the numeric gate and requires current runtime diagnostics for render-only repetition, major-light-leak and temporal risks, with temporal evidence bound to the same current visual candidate as the native-4K still packet.",
   "requiredViews": [
     "hero",
     "oblique",
@@ -41,6 +41,9 @@
     "requireCategoryEvidenceText": true,
     "requireCategoryCorrectiveActionText": true,
     "requireDeductionTextWhenScoreBelowWeight": true,
+    "requireScoreArithmeticSchemaVersion": true,
+    "requireExplicitIntegerDeductionPointsPerCategory": true,
+    "requireScorePlusDeductionPointsEqualsWeight": true,
     "requireCriticalDefectEvidenceText": true,
     "requireAtLeastOneObservedReferencePerCategory": true,
     "requireAtLeastOneObservedReferencePerCriticalDefect": true,
@@ -51,6 +54,15 @@
     "renderedLightLeakDiagnosticsCannotDecideCriticalDefect": true,
     "requireCurrentTemporalCandidateCoherence": true,
     "temporalCandidateCoherenceCannotAwardPointsOrClearCriticalDefects": true
+  },
+  "scoreArithmetic": {
+    "evidenceSchemaVersion": "1.0",
+    "equation": "score + deductionPoints == category.weight",
+    "deductionPointsMinimum": 0,
+    "requireDeductionPointsAtMostCategoryWeight": true,
+    "missingDeductionPointsPolicy": "FAIL_REVIEW_REQUIRED",
+    "legacyEvidencePolicy": "FAIL_REVIEW_REQUIRED",
+    "visualPointsAwardedAutomatically": 0
   },
   "runtimeDiagnosticPreconditions": {
     "renderedRepetition": {
@@ -93,5 +105,5 @@
   },
   "visualScoreAwardedByThisQA": false,
   "runtimeRenderVerified": false,
-  "note": "Implementation Readiness and source-side validation remain separate from Visual Fidelity. Reviewed evidence must still pass render provenance, observability, current SHA-256-bound rendered repetition and light-leak triage, temporal runtime sealing, current temporal-to-still candidate coherence and the canonical 92/100 gate. Pixel/provenance diagnostics never substitute for direct review and cannot decide their associated critical defects by themselves."
+  "note": "Implementation Readiness and source-side validation remain separate from Visual Fidelity. Every category must record an explicit integer deductionPoints value and satisfy score + deductionPoints == canonical weight; missing or legacy arithmetic packets require re-review rather than inferred zero deductions. Reviewed evidence must still pass render provenance, observability, current SHA-256-bound rendered repetition and light-leak triage, temporal runtime sealing, current temporal-to-still candidate coherence and the canonical 92/100 gate. Pixel/provenance diagnostics never substitute for direct review and cannot decide their associated critical defects by themselves."
 }

@@ -1,7 +1,7 @@
 {
-  "schemaVersion": "1.0",
+  "schemaVersion": "1.1",
   "contractId": "danchi_lod_proxy_fidelity",
-  "purpose": "Prevent material, lighting-probe, transform or renderer-state discontinuities when DanchiHighDetail cross-fades from physical source renderers to LOD1/2/3 proxies. This is implementation/runtime readiness QA only and awards no Visual Fidelity points without native rendered evidence.",
+  "purpose": "Prevent visibility, material, GI/lightmap, lighting-probe, transform or renderer-state discontinuities when DanchiHighDetail cross-fades from physical source renderers to LOD1/2/3 proxies. This is implementation/runtime readiness QA only and awards no Visual Fidelity points without native rendered evidence.",
   "formalEvidencePolicy": {
     "formalCameraReadOnlyValidation": true,
     "repairDuringCaptureForbidden": true,
@@ -19,21 +19,45 @@
     "worldPositionToleranceM": 0.0005,
     "worldRotationToleranceDeg": 0.05,
     "lossyScaleTolerance": 0.001,
+    "lightmapVectorTolerance": 0.0001,
+    "scaleInLightmapTolerance": 0.0001,
     "requireIdenticalMeshReference": true,
     "requireIdenticalMaterialReferences": true,
     "requireLayerParity": true,
     "requireStaticFlagParity": true,
+    "requireEffectiveVisibilityParity": true,
+    "requireRendererEnabledParity": true,
     "requireShadowCastingParity": true,
     "requireReceiveShadowsParity": true,
     "requireLightProbeUsageParity": true,
     "requireReflectionProbeUsageParity": true,
     "requireProbeAnchorParity": true,
+    "requireLightProbeProxyVolumeOverrideParity": true,
+    "requireRenderingLayerMaskParity": true,
     "requireMotionVectorModeParity": true,
     "requireOcclusionPolicyParity": true,
     "requireSortingParity": true,
+    "requireAdditionalVertexStreamsParity": true,
+    "requireReceiveGiParity": true,
+    "requireScaleInLightmapParity": true,
+    "requireStitchLightmapSeamsParity": true,
+    "requireRuntimeLightmapStateParity": true,
+    "runtimeLightmapStateFields": ["lightmapIndex", "lightmapScaleOffset", "realtimeLightmapIndex", "realtimeLightmapScaleOffset"],
+    "runtimeLightmapStatePersistenceCaveat": "Unity owns editor/runtime lightmap index and scale-offset assignment after scene load; therefore formal pre-cull must revalidate these transient values rather than trusting the generation-time copy.",
     "requireMaterialPropertyBlockParity": true,
     "materialPropertyBlockScopes": ["renderer-wide", "per-material-index"],
     "pbrOverrideFamiliesChecked": ["base-color", "metallic", "smoothness", "normal-scale", "occlusion", "emission", "wetness", "foliage-variation", "exposure-bias", "major-texture-bindings"]
+  },
+  "visibilityIntent": {
+    "preventDisabledSourceReappearance": true,
+    "preventInactiveSourceReappearance": true,
+    "rationale": "A freshly created proxy defaults to visible. Without explicit parity, disabled legacy/alternate geometry can appear only after an LOD transition and become a benchmark-frame critical defect."
+  },
+  "giAndVertexIntent": {
+    "preserveAdditionalVertexStreams": true,
+    "preserveGiAuthoringState": true,
+    "preserveRuntimeLightmapStateWhenAvailable": true,
+    "rationale": "Additional vertex streams may override normals, tangents, colors or UVs. GI/lightmap state changes can produce exposure, contact or light-leak jumps during a cross-fade even with identical mesh/material references."
   },
   "temporalIntent": {
     "fadeMode": "CrossFade",
@@ -41,11 +65,19 @@
     "preventAlbedoRoughnessWetnessJump": true,
     "preventReflectionProbeJump": true,
     "preventShadowStateJump": true,
+    "preventGiLightmapJump": true,
+    "preventVisibilityPop": true,
     "preventClothesSupportSilhouettePop": true
   },
   "failureInjection": [
     "move one LOD proxy by more than 0.5 mm and require FAIL before formal capture",
     "replace one proxy mesh or material and require FAIL",
+    "disable one physical source retained into LOD1+ while forcing its proxy visible and require FAIL",
+    "place a retained source under an inactive parent while leaving its proxy active and require FAIL",
+    "change one proxy rendering-layer mask or Light Probe Proxy Volume override and require FAIL",
+    "change one proxy additionalVertexStreams reference and require FAIL",
+    "change one proxy ReceiveGI, scaleInLightmap or stitchLightmapSeams value and require FAIL",
+    "change one proxy baked/realtime lightmap index or scale-offset and require FAIL",
     "change one proxy reflection/light-probe policy or probe anchor and require FAIL",
     "clear a source-derived proxy MaterialPropertyBlock while the source retains one and require FAIL",
     "change a proxy motion-vector/occlusion/sorting state and require FAIL",
@@ -54,9 +86,11 @@
   ],
   "criticalDefectRiskReduced": [
     "visible_lod_pop",
+    "hidden_or_legacy_geometry_reappears_after_lod_transition",
     "severe_aliasing_or_shimmer",
     "material_discontinuity_across_lod",
     "reflection_lighting_discontinuity_across_lod",
+    "gi_lightmap_discontinuity_or_light_leak_across_lod",
     "unverified_render_claim"
   ],
   "visualFidelityPointsAwarded": 0,
@@ -64,9 +98,9 @@
   "runtimeRenderVerification": "PENDING_UNITY_RUNTIME",
   "expectedVisualScoreImpactIfRenderedCleanly": {
     "materialPbrPhysicalPlausibility": "small-to-medium",
-    "lightingShadowsReflections": "small-to-medium",
+    "lightingShadowsReflections": "medium",
     "temporalLodAliasingStability": "medium-to-large",
-    "cinematicImageQuality": "small"
+    "cinematicImageQuality": "small-to-medium"
   },
   "forbiddenThemes": ["earthquake", "disaster", "reconstruction"]
 }

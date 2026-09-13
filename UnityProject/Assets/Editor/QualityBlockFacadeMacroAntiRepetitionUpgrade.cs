@@ -7,35 +7,35 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 
 /// <summary>
-/// Adds a second, deliberately incommensurate neutral coating-variation field to the formal painted-RC
-/// facade material. The existing physical-UV pass correctly prevents each apartment bay from restarting
-/// UV0, but the generated primary coating texture is itself exactly periodic every 2.4 m. On a 26 m hero
-/// facade that can still expose about 10.8 identical macro cycles. This pass uses Standard's detail-albedo
-/// channel as a low-amplitude coating/application variation at 7.9 m. The two periods do not exactly meet
-/// again until 189.6 m, so the formal facade does not repeat the same combined macro appearance within the
-/// benchmark block. No light direction, shadow, runoff or specular highlight is painted into this map.
-///
-/// This is source-side risk reduction for the critical repeated-pattern defect only. It never clears the
-/// defect or awards Visual Fidelity points without sealed native-4K and temporal evidence.
+/// Removes the exact 2.4 m macro recurrence from the formal painted-RC facade while preserving the
+/// intended 0.22 m detail-normal frequency. Unity's built-in Standard shader shares _DetailAlbedoMap_ST
+/// between secondary albedo and secondary normal sampling, so using Standard's detail-albedo slot for a
+/// 7.9 m anti-repeat field would also stretch the detail normal from 0.22 m to 7.9 m. The formal material
+/// therefore switches, after physical UV construction, to a small Standard-lighting surface shader with
+/// independent texture transforms for primary coating, detail normal and neutral macro variation.
 /// </summary>
 [InitializeOnLoad]
 public static class QualityBlockFacadeMacroAntiRepetitionUpgrade
 {
     private const string ScenePath = "Assets/Scenes/QualityBlock1990s.unity";
-    private const string ApertureRootName = "DanchiFacadeApertureShell";
+    private const string RootName = "DanchiFacadeApertureShell";
     private const string AssetRoot = "Assets/Art/GeneratedFacadeOptics";
     private const string TexturePath = AssetRoot + "/FacadeRC_AntiRepeatAlbedo.png";
-    private const string FormalMaterialPath = AssetRoot + "/MAT_FacadePaintedRC_AperturePhysicalUV.mat";
+    private const string MaterialPath = AssetRoot + "/MAT_FacadePaintedRC_AperturePhysicalUV.mat";
     private const string ContractPath = "Assets/QA/facade_macro_anti_repetition_contract.json";
+    private const string ShaderName = "NewTown/FacadePaintedRC";
     private const int TextureSize = 1024;
-    private const float PrimaryMacroRepeatMeters = 2.4f;
-    private const float AntiRepeatMacroRepeatMeters = 7.9f;
-    private const float ExpectedCombinedRepeatMeters = 189.6f;
-    private const float NeutralDetailSrgb = 0.504f;
-    private const float ModulationAmplitudeSrgb = 0.0115f;
-    private const float MinimumCombinedRepeatMeters = 100f;
-    private static readonly Vector2 ExpectedPhysicalUvScale = Vector2.one * (PrimaryMacroRepeatMeters / AntiRepeatMacroRepeatMeters);
-    private static bool applyingAfterSave;
+    private const float PrimaryMeters = 2.4f;
+    private const float DetailNormalMeters = 0.22f;
+    private const float AntiRepeatMeters = 7.9f;
+    private const float ExpectedCombinedMeters = 189.6f;
+    private const float MinCombinedMeters = 100f;
+    private const float NeutralSrgb = 0.504f;
+    private const float ModulationSrgb = 0.0115f;
+    private static readonly Vector2 PrimaryScale = Vector2.one;
+    private static readonly Vector2 DetailNormalScale = Vector2.one * (PrimaryMeters / DetailNormalMeters);
+    private static readonly Vector2 MacroVariationScale = Vector2.one * (PrimaryMeters / AntiRepeatMeters);
+    private static bool applying;
 
     static QualityBlockFacadeMacroAntiRepetitionUpgrade()
     {
@@ -48,73 +48,58 @@ public static class QualityBlockFacadeMacroAntiRepetitionUpgrade
     [MenuItem("NewTown/Materials/Apply Facade Macro Anti-Repetition Layer")]
     public static void ApplyAndValidate()
     {
-        EnsureSceneOpen();
+        EnsureScene();
         ValidateContractConfigOnly();
-        RequireFormalApertureRoot();
+        RequireRoot();
         ApplyMaterialState();
         ValidatePreparedState();
-        Debug.Log(
-            $"Facade macro anti-repetition layer applied: primary={PrimaryMacroRepeatMeters:F1} m, secondary={AntiRepeatMacroRepeatMeters:F1} m, " +
-            $"first exact combined repeat={ComputeCombinedRepeatMeters():F1} m. Visual Fidelity remains UNSCORED until native 4K/temporal review.");
+        Debug.Log($"Facade anti-repeat valid: primary={PrimaryMeters:F2} m, detailNormal={DetailNormalMeters:F2} m, macroVariation={AntiRepeatMeters:F1} m, exactCombinedRepeat={CombinedRepeatMeters():F1} m. Visual Fidelity remains UNSCORED.");
     }
 
     [MenuItem("NewTown/QA/Validate Facade Macro Anti-Repetition Contract")]
     public static void ValidateContractConfigOnly()
     {
         if (!File.Exists(ContractPath))
-            throw new InvalidOperationException($"Missing facade macro anti-repetition contract: {ContractPath}");
-
+            throw new InvalidOperationException($"Missing facade anti-repeat contract: {ContractPath}");
         string json = File.ReadAllText(ContractPath);
-        string[] requiredTokens =
+        string[] required =
         {
-            "\"schemaVersion\": \"1.0.0\"",
+            "\"schemaVersion\": \"1.1.0\"",
+            "\"shaderName\": \"NewTown/FacadePaintedRC\"",
             "\"primaryMacroRepeatMeters\": 2.4",
+            "\"detailNormalRepeatMeters\": 0.22",
             "\"antiRepeatMacroRepeatMeters\": 7.9",
             "\"combinedExactRepeatMeters\": 189.6",
-            "\"formalMaterial\": \"Assets/Art/GeneratedFacadeOptics/MAT_FacadePaintedRC_AperturePhysicalUV.mat\"",
-            "\"generatedTexture\": \"Assets/Art/GeneratedFacadeOptics/FacadeRC_AntiRepeatAlbedo.png\"",
-            "\"detailAlbedoProperty\": \"_DetailAlbedoMap\"",
+            "\"macroVariationProperty\": \"_MacroVariationMap\"",
             "\"criticalDefectRiskReduced\": \"immediately_obvious_repeated_texture_or_module_pattern\"",
+            "\"sharedStandardDetailUvHazardRejected\": true",
             "\"paintedHighlightsForbidden\": true",
-            "\"directionalWeatheringForbidden\": true",
             "\"visualFidelityPointsAwarded\": 0",
             "\"runtimeRenderVerification\": \"PENDING_UNITY_RUNTIME\""
         };
-        foreach (string token in requiredTokens)
+        foreach (string token in required)
             if (json.IndexOf(token, StringComparison.Ordinal) < 0)
-                throw new InvalidOperationException($"Facade macro anti-repetition contract missing required token: {token}");
-
-        float combined = ComputeCombinedRepeatMeters();
-        if (Mathf.Abs(combined - ExpectedCombinedRepeatMeters) > 0.001f)
-            throw new InvalidOperationException(
-                $"Facade macro repeat arithmetic drifted: calculated {combined:F3} m, expected {ExpectedCombinedRepeatMeters:F3} m.");
-        if (combined < MinimumCombinedRepeatMeters)
-            throw new InvalidOperationException(
-                $"Facade combined macro repeat is too short: {combined:F1} m < {MinimumCombinedRepeatMeters:F1} m.");
+                throw new InvalidOperationException($"Facade anti-repeat contract missing token: {token}");
+        float combined = CombinedRepeatMeters();
+        if (Mathf.Abs(combined - ExpectedCombinedMeters) > 0.001f || combined < MinCombinedMeters)
+            throw new InvalidOperationException($"Facade repeat arithmetic invalid: {combined:F3} m.");
     }
 
     [MenuItem("NewTown/QA/Validate Formal Facade Macro Anti-Repetition State")]
     public static void ValidateOpenScene()
     {
-        EnsureSceneOpen();
+        EnsureScene();
         ValidateContractConfigOnly();
-        RequireFormalApertureRoot();
+        RequireRoot();
         ValidatePreparedState();
-        Debug.Log(
-            $"Formal facade macro anti-repetition state valid: detail-albedo period={AntiRepeatMacroRepeatMeters:F1} m, " +
-            $"combined exact repeat={ComputeCombinedRepeatMeters():F1} m, automatic visual points=0. Native 4K review still required.");
     }
 
     private static void OnSceneSaved(Scene scene)
     {
-        if (applyingAfterSave || !scene.IsValid() || scene.path != ScenePath)
+        if (applying || !scene.IsValid() || scene.path != ScenePath || FindSceneObject(RootName) == null ||
+            AssetDatabase.LoadAssetAtPath<Material>(MaterialPath) == null)
             return;
-        if (FindSceneObject(ApertureRootName) == null)
-            return;
-        if (AssetDatabase.LoadAssetAtPath<Material>(FormalMaterialPath) == null)
-            return;
-
-        applyingAfterSave = true;
+        applying = true;
         try
         {
             ValidateContractConfigOnly();
@@ -123,104 +108,118 @@ public static class QualityBlockFacadeMacroAntiRepetitionUpgrade
         }
         catch (Exception ex)
         {
-            throw new InvalidOperationException(
-                "Benchmark facade save failed macro anti-repetition QA. The formal painted-RC material may not proceed to reflection/capture with a short exact macro repeat.", ex);
+            throw new InvalidOperationException("Benchmark save blocked by facade macro anti-repetition/detail-frequency QA.", ex);
         }
-        finally
-        {
-            applyingAfterSave = false;
-        }
+        finally { applying = false; }
     }
 
     private static void OnCameraPreCull(Camera camera)
     {
-        if (camera == null || camera.targetTexture == null)
-            return;
-        string targetName = camera.targetTexture.name ?? string.Empty;
-        if (!targetName.StartsWith("QA4K_", StringComparison.Ordinal) &&
-            !targetName.StartsWith("QATemporal_", StringComparison.Ordinal))
-            return;
+        if (camera == null || camera.targetTexture == null) return;
+        string n = camera.targetTexture.name ?? string.Empty;
+        if (!n.StartsWith("QA4K_", StringComparison.Ordinal) &&
+            !n.StartsWith("QATemporal_", StringComparison.Ordinal) &&
+            !n.StartsWith("QAPreparedTemporal_", StringComparison.Ordinal)) return;
         Scene scene = EditorSceneManager.GetActiveScene();
-        if (!scene.IsValid() || scene.path != ScenePath)
-            return;
-
-        // Read-only formal-evidence guard. Do not repair a changed material during capture.
+        if (!scene.IsValid() || scene.path != ScenePath) return;
         ValidateContractConfigOnly();
-        RequireFormalApertureRoot();
+        RequireRoot();
         ValidatePreparedState();
     }
 
     private static void ApplyMaterialState()
     {
-        Texture2D antiRepeat = EnsureTexture();
-        Material material = AssetDatabase.LoadAssetAtPath<Material>(FormalMaterialPath);
-        if (material == null)
-            throw new InvalidOperationException($"Formal facade physical-UV material missing: {FormalMaterialPath}");
-        if (material.shader == null || material.shader.name != "Standard")
-            throw new InvalidOperationException(
-                $"Formal facade anti-repeat layer requires built-in Standard shader, got {material.shader?.name ?? "<null>"}.");
-        if (!material.HasProperty("_DetailAlbedoMap"))
-            throw new InvalidOperationException("Standard facade material exposes no _DetailAlbedoMap property.");
+        Material material = AssetDatabase.LoadAssetAtPath<Material>(MaterialPath);
+        if (material == null) throw new InvalidOperationException($"Formal facade material missing: {MaterialPath}");
+        Texture main = RequireTexture(material, "_MainTex");
+        Texture bump = RequireTexture(material, "_BumpMap");
+        Texture mask = RequireTexture(material, "_MetallicGlossMap");
+        Texture detailNormal = RequireTexture(material, "_DetailNormalMap");
+        float bumpStrength = material.HasProperty("_BumpScale") ? material.GetFloat("_BumpScale") : 0.82f;
+        float detailStrength = material.HasProperty("_DetailNormalMapScale") ? material.GetFloat("_DetailNormalMapScale") : 0.42f;
+        float glossScale = material.HasProperty("_GlossMapScale") ? material.GetFloat("_GlossMapScale") : 1f;
+        Color color = material.HasProperty("_Color") ? material.GetColor("_Color") : Color.white;
 
-        material.SetTexture("_DetailAlbedoMap", antiRepeat);
-        material.SetTextureScale("_DetailAlbedoMap", ExpectedPhysicalUvScale);
-        material.SetTextureOffset("_DetailAlbedoMap", Vector2.zero);
+        Shader shader = Shader.Find(ShaderName);
+        if (shader == null) throw new InvalidOperationException($"Required facade shader not found: {ShaderName}");
+        Texture2D macro = EnsureTexture();
+        material.shader = shader;
+        material.name = "MAT_FacadePaintedRC_AperturePhysicalUV";
+        material.SetColor("_Color", color);
+        material.SetTexture("_MainTex", main);
+        material.SetTexture("_BumpMap", bump);
+        material.SetTexture("_MetallicGlossMap", mask);
+        material.SetTexture("_DetailNormalMap", detailNormal);
+        material.SetTexture("_MacroVariationMap", macro);
+        SetTextureTransform(material, "_MainTex", PrimaryScale);
+        SetTextureTransform(material, "_BumpMap", PrimaryScale);
+        SetTextureTransform(material, "_MetallicGlossMap", PrimaryScale);
+        SetTextureTransform(material, "_DetailNormalMap", DetailNormalScale);
+        SetTextureTransform(material, "_MacroVariationMap", MacroVariationScale);
+        material.SetFloat("_BumpScale", bumpStrength);
+        material.SetFloat("_DetailNormalMapScale", detailStrength);
+        material.SetFloat("_GlossMapScale", glossScale);
+        material.SetFloat("_Metallic", 0f);
+        material.SetFloat("_Glossiness", 0.14f);
+        material.SetColor("_EmissionColor", Color.black);
+        // Retain legacy validation keywords as compatibility metadata; this shader uses explicit texture paths.
+        material.EnableKeyword("_NORMALMAP");
         material.EnableKeyword("_DETAIL_MULX2");
-        if (material.HasProperty("_UVSec"))
-            material.SetFloat("_UVSec", 0f); // Formal aperture UV0 is the physically scaled Danchi-local field.
+        material.DisableKeyword("_EMISSION");
         EditorUtility.SetDirty(material);
         AssetDatabase.SaveAssets();
+    }
+
+    private static Texture RequireTexture(Material material, string property)
+    {
+        if (!material.HasProperty(property))
+            throw new InvalidOperationException($"Formal facade material lost required property {property} before shader handoff.");
+        Texture value = material.GetTexture(property);
+        if (value == null) throw new InvalidOperationException($"Formal facade material has no texture bound to {property}.");
+        return value;
+    }
+
+    private static void SetTextureTransform(Material material, string property, Vector2 scale)
+    {
+        if (!material.HasProperty(property)) throw new InvalidOperationException($"Facade shader missing property {property}.");
+        material.SetTextureScale(property, scale);
+        material.SetTextureOffset(property, Vector2.zero);
     }
 
     private static Texture2D EnsureTexture()
     {
         Texture2D existing = AssetDatabase.LoadAssetAtPath<Texture2D>(TexturePath);
-        if (existing != null)
-            return existing;
-
+        if (existing != null) return existing;
         Directory.CreateDirectory(AssetRoot);
         var pixels = new Color32[TextureSize * TextureSize];
-        const float tau = Mathf.PI * 2f;
+        float tau = Mathf.PI * 2f;
         for (int y = 0; y < TextureSize; y++)
         {
             float v = y / (float)TextureSize;
             for (int x = 0; x < TextureSize; x++)
             {
                 float u = x / (float)TextureSize;
-                // Integer frequencies keep the 7.9 m map tileable. Mixed directions avoid a single
-                // stripe orientation. This is coating/application/chalking variation only: no light,
-                // ledge, runoff or horizon direction is encoded.
                 float n =
                     Mathf.Sin(tau * (u + 2f * v) + 0.73f) * 0.31f +
                     Mathf.Cos(tau * (2f * u - 3f * v) + 1.91f) * 0.24f +
                     Mathf.Sin(tau * (4f * u + v) + 2.47f) * 0.19f +
                     Mathf.Cos(tau * (3f * u + 5f * v) + 0.28f) * 0.15f +
                     Mathf.Sin(tau * (7f * u - 4f * v) + 1.17f) * 0.11f;
-                float value = Mathf.Clamp(NeutralDetailSrgb + n * ModulationAmplitudeSrgb, 0.490f, 0.516f);
+                float value = Mathf.Clamp(NeutralSrgb + n * ModulationSrgb, 0.490f, 0.516f);
                 byte b = (byte)Mathf.RoundToInt(value * 255f);
                 pixels[y * TextureSize + x] = new Color32(b, b, b, 255);
             }
         }
-
-        var texture = new Texture2D(TextureSize, TextureSize, TextureFormat.RGBA32, false, false)
-        {
-            name = "FacadeRC_AntiRepeatAlbedo"
-        };
+        var temp = new Texture2D(TextureSize, TextureSize, TextureFormat.RGBA32, false, false);
         try
         {
-            texture.SetPixels32(pixels);
-            texture.Apply(false, false);
-            File.WriteAllBytes(TexturePath, texture.EncodeToPNG());
+            temp.SetPixels32(pixels); temp.Apply(false, false);
+            File.WriteAllBytes(TexturePath, temp.EncodeToPNG());
         }
-        finally
-        {
-            UnityEngine.Object.DestroyImmediate(texture);
-        }
-
+        finally { UnityEngine.Object.DestroyImmediate(temp); }
         AssetDatabase.ImportAsset(TexturePath, ImportAssetOptions.ForceUpdate);
         TextureImporter importer = AssetImporter.GetAtPath(TexturePath) as TextureImporter;
-        if (importer == null)
-            throw new InvalidOperationException($"TextureImporter unavailable for {TexturePath}");
+        if (importer == null) throw new InvalidOperationException($"TextureImporter unavailable: {TexturePath}");
         importer.textureType = TextureImporterType.Default;
         importer.sRGBTexture = true;
         importer.wrapMode = TextureWrapMode.Repeat;
@@ -230,109 +229,70 @@ public static class QualityBlockFacadeMacroAntiRepetitionUpgrade
         importer.textureCompression = TextureImporterCompression.CompressedHQ;
         importer.alphaSource = TextureImporterAlphaSource.None;
         importer.SaveAndReimport();
-
-        Texture2D generated = AssetDatabase.LoadAssetAtPath<Texture2D>(TexturePath);
-        if (generated == null)
-            throw new InvalidOperationException($"Failed to import generated facade anti-repeat texture: {TexturePath}");
-        return generated;
+        Texture2D result = AssetDatabase.LoadAssetAtPath<Texture2D>(TexturePath);
+        if (result == null) throw new InvalidOperationException($"Failed to import {TexturePath}");
+        return result;
     }
 
     private static void ValidatePreparedState()
     {
-        Material material = AssetDatabase.LoadAssetAtPath<Material>(FormalMaterialPath);
-        if (material == null)
-            throw new InvalidOperationException($"Formal facade physical-UV material missing: {FormalMaterialPath}");
-        if (material.shader == null || material.shader.name != "Standard")
-            throw new InvalidOperationException("Formal facade anti-repeat material is no longer Standard shader.");
-        if (!material.HasProperty("_DetailAlbedoMap"))
-            throw new InvalidOperationException("Formal facade material lost _DetailAlbedoMap.");
-
-        Texture2D detail = material.GetTexture("_DetailAlbedoMap") as Texture2D;
-        if (detail == null)
-            throw new InvalidOperationException("Formal facade material has no detail-albedo anti-repeat texture.");
-        string detailPath = AssetDatabase.GetAssetPath(detail);
-        if (!string.Equals(detailPath, TexturePath, StringComparison.Ordinal))
-            throw new InvalidOperationException(
-                $"Formal facade detail-albedo path changed: {detailPath}; expected {TexturePath}.");
-
-        Texture main = material.HasProperty("_MainTex") ? material.GetTexture("_MainTex") : null;
-        if (main == detail)
-            throw new InvalidOperationException("Facade anti-repeat detail map may not reuse the primary periodic albedo texture.");
-
-        Vector2 scale = material.GetTextureScale("_DetailAlbedoMap");
-        if ((scale - ExpectedPhysicalUvScale).sqrMagnitude > 0.000001f)
-            throw new InvalidOperationException(
-                $"Formal facade anti-repeat scale drifted: {scale}; expected {ExpectedPhysicalUvScale} for {AntiRepeatMacroRepeatMeters:F1} m physical period.");
-        Vector2 offset = material.GetTextureOffset("_DetailAlbedoMap");
-        if (offset.sqrMagnitude > 0.000001f)
-            throw new InvalidOperationException($"Formal facade anti-repeat offset must remain zero, got {offset}.");
-        if (!material.IsKeywordEnabled("_DETAIL_MULX2"))
-            throw new InvalidOperationException("Formal facade material lost Standard detail-map keyword _DETAIL_MULX2.");
-        if (material.HasProperty("_UVSec") && Mathf.Abs(material.GetFloat("_UVSec")) > 0.001f)
-            throw new InvalidOperationException("Formal facade detail maps must sample the physically scaled UV0 field, not UV1.");
-        if (material.HasProperty("_Metallic") && material.GetFloat("_Metallic") > 0.001f)
-            throw new InvalidOperationException("Facade painted RC became metallic while applying anti-repeat detail.");
-        if (material.IsKeywordEnabled("_EMISSION") ||
-            (material.HasProperty("_EmissionColor") && material.GetColor("_EmissionColor").maxColorComponent > 0.001f))
-            throw new InvalidOperationException("Facade anti-repeat material may not become emissive.");
-
-        if (detail.width != TextureSize || detail.height != TextureSize)
-            throw new InvalidOperationException(
-                $"Facade anti-repeat texture resolution changed: {detail.width}x{detail.height}; expected {TextureSize}x{TextureSize}.");
-        if (detail.mipmapCount <= 1)
-            throw new InvalidOperationException("Facade anti-repeat texture must carry mipmaps for stable oblique/temporal sampling.");
+        Material m = AssetDatabase.LoadAssetAtPath<Material>(MaterialPath);
+        if (m == null || m.shader == null || m.shader.name != ShaderName)
+            throw new InvalidOperationException($"Formal facade must use {ShaderName} after physical-UV construction.");
+        ValidateTextureBinding(m, "_MainTex", null, PrimaryScale);
+        ValidateTextureBinding(m, "_BumpMap", null, PrimaryScale);
+        ValidateTextureBinding(m, "_MetallicGlossMap", null, PrimaryScale);
+        ValidateTextureBinding(m, "_DetailNormalMap", null, DetailNormalScale);
+        ValidateTextureBinding(m, "_MacroVariationMap", TexturePath, MacroVariationScale);
+        Texture main = m.GetTexture("_MainTex");
+        Texture macro = m.GetTexture("_MacroVariationMap");
+        if (main == macro) throw new InvalidOperationException("Macro variation may not reuse primary albedo.");
+        if (Mathf.Abs(DetailNormalScale.x - MacroVariationScale.x) < 0.01f)
+            throw new InvalidOperationException("Detail-normal and macro-variation frequencies collapsed together.");
+        if (m.GetFloat("_Metallic") > 0.001f)
+            throw new InvalidOperationException("Painted RC scalar metallic must remain zero.");
+        if (m.IsKeywordEnabled("_EMISSION") || m.GetColor("_EmissionColor").maxColorComponent > 0.001f)
+            throw new InvalidOperationException("Painted RC may not emit light.");
+        Texture2D macro2d = macro as Texture2D;
+        if (macro2d == null || macro2d.width != TextureSize || macro2d.height != TextureSize || macro2d.mipmapCount <= 1)
+            throw new InvalidOperationException("Macro variation texture resolution/mipmap contract failed.");
         TextureImporter importer = AssetImporter.GetAtPath(TexturePath) as TextureImporter;
-        if (importer == null)
-            throw new InvalidOperationException("Facade anti-repeat TextureImporter is missing.");
-        if (!importer.sRGBTexture || !importer.mipmapEnabled || importer.wrapMode != TextureWrapMode.Repeat ||
-            importer.filterMode != FilterMode.Trilinear || importer.anisoLevel < 8)
-            throw new InvalidOperationException(
-                "Facade anti-repeat texture import policy drifted; require sRGB, mipmaps, Repeat, Trilinear and anisotropy >= 8.");
-
-        float combined = ComputeCombinedRepeatMeters();
-        if (combined < MinimumCombinedRepeatMeters || Mathf.Abs(combined - ExpectedCombinedRepeatMeters) > 0.001f)
-            throw new InvalidOperationException(
-                $"Facade macro anti-repeat arithmetic invalid: combined exact repeat={combined:F3} m.");
+        if (importer == null || !importer.sRGBTexture || !importer.mipmapEnabled || importer.wrapMode != TextureWrapMode.Repeat || importer.filterMode != FilterMode.Trilinear || importer.anisoLevel < 8)
+            throw new InvalidOperationException("Macro variation importer must be sRGB, mipmapped, Repeat, Trilinear, anisotropy >= 8.");
+        float combined = CombinedRepeatMeters();
+        if (combined < MinCombinedMeters || Mathf.Abs(combined - ExpectedCombinedMeters) > 0.001f)
+            throw new InvalidOperationException($"Combined facade repeat arithmetic invalid: {combined:F3} m.");
     }
 
-    private static void RequireFormalApertureRoot()
+    private static void ValidateTextureBinding(Material m, string property, string expectedPath, Vector2 expectedScale)
     {
-        if (FindSceneObject(ApertureRootName) == null)
-            throw new InvalidOperationException(
-                $"Formal facade aperture root {ApertureRootName} is missing; anti-repeat material evidence is not scoreable.");
+        if (!m.HasProperty(property) || m.GetTexture(property) == null)
+            throw new InvalidOperationException($"Formal facade missing {property}.");
+        if (expectedPath != null && !string.Equals(AssetDatabase.GetAssetPath(m.GetTexture(property)), expectedPath, StringComparison.Ordinal))
+            throw new InvalidOperationException($"{property} uses unexpected asset: {AssetDatabase.GetAssetPath(m.GetTexture(property))}");
+        if ((m.GetTextureScale(property) - expectedScale).sqrMagnitude > 0.000002f || m.GetTextureOffset(property).sqrMagnitude > 0.000001f)
+            throw new InvalidOperationException($"{property} physical scale/offset drifted. Got scale={m.GetTextureScale(property)}, expected={expectedScale}.");
     }
 
-    private static float ComputeCombinedRepeatMeters()
+    private static float CombinedRepeatMeters()
     {
-        int primaryMm = Mathf.RoundToInt(PrimaryMacroRepeatMeters * 1000f);
-        int antiMm = Mathf.RoundToInt(AntiRepeatMacroRepeatMeters * 1000f);
-        int gcd = GreatestCommonDivisor(primaryMm, antiMm);
-        long lcmMm = (long)primaryMm / gcd * antiMm;
-        return lcmMm / 1000f;
+        int a = Mathf.RoundToInt(PrimaryMeters * 1000f), b = Mathf.RoundToInt(AntiRepeatMeters * 1000f);
+        int x = a, y = b;
+        while (y != 0) { int t = x % y; x = y; y = t; }
+        return ((long)a / Mathf.Max(1, Mathf.Abs(x)) * b) / 1000f;
     }
 
-    private static int GreatestCommonDivisor(int a, int b)
+    private static void RequireRoot()
     {
-        a = Mathf.Abs(a);
-        b = Mathf.Abs(b);
-        while (b != 0)
-        {
-            int t = a % b;
-            a = b;
-            b = t;
-        }
-        return Mathf.Max(1, a);
+        if (FindSceneObject(RootName) == null) throw new InvalidOperationException($"Formal facade root missing: {RootName}");
     }
 
-    private static void EnsureSceneOpen()
+    private static void EnsureScene()
     {
         if (!EditorSceneManager.GetActiveScene().IsValid() || EditorSceneManager.GetActiveScene().path != ScenePath)
             EditorSceneManager.OpenScene(ScenePath, OpenSceneMode.Single);
     }
 
-    private static GameObject FindSceneObject(string name)
-    {
-        return Resources.FindObjectsOfTypeAll<GameObject>()
-            .FirstOrDefault(x => x != null && x.scene.IsValid() && x.scene.path == ScenePath && x.name == name);
-    }
+    private static GameObject FindSceneObject(string name) => Resources.FindObjectsOfTypeAll<GameObject>()
+        .FirstOrDefault(x => x != null && x.scene.IsValid() && x.scene.path == ScenePath && x.name == name);
 }

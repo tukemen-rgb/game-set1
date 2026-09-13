@@ -1,107 +1,98 @@
 {
-  "schemaVersion": "1.0.0",
+  "schemaVersion": "1.1.0",
   "scenePath": "Assets/Scenes/QualityBlock1990s.unity",
   "formalFacadeRoot": "DanchiFacadeApertureShell",
   "formalMaterial": "Assets/Art/GeneratedFacadeOptics/MAT_FacadePaintedRC_AperturePhysicalUV.mat",
+  "shaderName": "NewTown/FacadePaintedRC",
+  "shaderPath": "Assets/Shaders/NewTownFacadePaintedRC.shader",
   "generatedTexture": "Assets/Art/GeneratedFacadeOptics/FacadeRC_AntiRepeatAlbedo.png",
-  "detailAlbedoProperty": "_DetailAlbedoMap",
-  "detailUvSet": 0,
-  "materialModel": "Unity built-in Standard painted reinforced-concrete dielectric with physically scaled UV0 and two independent neutral coating-frequency fields",
+  "macroVariationProperty": "_MacroVariationMap",
+  "detailNormalProperty": "_DetailNormalMap",
+  "criticalDefectRiskReduced": "immediately_obvious_repeated_texture_or_module_pattern",
   "manufactureAndInstallationReasoning": {
     "substrate": "reinforced-concrete apartment shell",
-    "finishLayers": [
-      "cementitious leveling/render",
-      "matte exterior protective coating with aggregate and application/chalking variation"
-    ],
-    "geometryVsMaterial": "openings, returns, drips, joints, slab lips and penetrations remain geometry; aggregate, coating grain and low-amplitude finish variation remain material response",
-    "mountingAndInterfaces": "facade coating terminates at aluminum sash/seal, balcony slab/drip and construction-joint geometry; the anti-repeat layer does not invent geometric seams",
-    "exposureAndAging": "anti-repeat detail represents non-directional coating/application/chalking variation only. Rain runoff, sill streaks, splash and metal-source staining remain cause-based overlays with separate metadata.",
-    "orientation": "detail albedo follows the existing Danchi-local physically scaled UV0 projection; no camera- or sun-facing projection is allowed"
+    "finish": "cementitious leveling/render plus aged matte exterior protective coating",
+    "mountingAndInterfaces": "coating terminates at real sash/seal, balcony drip/slab and construction-joint geometry; macro variation may not invent seams or installation depth",
+    "geometryVsMaterial": "openings, returns, drips, joints and penetrations are geometry; aggregate, coating grain, micro-normal and low-frequency application/chalking variation are material response",
+    "exposureAndAging": "macro variation is non-directional finish variation only; runoff, sill streaks, splash and metal-source residue remain separate cause-based weathering",
+    "orientation": "all texture fields derive from the Danchi-local physical UV0 field, not camera or sun direction"
   },
   "physicalScale": {
     "primaryMacroRepeatMeters": 2.4,
+    "detailNormalRepeatMeters": 0.22,
     "antiRepeatMacroRepeatMeters": 7.9,
     "combinedExactRepeatMeters": 189.6,
     "formalFacadeWidthMeters": 26.0,
-    "primaryCyclesAcrossFacadeApprox": 10.833333,
-    "antiRepeatCyclesAcrossFacadeApprox": 3.291139,
-    "detailAlbedoUvScaleOnPhysical2p4mUv": 0.30379747,
-    "minimumAcceptedCombinedExactRepeatMeters": 100.0,
-    "reasoning": "2.4 m and 7.9 m resolve to 2400 mm and 7900 mm; LCM is 189600 mm. The combined material therefore cannot return to the exact same two-layer macro phase within the 26 m hero facade."
+    "primaryUvScale": 1.0,
+    "detailNormalUvScale": 10.909091,
+    "macroVariationUvScale": 0.30379747,
+    "minimumAcceptedCombinedExactRepeatMeters": 100.0
   },
-  "detailAlbedoGeneration": {
+  "shaderReasoning": {
+    "lightingModel": "Unity Surface Shader Standard BRDF / built-in rendering pipeline",
+    "sharedStandardDetailUvHazardRejected": true,
+    "hazard": "Built-in Standard computes both secondary albedo and secondary normal from the _DetailAlbedoMap transformed UV. A 7.9 m detail-albedo scale would therefore also force the intended 0.22 m detail normal to 7.9 m.",
+    "solution": "Use a dedicated Standard-lighting surface shader whose _MainTex, _DetailNormalMap and _MacroVariationMap each receive independent texture transforms while preserving metallic/smoothness, primary normal, reflection probes and Standard BRDF response.",
+    "compatibilityMetadata": "_NORMALMAP and _DETAIL_MULX2 remain enabled on the material only so older source validators that use those flags as readiness metadata continue to fail closed; the custom shader samples both normal maps explicitly."
+  },
+  "macroVariationGeneration": {
     "resolution": [1024, 1024],
     "colorSpace": "sRGB",
-    "neutralDetailReferenceSrgb": 0.504,
+    "neutralReferenceSrgb": 0.504,
     "generatedSrgbClamp": [0.49, 0.516],
-    "modulationIntent": "very low-amplitude neutral luminance modulation; preserve base painted-RC hue and PBR roughness/normal response",
-    "tileability": "integer-frequency mixed-direction sinusoidal field; exact edge-periodic texture",
-    "filtering": "trilinear mipmapped Repeat with anisotropy >= 8",
+    "tileability": "integer-frequency mixed-direction periodic field",
+    "filtering": "Trilinear + mipmaps + Repeat + anisotropy >= 8",
     "paintedHighlightsForbidden": true,
     "paintedShadowsForbidden": true,
     "directionalWeatheringForbidden": true,
     "specularOrFresnelEncodedInAlbedoForbidden": true
   },
-  "materialPhysicalityPreserved": {
+  "materialPhysicality": {
     "metallic": 0.0,
     "specularF0Reference": 0.04,
     "primaryRoughnessRange": [0.79, 0.93],
     "primaryNormalAmplitudeMm": 0.55,
     "detailNormalAmplitudeMm": 0.12,
-    "detailNormalRepeatMeters": 0.22,
     "wetAlbedoMultiplierReference": 0.82,
     "wetRoughnessMultiplierReference": 0.58,
     "uvFadeMaxReference": 0.12,
     "angularResponse": {
-      "front": "neutral coating variation is subordinate to diffuse material color; no repeated dark/light panel stamp",
-      "oblique": "normal/roughness structure remains dominant while the low-frequency albedo field prevents exact macro recurrence",
-      "grazing": "dielectric Fresnel and real geometry create highlights; anti-repeat albedo must not create a highlight stripe"
+      "front": "matte neutral coating with low-amplitude finish variation and no panel-stamped recurrence",
+      "oblique": "0.22 m detail-normal frequency remains readable independently of the 7.9 m neutral albedo modulation",
+      "grazing": "real normals, geometry and dielectric Fresnel create highlights; macro variation must not form a highlight stripe"
     }
   },
-  "criticalDefectRiskReduced": "immediately_obvious_repeated_texture_or_module_pattern",
   "qa": {
-    "formalCaptureGuard": ["QA4K_*", "QATemporal_*"],
-    "requireDedicatedDetailTextureDifferentFromPrimaryAlbedo": true,
-    "requireDetailKeyword": "_DETAIL_MULX2",
-    "requireUv0": true,
-    "requireZeroDetailOffset": true,
+    "formalCaptureGuard": ["QA4K_*", "QATemporal_*", "QAPreparedTemporal_*"],
+    "requireIndependentPrimaryDetailNormalAndMacroTransforms": true,
+    "requireDedicatedMacroTextureDifferentFromPrimaryAlbedo": true,
+    "requireZeroOffsets": true,
     "requireMipmaps": true,
-    "requireSrgb": true,
-    "requireRepeatWrap": true,
-    "requireTrilinear": true,
-    "minimumAnisotropy": 8,
     "activeEmissionForbidden": true,
     "visualFidelityPointsAwarded": 0,
     "runtimeRenderVerification": "PENDING_UNITY_RUNTIME",
     "automaticFailConditions": [
-      "formal facade has no dedicated anti-repeat detail albedo",
-      "anti-repeat texture is replaced by the same texture as primary albedo",
-      "detail UV scale no longer represents 7.9 m on the 2.4 m physical UV field",
-      "combined exact macro repeat falls below 100 m",
-      "detail maps switch away from formal physical UV0",
-      "detail albedo becomes emissive, metallic, directional, or encodes a baked highlight/shadow",
-      "source-side anti-repeat QA is used to clear the rendered repeated-pattern critical defect without native 4K/temporal evidence"
+      "formal facade remains on built-in Standard after the physical-UV save instead of the independent-frequency facade shader",
+      "macro variation map is missing or reuses primary albedo",
+      "detail normal no longer resolves to 0.22 m physical repeat",
+      "macro variation no longer resolves to 7.9 m physical repeat",
+      "combined exact primary+macro recurrence falls below 100 m",
+      "material becomes metallic or emissive",
+      "source-side anti-repeat checks are used to clear a rendered repetition defect without actual 4K and temporal evidence"
     ]
   },
   "failureInjection": [
-    "remove _DetailAlbedoMap and require formal capture pre-cull to fail",
-    "bind the primary facade albedo as _DetailAlbedoMap and require fail",
-    "change detail scale to 1.0 (2.4 m, commensurate with the primary field) and require fail",
-    "change detail UV set to UV1 and require fail",
-    "disable mipmaps or anisotropy and require fail",
-    "enable emission on the formal facade material and require fail"
+    "switch formal material back to Standard after save and require formal pre-cull failure",
+    "set _DetailNormalMap tiling to the 7.9 m macro scale and require failure",
+    "set _MacroVariationMap tiling to 1.0 (2.4 m) and require failure",
+    "bind primary albedo as _MacroVariationMap and require failure",
+    "remove mipmaps or reduce anisotropy below 8 and require failure",
+    "enable emission and require failure"
   ],
   "renderReview": {
     "requiredViews": ["hero", "oblique", "grazing"],
     "required100PercentCrops": ["hero/facade_center", "oblique/construction_depth", "grazing/material_grazing"],
-    "temporalEvidence": "inspect the oblique/grazing camera movement for texture swimming, moire or an anti-repeat layer that becomes perceptible as its own pattern",
-    "scoreOnlyFromRenderedEvidence": true,
-    "inspection": [
-      "no exact 2.4 m macro patch recurrence is immediately legible across the 26 m apartment facade",
-      "coating remains neutral and matte rather than cloudy, striped or spotlighted",
-      "sash, balcony and runoff interfaces remain cause-based and are not blurred by the anti-repeat layer",
-      "100% crop retains aggregate/micro-normal detail and stable mip behavior",
-      "grazing highlights follow geometry, sun and Fresnel rather than the detail-albedo field"
-    ]
+    "temporalEvidence": "check texture swimming, moire and whether either the 7.9 m modulation or 0.22 m normal field becomes visibly periodic during motion",
+    "scoreOnlyFromRenderedEvidence": true
   }
 }

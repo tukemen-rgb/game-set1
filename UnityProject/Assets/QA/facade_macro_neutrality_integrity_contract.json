@@ -1,0 +1,61 @@
+{
+  "schemaVersion": "1.0.0",
+  "purpose": "Fail-closed proof that the 7.9 m facade anti-repetition field remains a deterministic, low-amplitude neutral diffuse modulation rather than an unreviewed image, colored tint, baked/directional highlight or emissive contribution.",
+  "scenePath": "Assets/Scenes/QualityBlock1990s.unity",
+  "texturePath": "Assets/Art/GeneratedFacadeOptics/FacadeRC_AntiRepeatAlbedo.png",
+  "shaderPath": "Assets/Shaders/NewTownFacadePaintedRC.shader",
+  "source": {
+    "resolution": [1024, 1024],
+    "neutralSrgb": 0.504,
+    "modulationSrgb": 0.0115,
+    "minimumSrgb": 0.49,
+    "maximumSrgb": 0.516,
+    "channels": "neutral_grayscale_rgb_alpha_1",
+    "exactProceduralSourceRequired": true,
+    "proceduralBasis": "periodic integer-frequency sin/cos field; no scene light vector, reflection, shadow, AO, drip, rust or camera term"
+  },
+  "shaderSemantics": {
+    "shaderName": "NewTown/FacadePaintedRC",
+    "macroProperty": "_MacroVariationMap",
+    "allowedUse": "multiply base diffuse albedo before Standard BRDF lighting",
+    "emission": 0.0,
+    "coloredMacroVariationForbidden": true,
+    "directionalOrBakedHighlightForbidden": true,
+    "emissiveMacroContributionForbidden": true
+  },
+  "formalEvidenceGate": {
+    "targets": ["QA4K_*", "QATemporal_*", "QAPreparedTemporal_*"],
+    "failureMode": "FAIL_CLOSED_BEFORE_RENDER_EVIDENCE",
+    "sourceTextureMustDecode": true,
+    "allPixelsMustMatchApprovedProceduralField": true,
+    "minimumObservedByteRange": 3,
+    "meanSrgbRange": [0.495, 0.51]
+  },
+  "visualFidelityGateMapping": {
+    "categories": [
+      "Material/PBR physical plausibility",
+      "Texture/microdetail/texel fidelity",
+      "Cinematic image quality/composition/color/exposure"
+    ],
+    "criticalDefectRisks": [
+      "obviously_painted_or_baked_highlights",
+      "immediately_obvious_repeated_texture_or_module_pattern"
+    ],
+    "visualFidelityPointsAwarded": 0,
+    "runtimeRenderVerification": "PENDING_UNITY_RUNTIME",
+    "requiredRenderedEvidence": [
+      "3840x2160 frontal facade",
+      "3840x2160 oblique facade",
+      "3840x2160 grazing-light facade",
+      "100_percent_facade_center_crop",
+      "100_percent_material_grazing_crop"
+    ]
+  },
+  "failureInjection": [
+    "replace one source pixel with colored RGB values -> FAIL",
+    "replace source image while preserving dimensions/import settings -> FAIL",
+    "route macroVariation into emission -> FAIL",
+    "remove neutral multiplicative albedo path -> FAIL",
+    "flatten the procedural field -> FAIL"
+  ]
+}

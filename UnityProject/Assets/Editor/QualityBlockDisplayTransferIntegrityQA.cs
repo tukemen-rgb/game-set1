@@ -13,8 +13,9 @@ using UnityEngine;
 /// an sRGB render target before PNG readback. A valid-looking render with a linear-coded LDR target or a
 /// manually gamma-encoded tonemap would invalidate exposure/color/material judgments across every category.
 ///
-/// This guard awards zero Visual Fidelity points. It only makes the capture path fail closed when the actual
-/// MainCamera target or the source bindings no longer describe the intended single linear-to-sRGB transfer.
+/// The authoritative capture now resolves MSAA in-place on the canonical sRGB camera target. There is no
+/// second shader-copied resolve target, so this guard source-binds that fixed-function path and also validates
+/// the exact post-resolve surface immediately before ReadPixels. This gate awards zero Visual Fidelity points.
 /// </summary>
 [InitializeOnLoad]
 public static class QualityBlockDisplayTransferIntegrityQA
@@ -47,13 +48,15 @@ public static class QualityBlockDisplayTransferIntegrityQA
         string contract = File.ReadAllText(ContractPath);
         foreach (string token in new[]
         {
-            "display-transfer-integrity-v1.0.0",
+            "display-transfer-integrity-v1.1.0",
             "Linear",
             "floatingPointHdrSourceMustBeLinear",
             "nativeLdrTargetMustUseSrgbReadWrite",
             "tonemapShaderMustOutputLinearLdr",
             "manualGammaEncodingForbidden",
-            "resolvedTargetMustInheritSrgbDescriptor",
+            "canonicalResolvedSurfaceMustRemainSrgb",
+            "inPlaceFixedFunctionResolveRequired",
+            "postTonemapShaderCopyForbidden",
             "hero",
             "oblique",
             "grazing",
@@ -71,9 +74,9 @@ public static class QualityBlockDisplayTransferIntegrityQA
         ValidateTonemapSourceBinding();
 
         Debug.Log(
-            "Display-transfer integrity contract valid: authoritative 4K targets are source-bound to sRGB read/write, " +
-            "HDR image-effect input remains linear, and the filmic shader is forbidden from manually gamma-encoding. " +
-            "Actual target properties still require Unity runtime verification; Visual Fidelity points awarded = 0.");
+            "Display-transfer integrity contract valid: authoritative 4K targets are source-bound to one sRGB LDR camera target, " +
+            "in-place fixed-function MSAA resolve, direct readback, linear HDR input, and a filmic shader with no manual gamma encoding. " +
+            "Actual resolved-surface properties still require Unity runtime verification; Visual Fidelity points awarded = 0.");
     }
 
     private static void OnCameraPreCull(Camera camera)
@@ -109,19 +112,8 @@ public static class QualityBlockDisplayTransferIntegrityQA
             }
 
             ValidateContractConfigOnly();
+            ValidateCanonicalLdrTarget(target, viewId, "pre-cull");
 
-            if (QualitySettings.activeColorSpace != ColorSpace.Linear)
-                throw new InvalidOperationException("Authoritative 4K display transfer requires Linear project color space.");
-            if (target.width != NativeWidth || target.height != NativeHeight)
-                throw new InvalidOperationException(
-                    $"Authoritative 4K target is not native {NativeWidth}x{NativeHeight}: {target.width}x{target.height}.");
-            if (IsHdrFormat(target.format))
-                throw new InvalidOperationException(
-                    $"The final camera target must be LDR before PNG evidence; observed HDR target format {target.format}.");
-            if (!target.sRGB)
-                throw new InvalidOperationException(
-                    "The native LDR MainCamera target is linear-coded (RenderTexture.sRGB=false). " +
-                    "That would omit the required Linear->sRGB display transfer and invalidate exposure/color review.");
             if (!camera.allowHDR || camera.allowDynamicResolution)
                 throw new InvalidOperationException("MainCamera must keep HDR enabled and dynamic resolution disabled for authoritative evidence.");
 
@@ -149,24 +141,81 @@ public static class QualityBlockDisplayTransferIntegrityQA
         }
     }
 
+    /// <summary>
+    /// Runtime proof of the exact surface consumed by ReadPixels. This is deliberately called after the
+    /// in-place MSAA resolve and after RenderTexture.active is assigned, because a correct pre-cull target
+    /// alone cannot prove that readback did not drift to a second/linear/mipmapped surface.
+    /// </summary>
+    public static void ValidateResolvedReadbackSurface(RenderTexture target, string viewId)
+    {
+        ValidateContractConfigOnly();
+        ValidateCanonicalLdrTarget(target, viewId, "post-resolve readback");
+
+        if (!target.IsCreated())
+            throw new InvalidOperationException($"Resolved authoritative target for '{viewId}' is not created at readback time.");
+        if (RenderTexture.active != target)
+            throw new InvalidOperationException(
+                $"Resolved authoritative target for '{viewId}' is not RenderTexture.active immediately before ReadPixels.");
+        if (target.bindTextureMS)
+            throw new InvalidOperationException(
+                $"Resolved authoritative target for '{viewId}' exposes raw multisample storage; direct resolved-surface readback is required.");
+        if (target.useMipMap || target.autoGenerateMips)
+            throw new InvalidOperationException(
+                $"Resolved authoritative target for '{viewId}' enables mipmaps. Native 1:1 evidence must read the resolved level-zero surface.");
+        if (target.antiAliasing != 1 && target.antiAliasing != 2 && target.antiAliasing != 4 && target.antiAliasing != 8)
+            throw new InvalidOperationException(
+                $"Resolved authoritative target for '{viewId}' reports invalid MSAA sample count {target.antiAliasing}.");
+    }
+
+    private static void ValidateCanonicalLdrTarget(RenderTexture target, string viewId, string phase)
+    {
+        if (target == null)
+            throw new InvalidOperationException($"Authoritative 4K {phase} target is null for '{viewId}'.");
+        if (QualitySettings.activeColorSpace != ColorSpace.Linear)
+            throw new InvalidOperationException("Authoritative 4K display transfer requires Linear project color space.");
+        if (!RequiredViews.Contains(viewId))
+            throw new InvalidOperationException($"Unknown authoritative 4K display-transfer view '{viewId}'.");
+        if (!string.Equals(target.name, $"QA4K_{viewId}_MSAA", StringComparison.Ordinal))
+            throw new InvalidOperationException(
+                $"Authoritative 4K {phase} target identity drifted for '{viewId}': '{target.name}'.");
+        if (target.width != NativeWidth || target.height != NativeHeight)
+            throw new InvalidOperationException(
+                $"Authoritative 4K {phase} target is not native {NativeWidth}x{NativeHeight}: {target.width}x{target.height}.");
+        if (IsHdrFormat(target.format))
+            throw new InvalidOperationException(
+                $"The final camera target must be LDR before PNG evidence; observed HDR target format {target.format} during {phase}.");
+        if (!target.sRGB)
+            throw new InvalidOperationException(
+                $"The native LDR MainCamera target is linear-coded during {phase} (RenderTexture.sRGB=false). " +
+                "That would omit the required Linear->sRGB display transfer and invalidate exposure/color review.");
+    }
+
     private static void ValidateCaptureSourceBinding()
     {
         string source = ReadRequiredSource(CaptureSourcePath);
         foreach (string token in new[]
         {
             "new RenderTextureDescriptor(Width, Height, RenderTextureFormat.ARGB32, 24)",
+            "bindMS = false",
             "sRGB = QualitySettings.activeColorSpace == ColorSpace.Linear",
-            "var resolveDescriptor = msaaDescriptor;",
-            "resolveDescriptor.msaaSamples = 1;",
-            "new RenderTexture(resolveDescriptor)",
-            "Graphics.Blit(msaaTarget, resolvedTarget);",
-            "RenderTexture.active = resolvedTarget;",
+            "msaaTarget.ResolveAntiAliasedSurface();",
+            "RenderTexture.active = msaaTarget;",
+            "QualityBlockDisplayTransferIntegrityQA.ValidateResolvedReadbackSurface(msaaTarget, view.id);",
             "TextureFormat.RGB24, false, false"
         })
         {
             if (source.IndexOf(token, StringComparison.Ordinal) < 0)
                 throw new InvalidOperationException(
                     "Native 4K capture source lost required display-transfer binding token: " + token);
+        }
+
+        if (source.IndexOf("Graphics.Blit(msaaTarget", StringComparison.Ordinal) >= 0 ||
+            source.IndexOf("resolvedTarget", StringComparison.Ordinal) >= 0 ||
+            source.IndexOf("resolveDescriptor", StringComparison.Ordinal) >= 0)
+        {
+            throw new InvalidOperationException(
+                "Native 4K capture reintroduced a post-tonemap shader-copy/secondary-resolve path. " +
+                "Display-transfer evidence requires in-place fixed-function resolve on the canonical sRGB target.");
         }
     }
 

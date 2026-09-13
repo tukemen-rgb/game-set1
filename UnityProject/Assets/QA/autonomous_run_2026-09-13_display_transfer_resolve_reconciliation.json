@@ -1,0 +1,93 @@
+{
+  "schemaVersion": "1.0",
+  "runDate": "2026-09-13",
+  "branch": "gpt/unity-migration",
+  "startHead": "42c55f38da381260ff475106e18cd275ee19f060",
+  "substantiveCommits": [
+    "6e2167281cd08b06d6344f11c042b03e34ca3afe",
+    "437296dcb094ac49b25442607548171ecce6c0a7",
+    "e4c7e581330a51f9126d7d4a3b59df4f5f80b501",
+    "ced2ca920c2d0f8b13e52f9b996c1a4e7bffad02",
+    "4fbdd966efb8ebb1384b7cacef0a76a00404a12b"
+  ],
+  "scope": {
+    "summary": "Reconciled the formal display-transfer evidence guard with the newly adopted in-place fixed-function MSAA resolve path. The previous display-transfer source binding still required the removed secondary resolve RenderTexture and Graphics.Blit, which would have caused the first real QA4K camera pre-cull to fail even though QualityBlock4KCapture had already migrated to ResolveAntiAliasedSurface(). Resolve and display-transfer validation are now co-bound so they cannot drift independently again.",
+    "whyThisWasPrioritized": "This was a real formal-render blocker discovered by cross-checking the capture implementation against its independent color-transfer guard. Leaving it unresolved would prevent actual 3840x2160 evidence from reaching review and would also make gamma/sRGB provenance internally contradictory. Fixing the evidence path has higher score utility than speculative geometry expansion while Unity Runner remains unavailable.",
+    "godotPreserved": true,
+    "baseMerged": false,
+    "excludedThemesAdded": false
+  },
+  "discoveredDefect": {
+    "type": "formal_capture_contract_drift",
+    "oldCaptureImplementation": "QualityBlock4KCapture uses bindMS=false, RenderTexture.ResolveAntiAliasedSurface() in-place and direct ReadPixels from msaaTarget.",
+    "staleGuardBehavior": "QualityBlockDisplayTransferIntegrityQA.ValidateCaptureSourceBinding still required resolveDescriptor, resolvedTarget, Graphics.Blit(msaaTarget, resolvedTarget), and readback from resolvedTarget.",
+    "consequence": "During a real QA4K hero render, the display-transfer Camera.onPreCull callback would call ValidateContractConfigOnly(), reject the new capture source, disable the required filmic tonemap in its catch path, and prevent a valid HDR-tonemap receipt from sealing. No Visual Fidelity image could become authoritative.",
+    "resolution": "Updated display-transfer source binding and machine-readable contract to the canonical single-target in-place resolve model, added bindTextureMS/mipmap runtime rejection, and made capture-resolve validation co-validate display-transfer configuration."
+  },
+  "changes": [
+    {
+      "path": "Assets/Editor/QualityBlockDisplayTransferIntegrityQA.cs",
+      "effect": "Schema/token expectations now describe display-transfer-integrity-v1.1.0. Source binding requires bindMS=false, sRGB target descriptor, ResolveAntiAliasedSurface(), direct ReadPixels from msaaTarget and forbids resolvedTarget/resolveDescriptor/post-tonemap Graphics.Blit reintroduction. Formal targets must also remain bindTextureMS=false and non-mipmapped at pre-cull."
+    },
+    {
+      "path": "Assets/QA/display_transfer_integrity_contract.json",
+      "effect": "Machine-readable display-transfer contract now defines a single canonical non-HDR sRGB target, in-place fixed-function resolve, direct readback, no secondary resolved target, no post-tonemap shader copy, runtime failure policy and Runner failure injections."
+    },
+    {
+      "path": "Assets/Editor/QualityBlockCaptureResolveIntegrityQA.cs",
+      "effect": "Capture-resolve schema moved to 1.1 and now fail-closed co-validates QualityBlockDisplayTransferIntegrityQA so resolve and gamma/sRGB source assumptions cannot become contradictory in future refactors."
+    },
+    {
+      "path": "Assets/QA/capture_resolve_integrity_contract.json",
+      "effect": "Adds displayTransferContractMustCoValidate=true and cross-contract failure injection requirements while keeping automatic Visual Fidelity points at zero."
+    }
+  ],
+  "researchVerification": {
+    "unity6": [
+      "Unity 6 RenderTextureReadWrite documentation states that non-HDR render textures in Linear color space are normally sRGB read/write targets and RenderTexture.sRGB reports that state.",
+      "Unity 6 RenderTexture.ResolveAntiAliasedSurface documentation states that omitting the target resolves the antialiased RenderTexture into itself.",
+      "Unity 6 RenderTexture.bindTextureMS documentation states that bindTextureMS=true prevents default resolved-surface behavior for multisampled shader binding."
+    ]
+  },
+  "verification": {
+    "staticRepositoryVerification": [
+      "Start HEAD to pre-record HEAD compares ahead 5 / behind 0 with merge-base equal to the start HEAD.",
+      "Diff before this run record is confined to four UnityProject/Assets Editor/QA files; no Godot path changed.",
+      "Final display-transfer source binding no longer requires the removed resolveDescriptor/resolvedTarget/Graphics.Blit capture path and explicitly requires ResolveAntiAliasedSurface plus direct msaaTarget ReadPixels.",
+      "Capture-resolve source guard now calls display-transfer contract validation, while the display-transfer guard does not call capture-resolve validation, avoiding recursion.",
+      "Both machine-readable contracts retain actual-render-required and zero-auto-point policy."
+    ],
+    "unityCompileRuntimeVerified": false,
+    "githubWorkflowRunsObserved": 0,
+    "commitStatusContextsObserved": 0,
+    "renderVerificationPending": true
+  },
+  "scores": {
+    "implementationReadiness": 93,
+    "implementationReadinessMax": 100,
+    "visualFidelityStatus": "UNSCORED_UNTIL_REAL_4K_RENDER",
+    "visualFidelityPointsAwardedThisRun": 0,
+    "visualFidelityPassClaimed": false
+  },
+  "expectedVisualScoreImpactNotAwarded": {
+    "Cinematic image quality/composition/color/exposure": "high evidence-integrity impact: the formal packet can no longer carry contradictory single-transfer assumptions after the resolve migration.",
+    "Lighting/shadows/reflections": "medium evidence-integrity impact: exposure and reflected highlight review now remain bound to the same declared sRGB LDR destination path.",
+    "Material/PBR physical plausibility": "medium evidence-integrity impact: roughness/Fresnel judgments are protected from an obsolete secondary shader-copy color path.",
+    "Texture/microdetail/texel fidelity": "medium evidence-integrity impact: direct resolved-surface review remains source-bound without a stale blit requirement."
+  },
+  "nextBlocker": {
+    "primary": "Unity 6000.3.0f1 Runner/runtime is still unavailable on this branch, so C# compilation, callback ordering, actual sRGB target state, fixed-function resolve behavior and PNG pixels remain unverified.",
+    "failureInjectionWhenRunnerAppears": [
+      "Run the clean Native 4K packet and confirm display-transfer and capture-resolve preflights both pass before hero Camera.Render.",
+      "Set the canonical QA4K target sRGB=false and require display-transfer pre-cull failure plus mandatory tonemap disable.",
+      "Set bindMS/bindTextureMS=true or enable mipmaps and require fail-closed rejection.",
+      "Temporarily reintroduce resolveDescriptor/resolvedTarget or Graphics.Blit(msaaTarget, ...) and require both cross-bound source guards to reject the packet before provenance sealing.",
+      "After clean recovery, produce fresh 3840x2160 hero/oblique/grazing stills and 100% crops; inspect gamma/exposure, sky gradients, roughness highlight rolloff, thin sash/guard edges and foliage silhouettes before any Visual Fidelity scoring."
+    ]
+  },
+  "policy": {
+    "visualGateThreshold": 92,
+    "actualRenderedEvidenceRequired": true,
+    "noUnobservableVisualPoints": true
+  }
+}

@@ -8,7 +8,9 @@ using UnityEngine;
 /// Fail-closed guard for the final native-4K MSAA resolve/readback path.
 /// Formal evidence may not insert a shader-based copy after the approved filmic display transform:
 /// the camera renders into the canonical MSAA target, Unity performs a fixed-function resolve, and
-/// ReadPixels consumes that resolved surface directly. This guard awards zero Visual Fidelity points.
+/// ReadPixels consumes that resolved surface directly. The same preflight also co-validates the display-
+/// transfer contract so resolve changes cannot leave stale gamma/sRGB assumptions behind. This guard awards
+/// zero Visual Fidelity points.
 /// </summary>
 [InitializeOnLoad]
 public static class QualityBlockCaptureResolveIntegrityQA
@@ -37,8 +39,8 @@ public static class QualityBlockCaptureResolveIntegrityQA
             throw new FileNotFoundException("Canonical native-4K capture source missing: " + CaptureSourcePath);
 
         CaptureResolveContract contract = JsonUtility.FromJson<CaptureResolveContract>(File.ReadAllText(ContractPath));
-        if (contract == null || !string.Equals(contract.schemaVersion, "1.0", StringComparison.Ordinal))
-            throw new InvalidOperationException("Capture-resolve integrity contract is null/unparseable or not schema 1.0.");
+        if (contract == null || !string.Equals(contract.schemaVersion, "1.1", StringComparison.Ordinal))
+            throw new InvalidOperationException("Capture-resolve integrity contract is null/unparseable or not schema 1.1.");
         if (!string.Equals(contract.captureSourcePath, CaptureSourcePath, StringComparison.Ordinal) ||
             !string.Equals(contract.scenePath, ScenePath, StringComparison.Ordinal) ||
             !string.Equals(contract.formalTargetPrefix, FormalTargetPrefix, StringComparison.Ordinal))
@@ -51,6 +53,7 @@ public static class QualityBlockCaptureResolveIntegrityQA
             !r.postTonemapGraphicsBlitForbidden ||
             !r.readPixelsFromCanonicalResolvedSurface ||
             !r.pixelExactCropPolicyRequired ||
+            !r.displayTransferContractMustCoValidate ||
             !r.actualUnityRenderRequiredForVisualPoints ||
             !r.visualPointsAwardedByThisGateMustRemainZero)
             throw new InvalidOperationException("Capture-resolve integrity requirements were weakened or are incomplete.");
@@ -67,6 +70,10 @@ public static class QualityBlockCaptureResolveIntegrityQA
             throw new InvalidOperationException(
                 "Canonical 4K capture contains a shader-based Graphics.Blit call after/beside the approved filmic transform. " +
                 "Formal evidence requires fixed-function MSAA resolve plus direct ReadPixels.");
+
+        // Resolve and display transfer are one evidence boundary. A resolve refactor is not valid if the
+        // color-transfer source binding still describes a secondary target or shader copy (or vice versa).
+        QualityBlockDisplayTransferIntegrityQA.ValidateContractConfigOnly();
     }
 
     private static void OnCameraPreCull(Camera camera)
@@ -115,6 +122,7 @@ public static class QualityBlockCaptureResolveIntegrityQA
         public bool postTonemapGraphicsBlitForbidden;
         public bool readPixelsFromCanonicalResolvedSurface;
         public bool pixelExactCropPolicyRequired;
+        public bool displayTransferContractMustCoValidate;
         public bool actualUnityRenderRequiredForVisualPoints;
         public bool visualPointsAwardedByThisGateMustRemainZero;
     }

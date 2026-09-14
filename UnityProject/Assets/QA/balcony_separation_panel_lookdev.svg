@@ -1,0 +1,54 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="900" viewBox="0 0 1400 900">
+  <rect width="1400" height="900" fill="#ece9e1"/>
+  <style>
+    .title{font:700 34px sans-serif;fill:#202020}.h{font:700 22px sans-serif;fill:#262626}.t{font:17px sans-serif;fill:#333}.s{font:14px sans-serif;fill:#444}.dim{font:15px monospace;fill:#222}.line{stroke:#303030;stroke-width:3;fill:none}.thin{stroke:#555;stroke-width:1.5;fill:none}.dash{stroke:#777;stroke-width:1.5;stroke-dasharray:8 7;fill:none}.board{fill:#a6a397;stroke:#3c3c3c;stroke-width:2}.alu{fill:#808487;stroke:#333;stroke-width:2}.steel{fill:#55585a;stroke:#242424;stroke-width:2}.sun{fill:#f2e1a5;stroke:#555;stroke-width:2}
+  </style>
+  <text x="45" y="55" class="title">Balcony separation panel — generated fallback lookdev / construction plate</text>
+  <text x="45" y="88" class="t">Ordinary circa-2000 Japanese apartment balcony cue. Source QA only; real 4K Unity pixels remain required for Visual Fidelity.</text>
+
+  <text x="55" y="145" class="h">A. Oblique construction view</text>
+  <line x1="70" y1="600" x2="600" y2="600" class="line"/>
+  <text x="75" y="625" class="s">balcony slab top datum</text>
+  <polygon points="210,240 430,300 430,585 210,525" class="board"/>
+  <line x1="205" y1="230" x2="435" y2="293" class="line"/>
+  <line x1="205" y1="530" x2="435" y2="592" class="line"/>
+  <line x1="205" y1="230" x2="205" y2="530" class="line"/>
+  <line x1="435" y1="293" x2="435" y2="592" class="line"/>
+  <rect x="176" y="520" width="50" height="42" class="steel"/>
+  <rect x="414" y="510" width="54" height="46" class="steel"/>
+  <circle cx="431" cy="523" r="7" fill="#3b3b3b"/><circle cx="451" cy="543" r="7" fill="#3b3b3b"/>
+  <line x1="160" y1="540" x2="160" y2="600" class="thin"/>
+  <line x1="150" y1="540" x2="170" y2="540" class="thin"/><line x1="150" y1="600" x2="170" y2="600" class="thin"/>
+  <text x="90" y="575" class="dim">60 mm clear</text>
+  <text x="245" y="208" class="dim">32 mm Al perimeter frame</text>
+  <text x="250" y="395" class="dim">6 mm mineral board</text>
+  <text x="470" y="470" class="dim">rear wall brackets + fasteners</text>
+  <text x="70" y="675" class="t">Load/interface intent: panel is captured by frame; front uses existing divider bracket zone, rear uses explicit wall brackets.</text>
+  <text x="70" y="703" class="t">No board/slab interpenetration. No painted contact shadow. Board/frame depth must read in oblique 100% crop.</text>
+
+  <text x="730" y="145" class="h">B. Section + PBR response</text>
+  <rect x="800" y="235" width="18" height="310" class="alu"/>
+  <rect x="818" y="255" width="6" height="270" class="board"/>
+  <rect x="824" y="235" width="18" height="310" class="alu"/>
+  <line x1="760" y1="550" x2="910" y2="550" class="line"/>
+  <text x="760" y="580" class="dim">board t = 6 mm</text>
+  <text x="760" y="610" class="dim">frame section = 32 mm</text>
+  <text x="760" y="640" class="dim">overall H = 1.78 m</text>
+  <text x="760" y="670" class="dim">depth = 0.88 m</text>
+
+  <circle cx="1080" cy="250" r="55" class="sun"/>
+  <line x1="1040" y1="290" x2="925" y2="420" stroke="#a27934" stroke-width="8"/>
+  <path d="M935 415 C1005 382, 1060 382, 1130 415" stroke="#666" stroke-width="14" fill="none" opacity="0.55"/>
+  <path d="M935 455 C1010 446, 1060 446, 1130 455" stroke="#b3b3ae" stroke-width="31" fill="none" opacity="0.8"/>
+  <text x="950" y="500" class="s">aluminium: narrower directional highlight</text>
+  <text x="950" y="530" class="s">board: broad rough dielectric highlight</text>
+  <text x="950" y="560" class="s">no baked sun direction in albedo/normal</text>
+
+  <text x="730" y="725" class="h">Evidence checklist</text>
+  <text x="730" y="760" class="t">3840×2160 frontal → module authenticity / repetition</text>
+  <text x="730" y="790" class="t">3840×2160 oblique → thickness / frame / mount / clearance</text>
+  <text x="730" y="820" class="t">3840×2160 grazing → board vs aluminium angular response</text>
+  <text x="730" y="850" class="t">100% crop + temporal → z-fight, micro-normal, LOD2→LOD3 cross-fade</text>
+
+  <text x="45" y="870" class="s">Reference logic: manufacturer balcony partition families include framed calcium-silicate board; 6 mm is a current common calcium-silicate board thickness used only as a plausible scale anchor, not an exact product claim.</text>
+</svg>

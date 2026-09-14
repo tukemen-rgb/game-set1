@@ -1,0 +1,75 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="1000" viewBox="0 0 1600 1000">
+  <rect width="1600" height="1000" fill="#f4f2ea"/>
+  <style>
+    .title{font:700 34px sans-serif;fill:#20231f}.h{font:700 20px sans-serif;fill:#20231f}.t{font:15px sans-serif;fill:#30362f}.s{font:13px sans-serif;fill:#4a5148}.box{fill:#fff;stroke:#7a8176;stroke-width:2}.line{stroke:#566052;stroke-width:3;fill:none}.thin{stroke:#697265;stroke-width:1.5;fill:none}.blade{stroke:#33492e;stroke-width:4;fill:none}.dim{stroke:#805f39;stroke-width:2;fill:none}.warn{fill:#fff8e6;stroke:#a7772f;stroke-width:2}.pass{fill:#eef5ed;stroke:#5c7956;stroke-width:2}
+  </style>
+  <text x="55" y="58" class="title">Maintained lawn physical-blade lookdev — render verification pending</text>
+  <text x="55" y="88" class="t">Purpose: add resolvable lamina silhouette over the metric PBR turf substrate without inventing patch seams or fake highlights.</text>
+
+  <rect x="55" y="125" width="470" height="310" rx="10" class="box"/>
+  <text x="80" y="160" class="h">Blade construction / frontal</text>
+  <line x1="95" y1="375" x2="485" y2="375" class="line"/>
+  <text x="100" y="405" class="s">GrassField finish-grade datum</text>
+  <path d="M220 374 C218 325 207 278 220 225 C234 278 238 326 235 374" class="blade"/>
+  <path d="M305 374 C312 322 335 277 325 215 C298 277 287 324 292 374" class="blade"/>
+  <path d="M382 374 C383 331 374 292 392 245 C404 292 402 331 398 374" class="blade"/>
+  <line x1="195" y1="215" x2="195" y2="375" class="dim"/>
+  <line x1="186" y1="215" x2="204" y2="215" class="dim"/>
+  <line x1="186" y1="375" x2="204" y2="375" class="dim"/>
+  <text x="102" y="290" class="t">40–180 mm final envelope</text>
+  <text x="255" y="195" class="t">4.2–9.2 mm width</text>
+  <text x="255" y="420" class="s">Double-sided surface lamina; sub-pixel thickness is not exaggerated into a slab.</text>
+
+  <rect x="555" y="125" width="480" height="310" rx="10" class="box"/>
+  <text x="580" y="160" class="h">Oblique / construction edge</text>
+  <polygon points="590,355 995,355 920,405 665,405" fill="#b9b6ac" stroke="#77746e" stroke-width="2"/>
+  <polygon points="590,300 995,300 995,355 590,355" fill="#d3d0c7" stroke="#77746e" stroke-width="2"/>
+  <text x="610" y="330" class="t">hardscape / path</text>
+  <line x1="590" y1="275" x2="750" y2="275" class="dim"/>
+  <line x1="590" y1="265" x2="590" y2="285" class="dim"/>
+  <line x1="750" y1="265" x2="750" y2="285" class="dim"/>
+  <text x="625" y="258" class="t">≥160 mm no-blade construction clearance</text>
+  <path d="M785 355 C790 322 806 296 802 260" class="blade"/>
+  <path d="M842 355 C845 310 830 280 852 235" class="blade"/>
+  <path d="M903 355 C900 315 918 278 910 245" class="blade"/>
+  <text x="580" y="420" class="s">Fixed candidate budget: rejected hardscape samples are not refilled, so narrow remnants stay sparse.</text>
+
+  <rect x="1065" y="125" width="480" height="310" rx="10" class="box"/>
+  <text x="1090" y="160" class="h">Grazing-light response</text>
+  <circle cx="1450" cy="205" r="33" fill="#f5d57d" stroke="#987b37" stroke-width="2"/>
+  <line x1="1420" y1="230" x2="1200" y2="350" class="dim"/>
+  <path d="M1135 380 C1140 328 1150 286 1145 230" class="blade"/>
+  <path d="M1205 380 C1218 334 1244 290 1235 230" class="blade"/>
+  <path d="M1278 380 C1272 336 1262 298 1285 245" class="blade"/>
+  <path d="M1350 380 C1350 330 1372 288 1365 235" class="blade"/>
+  <line x1="1100" y1="380" x2="1505" y2="380" class="line"/>
+  <text x="1090" y="410" class="s">metallic = 0 · wetness = 0 · dry rough dielectric</text>
+  <text x="1090" y="430" class="s">Specular/Fresnel direction must come from SummerSun + sky + synchronized probes only.</text>
+
+  <rect x="55" y="470" width="720" height="235" rx="10" class="box"/>
+  <text x="80" y="505" class="h">LOD policy — same accepted footprint, strict density reduction</text>
+  <g transform="translate(85,535)">
+    <rect x="0" y="0" width="145" height="115" class="pass"/><text x="15" y="25" class="t">LOD0</text><text x="15" y="50" class="s">cap 240 tufts</text><text x="15" y="72" class="s">3 blades/tuft</text><text x="15" y="96" class="s">0.18</text>
+    <rect x="165" y="0" width="145" height="115" class="pass"/><text x="180" y="25" class="t">LOD1</text><text x="180" y="50" class="s">cap 120 / 50%</text><text x="180" y="72" class="s">3 blades/tuft</text><text x="180" y="96" class="s">0.08</text>
+    <rect x="330" y="0" width="145" height="115" class="pass"/><text x="345" y="25" class="t">LOD2</text><text x="345" y="50" class="s">cap 54 / 23%</text><text x="345" y="72" class="s">2 blades/tuft</text><text x="345" y="96" class="s">0.035</text>
+    <rect x="495" y="0" width="145" height="115" class="pass"/><text x="510" y="25" class="t">LOD3</text><text x="510" y="50" class="s">cap 22 / 9%</text><text x="510" y="72" class="s">2 blades/tuft</text><text x="510" y="96" class="s">0.012</text>
+  </g>
+  <text x="80" y="685" class="s">Animated cross-fade required. Retained tufts are a deterministic prefix; lower LODs may thin, never reshuffle the lawn footprint.</text>
+
+  <rect x="805" y="470" width="740" height="235" rx="10" class="box"/>
+  <text x="830" y="505" class="h">Material / microstructure ownership</text>
+  <text x="830" y="540" class="t">Geometry owns</text>
+  <text x="830" y="565" class="s">height · width · lean · two-segment bend · tip taper · silhouette · hardscape clearance</text>
+  <text x="830" y="600" class="t">PBR material owns</text>
+  <text x="830" y="625" class="s">chlorophyll/albedo breakup · fine fibre/venation-scale normal · sub-pixel turf mass · dielectric angular response</text>
+  <text x="830" y="660" class="t">Forbidden lookdev shortcut</text>
+  <text x="830" y="685" class="s">No painted sun streak, contact shadow, metallic sheen, glowing edge, or square patch-boundary cue.</text>
+
+  <rect x="55" y="740" width="1490" height="205" rx="10" class="warn"/>
+  <text x="80" y="778" class="h">Native evidence checklist — do not score from this plate</text>
+  <text x="80" y="812" class="t">3840×2160 hero/frontal:</text><text x="300" y="812" class="s">lawn reads as a continuous maintained surface; no visible 9 m batching grid; blade bases do not float.</text>
+  <text x="80" y="842" class="t">Oblique + 100%:</text><text x="300" y="842" class="s">inspect vegetation_grounding / lawn-edge contact, clearance from plaza/path, individual bend/tip breakup and physical scale.</text>
+  <text x="80" y="872" class="t">Grazing + 100%:</text><text x="300" y="872" class="s">highlights track scene light; fine blades break the plane without turning into bright wire noise or repeated comb patterns.</text>
+  <text x="80" y="902" class="t">Temporal:</text><text x="300" y="902" class="s">reject severe shimmer, crawling sub-pixel lines, visible density pop or patchwise cross-fade bands.</text>
+  <text x="80" y="930" class="s">Visual Fidelity points awarded by this illustration: 0. Render review is mandatory.</text>
+</svg>

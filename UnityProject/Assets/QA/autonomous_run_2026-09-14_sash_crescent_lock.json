@@ -1,0 +1,95 @@
+{
+  "schemaVersion": "1.0.0",
+  "runDate": "2026-09-14",
+  "branch": "gpt/unity-migration",
+  "startingHead": "9f8c208e1016559a4dcebaa321e8f48575f651a2",
+  "focus": "Replace an authenticity/construction omission at the apartment sliding-sash meeting stile with period-plausible physical crescent-lock hardware while keeping render claims fail-closed.",
+  "substantiveCommits": [
+    {
+      "sha": "1828d8bf147145625fb3df48f3d18e44db0bb2a3",
+      "message": "Specify period-correct sash crescent lock assembly",
+      "files": ["UnityProject/Assets/QA/sash_crescent_lock_contract.json"]
+    },
+    {
+      "sha": "74ba418a3ce3f9aa9047ea446744ace3ec204a64",
+      "message": "Add physical period-correct sash crescent locks",
+      "files": ["UnityProject/Assets/Editor/QualityBlockSashCrescentLockUpgrade.cs"]
+    }
+  ],
+  "implementation": {
+    "assemblyCount": 30,
+    "construction": [
+      "72 x 18 x 6 mm coated-metal mounting plate",
+      "two separate fixing screw heads on verified 50 mm vertical centres",
+      "12 mm pivot boss",
+      "five-segment curved LOD0 crescent lever",
+      "separate opposing keeper",
+      "room-side placement behind exterior glass planes"
+    ],
+    "material": {
+      "surface": "dark bronze/brown opaque coating over metal",
+      "metallic": 0.0,
+      "roughnessNominal": 0.60,
+      "specularF0": 0.04,
+      "normalScale": 0.0,
+      "wetness": 0.0,
+      "aging": "limited coating dulling, hand-contact polish and protected recess dust only"
+    },
+    "lod": {
+      "levels": 4,
+      "lod0RenderersPerWindow": 10,
+      "lod1RenderersPerWindow": 5,
+      "lod2RenderersPerWindow": 2,
+      "lod3RenderersPerWindow": 1,
+      "fadeMode": "CrossFade",
+      "formalPreCullValidation": true
+    },
+    "geometryPolicy": "All benchmark hardware uses generated chamfered/bevelled GM_HD_* mesh assets from QualityBlockDetailMeshLibrary; no stock Cube/Cylinder/Quad/Plane mesh is accepted by validation.",
+    "collisionPolicy": "render-only detail; no gameplay colliders",
+    "sourceBasis": "LIXIL/Tostem AAAZC07L official service-part record: Atmos II from 1996-10, metal construction, 50 mm fixing-screw pitch. Shape is conservative fallback reconstruction rather than exact product replication."
+  },
+  "verification": {
+    "repositoryCompare": {
+      "base": "9f8c208e1016559a4dcebaa321e8f48575f651a2",
+      "headBeforeRunRecord": "74ba418a3ce3f9aa9047ea446744ace3ec204a64",
+      "aheadBy": 2,
+      "behindBy": 0,
+      "mergeBaseUnchanged": true,
+      "changedPaths": [
+        "UnityProject/Assets/Editor/QualityBlockSashCrescentLockUpgrade.cs",
+        "UnityProject/Assets/QA/sash_crescent_lock_contract.json"
+      ],
+      "godotChanged": false,
+      "baseMerged": false
+    },
+    "githubStatusContexts": 0,
+    "githubWorkflowRuns": 0,
+    "unityCompileVerified": false,
+    "unityRuntimeVerified": false,
+    "native4KRenderVerified": false,
+    "renderVerification": "PENDING_UNITY_RUNTIME"
+  },
+  "scores": {
+    "implementationReadiness": 93,
+    "visualFidelityStatus": "UNSCORED_UNTIL_REAL_4K_RENDER",
+    "visualPointsAwardedThisRun": 0,
+    "passClaimed": false
+  },
+  "expectedVisualScoreImpact": {
+    "prospectiveOnly": true,
+    "geometryConstructionFidelity": "medium: adds a missing manufactured window mechanism and explicit mounting/load/interface logic visible in sash crops",
+    "materialPbrPhysicalPlausibility": "small-to-medium: replaces generic dark handle implication with explicit coated-metal dielectric response and manufactured bevels",
+    "periodAccuracySceneAuthenticity": "medium: adds a documented period-plausible two-panel sash lock class with verified 50 mm screw pitch",
+    "cinematicImageQuality": "small: extra fine depth/contact highlights may improve close facade realism if they survive actual framing",
+    "temporalLodAliasingStability": "neutral-to-small-positive: four-level cross-fade policy is implemented but cannot be credited before temporal render evidence"
+  },
+  "requiredRunnerVerification": [
+    "compile QualityBlockSashCrescentLockUpgrade.cs under Unity 6000.3.0f1",
+    "rebuild/save QualityBlock1990s and verify 30 assemblies are generated under Danchi",
+    "run structural QA and inject failures for missing keeper, wrong screw pitch, stock primitive mesh, collider addition, metallic coating drift and disabled LOD cross-fade",
+    "capture fresh 3840x2160 frontal, oblique and grazing views plus a 100% window-hardware crop",
+    "verify the lock remains visually behind glazing, does not intersect gasket/sash/glass, and does not create repeated high-contrast clone artifacts",
+    "run temporal oblique walk evidence and reject any visible LOD pop or shimmer before scoring"
+  ],
+  "nextBlocker": "No GitHub status context or workflow run is attached to the branch head, so Unity compile/runtime behavior and actual pixel contribution remain unverified. The next priority is real Unity runner evidence, not awarding source-only visual points."
+}

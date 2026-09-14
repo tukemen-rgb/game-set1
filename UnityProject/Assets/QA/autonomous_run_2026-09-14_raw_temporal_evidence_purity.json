@@ -1,0 +1,74 @@
+{
+  "schemaVersion": "1.0.0",
+  "runDate": "2026-09-14",
+  "branch": "gpt/unity-migration",
+  "startingHead": "6933337c3b8a68ea913e78b7473aac7e8b49f95d",
+  "headBeforeRunRecord": "94d068cf5c12094a6fbecba649b19a437ecf9f27",
+  "objective": "Close a formal-evidence integrity gap in the raw native-4K temporal sequences used to judge severe aliasing/shimmer and visible LOD pop, without awarding any visual points before real Unity-rendered pixels exist.",
+  "investigation": {
+    "selectedIssue": "Raw QATemporal_subpixel_grazing_*_MSAA and QATemporal_lod_walk_oblique_*_MSAA frames are authoritative evidence for the Temporal/LOD/Aliasing category and two critical automatic-fail defects. Existing display-transfer QA covers QATemporal_, while the detailed camera lifecycle purity guard is scoped to QA4K_ and QAPreparedTemporal_. This left no dedicated pre-cull -> pre-render -> post-render equality proof for raw temporal camera/target state or the complete physical-lighting/renderable/material/GI/reflection fingerprint.",
+    "risk": "A callback could change camera pose/FOV, target state, sun/sky, render policy, renderer/material/texture state, GI binding or reflection-probe state inside a raw temporal frame. The resulting PNG could remain sealed and look plausible while no longer being a trustworthy basis for shimmer/LOD-pop scoring.",
+    "scopeDecision": "Add a dedicated read-only raw-temporal lifecycle guard rather than broadening the still/prepared-temporal camera guard. Raw temporal capture intentionally permits the supported 1/2/4/8 MSAA sample counts and has a distinct capture/sealing path, so a separate contract makes those semantics explicit and avoids conflating still evidence with motion evidence."
+  },
+  "changes": [
+    {
+      "commit": "0ad0982202159462a3125b1e40d1887b568eb5e7",
+      "path": "UnityProject/Assets/QA/raw_temporal_evidence_purity_contract.json",
+      "summary": "Added a machine-readable zero-point contract covering the two approved raw temporal target families, native 3840x2160 ARGB32/sRGB/non-mipmapped output, supported 1/2/4/8 samples, read-only lifecycle equality, physical-lighting/renderable/material/GI/reflection fingerprint equality and explicit failure injections."
+    },
+    {
+      "commit": "94d068cf5c12094a6fbecba649b19a437ecf9f27",
+      "path": "UnityProject/Assets/Editor/QualityBlockRawTemporalEvidencePurityQA.cs",
+      "summary": "Added an InitializeOnLoad fail-closed guard for approved QATemporal targets. At pre-cull it validates the established camera/light contracts and records SHA-256 fingerprints for camera/target state plus the repository's complete physical-lighting/renderable/material/GI/reflection state. Pre-render and post-render must reproduce both fingerprints exactly or the frame is rejected; lifecycle state is always cleared after post-render."
+    }
+  ],
+  "formalEvidenceBehavior": {
+    "approvedTargets": [
+      "QATemporal_subpixel_grazing_<two-digit-frame>_MSAA",
+      "QATemporal_lod_walk_oblique_<two-digit-frame>_MSAA"
+    ],
+    "preCull": "Read-only validation; establishes the accepted camera/target SHA-256 and complete physical-state SHA-256.",
+    "preRender": "Read-only validation; both fingerprints must exactly match pre-cull before rendering proceeds.",
+    "postRender": "Read-only validation; both fingerprints must exactly match pre-cull before the raw temporal frame can proceed to resolve/readback/sealing.",
+    "msaaPolicy": "Accepts only supported raw temporal sample counts 1, 2, 4 or 8; no false assumption that every platform must produce 4x MSAA.",
+    "visualScoring": "No automatic points. Actual sealed 3840x2160 temporal sequences and 100% crops still require real Unity rendering and pixel review before Temporal/LOD/Aliasing can receive observed-evidence credit."
+  },
+  "failureInjection": [
+    "Change MainCamera transform/FOV/clip/culling/viewport between pre-cull and pre-render",
+    "Change raw temporal RenderTexture dimensions/format/sRGB/MSAA/mips/filter/wrap mid-frame",
+    "Attach a camera command buffer or second enabled OnRenderImage effect",
+    "Change SummerSun direction/color/intensity/shadow state or sky/ambient/global render policy mid-frame",
+    "Change a renderable mesh/material/texture/MaterialPropertyBlock or GI/lightmap/reflection-probe binding mid-frame",
+    "Begin a nested/stale lifecycle on the same raw temporal RenderTexture"
+  ],
+  "verification": {
+    "repositoryDiff": "2 substantive files added before this run record; UnityProject/Assets/Editor and UnityProject/Assets/QA only; no Godot path was touched.",
+    "sourceReview": "The committed QA source was re-read from the branch after commit. Target-name recognition is limited to the two canonical QATemporal probe families with two-digit frame suffixes. The guard reuses existing CameraEvidence and LightEvidence source validation and the v6 complete physical-lighting fingerprint instead of inventing a weaker parallel lighting model.",
+    "unityCompileRuntime": "PENDING_UNITY_RUNTIME",
+    "native4kRender": "PENDING_UNITY_RUNTIME",
+    "githubActionsRunsAtCheck": 0,
+    "commitStatusContextsAtCheck": 0,
+    "visualFidelityStatus": "UNSCORED_UNTIL_REAL_4K_RENDER",
+    "visualFidelityPointsAdded": 0,
+    "visualPassClaimed": false
+  },
+  "implementationReadiness": {
+    "score": 93,
+    "outOf": 100,
+    "reason": "Raw temporal evidence now has a dedicated fail-closed intra-frame state-integrity gate, but Unity 6000.3.0f1 compile/runtime, failure-injection execution and real native-4K temporal pixels are still unavailable."
+  },
+  "expectedVisualScoreImpactNotAwarded": {
+    "temporalLodAliasingStability": "medium-to-large evidence-confidence improvement",
+    "lightingShadowsReflections": "medium evidence-confidence improvement",
+    "materialPbrPhysicalPlausibility": "small-to-medium evidence-confidence improvement",
+    "cinematicImageQuality": "small-to-medium evidence-confidence improvement",
+    "note": "These are expected evidence-quality impacts only, not Visual Fidelity points."
+  },
+  "constraints": {
+    "godotPreserved": true,
+    "baseMerged": false,
+    "excludedThemesAdded": false,
+    "earthquakeDisasterReconstructionThemes": "absent"
+  },
+  "nextBlocker": "Unity 6000.3.0f1 Runner/runtime. When available, stop speculative expansion; execute the raw-temporal mid-frame failure injections, prove pre-cull/pre-render/post-render rejection behavior, then capture fresh sealed 3840x2160 subpixel_grazing and lod_walk_oblique sequences with their 100% crops. Score shimmer, aliasing and LOD pop only from those observed pixels."
+}

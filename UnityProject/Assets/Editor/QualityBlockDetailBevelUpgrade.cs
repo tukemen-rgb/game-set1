@@ -40,6 +40,12 @@ public static class QualityBlockDetailBevelUpgrade
         if (root == null)
             throw new InvalidOperationException("DanchiHighDetail is missing. Build the detail pass first.");
 
+        // The base high-detail pass already carries front divider brackets, but historically omitted the
+        // manufactured balcony separation panel itself. Build the complete board/frame/rear-mount assembly
+        // here, before primitive replacement, so its source geometry receives the same bevel, physical UV and
+        // later LOD derivation as every other benchmark-facing Danchi component.
+        QualityBlockBalconySeparationPanelUpgrade.ApplyToOpenScene();
+
         int boxes = 0;
         int cylinders = 0;
         int hexFasteners = 0;

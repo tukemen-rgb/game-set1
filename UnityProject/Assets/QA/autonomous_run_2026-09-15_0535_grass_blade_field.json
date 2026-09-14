@@ -1,0 +1,144 @@
+{
+  "schemaVersion": "1.0.0",
+  "runId": "2026-09-15_0535_grass_blade_field",
+  "branch": "gpt/unity-migration",
+  "runStartHead": "4b1bbf458d3c0850af6474dab66b113c109e60bc",
+  "substantiveHeadBeforeRunRecord": "b7dab4aa456d4efc36b80457bf6c164830810ffc",
+  "policy": {
+    "preserveGodot": true,
+    "baseMergePerformed": false,
+    "scope": "UnityProject/Assets/Editor and UnityProject/Assets/QA only",
+    "newCommitsAllowedByDatePolicy": true,
+    "visualFidelityRequiresActualRender": true
+  },
+  "problem": {
+    "observedSourceGap": "The 54 m x 36 m GrassField already had metre-scaled two-frequency PBR, but its broad lawn silhouette remained a perfectly flat primitive surface outside localized tree understory. This can limit vegetation natural complexity and expose a texture-only lawn tell in oblique/grazing 4K views.",
+    "existingSystemsRespected": [
+      "QualityBlockTreeDetailUpgrade",
+      "QualityBlockTreeWoodyContinuityQA",
+      "QualityBlockFoliageMorphologyVariationUpgrade",
+      "QualityBlockFoliagePhysicalityQA",
+      "QualityBlockVegetationEcologyUpgrade",
+      "QualityBlockVegetationRootZoneInterfaceQA",
+      "QualityBlockGroundBaseSurfaceUpgrade"
+    ],
+    "nonDuplicationDecision": "Do not add another tree/crown/understory system. Add only a broad-lawn blade silhouette layer over the existing GrassField material substrate."
+  },
+  "commits": [
+    {
+      "sha": "75727ea37181d0460f332842175e323784879c10",
+      "message": "Add physical grass blade field with four-level LOD",
+      "purpose": "Initial combined-patch blade geometry, hardscape exclusions, PBR inheritance, LODs and source/formal QA."
+    },
+    {
+      "sha": "8323c5b25f87d03cfc32704f4bbe73a88624e297",
+      "message": "Make grass density area-proportional and LOD-safe",
+      "purpose": "Corrected rejection sampling so hardscape-heavy patches do not refill to full density; added strict sparse-patch LOD reduction and structural geometry signatures."
+    },
+    {
+      "sha": "11783e99a0ef0ad0bc62752a2cdc271f49ae91c7",
+      "message": "Add machine-readable physical lawn contract",
+      "purpose": "Recorded dimensions, substrate interface, material response, exposure/aging, geometry-vs-material ownership, LOD policy and render rejection criteria."
+    },
+    {
+      "sha": "d08c31c103ca49462b7c1abd4113019ef9b748fe",
+      "message": "Add physical lawn 4K lookdev plate",
+      "purpose": "Added explicit frontal/oblique/grazing lookdev illustration and native-evidence checklist."
+    },
+    {
+      "sha": "b7dab4aa456d4efc36b80457bf6c164830810ffc",
+      "message": "Fail closed on grass field before main 4K camera render",
+      "purpose": "Extended read-only validation to the canonical QualityCamera path used by the native 4K capture."
+    }
+  ],
+  "implementation": {
+    "root": "QualityBlock1990s/Ground/GrassBladeFieldDetail",
+    "fieldMeters": [54.0, 36.0],
+    "patchGrid": [6, 4],
+    "patchMeters": [9.0, 9.0],
+    "candidateSamplesPerPatch": 240,
+    "bladeGeometry": "double-sided two-segment curved lamina with deterministic width/height/yaw/lean/tip variation",
+    "nominalTuftHeightMeters": [0.055, 0.165],
+    "bladeWidthMeters": [0.0042, 0.0092],
+    "hardscapeClearanceMeters": 0.16,
+    "densityCausality": "fixed candidate budget; rejected hardscape candidates are not replaced, so exposed area controls density",
+    "edgeMaintenanceCausality": "near-circulation blades are shorter through hardscape-distance response",
+    "material": {
+      "source": "PBR_GrassWorn",
+      "metallic": 0.0,
+      "emission": false,
+      "smoothnessScale": 0.28,
+      "normalScale": 0.65,
+      "wetness": 0.0,
+      "highlightPolicy": "scene-light/probe dielectric response only"
+    },
+    "lod": {
+      "levels": 4,
+      "crossFade": true,
+      "screenRelativeHeights": [0.18, 0.08, 0.035, 0.012],
+      "fullPatchCaps": [240, 120, 54, 22],
+      "sparseRatios": [1.0, 0.50, 0.23, 0.09],
+      "stablePrefixRetention": true
+    },
+    "performanceIntent": "one combined renderer per patch per active LOD rather than one renderer per blade; no gameplay colliders"
+  },
+  "verification": {
+    "actualUnityCompile": false,
+    "actualUnityRuntime": false,
+    "actual3840x2160Render": false,
+    "visualScoringPerformed": false,
+    "sourceReview": "complete for this run",
+    "deterministicPlacementDryRun": {
+      "method": "independent reproduction of the integer hash, 24 patch centres and source exclusion rectangles",
+      "populatedPatches": 24,
+      "acceptedTuftCountRange": [28, 240],
+      "distinctAcceptedCounts": 18,
+      "strictLodReductionForAllPatches": true,
+      "exampleSparseLodCounts": [55, 27, 12, 4],
+      "exampleDenseLodCounts": [240, 120, 54, 21]
+    },
+    "gitComparisonAtSubstantiveHead": {
+      "aheadBy": 5,
+      "behindBy": 0,
+      "mergeBaseEqualsRunStartHead": true,
+      "netFiles": [
+        "UnityProject/Assets/Editor/QualityBlockGrassBladeFieldUpgrade.cs",
+        "UnityProject/Assets/Editor/QualityBlockGrassBladeFormalEvidenceGuard.cs",
+        "UnityProject/Assets/QA/grass_blade_field_contract.json",
+        "UnityProject/Assets/QA/grass_blade_field_lookdev.svg"
+      ]
+    },
+    "commitStatusContextsAtSubstantiveHead": 0,
+    "workflowRunsAtSubstantiveHead": 0,
+    "verificationPendingReason": "No connected Unity 6000.3.0f1 runner or authoritative native render appeared on this branch."
+  },
+  "implementationReadiness": {
+    "score": 93,
+    "outOf": 100,
+    "unchangedThisRun": true,
+    "remainingGap": "Unity 6000.3.0f1 compile/runtime execution and generated-scene validation"
+  },
+  "visualFidelity": {
+    "status": "UNSCORED_UNTIL_REAL_4K_RENDER",
+    "pointsAwardedThisRun": 0,
+    "passClaimed": false,
+    "expectedImpactNotAwarded": {
+      "vegetationNaturalComplexity": "medium-high",
+      "textureMicrodetailTexelFidelity": "small-medium",
+      "cinematicImageQuality": "medium, especially oblique/grazing foreground breakup",
+      "temporalLodAliasingStability": "potential benefit from cross-fade but remains an explicit render risk"
+    }
+  },
+  "plannedFailureInjectionWhenRunnerExists": [
+    "replace one grass patch LOD mesh with a Unity Plane and require rejection",
+    "set blade metallic to 0.5 and require rejection",
+    "enable blade emission and require rejection",
+    "add a collider under GrassBladeFieldDetail and require rejection",
+    "remove LOD3 and require rejection",
+    "disable animated cross-fade and require rejection",
+    "duplicate one LOD0 mesh across multiple patches and require structural repetition rejection",
+    "move blade geometry into a hardscape exclusion and inspect the formal 4K crop",
+    "inspect temporal sequence for shimmer and density pop"
+  ],
+  "nextBlocker": "A real Unity 6000.3.0f1 runner is required. Once available, stop speculative expansion, compile/apply this system, run failure injections, synchronize reflections, capture fresh 3840x2160 hero/oblique/grazing frames plus 100% lawn-edge/vegetation-grounding crops and temporal evidence, then score only observed pixels."
+}

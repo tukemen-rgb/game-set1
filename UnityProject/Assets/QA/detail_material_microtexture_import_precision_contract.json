@@ -1,0 +1,100 @@
+{
+  "schemaVersion": "1.0.0",
+  "contractId": "detail_material_microtexture_import_precision",
+  "purpose": "Preserve weak physically-authored normal and metallic/smoothness signals for apartment-detail materials until they can be judged from native 3840x2160 Unity evidence. Block compression is not accepted for these physical-data maps because it can quantize tangent-space direction, roughness width and metallic response before grazing-light review.",
+  "scope": {
+    "textureRoot": "Assets/Art/GeneratedDetailMaterials",
+    "textureSize": 1024,
+    "profiles": [
+      "MAT_AgedAluminum",
+      "MAT_DarkGalvanizedSteel",
+      "MAT_WindowRubber",
+      "MAT_AgedACPlastic",
+      "MAT_PipeInsulation",
+      "MAT_DrainHose"
+    ],
+    "protectedRoles": [
+      "MicroNormal",
+      "MetallicSmoothness"
+    ],
+    "albedoPolicy": "Not part of this lossless gate. This change protects high-frequency physical response without imposing unnecessary memory cost on lower-frequency colour data."
+  },
+  "physicalInterpretation": {
+    "lightingNeutral": true,
+    "paintedOrBakedHighlightsAllowed": false,
+    "normalSpace": "tangent",
+    "metallicChannel": "R",
+    "smoothnessChannel": "A",
+    "wetness": "dry benchmark unless another cause-based weather state is explicitly authored and separately verified",
+    "angularResponse": "Unity Standard physically based response; Fresnel/specular response must arise from material state and lighting, never from painted highlights",
+    "profileNotes": {
+      "MAT_AgedAluminum": "anodized/extruded aluminium directional grain; metallic source remains bounded by the existing microstructure profile",
+      "MAT_DarkGalvanizedSteel": "galvanized steel zinc-spangle-like microvariation without glitter or baked light direction",
+      "MAT_WindowRubber": "EPDM-like dielectric rubber microrelief; metallic remains zero",
+      "MAT_AgedACPlastic": "aged ABS-like dielectric orange-peel microrelief; UV aging belongs in colour/aging policy rather than fake specular paint",
+      "MAT_PipeInsulation": "dielectric wrap/foam skin with shallow wrap cadence",
+      "MAT_DrainHose": "dielectric polymer hose with circumferential corrugation signal"
+    }
+  },
+  "canonicalImporterState": {
+    "textureCompression": "Uncompressed",
+    "crunchedCompression": false,
+    "standalonePlatformOverrideAllowed": false,
+    "minimumMaxTextureSize": 1024,
+    "requiredRuntimeWidth": 1024,
+    "requiredRuntimeHeight": 1024,
+    "mipmapsRequired": true,
+    "filterMode": "Trilinear",
+    "wrapMode": "Repeat",
+    "minimumAnisotropy": 8,
+    "sRGB": false,
+    "normalTextureType": "NormalMap",
+    "metallicSmoothnessTextureType": "Default",
+    "alphaSource": "FromInput"
+  },
+  "formalEvidencePolicy": {
+    "scene": "Assets/Scenes/QualityBlock1990s.unity",
+    "formalRenderTargetPrefixes": [
+      "QA4K_",
+      "QATemporal_",
+      "QAPreparedTemporal_"
+    ],
+    "preCullBehavior": "READ_ONLY_FAIL_CLOSED",
+    "repairDuringFormalCapture": false,
+    "requiredRenderedEvidence": [
+      "3840x2160 oblique case showing representative apartment-detail materials",
+      "3840x2160 grazing-light case where normal and roughness response are visible",
+      "100% detail-material crop from the native 4K frame",
+      "100% construction-interface crop where the material meets its mounting context",
+      "subpixel/grazing temporal evidence for sparkle, shimmer and mip stability"
+    ]
+  },
+  "failureInjection": [
+    "Set any protected texture to CompressedHQ or another compressed mode and require formal pre-cull failure.",
+    "Enable Crunch compression and require failure.",
+    "Enable a Standalone platform texture override and require failure.",
+    "Set maxTextureSize below 1024 and require failure.",
+    "Disable mipmaps and require failure.",
+    "Set filter mode to Bilinear or Point and require failure.",
+    "Set anisotropy below 8 and require failure.",
+    "Enable sRGB on a protected physical-data texture and require failure.",
+    "Change a MicroNormal importer away from NormalMap and require failure.",
+    "Change a MetallicSmoothness importer away from Default or stop preserving input alpha and require failure."
+  ],
+  "visualFidelityGate": {
+    "visualFidelityPointsAwarded": 0,
+    "runtimeRenderVerification": "PENDING_UNITY_RUNTIME",
+    "passClaimAllowedWithoutRenderedEvidence": false,
+    "expectedImpactNotAwarded": {
+      "Material/PBR physical plausibility": "medium",
+      "Texture/microdetail/texel fidelity": "medium-large",
+      "Lighting/shadows/reflections": "small-medium",
+      "Temporal/LOD/aliasing stability": "small-medium"
+    }
+  },
+  "prohibitedThemes": [
+    "earthquake",
+    "disaster",
+    "reconstruction"
+  ]
+}

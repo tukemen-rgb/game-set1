@@ -1,0 +1,72 @@
+{
+  "schemaVersion": "1.0.0",
+  "contractId": "physical-data-import-precision-bundle-v1",
+  "objective": "Fail closed before reflection-probe or formal benchmark rendering if any protected subtle physical-data texture has drifted from its domain import-precision contract.",
+  "domains": [
+    {
+      "id": "facade_macro",
+      "validator": "QualityBlockFacadeMacroPrecisionUpgrade",
+      "role": "low-amplitude facade anti-repetition albedo field"
+    },
+    {
+      "id": "balcony_microtexture",
+      "validator": "QualityBlockBalconyMicrotextureImportPrecisionQA",
+      "role": "waterproofing normal and metallic/smoothness physical data"
+    },
+    {
+      "id": "ground_microtexture",
+      "validator": "QualityBlockGroundMicrotextureImportPrecisionQA",
+      "role": "ground normal and metallic/smoothness physical data"
+    },
+    {
+      "id": "foliage_microtexture",
+      "validator": "QualityBlockFoliageMicrotextureImportPrecisionQA",
+      "role": "leaf normal and smoothness physical data"
+    },
+    {
+      "id": "detail_material_microtexture",
+      "validator": "QualityBlockDetailMaterialMicrotextureImportPrecisionQA",
+      "role": "apartment-detail normal and metallic/smoothness physical data"
+    }
+  ],
+  "renderBoundaryPolicy": {
+    "formalTargets": ["QA4K_*", "QATemporal_*", "QAPreparedTemporal_*"],
+    "reflectionCameraType": "Reflection",
+    "formalPreCullBehavior": "READ_ONLY_FAIL_CLOSED",
+    "reflectionPreCullBehavior": "READ_ONLY_FAIL_CLOSED",
+    "repairDuringReflectionOrFormalRender": false,
+    "reason": "Reflection cubemaps and final camera evidence must sample the same already-prepared physical-data texture state. Import repair after cubemap capture would invalidate material/reflection coherence."
+  },
+  "requiredDomainContractBehavior": {
+    "uncompressedWhereSpecified": true,
+    "crunchForbiddenWhereSpecified": true,
+    "standaloneOverrideForbiddenWhereSpecified": true,
+    "mipmapsRequiredWhereSpecified": true,
+    "trilinearRequiredWhereSpecified": true,
+    "anisotropyRequiredWhereSpecified": true,
+    "linearPhysicalDataRequiredWhereSpecified": true,
+    "normalMapTypingRequiredWhereSpecified": true,
+    "smoothnessAlphaPreservationRequiredWhereSpecified": true
+  },
+  "failureInjection": [
+    "Regress one protected domain texture to block compression and require reflection-camera pre-cull failure.",
+    "Enable a Standalone platform override on one protected texture and require reflection-camera pre-cull failure.",
+    "Disable mipmaps or reduce anisotropy on one protected texture and require formal camera pre-cull failure.",
+    "Change one protected normal away from NormalMap and require failure before reflection or formal evidence rendering.",
+    "Remove smoothness input alpha from one protected mask and require failure before reflection or formal evidence rendering.",
+    "Capture reflection probes in a clean state, mutate protected importer state, then require final formal pre-cull failure rather than accepting stale cubemap/material coherence."
+  ],
+  "visualGate": {
+    "visualFidelityPointsAwarded": 0,
+    "passClaimAllowedWithoutRenderedEvidence": false,
+    "runtimeRenderVerification": "PENDING_UNITY_RUNTIME",
+    "expectedImpactNotAwarded": {
+      "Material/PBR physical plausibility": "medium-large",
+      "Lighting/shadows/reflections": "medium",
+      "Texture/microdetail/texel fidelity": "medium-large",
+      "Vegetation/natural complexity": "small-medium",
+      "Cinematic image quality/composition/color/exposure": "small",
+      "Temporal/LOD/aliasing stability": "medium"
+    }
+  }
+}

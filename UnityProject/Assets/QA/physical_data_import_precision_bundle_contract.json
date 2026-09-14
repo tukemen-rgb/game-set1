@@ -1,7 +1,8 @@
 {
-  "schemaVersion": "1.0.0",
+  "schemaVersion": "1.1.0",
   "contractId": "physical-data-import-precision-bundle-v1",
   "objective": "Fail closed before reflection-probe or formal benchmark rendering if any protected subtle physical-data texture has drifted from its domain import-precision contract.",
+  "protectedDomainCount": 7,
   "domains": [
     {
       "id": "facade_macro",
@@ -32,6 +33,11 @@
       "id": "park_furniture_microtexture",
       "validator": "QualityBlockParkFurnitureMicrotextureImportPrecisionQA",
       "role": "slide, bench, lamp and notice-board normal and metallic/smoothness physical data"
+    },
+    {
+      "id": "generic_pbr_microtexture",
+      "validator": "QualityBlockGenericPbrMicrotextureImportPrecisionQA",
+      "role": "concrete, paving, soil, grass, leaf and bark normal plus metallic/smoothness physical data"
     }
   ],
   "renderBoundaryPolicy": {
@@ -59,7 +65,8 @@
     "Disable mipmaps or reduce anisotropy on one protected texture and require formal camera pre-cull failure.",
     "Change one protected normal away from NormalMap and require failure before reflection or formal evidence rendering.",
     "Remove smoothness input alpha from one protected mask and require failure before reflection or formal evidence rendering.",
-    "Regress one park-furniture physical-data map to compression and require the same reflection/formal fail-closed behavior as facade, balcony, ground, foliage and apartment-detail domains.",
+    "Regress one park-furniture physical-data map to compression and require the same reflection/formal fail-closed behavior as the other protected domains.",
+    "Regress one generic PBR physical-data map to compression and require reflection/formal pre-cull failure for concrete, paving, soil, vegetation or bark evidence.",
     "Capture reflection probes in a clean state, mutate protected importer state, then require final formal pre-cull failure rather than accepting stale cubemap/material coherence."
   ],
   "visualGate": {
@@ -70,7 +77,7 @@
       "Material/PBR physical plausibility": "medium-large",
       "Lighting/shadows/reflections": "medium",
       "Texture/microdetail/texel fidelity": "medium-large",
-      "Vegetation/natural complexity": "small-medium",
+      "Vegetation/natural complexity": "medium",
       "Cinematic image quality/composition/color/exposure": "small",
       "Temporal/LOD/aliasing stability": "medium"
     }

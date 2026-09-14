@@ -73,6 +73,8 @@
         "Assets/QA/facade_weathering_contract.json",
         "Assets/QA/futon_balcony_drape_contract.json",
         "Assets/QA/balcony_separation_panel_contract.json",
+        "Assets/QA/rainwater_downpipe_installation_contract.json",
+        "Assets/QA/rainwater_system_authority_contract.json",
         "Assets/QA/scene_material_physicality_contract.json",
         "Assets/QA/period_authenticity_contract.json",
         "Assets/QA/structural_surface_geometry_contract.json"

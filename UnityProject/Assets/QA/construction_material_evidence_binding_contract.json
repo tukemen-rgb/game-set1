@@ -25,6 +25,14 @@
   "autoInvalidateRenderReceiptOnBoundSourceMutation": true,
   "preserveRenderedPngsOnInvalidation": true,
   "failClosedWithoutBinding": true,
+  "scoringEntrypointEnforcement": {
+    "configValidator": "QualityBlockVisualFidelityGate.ValidateGateConfig",
+    "coreEvaluator": "QualityBlockVisualFidelityGate.EvaluateVisualGate",
+    "requiredContractValidator": "QualityBlockConstructionMaterialEvidenceBindingQA.ValidateContractConfigOnly",
+    "requiredBindingValidator": "QualityBlockConstructionMaterialEvidenceBindingQA.ValidateLatestBinding",
+    "failClosedBeforeCategoryScoring": true,
+    "rationale": "missing_construction_material_metadata is a critical automatic FAIL, so a direct CLI/reflection/core evaluator call must not bypass the capture-bound scene and metadata proof."
+  },
   "sourceBundle": {
     "includePersistedSceneAsset": true,
     "includeSceneMetadataCoverageContract": true,
@@ -48,9 +56,11 @@
     "change render_capture_receipt.json bytes or captureSessionId",
     "attempt to bind metadata whose filesystem write time is later than the render receipt seal",
     "delete a source that was present in the bound metadata bundle",
-    "change coverage contractPaths so the bound source set differs"
+    "change coverage contractPaths so the bound source set differs",
+    "delete construction_material_capture_binding.json and invoke QualityBlockVisualFidelityGate.EvaluateVisualGate directly",
+    "mutate a bound scene or metadata source and invoke the core evaluator without using the evidence-bound wrapper"
   ],
-  "expectedFailure": "The authoritative render receipt is invalidated fail-closed. Existing rendered PNGs remain available for diagnosis but cannot reach the evidence-bound Visual Fidelity gate until a fresh Unity capture is made.",
+  "expectedFailure": "The authoritative render receipt is invalidated or the core Visual Fidelity evaluator rejects the candidate before category scoring. Existing rendered PNGs remain available for diagnosis but cannot reach PASS until a fresh Unity capture is made and the exact scene/metadata bundle is bound.",
   "visualFidelityPointsAwardedAutomatically": false,
   "implementationReadinessOnlyUntilRealRender": true,
   "visualFidelityStatus": "UNSCORED_UNTIL_REAL_4K_RENDER"

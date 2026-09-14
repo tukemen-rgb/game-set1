@@ -3,7 +3,7 @@
   "runDate": "2026-09-14",
   "branch": "gpt/unity-migration",
   "startingHead": "d2e58bba82e404b940c5e81e44e2ea57fc0f37aa",
-  "headBeforeRunRecord": "e43d3b158f184f178ceac35e6fbaba2852c4cae6",
+  "headBeforeRunRecord": "c0ecb635558194a0b61dfaf521a6864f2cbb9e73",
   "objective": "Protect foliage physical-data texel fidelity before native-4K grading by closing an importer-precision gap in generated dry-leaf normal and smoothness maps, without awarding visual points before real Unity-rendered evidence exists.",
   "investigation": {
     "selectedIssue": "QualityBlockPbrUpgrade generates PBR_LeafDark and PBR_LeafMid normal plus metallic/smoothness textures through the generic generated-PBR path, whose importer policy is CompressedHQ. Existing foliage physicality QA validates shader/material physics, transmission, dielectric response and morphology but did not independently require lossless import precision for the generated leaf normal direction and smoothness alpha signals.",
@@ -12,12 +12,12 @@
   },
   "changes": [
     {
-      "commit": "70f5f43c1ddc13669064aa6858bf60e434933123",
+      "commit": "440e9074524c92546b468557499c13b9332002c9",
       "path": "UnityProject/Assets/QA/foliage_microtexture_import_precision_contract.json",
       "summary": "Added a machine-readable zero-point contract for the four generated foliage physical-data textures. Canonical state is Uncompressed, Crunch off, no Standalone override, 1024x1024, mipmapped, Repeat, Trilinear, anisotropy >=8 and linear; normals remain NormalMap and smoothness masks preserve input alpha. The contract records dry dielectric leaf physics, formal-evidence requirements, failure injections and zero automatic Visual Fidelity points."
     },
     {
-      "commit": "e43d3b158f184f178ceac35e6fbaba2852c4cae6",
+      "commit": "c0ecb635558194a0b61dfaf521a6864f2cbb9e73",
       "path": "UnityProject/Assets/Editor/QualityBlockFoliageMicrotextureImportPrecisionQA.cs",
       "summary": "Added InitializeOnLoad/import/save preparation plus formal pre-cull read-only validation. Preparation may reassert canonical importer state after generated textures are created or reimported; QA4K_, QATemporal_ and QAPreparedTemporal_ targets never repair in-flight and fail closed on compression, Crunch, platform override, size, mip, filter, anisotropy, colour-space, texture-type or alpha drift."
     }

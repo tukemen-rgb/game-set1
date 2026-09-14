@@ -1,0 +1,67 @@
+{
+  "schemaVersion": "1.0.0",
+  "contractId": "park-furniture-microtexture-import-precision-v1",
+  "scenePath": "Assets/Scenes/QualityBlock1990s.unity",
+  "sourceMaterialContract": "Assets/QA/park_furniture_microdetail_contract.json",
+  "textureRoot": "Assets/Art/GeneratedParkFurnitureMaterials/Microdetail",
+  "purpose": "Preserve the authored manufacture-scale normal and metallic/smoothness signals for benchmark-visible park furniture through Unity import so native-4K grazing and temporal evidence is not pre-degraded by block compression. This is implementation readiness only and awards no Visual Fidelity points without actual rendered evidence.",
+  "profiles": [
+    {"stem":"Park_PaintedSteel","surface":"aged municipal coating over steel","normalAmplitudeMm":0.055,"roughnessRange":[0.60,0.76],"metallic":0.0,"wetness":"dry benchmark default","angularResponse":"dielectric Fresnel; no painted highlight"},
+    {"stem":"Park_SlideStainless","surface":"formed SUS304-class slide skin","normalAmplitudeMm":0.028,"roughnessRange":[0.18,0.30],"metallic":1.0,"wetness":"dry benchmark default","angularResponse":"environment-driven metallic grazing response"},
+    {"stem":"Park_ExposedSteel","surface":"uncoated exposed steel hardware","normalAmplitudeMm":0.045,"roughnessRange":[0.26,0.42],"metallic":1.0,"wetness":"dry benchmark default","angularResponse":"true metallic reflection"},
+    {"stem":"Park_BenchTimber","surface":"exterior timber seat slats","normalAmplitudeMm":0.28,"roughnessRange":[0.66,0.84],"metallic":0.0,"wetness":"dry benchmark default","angularResponse":"broad dielectric response"},
+    {"stem":"Park_PrecastConcrete","surface":"dry aged precast mineral surface","normalAmplitudeMm":0.48,"roughnessRange":[0.80,0.93],"metallic":0.0,"wetness":"dry benchmark default","angularResponse":"rough dielectric response"},
+    {"stem":"Park_ContactConcrete","surface":"ground-contact/splash/capillary mineral zone","normalAmplitudeMm":0.62,"roughnessRange":[0.86,0.96],"metallic":0.0,"wetness":"causal contact-zone aging; not globally glossy","angularResponse":"rough dielectric response"},
+    {"stem":"Park_NoticeBacking","surface":"weathered notice-board backing","normalAmplitudeMm":0.22,"roughnessRange":[0.72,0.88],"metallic":0.0,"wetness":"dry benchmark default","angularResponse":"matte dielectric response"},
+    {"stem":"Park_LampDiffuser","surface":"aged/frosted daytime diffuser","normalAmplitudeMm":0.030,"roughnessRange":[0.36,0.52],"metallic":0.0,"wetness":"dry benchmark default","angularResponse":"dielectric Fresnel; non-emissive in daytime"}
+  ],
+  "protectedMapsPerProfile": ["Normal", "MetallicSmoothness"],
+  "importRequirements": {
+    "textureCompression": "Uncompressed",
+    "crunchedCompression": false,
+    "standalonePlatformOverrideAllowed": false,
+    "minimumMaxTextureSize": 1024,
+    "runtimeDimensions": [1024,1024],
+    "mipmapsRequired": true,
+    "filterMode": "Trilinear",
+    "wrapMode": "Repeat",
+    "minimumAnisotropy": 8,
+    "sRGB": false,
+    "normalTextureType": "NormalMap",
+    "metallicSmoothnessTextureType": "Default",
+    "alphaSource": "FromInput",
+    "reason": "The weakest signals are the 0.028-0.055 mm metal/coating normals and narrow smoothness variation. Block compression can quantize normal direction and highlight width before 4K grazing review; mask alpha must remain intact because it carries canonical smoothness."
+  },
+  "renderBoundaryPolicy": {
+    "formalTargets": ["QA4K_*", "QATemporal_*", "QAPreparedTemporal_*"],
+    "preCullBehavior": "READ_ONLY_FAIL_CLOSED",
+    "repairDuringFormalRender": false,
+    "reflectionBoundaryOwnedBy": "QualityBlockPhysicalDataImportPrecisionBundleQA",
+    "preparationMayRepairBeforeRender": true
+  },
+  "failureInjection": [
+    "Set one protected normal or metallic/smoothness map to CompressedHQ and require failure.",
+    "Enable Crunch compression and require failure.",
+    "Enable a Standalone platform override and require failure.",
+    "Reduce maxTextureSize below 1024 or runtime dimensions below 1024x1024 and require failure.",
+    "Disable mipmaps and require failure.",
+    "Change filter mode to Bilinear or Point and require failure.",
+    "Reduce anisotropy below 8 and require failure.",
+    "Enable sRGB on either physical-data map and require failure.",
+    "Change a normal away from NormalMap and require failure.",
+    "Remove source alpha from a metallic/smoothness map and require failure before evidence rendering."
+  ],
+  "requiredRenderedEvidence": [
+    "3840x2160 oblique and grazing frames containing slide, bench, lamp or notice-board furniture",
+    "100% stainless slide crop proving travel-direction abrasion remains subtle and reflection-driven",
+    "100% timber/concrete crop proving physical-scale relief survives without block artifacts",
+    "temporal grazing sequence proving the preserved microdetail does not produce sparkle or shimmer"
+  ],
+  "visualFidelityPointsAwarded": 0,
+  "runtimeRenderVerification": "PENDING_UNITY_RUNTIME",
+  "passClaimAllowedWithoutRenderedEvidence": false,
+  "constraints": {
+    "preserveGodot": true,
+    "excludedThemes": ["earthquake", "disaster", "reconstruction"]
+  }
+}

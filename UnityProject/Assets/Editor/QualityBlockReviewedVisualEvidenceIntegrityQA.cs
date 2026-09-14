@@ -9,11 +9,8 @@ using UnityEngine;
 /// <summary>
 /// Fail-closed integrity checks for the manually reviewed Visual Fidelity evidence document.
 ///
-/// The numeric gate validates score ranges and observability, while render provenance binds the review
-/// to exact Unity pixels. This layer closes a different ambiguity class: duplicated/unknown entries,
-/// missing corrective actions, mathematically inconsistent deductions, and incomplete review records
-/// that could otherwise be silently consumed through FirstOrDefault-style lookup. It awards zero
-/// Visual Fidelity points.
+/// This layer is intentionally non-scoring. It rejects structurally ambiguous review packets before
+/// the canonical numeric gate can consume them, then requires current source/pixel/temporal proofs.
 /// </summary>
 public static class QualityBlockReviewedVisualEvidenceIntegrityQA
 {
@@ -68,6 +65,13 @@ public static class QualityBlockReviewedVisualEvidenceIntegrityQA
                 EvidencePath);
 
         string evidenceJson = File.ReadAllText(EvidencePath);
+
+        // Validate the raw JSON before JsonUtility is trusted. JsonUtility maps a missing bool to false;
+        // for an automatic critical FAIL this could otherwise turn an omitted `present` decision into an
+        // apparent "defect absent" result. This validator requires one explicit boolean plus one terminal
+        // reviewStatus for every canonical defect, and requires those two signals to agree exactly.
+        QualityBlockCriticalDefectDecisionEncodingQA.ValidateEvidenceEncoding(evidenceJson);
+
         QualityBlockVisualFidelityGate.VisualEvidence evidence =
             JsonUtility.FromJson<QualityBlockVisualFidelityGate.VisualEvidence>(evidenceJson);
         if (evidence == null)
@@ -81,44 +85,26 @@ public static class QualityBlockReviewedVisualEvidenceIntegrityQA
         ValidateScoreArithmetic(evidenceJson, evidence.categories);
         ValidateCriticalDefectEntries(evidence.criticalDefects);
 
-        // missing_construction_material_metadata is a named automatic FAIL but it is not something
-        // pixels can prove absent. Revalidate both the detailed material/construction registry and
-        // every active benchmark renderer's metadata domain here, inside the scoring path. Human
-        // observed references remain required by the review schema, but they cannot override this
-        // machine proof. This source/scene validation awards zero visual points.
+        // Pixel review cannot prove source metadata completeness. Revalidate the live scene/registry inside
+        // the scoring path; human notes cannot override this machine proof.
         QualityBlockSceneMetadataCoverageQA.ValidateOpenScene();
 
-        // Static hierarchy signatures cannot clear the render-only obvious-repetition defect. Require
-        // pixel-domain diagnostics generated from the current SHA-256-bound native 4K manifest/crop bytes
-        // before scoring. The diagnostic is intentionally warning-only: its result cannot clear or assert
-        // the critical defect, so the reviewer must still record direct observations from the exact crops.
+        // These pixel-domain diagnostics are mandatory current-candidate preconditions but remain warning-only.
+        // They cannot automatically clear or assert their associated critical defects.
         QualityBlockRenderedRepetitionDiagnostics.ValidateLatestReportForScoring();
-
-        // Construction/shadow QA likewise cannot prove that a major bright leak is absent in the final
-        // post-tonemap pixels. Require the current SHA-256-bound bright-on-dark triage report before the
-        // reviewer can reach the numeric gate. It remains warning-only and cannot clear/assert the defect.
         QualityBlockRenderedLightLeakDiagnostics.ValidateLatestReportForScoring();
 
-        // A valid temporal sequence is still stale evidence if scene/material/shader/settings/capture-recipe
-        // inputs changed and a new still candidate was sealed afterward. Bind temporal provenance to the same
-        // current candidate SHA/epoch/scene before any temporal category or defect review can reach the gate.
-        // This bridge awards zero points and cannot clear shimmer/aliasing/LOD-pop by itself.
+        // Temporal evidence must belong to the same current still candidate and must carry per-frame runtime
+        // lighting + filmic HDR->LDR proof. Neither bridge awards points or clears temporal critical defects.
         QualityBlockTemporalCandidateCoherenceQA.ValidateForScoring();
-
-        // Temporal/LOD/aliasing review is not scoreable from PNG existence alone. Require the
-        // authoritative prepared sequence to prove one MainCamera pre-cull lighting fingerprint per
-        // temporal frame and one filmic native-4K HDR->LDR invocation per frame with zero fallback.
-        // The runtime receipt is SHA-256-bound to the temporal manifest/receipt, prepared scene binding,
-        // persisted scene and accepted reflection completion/wait proofs. It still awards zero points.
         QualityBlockTemporalRuntimeEvidenceGuard.ValidateLatestReceiptForScoring();
 
         Debug.Log(
-            "Reviewed Visual Fidelity evidence integrity valid: exact hero/oblique/grazing entries, exact nine categories, " +
-            "exact twelve critical-defect reviews, no duplicates/unknown IDs, complete evidence/corrective-action text, " +
-            "explicit integer deductionPoints with score + deductionPoints == category weight for every category, " +
-            "machine-revalidated construction/material metadata, current SHA-256-bound native-4K repetition and light-leak triage reports, " +
-            "temporal evidence bound to the same current still candidate SHA/epoch/scene, and a sealed per-frame temporal lighting + filmic HDR->LDR runtime receipt. " +
-            "Pixel/provenance diagnostics remain non-scoring; this QA awards 0 Visual Fidelity points and direct pixel review/provenance/numeric gate still decide eligibility/PASS.");
+            "Reviewed Visual Fidelity evidence integrity valid: hero/oblique/grazing entries, nine categories, " +
+            "twelve explicit terminal critical-defect decisions, no duplicate/unknown IDs, complete evidence/corrective-action text, " +
+            "explicit integer deductionPoints with score + deductionPoints == category weight, machine-revalidated construction/material metadata, " +
+            "current SHA-256-bound repetition/light-leak diagnostics, current still/temporal candidate coherence and sealed temporal runtime evidence. " +
+            "This QA awards 0 Visual Fidelity points; direct pixel review, render provenance and the canonical numeric gate still decide PASS.");
     }
 
     public static void ValidateContractConfigOnly()
@@ -172,6 +158,7 @@ public static class QualityBlockReviewedVisualEvidenceIntegrityQA
             throw new InvalidOperationException(
                 "Reviewed-evidence integrity rules were weakened or are incomplete.");
 
+        QualityBlockCriticalDefectDecisionEncodingQA.ValidateContractConfigOnly();
         QualityBlockTemporalCandidateCoherenceQA.ValidateContractConfigOnly();
     }
 

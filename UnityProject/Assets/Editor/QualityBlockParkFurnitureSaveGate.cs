@@ -20,6 +20,8 @@ public static class QualityBlockParkFurnitureSaveGate
     private const string ScenePath = "Assets/Scenes/QualityBlock1990s.unity";
     private const string ContractPath = "Assets/QA/park_street_furniture_contract.json";
     private const string MicrodetailContractPath = "Assets/QA/park_furniture_microdetail_contract.json";
+    private const string ExposureWeatheringContractPath = "Assets/QA/park_furniture_exposure_weathering_contract.json";
+    private const string ExposureWeatheringLookdevPath = "Assets/QA/park_furniture_exposure_weathering_lookdev.svg";
     private const string SlideInterfaceContractPath = "Assets/QA/slide_access_installation_contract.json";
     private const string SlideLookdevPath = "Assets/QA/slide_access_installation_lookdev.svg";
     private const string SlideChuteContractPath = "Assets/QA/slide_chute_fabrication_contract.json";
@@ -73,6 +75,11 @@ public static class QualityBlockParkFurnitureSaveGate
             QualityBlockNoticeBoardPrintedUvQA.ApplyAndValidate();
             QualityBlockBenchSeatConstructionInterfaceQA.ApplyToOpenScene();
 
+            // Exposure/contact weathering changes materials only and therefore runs after the authoritative
+            // microdetail/fabrication passes without requiring another LOD renderer rebind. It must not add
+            // renderers/colliders or take ownership of the slide chute / lamp weathering systems.
+            QualityBlockParkFurnitureExposureWeatheringQA.ApplyToOpenScene();
+
             QualityBlockParkFurnitureUpgrade.ValidateOpenScene();
             QualityBlockParkFurniturePhysicalRefinement.ValidateOpenScene();
             QualityBlockParkFurnitureLodRebind.ValidateOpenScene();
@@ -83,13 +90,14 @@ public static class QualityBlockParkFurnitureSaveGate
             QualityBlockParkFurnitureMicrodetailUpgrade.Validate();
             QualityBlockBenchSeatConstructionInterfaceQA.ValidateOpenScene();
             QualityBlockParkLampInstallationQA.ValidateOpenScene();
+            QualityBlockParkFurnitureExposureWeatheringQA.ValidateOpenScene();
         }
         catch (Exception ex)
         {
             throw new InvalidOperationException(
                 "Benchmark save blocked: park/street-furniture manufacture, material, physical-profile, " +
                 "notice-board display-case/printed-UV, slide access/support, watertight chute fabrication, " +
-                "park-lamp installation, LOD, microdetail or bench load-path contract failed.", ex);
+                "park-lamp installation, LOD, microdetail, causal exposure-weathering or bench load-path contract failed.", ex);
         }
         finally
         {
@@ -102,6 +110,8 @@ public static class QualityBlockParkFurnitureSaveGate
     {
         RequireFile(ContractPath, "construction/material metadata");
         RequireFile(MicrodetailContractPath, "park-furniture microdetail metadata");
+        RequireFile(ExposureWeatheringContractPath, "park-furniture exposure/weathering metadata");
+        RequireFile(ExposureWeatheringLookdevPath, "park-furniture exposure/weathering lookdev illustration");
         RequireFile(SlideInterfaceContractPath, "slide access/support metadata");
         RequireFile(SlideLookdevPath, "slide access/support lookdev illustration");
         RequireFile(SlideChuteContractPath, "slide chute fabrication metadata");
@@ -129,6 +139,17 @@ public static class QualityBlockParkFurnitureSaveGate
             "\"precast_concrete\"", "\"normalAmplitudeMm\"", "\"physicalTileMeters\"",
             "\"bareMetalMetallicMin\": 0.95", "\"visualFidelityPointsAwarded\": 0",
             "PENDING_UNITY_RUNTIME"
+        });
+
+        RequireTokens(ExposureWeatheringContractPath, "Furniture exposure-weathering metadata contract", new[]
+        {
+            "\"id\": \"park_furniture_exposure_weathering\"",
+            "\"wetness\": 0.0", "\"paint_uv_exposed\"", "\"paint_hand_contact\"",
+            "\"timber_sun_exposed\"", "\"requiredSlideTreadsPerLod\": 10",
+            "\"requiredSlideHandContactComponentsPerLod\": 5",
+            "\"requiredNoticeExposedComponentsPerLod\": 2",
+            "\"requireNoGeneratedRendererOrCollider\": true",
+            "\"visualFidelityPointsAwarded\": 0", "PENDING_UNITY_RUNTIME"
         });
 
         RequireTokens(SlideInterfaceContractPath, "Slide access/support metadata", new[]
@@ -192,6 +213,7 @@ public static class QualityBlockParkFurnitureSaveGate
         QualityBlockBenchSeatConstructionInterfaceQA.ValidateContractConfigOnly();
         QualityBlockParkLampInstallationQA.ValidateContractConfigOnly();
         QualityBlockNoticeBoardDisplayCaseQA.ValidateContractConfigOnly();
+        QualityBlockParkFurnitureExposureWeatheringQA.ValidateContractConfigOnly();
     }
 
     private static void RequireFile(string path, string description)

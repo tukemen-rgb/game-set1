@@ -80,6 +80,11 @@ public static class QualityBlockParkFurnitureSaveGate
             // renderers/colliders or take ownership of the slide chute / lamp weathering systems.
             QualityBlockParkFurnitureExposureWeatheringQA.ApplyToOpenScene();
 
+            // The acrylic-specific contract allows roughness down to 0.08, while the aggregate furniture
+            // physicality guard requires >=0.12. Normalize to the overlap (0.125) before aggregate validation
+            // so the prepared-scene gates cannot contradict each other.
+            QualityBlockNoticeAcrylicCompatibilityQA.ApplyAndValidate();
+
             QualityBlockParkFurnitureUpgrade.ValidateOpenScene();
             QualityBlockParkFurniturePhysicalRefinement.ValidateOpenScene();
             QualityBlockParkFurnitureLodRebind.ValidateOpenScene();
@@ -91,12 +96,13 @@ public static class QualityBlockParkFurnitureSaveGate
             QualityBlockBenchSeatConstructionInterfaceQA.ValidateOpenScene();
             QualityBlockParkLampInstallationQA.ValidateOpenScene();
             QualityBlockParkFurnitureExposureWeatheringQA.ValidateOpenScene();
+            QualityBlockNoticeAcrylicCompatibilityQA.Validate();
         }
         catch (Exception ex)
         {
             throw new InvalidOperationException(
                 "Benchmark save blocked: park/street-furniture manufacture, material, physical-profile, " +
-                "notice-board display-case/printed-UV, slide access/support, watertight chute fabrication, " +
+                "notice-board display-case/printed-UV/acrylic physical range, slide access/support, watertight chute fabrication, " +
                 "park-lamp installation, LOD, microdetail, causal exposure-weathering or bench load-path contract failed.", ex);
         }
         finally

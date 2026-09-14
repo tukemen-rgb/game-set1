@@ -1,0 +1,58 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="900" viewBox="0 0 1400 900">
+  <rect width="1400" height="900" fill="#101318"/>
+  <text x="60" y="64" fill="#f2f2ed" font-family="sans-serif" font-size="30" font-weight="700">Park / Street Furniture — Cause-Based Exposure Lookdev</text>
+  <text x="60" y="96" fill="#aab2bd" font-family="sans-serif" font-size="17">Dry midsummer benchmark • optical zoning only • no added weathering geometry • highlights from scene lighting/probes</text>
+
+  <g transform="translate(60 140)">
+    <rect width="610" height="300" rx="18" fill="#171c23" stroke="#343d49"/>
+    <text x="28" y="42" fill="#e8edf2" font-family="sans-serif" font-size="23" font-weight="700">SLIDE — exposure vs contact</text>
+    <path d="M85 218 L250 98 L505 218" fill="none" stroke="#7697a8" stroke-width="16" stroke-linecap="round"/>
+    <path d="M250 98 L490 250" fill="none" stroke="#c3c8ca" stroke-width="32" stroke-linecap="round"/>
+    <path d="M78 194 L205 103" fill="none" stroke="#9ab58f" stroke-width="8" stroke-linecap="round"/>
+    <path d="M422 177 L520 240" fill="none" stroke="#8aa9b7" stroke-width="5" stroke-dasharray="10 9"/>
+    <text x="28" y="272" fill="#d8b96d" font-family="sans-serif" font-size="16">UV / rain → deck + tread paint: slightly rougher</text>
+    <text x="28" y="294" fill="#8fcaad" font-family="sans-serif" font-size="16">hand contact → rail paint: slightly smoother</text>
+    <text x="330" y="78" fill="#cbd1d5" font-family="sans-serif" font-size="15">SUS travel abrasion stays in base microdetail</text>
+  </g>
+
+  <g transform="translate(730 140)">
+    <rect width="610" height="300" rx="18" fill="#171c23" stroke="#343d49"/>
+    <text x="28" y="42" fill="#e8edf2" font-family="sans-serif" font-size="23" font-weight="700">BENCH — sun / drying</text>
+    <rect x="80" y="100" width="440" height="26" rx="5" fill="#8b6542"/>
+    <rect x="80" y="139" width="440" height="26" rx="5" fill="#85603f"/>
+    <rect x="80" y="178" width="440" height="26" rx="5" fill="#80603f"/>
+    <rect x="128" y="204" width="45" height="63" fill="#85847e"/>
+    <rect x="430" y="204" width="45" height="63" fill="#85847e"/>
+    <rect x="128" y="244" width="45" height="23" fill="#656a62"/>
+    <rect x="430" y="244" width="45" height="23" fill="#656a62"/>
+    <text x="28" y="286" fill="#d8b96d" font-family="sans-serif" font-size="16">upward timber → restrained UV dry-state shift</text>
+    <text x="28" y="308" fill="#9bb6a0" font-family="sans-serif" font-size="16">grade band remains existing contact-concrete system</text>
+  </g>
+
+  <g transform="translate(60 490)">
+    <rect width="610" height="300" rx="18" fill="#171c23" stroke="#343d49"/>
+    <text x="28" y="42" fill="#e8edf2" font-family="sans-serif" font-size="23" font-weight="700">NOTICE BOARD — exposed shell / sheltered cavity</text>
+    <rect x="112" y="88" width="385" height="170" fill="#594b37" stroke="#78909c" stroke-width="18"/>
+    <rect x="95" y="72" width="420" height="16" fill="#7697a8"/>
+    <rect x="122" y="98" width="365" height="150" fill="#acc5cb" fill-opacity="0.18" stroke="#c8d8dc" stroke-opacity="0.55"/>
+    <rect x="151" y="121" width="68" height="82" fill="#d8d0b4"/>
+    <rect x="251" y="122" width="96" height="67" fill="#b9c9c6"/>
+    <rect x="377" y="119" width="62" height="91" fill="#d2b8b6"/>
+    <text x="28" y="284" fill="#d8b96d" font-family="sans-serif" font-size="16">top frame + hood → direct UV / rain response</text>
+    <text x="28" y="306" fill="#8fc1cc" font-family="sans-serif" font-size="16">paper + backing → remain sheltered; no exterior dirt class</text>
+  </g>
+
+  <g transform="translate(730 490)">
+    <rect width="610" height="300" rx="18" fill="#171c23" stroke="#343d49"/>
+    <text x="28" y="42" fill="#e8edf2" font-family="sans-serif" font-size="23" font-weight="700">PBR / EVIDENCE RULES</text>
+    <text x="34" y="86" fill="#d4d9df" font-family="monospace" font-size="16">• preserve base albedo / normal / metallic-smoothness maps</text>
+    <text x="34" y="118" fill="#d4d9df" font-family="monospace" font-size="16">• painted steel + timber remain dielectric (metallic = 0)</text>
+    <text x="34" y="150" fill="#d4d9df" font-family="monospace" font-size="16">• dry benchmark wetness = 0; no emission / baked highlight</text>
+    <text x="34" y="182" fill="#d4d9df" font-family="monospace" font-size="16">• same causal class across LOD0 / 1 / 2 / 3</text>
+    <text x="34" y="226" fill="#f1c66b" font-family="sans-serif" font-size="17" font-weight="700">Render proof required</text>
+    <text x="34" y="254" fill="#aeb8c3" font-family="sans-serif" font-size="16">3840×2160 frontal + oblique + grazing</text>
+    <text x="34" y="278" fill="#aeb8c3" font-family="sans-serif" font-size="16">100% crops + temporal LOD/material-class stability</text>
+  </g>
+
+  <text x="60" y="852" fill="#7f8995" font-family="sans-serif" font-size="15">Implementation lookdev only — visual points remain 0 until native Unity pixels are captured and reviewed.</text>
+</svg>

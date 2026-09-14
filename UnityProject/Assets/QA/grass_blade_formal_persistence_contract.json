@@ -1,0 +1,69 @@
+{
+  "schemaVersion": "1.0.0",
+  "id": "grass_blade_formal_persistence",
+  "scenePath": "Assets/Scenes/QualityBlock1990s.unity",
+  "sourceGrassContractPath": "Assets/QA/grass_blade_field_contract.json",
+  "rootPath": "QualityBlock1990s/Ground/GrassBladeFieldDetail",
+  "generatorMarker": "Generator_grass-blade-field-v1.0.1",
+  "purpose": "Require the physical grass-blade layer to exist in the persisted benchmark scene before formal rendering, rather than relying on an unsaved scene-open mutation that could render pixels not represented by the persisted scene evidence state.",
+  "formalPipeline": {
+    "captureEntrypoint": "QualityBlock4KCapture.PrepareSceneForSynchronizedCapture",
+    "canonicalReopen": "EditorSceneManager.OpenScene(ScenePath, OpenSceneMode.Single)",
+    "sceneOpenAction": "QualityBlockGrassBladeFieldUpgrade.ApplyToOpenScene(true)",
+    "sceneOpenMustPersist": true,
+    "sceneSavedBaselineRequired": true,
+    "formalCullMustMatchLatestSavedGrassFingerprint": true,
+    "renderCallbacksReadOnly": true
+  },
+  "fingerprint": {
+    "algorithm": "SHA-256",
+    "scope": [
+      "grass hierarchy local transforms and active state",
+      "MeshFilter asset path, dependency hash, mesh name, vertex/submesh count and bounds",
+      "Renderer enabled state, shadow/probe policy, material asset path/dependency hash and live PBR scalar/color/texture bindings",
+      "LODGroup fade policy, transitions and renderer assignments"
+    ],
+    "reason": "Temporary benchmark-camera transforms may dirty the broader scene during capture, so the guard binds only the grass render state to the most recently saved canonical-scene baseline instead of requiring the entire scene to remain globally clean."
+  },
+  "formalCameraClasses": [
+    "QualityCamera",
+    "Reflection",
+    "QA4K_*",
+    "QATemporal_*",
+    "QAPreparedTemporal_*"
+  ],
+  "failurePolicy": {
+    "failClosed": true,
+    "automaticRepairDuringRender": false,
+    "rejectIf": [
+      "formal render begins without a saved grass fingerprint baseline",
+      "GrassBladeFieldDetail or generator marker is missing",
+      "current grass render fingerprint differs from the latest scene-saved fingerprint",
+      "grass source QA fails before a formal camera cull",
+      "the source contract or canonical source material is unavailable when the benchmark scene is opened"
+    ]
+  },
+  "failureInjection": [
+    "open the canonical scene and delete one grass patch without saving, then invoke a formal camera",
+    "change one grass LOD transition without saving, then invoke a formal camera",
+    "swap one patch mesh or material after the latest scene save",
+    "remove the saved fingerprint baseline and invoke QualityCamera",
+    "remove GrassBladeFieldDetail before the canonical scene-open persistence pass"
+  ],
+  "renderVerification": {
+    "runtimeRenderVerified": false,
+    "visualFidelityPointsAwarded": 0,
+    "status": "IMPLEMENTATION_ONLY_RENDER_VERIFICATION_PENDING",
+    "requiredEvidence": [
+      "fresh hero 3840x2160 plus 100% lawn-edge crop",
+      "fresh oblique 3840x2160 plus vegetation-grounding crop",
+      "fresh grazing 3840x2160 plus lawn silhouette crop",
+      "sealed temporal LOD sequence"
+    ]
+  },
+  "expectedVisualFidelityImpact": {
+    "vegetationNaturalComplexity": "Preserves the implemented blade geometry in the exact saved scene used for evidence; no points until pixels are reviewed.",
+    "temporalLodAliasingStability": "Prevents formal temporal evidence from silently using an unsaved or later-mutated grass LOD state; no points until temporal pixels are reviewed.",
+    "criticalDefectEvidence": "Reduces provenance ambiguity around visible primitive fallback, repetition, floating vegetation and LOD-pop review without auto-clearing any defect."
+  }
+}

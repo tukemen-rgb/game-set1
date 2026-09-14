@@ -42,10 +42,11 @@ public static class QualityBlockPhysicalDataImportPrecisionBundleQA
         QualityBlockFoliageMicrotextureImportPrecisionQA.ApplyAndValidate();
         QualityBlockDetailMaterialMicrotextureImportPrecisionQA.ApplyAndValidate();
         QualityBlockParkFurnitureMicrotextureImportPrecisionQA.ApplyAndValidate();
+        QualityBlockGenericPbrMicrotextureImportPrecisionQA.ApplyAndValidate();
 
         ValidatePreparedStateReadOnly();
         Debug.Log(
-            "Physical-data import precision bundle prepared: facade macro plus balcony, ground, foliage, apartment-detail and park-furniture physical-data textures satisfy their domain gates. " +
+            "Physical-data import precision bundle prepared: facade macro plus balcony, ground, foliage, apartment-detail, park-furniture and generic-PBR physical-data textures satisfy their domain gates. " +
             "Reflection/formal render callbacks remain read-only and Visual Fidelity remains UNSCORED.");
     }
 
@@ -61,6 +62,7 @@ public static class QualityBlockPhysicalDataImportPrecisionBundleQA
         QualityBlockFoliageMicrotextureImportPrecisionQA.ValidateFromMenu();
         QualityBlockDetailMaterialMicrotextureImportPrecisionQA.ValidateFromMenu();
         QualityBlockParkFurnitureMicrotextureImportPrecisionQA.ValidateFromMenu();
+        QualityBlockGenericPbrMicrotextureImportPrecisionQA.ValidateFromMenu();
     }
 
     public static void ValidateContractConfigOnly()
@@ -72,7 +74,7 @@ public static class QualityBlockPhysicalDataImportPrecisionBundleQA
         string json = File.ReadAllText(ContractPath);
         string[] required =
         {
-            "\"schemaVersion\": \"1.0.0\"",
+            "\"schemaVersion\": \"1.1.0\"",
             "\"contractId\": \"physical-data-import-precision-bundle-v1\"",
             "QualityBlockFacadeMacroPrecisionUpgrade",
             "QualityBlockBalconyMicrotextureImportPrecisionQA",
@@ -80,6 +82,8 @@ public static class QualityBlockPhysicalDataImportPrecisionBundleQA
             "QualityBlockFoliageMicrotextureImportPrecisionQA",
             "QualityBlockDetailMaterialMicrotextureImportPrecisionQA",
             "QualityBlockParkFurnitureMicrotextureImportPrecisionQA",
+            "QualityBlockGenericPbrMicrotextureImportPrecisionQA",
+            "\"protectedDomainCount\": 7",
             "\"reflectionCameraType\": \"Reflection\"",
             "\"formalPreCullBehavior\": \"READ_ONLY_FAIL_CLOSED\"",
             "\"reflectionPreCullBehavior\": \"READ_ONLY_FAIL_CLOSED\"",
@@ -104,6 +108,7 @@ public static class QualityBlockPhysicalDataImportPrecisionBundleQA
         QualityBlockFoliageMicrotextureImportPrecisionQA.ValidateContractConfigOnly();
         QualityBlockDetailMaterialMicrotextureImportPrecisionQA.ValidateContractConfigOnly();
         QualityBlockParkFurnitureMicrotextureImportPrecisionQA.ValidateContractConfigOnly();
+        QualityBlockGenericPbrMicrotextureImportPrecisionQA.ValidateContractConfigOnly();
     }
 
     private static void ValidateBeforeRenderBoundary(Camera camera)

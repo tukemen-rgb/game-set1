@@ -29,6 +29,7 @@ public static class QualityBlockVisualFidelityGate
         // not only through MenuItem validators. This keeps -executeMethod / reflection / alternate runner
         // entry points from validating a merely 100-point-balanced but weakened gate.
         QualityBlockVisualGateIntegrityQA.ValidateContract();
+        QualityBlockConstructionMaterialEvidenceBindingQA.ValidateContractConfigOnly();
 
         GateConfig config = LoadJson<GateConfig>(ConfigPath);
         ObservabilityConfig observability = LoadJson<ObservabilityConfig>(ObservabilityPath);
@@ -48,6 +49,7 @@ public static class QualityBlockVisualFidelityGate
         // A CLI/runner invocation therefore cannot bypass exact category weights/minima, the canonical
         // 12 critical defects, duplicate/unknown reviewed entries, corrective actions, or observed refs.
         QualityBlockVisualGateIntegrityQA.ValidateContract();
+        QualityBlockConstructionMaterialEvidenceBindingQA.ValidateContractConfigOnly();
         QualityBlockReviewedVisualEvidenceIntegrityQA.ValidateReviewedEvidence();
 
         GateConfig config = LoadJson<GateConfig>(ConfigPath);
@@ -59,6 +61,11 @@ public static class QualityBlockVisualFidelityGate
         // Intrinsic still-evidence provenance. A direct CLI/reflection call cannot bypass SHA-256
         // capture/receipt and pixel-exact 100% crop checks by skipping the evidence-bound wrapper.
         QualityBlockRenderEvidenceProvenanceQA.ValidateEvidenceProvenance();
+
+        // missing_construction_material_metadata is a critical automatic FAIL. Require the exact persisted
+        // benchmark scene and every construction/material contract to be bound to this same render receipt
+        // at the core scoring entry point, not only through editor monitoring or the wrapper workflow.
+        QualityBlockConstructionMaterialEvidenceBindingQA.ValidateLatestBinding();
 
         if (!File.Exists(AbsolutePath(EvidencePath)))
             throw new InvalidOperationException(

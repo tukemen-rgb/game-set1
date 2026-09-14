@@ -26,7 +26,7 @@ public static class QualityBlockDetailBevelUpgrade
         EditorSceneManager.SaveOpenScenes();
         AssetDatabase.SaveAssets();
         AssetDatabase.Refresh();
-        Debug.Log("Beveled high-detail danchi with metric phased manufacture UVs built. Runtime Unity render verification remains pending.");
+        Debug.Log("Beveled high-detail danchi with metric phased manufacture UVs and physical balcony separation panels built. Runtime Unity render verification remains pending.");
     }
 
     [MenuItem("NewTown/Geometry/Apply Detail Bevel Pass Only")]
@@ -39,12 +39,6 @@ public static class QualityBlockDetailBevelUpgrade
         var root = FindSceneObject(DetailRootName);
         if (root == null)
             throw new InvalidOperationException("DanchiHighDetail is missing. Build the detail pass first.");
-
-        // The base high-detail pass already carries front divider brackets, but historically omitted the
-        // manufactured balcony separation panel itself. Build the complete board/frame/rear-mount assembly
-        // here, before primitive replacement, so its source geometry receives the same bevel, physical UV and
-        // later LOD derivation as every other benchmark-facing Danchi component.
-        QualityBlockBalconySeparationPanelUpgrade.ApplyToOpenScene();
 
         int boxes = 0;
         int cylinders = 0;
@@ -79,9 +73,12 @@ public static class QualityBlockDetailBevelUpgrade
         var manifest = root.AddComponent<QualityBlockDetailGeometryManifest>();
         manifest.Configure(boxes, cylinders, hexFasteners);
 
-        // This must run before DanchiLodUpgrade copies source renderers. LOD1-3 then inherit the same
-        // physically scaled/phase-diverse mesh assets rather than reintroducing normalized primitive UVs.
+        // Keep DanchiHighDetail's intentionally fixed six-material metric-UV contract closed before adding
+        // the fibre-cement balcony panel family. The panel pass then builds a separate Danchi child root with
+        // authored metre-UV meshes and its own per-panel LOD groups, using HD_BayAssembly transforms only as
+        // installation datums. This avoids silently widening the mature Danchi physical-UV registry.
         QualityBlockDetailPhysicalUvUpgrade.ApplyToOpenScene();
+        QualityBlockBalconySeparationPanelUpgrade.ApplyToOpenScene();
 
         EditorSceneManager.MarkSceneDirty(EditorSceneManager.GetActiveScene());
     }
@@ -114,11 +111,12 @@ public static class QualityBlockDetailBevelUpgrade
                 $"Expected every high-detail MeshFilter to use GM_HD authored geometry: authored={authoredCount}, total={filters.Length}.");
 
         QualityBlockDetailPhysicalUvQA.ValidateOpenScene();
+        QualityBlockBalconySeparationPanelUpgrade.ValidateOpenScene();
 
         Debug.Log(
             $"Beveled detail geometry validation passed structurally: chamferedBoxes={manifest.ChamferedBoxCount}, " +
-            $"beveledCylinders={manifest.BeveledCylinderCount}, hexFasteners={manifest.HexFastenerCount}, authoredMeshes={authoredCount}, metricPhysicalUv=validated. " +
-            "Actual edge highlights, microtexture repetition, seams and LOD behavior still require Unity render inspection.");
+            $"beveledCylinders={manifest.BeveledCylinderCount}, hexFasteners={manifest.HexFastenerCount}, authoredMeshes={authoredCount}, metricPhysicalUv=validated, balconySeparationPanels=validated. " +
+            "Actual edge highlights, microtexture repetition, panel attachment read, seams and LOD behavior still require Unity render inspection.");
     }
 
     private static bool IsFastener(string objectName)

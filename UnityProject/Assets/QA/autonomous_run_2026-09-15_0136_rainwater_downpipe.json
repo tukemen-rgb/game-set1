@@ -1,0 +1,93 @@
+{
+  "schemaVersion": "1.0.0",
+  "runDate": "2026-09-15",
+  "branch": "gpt/unity-migration",
+  "startHead": "ffa41bb79a8609d7c92def8ced3ddd41d7ed8e28",
+  "objective": "Reduce a direct automatic-FAIL risk from visible primitive-placeholder geometry by replacing the legacy RainGutter cylinder fallback with an authored physical vertical rainwater downpipe assembly while preserving Godot and existing mature Danchi systems.",
+  "constraints": {
+    "preserveGodot": true,
+    "mergeBaseWithoutApproval": false,
+    "excludedThemes": ["earthquake", "disaster", "reconstruction"],
+    "visualFidelityPassThreshold": 92,
+    "actualRenderRequiredForVisualScore": true
+  },
+  "observedSourceIssue": {
+    "path": "Assets/Editor/BuildQualityBlock1990s.cs",
+    "legacyObject": "RainGutter",
+    "finding": "The generated Danchi fallback creates five visible RainGutter objects from Unity PrimitiveType.Cylinder. This is a direct source-level risk for the critical defect visible_primitive_placeholder_geometry if the legacy renderers reach formal benchmark framing.",
+    "response": "Keep the legacy objects only as disabled provenance and author a dedicated DanchiRainwaterDrainage LOD assembly from QualityBlockDetailMeshLibrary meshes."
+  },
+  "implementation": {
+    "contract": "Assets/QA/rainwater_downpipe_contract.json",
+    "upgrade": "Assets/Editor/QualityBlockRainwaterDownpipeUpgrade.cs",
+    "qa": "Assets/Editor/QualityBlockRainwaterDownpipeConstructionQA.cs",
+    "lookdev": "Assets/QA/rainwater_downpipe_lookdev.svg",
+    "assembly": {
+      "scope": "visible vertical riser only",
+      "pipeOuterDiameterM": 0.075,
+      "visibleHeightM": 13.5,
+      "socketCount": 4,
+      "supportCount": 10,
+      "lodLevels": 4,
+      "lodRendererMinimums": [55, 35, 15, 1],
+      "crossFade": true,
+      "legacyRainGutterRenderersDisabled": true
+    },
+    "materials": {
+      "pvc": "dielectric aged PVC, metallic 0, smoothness 0.32-0.42, 512-square generated normal and metallic/smoothness physical-data textures, dry benchmark wetness 0",
+      "support": "aged galvanized steel, metallic 0.70-0.90, smoothness 0.30-0.45",
+      "highlightPolicy": "No highlight direction is baked into albedo/normal/roughness. Specular response must come from the coherent scene sun, sky and reflection state."
+    },
+    "weathering": "Cause-based baseline only: ordinary exterior UV chalking and sheltered hardware dust retention. No arbitrary damage or story-driven masks.",
+    "formalRenderBehavior": "QA4K/QATemporal/QAPreparedTemporal and Reflection-camera pre-cull validation is read-only and fail-closed; it does not repair the assembly during evidence generation."
+  },
+  "commits": [
+    {"sha": "4ea8e63d74e82cead573d7d6508979f09bc8554d", "purpose": "physical construction/material/LOD contract"},
+    {"sha": "f74d5902a8ec24fe604589c31b1e7560a930ea4a", "purpose": "authored downpipe upgrade implementation"},
+    {"sha": "2db9961355c4a6e9bc6c1abafc0f2d190d4989be", "purpose": "fail-closed construction/material/LOD QA"},
+    {"sha": "7e1461dc53600a7eeea08f94eec2e18bd45455d7", "purpose": "lookdev/evidence plate"}
+  ],
+  "verification": {
+    "sourceInspection": "completed",
+    "unityCompile": "PENDING_UNITY_RUNNER",
+    "unityRuntime": "PENDING_UNITY_RUNNER",
+    "sceneApplication": "PENDING_UNITY_RUNNER",
+    "formal3840x2160Captures": "PENDING_UNITY_RUNNER",
+    "temporalEvidence": "PENDING_UNITY_RUNNER",
+    "visualFidelityScore": "UNSCORED_UNTIL_REAL_4K_RENDER",
+    "visualFidelityPointsAwardedThisRun": 0
+  },
+  "implementationReadiness": {
+    "score": 93,
+    "outOf": 100,
+    "status": "unchanged",
+    "reason": "Source/data/QA implementation advanced, but real Unity 6000.3.0f1 compile/runtime evidence remains unavailable. No readiness points are awarded speculatively."
+  },
+  "expectedVisualScoreImpactNotAwarded": {
+    "geometryConstruction": "medium-high: removes a direct primitive-placeholder risk and adds socket/support/load-path geometry",
+    "materialPbr": "medium: separates dielectric PVC from galvanized support metal and preserves physical-data texture precision",
+    "weatheringCausality": "small-medium: explicit UV/shelter causes replace arbitrary dirt logic",
+    "periodAuthenticity": "small-medium: simple unbranded round service hardware is less game-like than repeated primitive cylinders",
+    "temporalLodAliasing": "small-medium: explicit four-level cross-fade policy, still unverified in motion"
+  },
+  "failureInjectionForRunner": [
+    "re-enable one legacy RainGutter renderer",
+    "replace PipeBody sharedMesh with Unity Cylinder",
+    "delete one stand-off or wall plate",
+    "set PVC metallic to 0.5",
+    "enable emission on PVC or clamp material",
+    "compress either PVC physical-data texture or enable Standalone override",
+    "remove one LOD or change fade mode away from CrossFade",
+    "move pipe into facade geometry"
+  ],
+  "formalEvidencePlan": [
+    "generate/apply upgrade and validate clean failure-injection recovery",
+    "capture 3840x2160 frontal",
+    "capture 3840x2160 oblique",
+    "capture 3840x2160 grazing-light",
+    "capture 100-percent downpipe/socket/support crop",
+    "capture temporal LOD sequence",
+    "score only observed pixels and temporal evidence under the 100-point Visual Fidelity Gate"
+  ],
+  "nextBlocker": "A real Unity 6000.3.0f1 runner or equivalent screenshot/render evidence is required. Once available, stop speculative expansion, apply this upgrade, run failure injection, then score/fix the actual rendered downpipe and surrounding facade."
+}

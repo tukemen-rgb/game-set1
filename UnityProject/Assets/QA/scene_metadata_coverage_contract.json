@@ -93,6 +93,7 @@
       "contractPaths": [
         "Assets/QA/park_street_furniture_contract.json",
         "Assets/QA/park_furniture_microdetail_contract.json",
+        "Assets/QA/park_furniture_exposure_weathering_contract.json",
         "Assets/QA/slide_access_installation_contract.json",
         "Assets/QA/bench_seat_construction_interface_contract.json"
       ]
@@ -132,6 +133,7 @@
       "contractPaths": [
         "Assets/QA/park_street_furniture_contract.json",
         "Assets/QA/park_furniture_microdetail_contract.json",
+        "Assets/QA/park_furniture_exposure_weathering_contract.json",
         "Assets/QA/notice_board_display_case_contract.json"
       ]
     },

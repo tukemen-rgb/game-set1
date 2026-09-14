@@ -1,0 +1,64 @@
+{
+  "schemaVersion": "1.0.0",
+  "assetId": "danchi_rainwater_system_authority",
+  "scenePath": "Assets/Scenes/QualityBlock1990s.unity",
+  "policy": "Exactly one formal rainwater-leader implementation may own the benchmark-facing assembly. The existing RainGutter macro body plus HD_RainwaterDownpipeAssembly accessories remain authoritative because they are already reconstructed, dimensioned, material-reasoned, LOD-integrated and explicitly invoked by the native-4K preparation path. A second independently positioned replacement system is prohibited.",
+  "authoritativeSystem": {
+    "macroBody": "Danchi/RainGutter",
+    "accessoryRoot": "Danchi/DanchiHighDetail/HD_RainwaterDownpipeAssembly",
+    "constructionQaSource": "Assets/Editor/QualityBlockRainwaterDownpipeInstallationQA.cs",
+    "constructionContract": "Assets/QA/rainwater_downpipe_installation_contract.json",
+    "lookdevIllustration": "Assets/QA/Lookdev/rainwater_downpipe_installation.svg",
+    "native4KEntryPoint": "Assets/Editor/QualityBlockNative4KReviewPacket.cs",
+    "requiredApplyToken": "QualityBlockRainwaterDownpipeInstallationQA.ApplyAndPersist();",
+    "requiredApplyOccurrences": 1,
+    "requiredValidateToken": "QualityBlockRainwaterDownpipeInstallationQA.ValidateOpenScene();",
+    "minimumValidateOccurrences": 3
+  },
+  "forbiddenDuplicateSystem": {
+    "sceneRootNames": [
+      "DanchiRainwaterDrainage"
+    ],
+    "sourcePaths": [
+      "Assets/Editor/QualityBlockRainwaterDownpipeUpgrade.cs",
+      "Assets/Editor/QualityBlockRainwaterDownpipeConstructionQA.cs"
+    ],
+    "contractPaths": [
+      "Assets/QA/rainwater_downpipe_contract.json",
+      "Assets/QA/rainwater_downpipe_lookdev.svg"
+    ],
+    "reason": "Those files described a second leader at unrelated installation coordinates and disabled the benchmark's existing RainGutter authority. Keeping both systems would make construction provenance ambiguous and could create duplicate geometry, contradictory LOD/material state, or formal-render failure."
+  },
+  "runtimeRules": {
+    "requireExactlyOneActiveRainGutterRenderer": true,
+    "requireExactlyOneAuthoritativeAccessoryRoot": true,
+    "requireAuthoritativeAccessoryRootUnderDanchiHighDetail": true,
+    "forbidActiveDuplicateRoot": true,
+    "reflectionReadOnlyValidation": true,
+    "formal4KReadOnlyValidation": true,
+    "formalTemporalReadOnlyValidation": true,
+    "renderCallbackMayRepair": false
+  },
+  "criticalDefectRiskBindings": [
+    "visible_primitive_placeholder_geometry",
+    "floating_or_interpenetrating_hero_geometry",
+    "obvious_repeated_texture_or_module_pattern",
+    "visible_lod_pop",
+    "missing_required_construction_material_metadata"
+  ],
+  "visualFidelity": {
+    "sourcePassAwardsPoints": false,
+    "automaticPoints": 0,
+    "statusUntilRealRender": "UNSCORED_UNTIL_REAL_4K_RENDER"
+  },
+  "failureInjection": [
+    "create an active Danchi/DanchiRainwaterDrainage root",
+    "create a second active RainGutter renderer",
+    "move HD_RainwaterDownpipeAssembly outside DanchiHighDetail",
+    "delete the authoritative rainwater installation contract",
+    "remove the authoritative ApplyAndPersist call from the native-4K packet",
+    "reduce native-4K rainwater validation calls below the contract minimum",
+    "reintroduce either forbidden duplicate source file",
+    "claim Visual Fidelity credit from this source-only authority gate"
+  ]
+}

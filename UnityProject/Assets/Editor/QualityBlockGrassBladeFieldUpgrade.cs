@@ -9,16 +9,14 @@ using UnityEngine.Rendering;
 using UnityEngine.SceneManagement;
 
 /// <summary>
-/// Adds sparse-but-geometric maintained-lawn blades over the generated GrassField so the benchmark
-/// does not rely on a perfectly flat green plane for all non-tree vegetation. The system deliberately
-/// uses compact combined patch meshes rather than one Renderer per blade: each patch contains curved,
-/// double-sided lamina geometry with deterministic height/width/lean variation and four cross-faded
-/// LODs. Hardscape/building rectangles are excluded before mesh generation, so blades do not grow
-/// through the apartment, plaza, paved park path or worn footpaths.
+/// Adds sparse geometric maintained-lawn blades over the generated GrassField so the benchmark does
+/// not rely on a perfectly flat green plane for all non-tree vegetation. Compact combined patch
+/// meshes keep the layer real-time: each populated patch contains curved double-sided lamina geometry
+/// with deterministic height/width/lean variation and four cross-faded LODs. Hardscape/building
+/// footprints are rejected before mesh generation so blades do not grow through constructed surfaces.
 ///
-/// This is implementation work only. The source checks below cannot award Visual Fidelity points;
-/// blade silhouette, density, grazing response, shimmer and LOD transitions still require native
-/// 3840x2160 still/temporal evidence.
+/// The source checks below improve implementation readiness only. Blade silhouette, density, grazing
+/// response, shimmer and LOD transitions still require native 3840x2160 still/temporal evidence.
 /// </summary>
 [InitializeOnLoad]
 public static class QualityBlockGrassBladeFieldUpgrade
@@ -26,7 +24,7 @@ public static class QualityBlockGrassBladeFieldUpgrade
     public const string ScenePath = "Assets/Scenes/QualityBlock1990s.unity";
     public const string ContractPath = "Assets/QA/grass_blade_field_contract.json";
     public const string RootName = "GrassBladeFieldDetail";
-    public const string GeneratorMarker = "Generator_grass-blade-field-v1.0.0";
+    public const string GeneratorMarker = "Generator_grass-blade-field-v1.0.1";
 
     private const string MeshRoot = "Assets/Art/GeneratedGrassBladeMeshes";
     private const string SourceMaterialPath = "Assets/Art/GeneratedPBR/PBR_GrassWorn.mat";
@@ -38,8 +36,9 @@ public static class QualityBlockGrassBladeFieldUpgrade
     private const int PatchColumns = 6;
     private const int PatchRows = 4;
     private const int Lods = 4;
-    private const int Lod0TargetTufts = 240;
-    private static readonly int[] LodTargets = { 240, 120, 54, 22 };
+    private const int Lod0CandidateCount = 240;
+    private static readonly int[] LodCaps = { 240, 120, 54, 22 };
+    private static readonly float[] LodRatios = { 1.0f, 0.50f, 0.23f, 0.09f };
     private static readonly int[] BladesPerTuft = { 3, 3, 2, 2 };
     private static readonly float[] LodTransitions = { 0.18f, 0.08f, 0.035f, 0.012f };
 
@@ -67,8 +66,8 @@ public static class QualityBlockGrassBladeFieldUpgrade
 
         public float EdgeDistance(float x, float z)
         {
-            float dx = Mathf.Max(MinX - x, 0f, x - MaxX);
-            float dz = Mathf.Max(MinZ - z, 0f, z - MaxZ);
+            float dx = Mathf.Max(MinX - x, Mathf.Max(0f, x - MaxX));
+            float dz = Mathf.Max(MinZ - z, Mathf.Max(0f, z - MaxZ));
             return Mathf.Sqrt(dx * dx + dz * dz);
         }
     }
@@ -93,8 +92,8 @@ public static class QualityBlockGrassBladeFieldUpgrade
         }
     }
 
-    // Conservative source footprints. A small maintenance margin keeps grass laminae away from
-    // construction interfaces where the base ground/contact systems own the visible edge treatment.
+    // Conservative benchmark footprints. The extra margin leaves interface/detail ownership to the
+    // hardscape and building systems rather than allowing grass blades to interpenetrate their edges.
     private static readonly RectXZ[] Exclusions =
     {
         new RectXZ(-21.25f, 5.25f, -15.85f, -7.15f), // apartment footprint
@@ -162,9 +161,9 @@ public static class QualityBlockGrassBladeFieldUpgrade
                         0.004f,
                         -FieldDepth * 0.5f + PatchSize * 0.5f + row * PatchSize);
 
-                    List<Tuft> tufts = GenerateTufts(patchIndex, center, Lod0TargetTufts);
-                    if (tufts.Count < LodTargets[3])
-                        continue; // Fully hardscaped cells do not need an empty LOD hierarchy.
+                    List<Tuft> tufts = GenerateTufts(patchIndex, center, Lod0CandidateCount);
+                    if (tufts.Count < 8)
+                        continue; // Cells with almost no exposed lawn should not manufacture dense strips in a tiny remainder.
 
                     BuildPatch(root.transform, patchIndex, center, tufts, bladeMaterial);
                     builtPatches++;
@@ -230,7 +229,7 @@ public static class QualityBlockGrassBladeFieldUpgrade
         if (patches.Length < 12)
             throw new InvalidOperationException($"Expected at least 12 populated grass patches, got {patches.Length}.");
 
-        var lod0VertexCounts = new HashSet<int>();
+        var geometrySignatures = new HashSet<string>(StringComparer.Ordinal);
         foreach (Transform patch in patches)
         {
             LODGroup group = patch.GetComponent<LODGroup>();
@@ -259,18 +258,17 @@ public static class QualityBlockGrassBladeFieldUpgrade
                 previousVertices = mesh.vertexCount;
                 if (renderer.sharedMaterial != bladeMaterial)
                     throw new InvalidOperationException($"Grass patch {patch.name} LOD{lod} material drifted from canonical blade material.");
+
                 if (lod == 0)
-                    lod0VertexCounts.Add(mesh.vertexCount);
+                    geometrySignatures.Add(GeometrySignature(mesh));
             }
         }
 
-        if (lod0VertexCounts.Count < 6)
+        int requiredDistinct = Mathf.Min(10, patches.Length);
+        if (geometrySignatures.Count < requiredDistinct)
             throw new InvalidOperationException(
-                $"Grass patch geometry is too repetitive: only {lod0VertexCounts.Count} distinct LOD0 vertex counts across {patches.Length} populated patches.");
+                $"Grass patch geometry is too repetitive: only {geometrySignatures.Count} distinct structural signatures across {patches.Length} populated patches; require {requiredDistinct}.");
 
-        // Explicitly reject blades whose combined-mesh bounds prove they were generated inside a fully
-        // excluded hardscape/building region. Per-vertex exclusion is guaranteed at generation time;
-        // this source check protects the gross integration envelope without pretending to inspect pixels.
         foreach (MeshRenderer renderer in root.GetComponentsInChildren<MeshRenderer>(true))
         {
             if (renderer.sharedMaterial != bladeMaterial)
@@ -278,7 +276,7 @@ public static class QualityBlockGrassBladeFieldUpgrade
         }
 
         if (logSuccess)
-            Debug.Log($"Grass blade source QA passed for {patches.Length} populated patches with four cross-faded LODs and deterministic construction exclusions. Native 4K appearance remains unscored.");
+            Debug.Log($"Grass blade source QA passed for {patches.Length} populated patches with area-proportional density, distinct deterministic geometry and four cross-faded LODs. Native 4K appearance remains unscored.");
     }
 
     private static void BuildPatch(Transform parent, int patchIndex, Vector3 center, List<Tuft> tufts, Material material)
@@ -290,7 +288,7 @@ public static class QualityBlockGrassBladeFieldUpgrade
         var lods = new LOD[Lods];
         for (int lod = 0; lod < Lods; lod++)
         {
-            int tuftCount = Mathf.Min(LodTargets[lod], tufts.Count);
+            int tuftCount = ResolveLodTuftCount(lod, tufts.Count);
             Mesh mesh = BuildPatchMesh(patchIndex, lod, center, tufts, tuftCount, BladesPerTuft[lod]);
             string meshPath = $"{MeshRoot}/GM_GrassPatch_{patchIndex:00}_LOD{lod}.asset";
             SaveOrReplaceMesh(meshPath, mesh);
@@ -318,12 +316,28 @@ public static class QualityBlockGrassBladeFieldUpgrade
         group.RecalculateBounds();
     }
 
-    private static List<Tuft> GenerateTufts(int patchIndex, Vector3 center, int target)
+    private static int ResolveLodTuftCount(int lod, int available)
     {
-        var result = new List<Tuft>(target);
-        int candidate = 0;
-        int safety = target * 10;
-        while (result.Count < target && candidate < safety)
+        if (available < 1)
+            throw new InvalidOperationException("Cannot build grass LODs from an empty patch.");
+        if (lod < 0 || lod >= Lods)
+            throw new ArgumentOutOfRangeException(nameof(lod));
+
+        int count = lod == 0
+            ? Mathf.Min(LodCaps[0], available)
+            : Mathf.Min(LodCaps[lod], Mathf.Max(1, Mathf.FloorToInt(available * LodRatios[lod])));
+        if (lod > 0)
+            count = Mathf.Min(count, ResolveLodTuftCount(lod - 1, available) - 1);
+        return Mathf.Max(1, count);
+    }
+
+    private static List<Tuft> GenerateTufts(int patchIndex, Vector3 center, int candidateCount)
+    {
+        // Exactly one candidate budget is evaluated per patch. Rejected candidates are NOT retried;
+        // therefore a patch that is mostly occupied by hardscape naturally contains fewer blades
+        // instead of concentrating a full-patch count into the remaining narrow grass strip.
+        var result = new List<Tuft>(candidateCount);
+        for (int candidate = 0; candidate < candidateCount; candidate++)
         {
             float lx = Mathf.Lerp(-PatchSize * 0.5f + 0.12f, PatchSize * 0.5f - 0.12f,
                 Hash01(patchIndex, candidate, 101));
@@ -332,18 +346,17 @@ public static class QualityBlockGrassBladeFieldUpgrade
             float wx = center.x + lx;
             float wz = center.z + lz;
 
-            if (IsGrassEligible(wx, wz))
-            {
-                float edgeDistance = NearestHardscapeDistance(wx, wz);
-                float maintained = Mathf.InverseLerp(0.18f, 0.90f, edgeDistance);
-                float height = Mathf.Lerp(0.055f, 0.165f, Hash01(patchIndex, candidate, 107));
-                height *= Mathf.Lerp(0.72f, 1f, maintained);
-                float width = Mathf.Lerp(0.0042f, 0.0092f, Hash01(patchIndex, candidate, 109));
-                float yaw = Hash01(patchIndex, candidate, 113) * 360f;
-                float lean = Mathf.Lerp(0.025f, 0.19f, Hash01(patchIndex, candidate, 127));
-                result.Add(new Tuft(new Vector3(lx, 0f, lz), candidate, height, width, yaw, lean));
-            }
-            candidate++;
+            if (!IsGrassEligible(wx, wz))
+                continue;
+
+            float edgeDistance = NearestHardscapeDistance(wx, wz);
+            float maintained = Mathf.InverseLerp(0.18f, 0.90f, edgeDistance);
+            float height = Mathf.Lerp(0.055f, 0.165f, Hash01(patchIndex, candidate, 107));
+            height *= Mathf.Lerp(0.72f, 1f, maintained);
+            float width = Mathf.Lerp(0.0042f, 0.0092f, Hash01(patchIndex, candidate, 109));
+            float yaw = Hash01(patchIndex, candidate, 113) * 360f;
+            float lean = Mathf.Lerp(0.025f, 0.19f, Hash01(patchIndex, candidate, 127));
+            result.Add(new Tuft(new Vector3(lx, 0f, lz), candidate, height, width, yaw, lean));
         }
         return result;
     }
@@ -488,6 +501,20 @@ public static class QualityBlockGrassBladeFieldUpgrade
         foreach (RectXZ rect in Exclusions)
             best = Mathf.Min(best, rect.EdgeDistance(x, z));
         return best;
+    }
+
+    private static string GeometrySignature(Mesh mesh)
+    {
+        Vector3[] v = mesh.vertices;
+        if (v == null || v.Length == 0)
+            return "empty";
+        Vector3 a = v[0];
+        Vector3 b = v[v.Length / 2];
+        Vector3 c = v[v.Length - 1];
+        Bounds bounds = mesh.bounds;
+        return string.Format(System.Globalization.CultureInfo.InvariantCulture,
+            "{0}:{1:F4},{2:F4}:{3:F4},{4:F4}:{5:F4},{6:F4}:{7:F3},{8:F3}",
+            mesh.vertexCount, a.x, a.z, b.x, b.z, c.x, c.z, bounds.size.x, bounds.size.z);
     }
 
     private static void SaveOrReplaceMesh(string path, Mesh generated)

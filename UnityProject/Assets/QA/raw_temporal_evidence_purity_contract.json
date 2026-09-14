@@ -1,0 +1,55 @@
+{
+  "schemaVersion": "1.0",
+  "purpose": "Fail closed if a raw native-4K temporal frame changes camera, render-target, physical-lighting, renderable-scene, material, GI, reflection-probe or render-policy state between Camera.onPreCull, Camera.onPreRender and Camera.onPostRender. This contract is evidence-integrity infrastructure only and awards zero Visual Fidelity points.",
+  "scenePath": "Assets/Scenes/QualityBlock1990s.unity",
+  "width": 3840,
+  "height": 2160,
+  "targetFamilies": [
+    "QATemporal_subpixel_grazing_<frame>_MSAA",
+    "QATemporal_lod_walk_oblique_<frame>_MSAA"
+  ],
+  "requirements": {
+    "mainCameraOnly": true,
+    "builtInForwardRequired": true,
+    "perspectiveRequired": true,
+    "hdrRequired": true,
+    "dynamicResolutionForbidden": true,
+    "singleApprovedFilmicImageEffectRequired": true,
+    "cameraCommandBuffersForbidden": true,
+    "native3840x2160Argb32Required": true,
+    "linearProjectSrgbTargetRequired": true,
+    "mipmapsForbidden": true,
+    "allowedMsaaSamples": [1, 2, 4, 8],
+    "preCullPreRenderPostRenderStateEqualityRequired": true,
+    "physicalLightingFingerprintEqualityRequired": true,
+    "renderableSceneAndMaterialFingerprintEqualityRequired": true,
+    "giAndReflectionStateFingerprintEqualityRequired": true,
+    "readOnlyDuringFormalLifecycle": true,
+    "actualUnityRenderRequiredForVisualPoints": true,
+    "manualPixelReviewRequired": true
+  },
+  "criticalDefectRiskMapping": [
+    "severe_aliasing_or_shimmer",
+    "visible_lod_pop",
+    "inconsistent_sun_shadow_direction",
+    "major_light_leak",
+    "unverified_render_claim"
+  ],
+  "failureInjection": [
+    "Change MainCamera position, rotation, FOV, clip planes, culling mask or viewport between pre-cull and pre-render and require the frame to fail.",
+    "Change the raw temporal RenderTexture dimensions, format, sRGB state, MSAA samples, mip state, filter or wrap mode during the frame and require failure.",
+    "Add a camera command buffer or a second enabled OnRenderImage effect and require failure.",
+    "Change SummerSun direction, color, intensity, shadow state, sky/ambient state or global render policy during the frame and require failure.",
+    "Change a renderable mesh, material, texture, MaterialPropertyBlock, GI/lightmap binding or reflection-probe state during the frame and require the physical-lighting fingerprint to change and the frame to fail.",
+    "Start a second raw temporal lifecycle on the same RenderTexture before the prior lifecycle completes and require failure."
+  ],
+  "formalBehavior": {
+    "preCull": "Read-only validation establishes the accepted camera/target and complete physical-lighting/renderable-state SHA-256 fingerprints.",
+    "preRender": "Read-only validation must reproduce both pre-cull fingerprints exactly before rasterization proceeds.",
+    "postRender": "Read-only validation must reproduce both pre-cull fingerprints exactly before readback/sealing; the lifecycle is then cleared.",
+    "repairDuringCapture": false
+  },
+  "runtimeVerificationStatus": "PENDING_UNITY_RUNTIME",
+  "runtimeVerified": false,
+  "visualFidelityPointsAwarded": 0
+}

@@ -27,6 +27,11 @@
       "id": "detail_material_microtexture",
       "validator": "QualityBlockDetailMaterialMicrotextureImportPrecisionQA",
       "role": "apartment-detail normal and metallic/smoothness physical data"
+    },
+    {
+      "id": "park_furniture_microtexture",
+      "validator": "QualityBlockParkFurnitureMicrotextureImportPrecisionQA",
+      "role": "slide, bench, lamp and notice-board normal and metallic/smoothness physical data"
     }
   ],
   "renderBoundaryPolicy": {
@@ -54,6 +59,7 @@
     "Disable mipmaps or reduce anisotropy on one protected texture and require formal camera pre-cull failure.",
     "Change one protected normal away from NormalMap and require failure before reflection or formal evidence rendering.",
     "Remove smoothness input alpha from one protected mask and require failure before reflection or formal evidence rendering.",
+    "Regress one park-furniture physical-data map to compression and require the same reflection/formal fail-closed behavior as facade, balcony, ground, foliage and apartment-detail domains.",
     "Capture reflection probes in a clean state, mutate protected importer state, then require final formal pre-cull failure rather than accepting stale cubemap/material coherence."
   ],
   "visualGate": {

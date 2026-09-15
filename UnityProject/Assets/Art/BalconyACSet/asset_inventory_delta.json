@@ -6,13 +6,19 @@
   "baseInventory": "Assets/Art/GardenProps/asset_inventory.json",
   "baseAuthoredAssetSets": 23,
   "newAssets": [
-    {"id":"OutdoorACCondenser780","kind":"tested_generator_plus_external_obj_glb","masterTriangles":21136,"lodTriangles":[10544,5384,3336,2788],"componentSurfacesMaster":151,"actualExportsGeneratedOutsideUnity":true,"meshBinariesCommitted":false,"unityVerified":false,"metadata":"Assets/Art/BalconyACSet/BalconyACSet.metadata.json"},
-    {"id":"RefrigerantPipeTrunking60x55_900","kind":"tested_generator_plus_external_obj_glb","masterTriangles":1732,"lodTriangles":[1308,980,828,748],"componentSurfaces":9,"actualExportsGeneratedOutsideUnity":true,"meshBinariesCommitted":false,"unityVerified":false,"metadata":"Assets/Art/BalconyACSet/BalconyACSet.metadata.json"},
-    {"id":"CondensateDrainHose16_1200","kind":"tested_generator_plus_external_obj_glb","masterTriangles":22272,"lodTriangles":[12024,4896,2420,1264],"componentSurfaces":2,"actualExportsGeneratedOutsideUnity":true,"meshBinariesCommitted":false,"unityVerified":false,"metadata":"Assets/Art/BalconyACSet/BalconyACSet.metadata.json"}
+    {"id":"OutdoorACCondenser780","masterTriangles":21136,"lodTriangles":[10544,5384,3336,2788],"unityVerified":false,"metadata":"Assets/Art/BalconyACSet/BalconyACSet.metadata.json"},
+    {"id":"RefrigerantPipeTrunking60x55_900","masterTriangles":1732,"lodTriangles":[1308,980,828,748],"unityVerified":false,"metadata":"Assets/Art/BalconyACSet/BalconyACSet.metadata.json"},
+    {"id":"CondensateDrainHose16_1200","masterTriangles":22272,"lodTriangles":[12024,4896,2420,1264],"unityVerified":false,"metadata":"Assets/Art/BalconyACSet/BalconyACSet.metadata.json"},
+    {"id":"RefrigerantLineSetPair_6p35_9p52","masterTriangles":24720,"lodTriangles":[13424,6208,3168,1680],"componentSurfaces":8,"actualExportsGeneratedOutsideUnity":true,"meshBinariesCommitted":false,"unityVerified":false,"metadata":"Assets/Art/BalconyACSet/BalconyACInstallDetails.metadata.json"},
+    {"id":"PipeCoverWallElbow60x55","masterTriangles":4224,"lodTriangles":[2208,1216,608,480],"componentSurfaces":2,"actualExportsGeneratedOutsideUnity":true,"meshBinariesCommitted":false,"unityVerified":false,"metadata":"Assets/Art/BalconyACSet/BalconyACInstallDetails.metadata.json"},
+    {"id":"ACWallPenetrationSeal75","masterTriangles":864,"lodTriangles":[640,448,336,240],"componentSurfaces":3,"actualExportsGeneratedOutsideUnity":true,"meshBinariesCommitted":false,"unityVerified":false,"metadata":"Assets/Art/BalconyACSet/BalconyACInstallDetails.metadata.json"}
   ],
-  "effectiveAuthoredAssetSets": 26,
-  "reviewIntegrations": [{"id":"BalconyACServiceReview_LOD0","kind":"external_actual_mesh_diagnostic_assembly","trianglesIncludingDiagnosticContext":23900,"formalBenchmarkSceneChanged":false,"unityVerified":false}],
+  "effectiveAuthoredAssetSets": 29,
+  "reviewIntegrations": [
+    {"id":"BalconyACServiceReview_LOD0","trianglesIncludingDiagnosticContext":23900,"formalBenchmarkSceneChanged":false,"unityVerified":false},
+    {"id":"BalconyACInstalledReview_LOD0","trianglesIncludingDiagnosticContext":40172,"geometryCount":141,"formalBenchmarkSceneChanged":false,"unityVerified":false}
+  ],
   "visualFidelity": {"status":"UNSCORED_UNTIL_REAL_4K_RENDER","score":null,"pass":false},
   "readiness": {"lastRecordedScore":93,"recomputed":false},
-  "nextProductionTarget": "If no Unity evidence appears, inspect current architecture owners before adding wall penetration putty/service caps or balcony sash details; prioritize camera-near installed interfaces that make the condenser feel physically integrated. If Unity evidence appears, stop expansion and fix/score actual pixels."
+  "nextProductionTarget": "Check current sash/window and balcony-building owners. If no Unity evidence appears, prioritize a high-visibility installed architectural assembly or further condenser hero refinement rather than new validators; if Unity evidence appears, stop expansion and score/fix actual pixels."
 }

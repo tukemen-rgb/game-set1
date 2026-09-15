@@ -1,0 +1,20 @@
+{
+  "runId": "2026_09_16_balcony_ac_install_details",
+  "startHead": "b89d22e4c189f24fddbb87fd32ca74c2e5d5de3a",
+  "branch": "gpt/unity-migration",
+  "workflowRunsObservedAtStart": 0,
+  "newAssetSets": 3,
+  "actualGeneratedMeshes": {"standaloneGlb":15,"standaloneObj":15,"combinedReviewGlb":1,"reviewTrianglesIncludingDiagnosticContext":40172},
+  "triangles": {"RefrigerantLineSetPair_6p35_9p52":[24720,13424,6208,3168,1680],"PipeCoverWallElbow60x55":[4224,2208,1216,608,480],"ACWallPenetrationSeal75":[864,640,448,336,240]},
+  "externalVerification": ["finite vertices/normals","nondegenerate faces","watertight components","consistent winding","edge incidence 2","positive component volume","GLB triangle/bounds roundtrip","OBJ triangle roundtrip","strict LOD triangle reduction","CPU z-buffer/backface-culled actual mesh preview","coordinate-constrained 0.5 mm line/trunk joins and wall/trunk alignment"],
+  "sourceOnlyOrDocumentation": ["generator","diagnostic review builder","metadata","inventory","run record"],
+  "notVerified": ["Unity compile/import/render","full triangle-triangle intersection/contact","temporal LOD/shimmer","native PBR appearance","target-hardware performance"],
+  "visualFidelity": {"score":null,"pass":false,"pointsAwarded":0,"expectedImpact":"Installed interface continuity, physically readable service-line construction, wall-contact credibility and close-up material separation; no visual points awarded without Unity pixels."},
+  "readiness": {"lastRecordedScore":93,"recomputed":false},
+  "godotChanges": 0,
+  "baseMerge": false,
+  "formalBenchmarkSceneChanged": false,
+  "excludedThemesPresent": false,
+  "blocker": "No Unity Actions runner or Unity render evidence observed on this branch at run start.",
+  "nextTarget": "Inspect sash/window/building owners; build or materially refine a high-visibility installed assembly, unless Unity evidence becomes available first."
+}

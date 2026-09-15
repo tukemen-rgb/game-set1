@@ -1,0 +1,70 @@
+{
+  "schema": 1,
+  "assetId": "BalconyFaucetG13",
+  "variant": "user_reference_photo_hero_v2",
+  "date": "2026-09-16",
+  "units": "metres",
+  "reference": {
+    "source": "User-supplied faucet/soap-net photo in conversation",
+    "usedFor": "single-lever silhouette, compact rounded valve body, knurled spout union, short hooked outlet, inlet-neck hanging point",
+    "photoPixelsReused": false,
+    "referenceImageRedistributed": false,
+    "assumptions": "Exact manufacturer, vintage, dimensions, plating condition and valve internals cannot be established from the photo. Dimensions are original modeling assumptions constrained by the existing G13-scale owner; not a replica of a historical SKU."
+  },
+  "ownerChain": {
+    "baseOwner": "UnityProject/Tools/generate_faucet_hose.py",
+    "heroOwner": "UnityProject/Tools/refine_faucet_hero.py",
+    "duplicateFaucetSystemCreated": false
+  },
+  "manufactureInstallation": {
+    "components": [
+      "wall escutcheon",
+      "33 mm inlet neck envelope",
+      "rounded cast valve body",
+      "EPDM wall gasket",
+      "neck weather band",
+      "bonnet cylinder",
+      "hex bonnet",
+      "brass spindle",
+      "single lever hub",
+      "single lever handle",
+      "palm end",
+      "blue index cap",
+      "26-tooth spout union",
+      "spout packing",
+      "curved chrome spout",
+      "open outlet sleeve",
+      "outlet lip"
+    ],
+    "dimensionsMm": {
+      "wallEscutcheonDiameter": 63,
+      "inletNeckDiameter": 33,
+      "bodyMaximumWidthApprox": 55,
+      "spoutOuterDiameter": 20.8,
+      "outletOuterDiameter": 22.4,
+      "outletInnerDiameter": 15.6
+    },
+    "mounting": "Wall-mounted through existing inlet-axis datum. Soap-net accessory loops around the inlet neck behind the body. Wall substrate/fitting behind escutcheon is outside this asset.",
+    "interfaces": "Knurled union overlaps body-side packing; open annular outlet sleeve provides a real central cavity. Lever is separate from spindle/hub as a manufactured assembly. Component overlaps at joints are intentional; boolean union and pressure sealing are not simulated.",
+    "orientationExposure": "Wall mounted, Y-up; handle/top and spout receive sun/hand contact, body underside receives splash/runoff. Scene-specific sun direction and moisture exposure remain unverified.",
+    "agingCausality": "User photo shows a used exterior faucet. Refinement uses higher body roughness and fine wipe/machining normal variation; no baked directional highlights, arbitrary rust patches or fake shadowing.",
+    "geometryVsMaterial": "Rounded body, single lever, union teeth, outlet cavity, gaskets and seals are geometry. Fine scratches/roughness are material maps."
+  },
+  "materials": [
+    {"id":"ChromeBodyAged","albedoSRGB":[0.47,0.49,0.5],"roughness":0.34,"metallic":1,"normalScale":0.14,"wetness":0,"microstructure":"fine machining/wipe signal plus low-frequency roughness; 256px deterministic maps","uvAging":"no painted rust; roughness-only use history proxy","angularResponse":"conductor microfacet; no baked highlight"},
+    {"id":"ChromeSpout","albedoSRGB":[0.67,0.69,0.7],"roughness":0.22,"metallic":1,"normalScale":0.1,"wetness":0,"microstructure":"fine wipe scratches","uvAging":"none baked","angularResponse":"conductor microfacet"},
+    {"id":"ChromeLever","albedoSRGB":[0.72,0.74,0.75],"roughness":0.18,"metallic":1,"normalScale":0.08,"wetness":0,"microstructure":"polished handled surface","uvAging":"none baked","angularResponse":"conductor microfacet"},
+    {"id":"WarmBrass","albedoSRGB":[0.57,0.39,0.14],"roughness":0.31,"metallic":1,"normalScale":0.09,"wetness":0,"microstructure":"turned metal signal","uvAging":"none baked","angularResponse":"conductor microfacet"},
+    {"id":"BlueIndexCap","albedoSRGB":[0.02,0.23,0.55],"roughness":0.43,"metallic":0,"dielectricF0":0.04,"normalScale":0.06,"wetness":0,"microstructure":"molded plastic stipple","uvAging":"none baked","angularResponse":"dielectric microfacet"},
+    {"id":"BlackEPDM","albedoSRGB":[0.015,0.017,0.018],"roughness":0.81,"metallic":0,"dielectricF0":0.04,"normalScale":0.09,"wetness":0,"microstructure":"matte compressed rubber","uvAging":"none baked","angularResponse":"dielectric microfacet"}
+  ],
+  "triangles": {"MASTER":13472,"LOD0":8712,"LOD1":4992,"LOD2":3080,"LOD3":2012},
+  "componentsPerLevel": 17,
+  "normalMappedComponentsPerLevel": 17,
+  "authoringSource": "UnityProject/Tools/refine_faucet_hero.py",
+  "sourceSHA256": "578b3a2cac9e9e4a0a7beea0b3c676b15d881a23fd3cfa4a421702c63b6573f9",
+  "sourceGitBlobSHA": "bb13f0423b4e041b26d370c6391ab7ad88665aac",
+  "verification": {"externalGeometry":true,"watertightPerComponent":true,"windingConsistent":true,"finiteUvAndNormals":true,"glbRoundtrip":true,"objTriangleRoundtrip":true,"strictLodTriangleReduction":true,"unityCompile":false,"unityImport":false,"unityRender":false,"temporalLod":false},
+  "visualFidelity": {"authority":"Assets/QA/visual_fidelity_gate.json","status":"UNSCORED_UNTIL_REAL_4K_RENDER","score":null,"pass":false,"pointsAwarded":0},
+  "pending": ["Unity material/normal import verification","real 3840x2160 frontal/oblique/grazing-light captures","contact/intersection review at soap-net neck loop","temporal LOD/shimmer verification","target-hardware performance"]
+}

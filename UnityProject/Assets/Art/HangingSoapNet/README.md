@@ -1,11 +1,13 @@
-# HangingBlueSoapNet: user-reference model
+# Faucet + hanging soap-net reference v2
 
-Original blue open-net bag, rounded ivory soap, neck hook, eye and cords. Photograph used for construction reference only; no source-image pixels or watermarks redistributed. Fibre/alloy/dimensions are explicit modeling assumptions. Existing faucet is reused without modification.
+This batch materially refines the existing `BalconyFaucetG13` hero owner and the existing `HangingBlueSoapNet` accessory using the user-supplied reference photo for construction/silhouette only. No reference-photo pixels or watermarks are redistributed.
 
-Run `python UnityProject/Tools/generate_hanging_soap_net.py --output /path/to/out --faucet /path/to/BalconyFaucetG13Hero_LOD0.glb`. Omit `--faucet` for the standalone accessory. Requires numpy, scipy, trimesh, Pillow; no network calls. Metres, Y-up, root at host inlet-neck axis. Review translation [0,0.55,0.024] is for the supplied known host only.
+The faucet remains in the existing owner chain (`generate_faucet_hose.py` -> `refine_faucet_hero.py`): the former cross-handle/cylindrical camera-near silhouette is replaced inside the refiner by a rounded used body, compact single lever with blue index cap, toothed union, short hooked spout and real outlet cavity. PBR textures carry metallic/roughness/normal data; weathering is roughness-led rather than baked lighting.
 
-MASTER/LOD0/LOD1/LOD2/LOD3 triangles: 103904/61968/32136/17200/9840. All 32 net yarns remain. 41 logical physical parts compacted into four material meshes per export, not 41 separate yarn renderers. Unity draw calls and temporal behavior are unmeasured.
+The soap net keeps true open geometry but changes from a rigid regular cylinder with blue triangular cords to a shorter/wider slackened crossed-yarn bag with an irregular mouth and a thin stainless neck loop/drop/split hanger. All 28 yarns remain through MASTER and LOD0/1/2/3; 37 logical parts are compacted to four material meshes.
 
-The conversation ZIP contains five actual OBJ and five GLB levels, combined host review GLB, the reused host input, textures, numerical reports, generator and depth-buffered actual-geometry previews. GitHub stores the byte-identical executed generator and metadata/inventory delta; binaries are not claimed committed.
+Actual external outputs generated in this run: five faucet GLB + five faucet OBJ, five soap-net GLB + five soap-net OBJ, and one combined LOD0 review GLB. Faucet triangle counts: 13472/8712/4992/3080/2012. Soap-net triangle counts: 88480/51552/25872/14352/8672. Combined LOD0: 60264 triangles.
 
-This is a shape prototype, not a movie-quality result. Yarn vertices and face centres were tested outside the analytic soap volume; this is not a complete intersection proof. Softer actual knitted loops, knot contacts, photo-like host silhouette/wear, UV microdetail, Unity import and native 4K/temporal evidence remain pending. The existing central Visual Fidelity Gate is unchanged; zero visual points awarded. Godot and formal benchmark scenes untouched.
+Executed checks cover finite geometry/normals, nondegenerate triangles, per-component watertight/winding/positive volume, GLB roundtrip, OBJ triangle roundtrip, strict LOD triangle reduction, UV/normal maps on the faucet, and analytic soap-envelope clearance for yarn vertices/triangle centres. Diagnostic previews rasterize actual GLB triangles with back-face culling.
+
+Not verified: Unity compile/import/render, native 3840x2160 frames/crops, temporal LOD/shimmer, full yarn-yarn/contact intersections, cloth deformation and target-hardware performance. Visual Fidelity therefore remains unscored; last recorded Implementation Readiness remains 93/100 and was not recomputed. Godot, base merge and formal benchmark scenes are untouched.

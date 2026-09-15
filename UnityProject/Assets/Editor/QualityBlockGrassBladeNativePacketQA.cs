@@ -10,8 +10,9 @@ using UnityEngine;
 /// authoritative native-4K review packet rather than merely an InitializeOnLoad convenience side effect.
 /// The only mutating grass build must happen before realtime reflection probes are requested. From the
 /// reflection request onward, grass geometry/material/LOD state is read-only and explicitly revalidated
-/// before still and temporal evidence. This is implementation/evidence integrity only and awards no
-/// Visual Fidelity points without actual rendered pixels.
+/// before still and temporal evidence. Critical-failure mappings are cross-checked against the canonical
+/// Visual Fidelity Gate IDs so a descriptive alias cannot silently bypass an automatic FAIL. This is
+/// implementation/evidence integrity only and awards no Visual Fidelity points without actual pixels.
 /// </summary>
 public static class QualityBlockGrassBladeNativePacketQA
 {
@@ -19,6 +20,7 @@ public static class QualityBlockGrassBladeNativePacketQA
     private const string NativePacketPath = "Assets/Editor/QualityBlockNative4KReviewPacket.cs";
     private const string SourceGrassContractPath = "Assets/QA/grass_blade_field_contract.json";
     private const string PersistenceContractPath = "Assets/QA/grass_blade_formal_persistence_contract.json";
+    private const string VisualGatePath = "Assets/QA/visual_fidelity_gate.json";
 
     private const string SelfValidationToken = "QualityBlockGrassBladeNativePacketQA.ValidateContractConfigOnly();";
     private const string PersistencePreflightToken = "QualityBlockGrassBladeFormalPersistenceQA.ValidateContractConfigOnly();";
@@ -30,6 +32,20 @@ public static class QualityBlockGrassBladeNativePacketQA
     private const string StillCaptureToken = "QualityBlock4KCapture.CapturePreparedSceneAfterProbeSync();";
     private const string TemporalBeginToken = "QualityBlockTemporalRuntimeEvidenceGuard.Begin();";
 
+    private static readonly string[] RequiredCriticalFailureMappings =
+    {
+        "missing_construction_material_metadata",
+        "visible_lod_pop",
+        "severe_aliasing_or_shimmer",
+        "unverified_render_claim"
+    };
+
+    private static readonly string[] ForbiddenLegacyAliases =
+    {
+        "severe_aliasing_or_shimmering",
+        "claiming_render_quality_without_actual_render"
+    };
+
     [MenuItem("NewTown/QA/Validate Grass Blade Native Packet Integration")]
     public static void ValidateContractConfigOnly()
     {
@@ -39,15 +55,18 @@ public static class QualityBlockGrassBladeNativePacketQA
             throw new FileNotFoundException("Native-4K review packet source missing: " + NativePacketPath);
         if (!File.Exists(SourceGrassContractPath) || !File.Exists(PersistenceContractPath))
             throw new FileNotFoundException("Grass source/persistence contracts must both exist before native-packet integration can be accepted.");
+        if (!File.Exists(VisualGatePath))
+            throw new FileNotFoundException("Canonical Visual Fidelity Gate contract missing: " + VisualGatePath);
 
         Contract contract = JsonUtility.FromJson<Contract>(File.ReadAllText(ContractPath));
-        if (contract == null || !string.Equals(contract.schemaVersion, "1.0.0", StringComparison.Ordinal))
-            throw new InvalidOperationException("Grass native-packet integration contract is null/unparseable or not schema 1.0.0.");
+        if (contract == null || !string.Equals(contract.schemaVersion, "1.1.0", StringComparison.Ordinal))
+            throw new InvalidOperationException("Grass native-packet integration contract is null/unparseable or not schema 1.1.0.");
         if (!string.Equals(contract.status, "PENDING_REAL_UNITY_4K_RENDER", StringComparison.Ordinal) ||
             !string.Equals(contract.scenePath, "Assets/Scenes/QualityBlock1990s.unity", StringComparison.Ordinal) ||
             !string.Equals(contract.nativePacketPath, NativePacketPath, StringComparison.Ordinal) ||
             !string.Equals(contract.sourceGrassContractPath, SourceGrassContractPath, StringComparison.Ordinal) ||
-            !string.Equals(contract.persistenceContractPath, PersistenceContractPath, StringComparison.Ordinal))
+            !string.Equals(contract.persistenceContractPath, PersistenceContractPath, StringComparison.Ordinal) ||
+            !string.Equals(contract.visualGatePath, VisualGatePath, StringComparison.Ordinal))
             throw new InvalidOperationException("Grass native-packet integration identity/status paths drifted.");
 
         RequiredTokens tokens = contract.requiredTokens;
@@ -66,16 +85,8 @@ public static class QualityBlockGrassBladeNativePacketQA
             !ordering.sourceAndPersistenceValidationRequiredBetweenStillSealAndTemporalBegin)
             throw new InvalidOperationException("Grass native-packet integration ordering requirements were weakened.");
 
-        string[] requiredCritical =
-        {
-            "missing_construction_material_metadata",
-            "visible_lod_pop",
-            "severe_aliasing_or_shimmering",
-            "claiming_render_quality_without_actual_render"
-        };
-        if (contract.criticalFailureMappings == null ||
-            !new HashSet<string>(contract.criticalFailureMappings, StringComparer.Ordinal).SetEquals(requiredCritical))
-            throw new InvalidOperationException("Grass native-packet integration critical-failure mappings drifted.");
+        ValidateCriticalFailureMappings(contract);
+
         if (contract.renderVerification.runtimeRenderVerified ||
             contract.renderVerification.visualFidelityPointsAwarded != 0 ||
             !string.Equals(contract.renderVerification.visualFidelityStatus, "UNSCORED_UNTIL_REAL_4K_RENDER", StringComparison.Ordinal))
@@ -107,7 +118,53 @@ public static class QualityBlockGrassBladeNativePacketQA
         RequireBothInWindow(source, SourceValidationToken, PersistenceValidationToken, still, temporal,
             "after still capture/seal and before temporal capture begins");
 
-        Debug.Log("Grass native-packet integration valid: one persisted pre-reflection build plus explicit read-only validation before probe request, stills and temporal evidence. Visual Fidelity remains UNSCORED.");
+        Debug.Log("Grass native-packet integration valid: one persisted pre-reflection build, explicit read-only validation before probe/still/temporal evidence, and canonical automatic-FAIL mappings bound to visual_fidelity_gate.json. Visual Fidelity remains UNSCORED.");
+    }
+
+    private static void ValidateCriticalFailureMappings(Contract contract)
+    {
+        CriticalFailureMappingPolicy policy = contract.criticalFailureMappingPolicy;
+        if (policy == null || !policy.requireExactCanonicalIds ||
+            !policy.requireMembershipInVisualFidelityGate || !policy.rejectLegacyAliases)
+            throw new InvalidOperationException("Grass critical-failure mapping policy was weakened or is incomplete.");
+
+        string[] mappings = contract.criticalFailureMappings ?? Array.Empty<string>();
+        if (mappings.Length != RequiredCriticalFailureMappings.Length ||
+            mappings.Any(string.IsNullOrWhiteSpace) ||
+            mappings.Distinct(StringComparer.Ordinal).Count() != mappings.Length ||
+            !new HashSet<string>(mappings, StringComparer.Ordinal).SetEquals(RequiredCriticalFailureMappings))
+            throw new InvalidOperationException(
+                "Grass native-packet criticalFailureMappings must be the exact canonical set: " +
+                string.Join(", ", RequiredCriticalFailureMappings) + ".");
+
+        string[] forbidden = contract.forbiddenLegacyAliases ?? Array.Empty<string>();
+        if (forbidden.Length != ForbiddenLegacyAliases.Length ||
+            forbidden.Distinct(StringComparer.Ordinal).Count() != forbidden.Length ||
+            !new HashSet<string>(forbidden, StringComparer.Ordinal).SetEquals(ForbiddenLegacyAliases))
+            throw new InvalidOperationException("Grass native-packet forbidden legacy critical aliases drifted.");
+        if (mappings.Any(x => ForbiddenLegacyAliases.Contains(x, StringComparer.Ordinal)))
+            throw new InvalidOperationException("Grass critical-failure mapping contains a forbidden descriptive/legacy alias.");
+
+        VisualGateDocument gate = JsonUtility.FromJson<VisualGateDocument>(File.ReadAllText(VisualGatePath));
+        if (gate == null || gate.criticalDefects == null || gate.criticalDefects.Length == 0)
+            throw new InvalidOperationException("Canonical Visual Fidelity Gate critical-defect definitions are unavailable.");
+
+        string[] gateIds = gate.criticalDefects
+            .Where(x => x != null && !string.IsNullOrWhiteSpace(x.id))
+            .Select(x => x.id)
+            .ToArray();
+        if (gateIds.Length != gate.criticalDefects.Length ||
+            gateIds.Distinct(StringComparer.Ordinal).Count() != gateIds.Length)
+            throw new InvalidOperationException("Canonical Visual Fidelity Gate contains null, blank or duplicate critical-defect IDs.");
+
+        foreach (string mapping in mappings)
+            if (!gateIds.Contains(mapping, StringComparer.Ordinal))
+                throw new InvalidOperationException(
+                    $"Grass critical-failure mapping '{mapping}' is not a canonical visual_fidelity_gate.json automatic-FAIL ID.");
+        foreach (string alias in forbidden)
+            if (gateIds.Contains(alias, StringComparer.Ordinal))
+                throw new InvalidOperationException(
+                    $"Forbidden grass critical alias '{alias}' unexpectedly became canonical; review the gate intentionally before changing this contract.");
     }
 
     private static bool TokenEquals(RequiredTokens t)
@@ -169,10 +226,13 @@ public static class QualityBlockGrassBladeNativePacketQA
         public string nativePacketPath;
         public string sourceGrassContractPath;
         public string persistenceContractPath;
+        public string visualGatePath;
         public RequiredTokens requiredTokens;
         public MinimumOccurrences minimumOccurrences;
         public Ordering ordering;
+        public CriticalFailureMappingPolicy criticalFailureMappingPolicy;
         public string[] criticalFailureMappings;
+        public string[] forbiddenLegacyAliases;
         public RenderVerification renderVerification;
     }
 
@@ -207,6 +267,26 @@ public static class QualityBlockGrassBladeNativePacketQA
         public bool sourceAndPersistenceValidationRequiredBetweenFinalBuildAndReflectionRequest;
         public bool sourceAndPersistenceValidationRequiredBetweenReflectionCompletionAndStillCapture;
         public bool sourceAndPersistenceValidationRequiredBetweenStillSealAndTemporalBegin;
+    }
+
+    [Serializable]
+    private sealed class CriticalFailureMappingPolicy
+    {
+        public bool requireExactCanonicalIds;
+        public bool requireMembershipInVisualFidelityGate;
+        public bool rejectLegacyAliases;
+    }
+
+    [Serializable]
+    private sealed class VisualGateDocument
+    {
+        public CriticalDefectDefinition[] criticalDefects;
+    }
+
+    [Serializable]
+    private sealed class CriticalDefectDefinition
+    {
+        public string id;
     }
 
     [Serializable]

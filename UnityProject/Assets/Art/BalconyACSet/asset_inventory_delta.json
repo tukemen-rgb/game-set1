@@ -1,0 +1,18 @@
+{
+  "schema": 1,
+  "updated": "2026-09-16",
+  "branch": "gpt/unity-migration",
+  "isInventoryDelta": true,
+  "baseInventory": "Assets/Art/GardenProps/asset_inventory.json",
+  "baseAuthoredAssetSets": 23,
+  "newAssets": [
+    {"id":"OutdoorACCondenser780","kind":"tested_generator_plus_external_obj_glb","masterTriangles":21136,"lodTriangles":[10544,5384,3336,2788],"componentSurfacesMaster":151,"actualExportsGeneratedOutsideUnity":true,"meshBinariesCommitted":false,"unityVerified":false,"metadata":"Assets/Art/BalconyACSet/BalconyACSet.metadata.json"},
+    {"id":"RefrigerantPipeTrunking60x55_900","kind":"tested_generator_plus_external_obj_glb","masterTriangles":1732,"lodTriangles":[1308,980,828,748],"componentSurfaces":9,"actualExportsGeneratedOutsideUnity":true,"meshBinariesCommitted":false,"unityVerified":false,"metadata":"Assets/Art/BalconyACSet/BalconyACSet.metadata.json"},
+    {"id":"CondensateDrainHose16_1200","kind":"tested_generator_plus_external_obj_glb","masterTriangles":22272,"lodTriangles":[12024,4896,2420,1264],"componentSurfaces":2,"actualExportsGeneratedOutsideUnity":true,"meshBinariesCommitted":false,"unityVerified":false,"metadata":"Assets/Art/BalconyACSet/BalconyACSet.metadata.json"}
+  ],
+  "effectiveAuthoredAssetSets": 26,
+  "reviewIntegrations": [{"id":"BalconyACServiceReview_LOD0","kind":"external_actual_mesh_diagnostic_assembly","trianglesIncludingDiagnosticContext":23900,"formalBenchmarkSceneChanged":false,"unityVerified":false}],
+  "visualFidelity": {"status":"UNSCORED_UNTIL_REAL_4K_RENDER","score":null,"pass":false},
+  "readiness": {"lastRecordedScore":93,"recomputed":false},
+  "nextProductionTarget": "If no Unity evidence appears, inspect current architecture owners before adding wall penetration putty/service caps or balcony sash details; prioritize camera-near installed interfaces that make the condenser feel physically integrated. If Unity evidence appears, stop expansion and fix/score actual pixels."
+}

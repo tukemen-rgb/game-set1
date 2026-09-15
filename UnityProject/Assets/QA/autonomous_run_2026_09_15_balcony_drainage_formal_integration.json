@@ -1,0 +1,92 @@
+{
+  "schemaVersion": "1.0.0",
+  "runId": "2026-09-15_balcony_drainage_formal_integration",
+  "branch": "gpt/unity-migration",
+  "startHead": "9509a09d6d788e32b780c7ad9df50b72aacaaa1c",
+  "scope": "Close the formal-render lifecycle and metadata-evidence gap for the existing physical balcony drainage/waterproofing system without adding speculative visual score.",
+  "constraints": {
+    "preserveGodot": true,
+    "baseMergeAllowed": false,
+    "baseMergedThisRun": false,
+    "excludeEarthquakeDisasterReconstructionThemes": true,
+    "forbiddenThemeContentAdded": false,
+    "visualFidelityPointsMayOnlyComeFromActualRenderedEvidence": true
+  },
+  "finding": {
+    "summary": "The existing balcony drainage/waterproofing implementation had render-facing geometry and detailed manufacture/material metadata, but the authoritative Native-4K packet did not explicitly persist/validate it and the detailed source contract was absent from the Danchi metadata contractPaths bundle.",
+    "risk": "Formal evidence could omit the intended 1:50 balcony fall, waterproofing returns and drainage hardware, or render pixels without sealing the detailed drainage construction/material contract into the construction-material SHA-256 evidence bundle.",
+    "priorityReason": "This directly limits trustworthy Geometry & construction, Material/PBR and Weathering/context evidence, so it outranks speculative scene expansion while Unity rendering is unavailable."
+  },
+  "substantiveCommits": [
+    {
+      "sha": "a8c1b33e6f97713e207470666d3c2e967f43eaa5",
+      "purpose": "Define machine-readable Native-4K balcony drainage integration/lifecycle contract."
+    },
+    {
+      "sha": "24227807088d75d420e7dfedf8a5a58db6063b46",
+      "purpose": "Add fail-closed formal integration QA for persisted build, phase ordering, central critical-ID membership and Danchi metadata binding."
+    },
+    {
+      "sha": "a7d14c7f9e11ee568ea327a97e107d47f8086b7e",
+      "purpose": "Bind balcony_drainage_waterproofing_contract.json exactly once into the Danchi scene-metadata domain."
+    },
+    {
+      "sha": "bb43311bdad5ee78c58f9f4e4656db3546311bb5",
+      "purpose": "Make balcony drainage an explicit persisted pre-reflection member of the Native-4K packet with read-only validation at pre-reflection, post-reflection/pre-still and post-still/pre-temporal boundaries."
+    }
+  ],
+  "staticVerification": {
+    "startToSubstantiveHeadAheadBy": 4,
+    "startToSubstantiveHeadBehindBy": 0,
+    "changedRoots": ["UnityProject/Assets/Editor", "UnityProject/Assets/QA"],
+    "godotChanged": false,
+    "baseMergeDetected": false,
+    "centralCriticalIdsRequired": 12,
+    "renderLifecycleMutatingBuildCountRequired": 1,
+    "renderLifecycleValidationBoundariesRequired": 3,
+    "danchiMetadataContractOccurrenceRequired": 1,
+    "constructionMaterialEvidenceBinderContractPathsEnumerationRequired": true
+  },
+  "runtimeVerification": {
+    "unityVersionRequired": "6000.3.0f1",
+    "compileVerified": false,
+    "runtimeVerified": false,
+    "native3840x2160StillEvidenceAvailable": false,
+    "oneHundredPercentCropsAvailable": false,
+    "temporalEvidenceAvailable": false,
+    "githubStatusContextCountAtSubstantiveHead": 0,
+    "githubWorkflowRunCountAtSubstantiveHead": 0,
+    "renderVerificationPending": true
+  },
+  "scores": {
+    "implementationReadiness": 93,
+    "implementationReadinessMaximum": 100,
+    "visualFidelityStatus": "UNSCORED_UNTIL_REAL_4K_RENDER",
+    "visualFidelityPointsAwardedThisRun": 0,
+    "visualFidelityPassClaimed": false
+  },
+  "expectedVisualScoreImpactAfterRealRenderOnly": {
+    "geometry_construction": "medium_to_high: formal frames should now deterministically include the actual balcony floor fall, waterproof returns, terminal drainage channel and grate construction rather than relying on editor lifecycle side effects",
+    "material_pbr": "small_to_medium: the dry dielectric waterproof/coated drainage material state now travels through the same persisted reflection/still lifecycle",
+    "weathering_causality": "medium: runoff and residue reasoning gains a physically represented gravity/drainage path in the formal scene",
+    "temporal_lod_aliasing": "unscored risk: millimetric grate/sloped-edge behavior must be judged from sealed temporal pixels"
+  },
+  "failureInjectionPlanForFirstRealUnitySession": [
+    "remove the single balcony drainage persisted build from the Native-4K packet and require formal preflight failure",
+    "move the persisted build to or after reflection synchronization and require formal preflight failure",
+    "remove any one of the three read-only lifecycle validation boundaries and require formal preflight failure",
+    "remove, duplicate or move balcony_drainage_waterproofing_contract.json out of the Danchi metadata domain and require formal preflight failure",
+    "disable domain contractPaths enumeration in the construction/material SHA-256 evidence binder and require formal preflight failure",
+    "replace a canonical critical-failure ID with a descriptive alias and require formal preflight failure",
+    "mutate balcony drainage geometry/material state after reflection synchronization and require later lifecycle validation failure"
+  ],
+  "requiredRealEvidenceBeforeScoring": {
+    "resolution": [3840, 2160],
+    "stillViews": ["hero", "oblique", "grazing"],
+    "oneHundredPercentCrops": ["balcony_services", "construction_depth", "material_grazing"],
+    "temporalCases": ["subpixel_grazing", "lod_transition"],
+    "scoreOnlyObservablePixels": true,
+    "doNotSelfAwardUnobservablePoints": true
+  },
+  "nextBlocker": "A real Unity 6000.3.0f1 clean compile/runtime session is still required before failure injection, native 4K capture, 100% crops, temporal evidence and any Visual Fidelity scoring can occur."
+}

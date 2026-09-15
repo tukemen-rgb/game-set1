@@ -1,0 +1,19 @@
+{
+  "date":"2026-09-15",
+  "repository":"tukemen-rgb/game-set1",
+  "branch":"gpt/unity-migration",
+  "startHead":"78af5a622382ec414cedb82f234ed16b7eab674b",
+  "runnerCheck":{"githubActionsRuns":0,"realUnityRunnerAvailable":false,"renderScreenshotsFound":false},
+  "ownershipSearch":{"terms":["Clothesline","Laundry","Watering"],"matchesInCurrentBranchTree":0,"decision":"author modular laundry bracket/pole; defer watering can/clothespin basket to next production run"},
+  "production":{"assets":["BalconyLaundryArm450","LaundryPole2560"],"referenceAssembly":"two arms at z +/-0.9m, pole through x=0.425m outer holes","actualExternalMeshLevelsPerAsset":5,"materials":3,"generator":"tools/generate_balcony_laundry_hardware.py"},
+  "triangles":{"BalconyLaundryArm450":{"MASTER":4556,"LOD0":3084,"LOD1":1964,"LOD2":1356,"LOD3":972},"LaundryPole2560":{"MASTER":20928,"LOD0":9856,"LOD1":4240,"LOD2":1776,"LOD3":800},"ReferenceAssembly":{"MASTER":30040,"LOD0":16024,"LOD1":8168,"LOD2":4488,"LOD3":2744}},
+  "manufacturingReasoning":{"arm":"8mm press-cut/formed galvanized arm plate with true holes; separate wall plate/gusset/hinge/fasteners; generic unbranded design","pole":"32mm hollow stainless tube, 1.2mm wall, separate inserted polymer end caps and stop collar/screw","clearance":"Ø32mm pole in Ø38mm arm hole = 3mm nominal radial clearance","references":"Current official dimensions are modern scale references only; exact 1990s SKU is not asserted"},
+  "externalGeometryVerification":{"executed":true,"finiteVertices":true,"noDegenerateFaces":true,"allComponentsWatertight":true,"consistentWinding":true,"glbRoundtripTriangleParity":true,"objExportCompleted":true,"strictRuntimeLodReduction":true,"analyticalPoleHoleClearance":true},
+  "unityVerification":{"compile":false,"import":false,"render":false,"temporal":false,"realtimePerformance":false},
+  "readiness":{"lastRecorded":93,"recomputed":false,"pointsAdded":0},
+  "visualFidelity":{"score":null,"pass":false,"status":"UNSCORED_UNTIL_REAL_4K_RENDER","pointsAdded":0,"expectedImpactOnly":["geometry/construction","material/PBR","period/scene authenticity","temporal/LOD after verification"]},
+  "criticalDefects":{"claimedCleared":[],"note":"No visual critical defect cleared without Unity pixels."},
+  "safety":{"godotChanged":false,"baseMerge":false,"formalBenchmarkSceneChanged":false,"excludedThemeAdded":false},
+  "nextProductionTarget":"Small molded balcony watering can, then clothespin basket; check current branch ownership and runner evidence before modeling.",
+  "blocker":"Unity 6000.3.0f1 compile/import and actual 4K/temporal rendering remain unavailable."
+}

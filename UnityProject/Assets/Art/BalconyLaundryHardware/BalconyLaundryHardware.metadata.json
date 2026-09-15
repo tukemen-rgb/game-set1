@@ -1,0 +1,43 @@
+{
+  "schema": 1,
+  "id": "BalconyLaundryHardwareSet",
+  "units": "metres",
+  "status": "authored_actual_external_meshes_unity_import_pending",
+  "assets": {
+    "BalconyLaundryArm450": {
+      "manufacture": "Generic unbranded fabricated outdoor laundry bracket: press-cut/formed galvanized steel arm plate with true through-holes, separate wall base, welded lower gusset, hinge boss/pin/washers and four exposed wall fastener heads. Not a replica of cited products.",
+      "dimensions": {"armLength":0.45,"armHeight":0.054,"armPlateThickness":0.008,"rodHoleDiameter":0.038,"wallBaseHeight":0.21,"wallBaseWidth":0.07,"wallBaseThickness":0.006,"pivotPinDiameter":0.012},
+      "mounting": "Wall/base plate assumed anchored to sound structural substrate; anchor embedment, waterproofing and substrate-specific fastener specification are scene/building dependent and are not invented here.",
+      "interfaces": {"poleOuterDiameter":0.032,"rodHoleDiameter":0.038,"nominalRadialClearance":0.003,"pairSpacingReference":1.8},
+      "orientation": "Wall normal +X; arm projects +X; pole axis Z. Reference assembly keeps arm horizontal.",
+      "exposure": "Outdoor balcony: sun, sky, wind and rain exposure; rear of base and wall interface sheltered.",
+      "aging": "Maintained intact zinc. Micro roughness variation only; no arbitrary rust, streaks, dents or painted highlights before placement-specific causal history exists.",
+      "geometryVsMaterial": "Arm silhouette, all three through-holes, gusset, hinge, washers, fastener heads and plate thickness are geometry. Zinc grain is material microvariation.",
+      "periodAccuracy": "Generic unbranded construction chosen for scene plausibility. Current manufacturer dimensions are scale/construction references only, not evidence this exact configuration existed in the 1990s.",
+      "lod": "LOD0/1/2/3 retain all manufactured components and all three true holes; only curved tessellation decreases."
+    },
+    "LaundryPole2560": {
+      "manufacture": "Generic 32 mm outdoor laundry pole modeled as a hollow stainless tube with 1.2 mm wall, two inserted polymer end plugs/collars, rounded end caps and a separate metal stop collar/screw.",
+      "dimensions": {"length":2.56,"outerDiameter":0.032,"innerDiameter":0.0296,"wallThickness":0.0012,"endCapMaxDiameter":0.0344},
+      "mounting": "Free supported in bracket holes; not fused to bracket. Reference assembly passes through outermost Ø38 mm holes.",
+      "interfaces": {"bracketHoleDiameter":0.038,"nominalRadialClearance":0.003,"referenceSupportSpacing":1.8,"overhangEachSide":0.38},
+      "orientation": "Axis Z in source/reference assembly.",
+      "exposure": "Outdoor sun/rain. Tube interior sheltered; polymer end caps exposed.",
+      "aging": "Dry maintained reference state; no baked highlights, water streaks or severe corrosion.",
+      "geometryVsMaterial": "Hollow tube bore, tube wall, end plug/collar, rounded caps and stop collar/screw are geometry. Fine steel/rubber surface variation is material.",
+      "periodAccuracy": "Current 32 mm × 2.56 m manufacturer pole information is used only as scale reference. Exact 1990s product claim is intentionally not made.",
+      "lod": "All tube/cap/stop components retained through LOD3."
+    }
+  },
+  "materials": {
+    "galvanized_steel": {"albedoSRGB":[0.56,0.59,0.61],"metallic":1.0,"specularWorkflow":"metallic conductor","roughness":0.48,"normalScale":0.0,"microstructure":"low-amplitude nondirectional roughness/albedo variation; no painted directional highlight","wetness":0.0,"uvAging":"none in generic library asset; placement-specific UV fade requires exposure history","angularFresnel":"metallic Fresnel; conductor base color supplies F0"},
+    "stainless_steel": {"albedoSRGB":[0.62,0.64,0.65],"metallic":1.0,"specularWorkflow":"metallic conductor","roughness":0.32,"normalScale":0.0,"microstructure":"low-amplitude nondirectional roughness/albedo variation; no brushed-direction claim","wetness":0.0,"uvAging":"none","angularFresnel":"metallic Fresnel"},
+    "gray_epdm": {"albedoSRGB":[0.08,0.085,0.09],"metallic":0.0,"dielectricF0":0.04,"roughness":0.72,"normalScale":0.0,"microstructure":"fine nondirectional albedo/smoothness variation","wetness":0.0,"uvAging":"no prebaked chalking; add only after placement age/exposure is established","angularFresnel":"dielectric approximately 4 percent normal-incidence reflectance"}
+  },
+  "references": [
+    {"url":"https://www.kawaguchigiken.co.jp/products/monohoshi/hipwall/","use":"Current official scale reference: 350/450/550 mm balcony arm sizes; not historical proof or copied geometry."},
+    {"url":"https://www.kawaguchigiken.co.jp/products/monohoshi/window/","use":"Current official scale reference: stainless pole diameter 32 mm, length 2.56 m; not historical proof."}
+  ],
+  "verification": {"externalGeometry":{"finiteVertices":true,"noDegenerateFaces":true,"allComponentsWatertight":true,"consistentWinding":true,"glbRoundtripTriangleParity":true,"lodTriangleReductionStrict":true,"analyticalPoleHoleRadialClearanceMetres":0.003},"unityCompile":false,"unityImport":false,"render":false,"temporal":false,"realtimePerformance":false,"visualFidelityScore":null,"visualFidelityPass":false},
+  "triangles": {"BalconyLaundryArm450":{"MASTER":4556,"LOD0":3084,"LOD1":1964,"LOD2":1356,"LOD3":972},"LaundryPole2560":{"MASTER":20928,"LOD0":9856,"LOD1":4240,"LOD2":1776,"LOD3":800},"ReferenceAssembly":{"MASTER":30040,"LOD0":16024,"LOD1":8168,"LOD2":4488,"LOD3":2744}}
+}

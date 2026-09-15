@@ -1,0 +1,68 @@
+{
+  "schemaVersion": "1.0",
+  "runUtc": "2026-09-09T07:34:26Z",
+  "branch": "gpt/unity-migration",
+  "startingHead": "be1eb8c674a8aa50e38c08add609bf8dd7e630e4",
+  "implementationCommits": [
+    "497377d85a5dfd29d1400a49707c5a16e620b74b",
+    "f42b598907d88acad8a112d492dcba57b3b5e3ab",
+    "d40d4bc667f7133fb52185708e2e3951cf079d10",
+    "ab958af045388d150605d98858ac4c8d6cde596a"
+  ],
+  "scope": "Close the remaining evidence gap for Temporal/LOD/aliasing stability and the severe-shimmer / visible-LOD-pop critical defects without awarding visual points from source code.",
+  "changes": [
+    {
+      "path": "Assets/QA/temporal_stability_contract.json",
+      "summary": "Machine-readable native-4K temporal evidence contract with subpixel-grazing and far-to-near LOD-walk probes, pixel-exact crop policy, SHA-256 sealing and zero automatic visual points."
+    },
+    {
+      "path": "Assets/Editor/QualityBlockTemporalStabilityCapture.cs",
+      "summary": "Deterministic 3840x2160 frame-sequence capture, per-frame 100% crops, LOD inventory, SHA-256 manifest/receipt sealing, and pixel-by-pixel crop provenance validation."
+    },
+    {
+      "path": "Assets/QA/visual_evidence_observability_contract.json",
+      "summary": "Temporal category now requires both sealed motion probes; shimmer critical requires both; visible LOD pop requires the LOD-walk probe."
+    },
+    {
+      "path": "Assets/Editor/QualityBlockVisualFidelityGate.cs",
+      "summary": "Numeric Visual Fidelity evaluator now validates sealed temporal evidence and observedTemporalRefs in addition to still-frame provenance. Still images alone can no longer clear temporal hard minimum or dismiss shimmer/LOD critical defects."
+    }
+  ],
+  "verification": {
+    "githubWorkflowRunsObservedBeforeChanges": 0,
+    "githubCommitStatusesObservedBeforeChanges": 0,
+    "unityRuntimeAvailable": false,
+    "unityCompileVerified": false,
+    "native4KStillEvidenceAvailable": false,
+    "native4KTemporalEvidenceAvailable": false,
+    "renderVerification": "PENDING_REAL_UNITY_RUNNER",
+    "staticChecks": [
+      "Temporal contract requires exactly two named native-4K probes and pixel-exact 100% crops.",
+      "Visual gate observability allowedTemporalRefs is exact-set validated against subpixel_grazing and lod_walk_oblique.",
+      "Temporal category requires two temporal refs; severe_aliasing_or_shimmer requires two; visible_lod_pop requires lod_walk_oblique.",
+      "Temporal evidence validation recomputes manifest/receipt SHA-256, every frame/crop SHA-256, PNG dimensions and every crop pixel against its source frame.",
+      "No source-side temporal check contributes Visual Fidelity points."
+    ]
+  },
+  "scores": {
+    "implementationReadiness": 93,
+    "implementationReadinessPossible": 100,
+    "visualFidelityStatus": "UNSCORED",
+    "visualFidelityPointsAwardedThisRun": 0,
+    "visualPassClaimed": false
+  },
+  "expectedVisualScoreImpactAfterRealEvidence": {
+    "temporal_lod_aliasing": "Makes the 5-point category genuinely observable across motion rather than inferable only from three still frames.",
+    "criticalDefects": [
+      "severe_aliasing_or_shimmer can no longer be marked absent without both native-4K temporal probes.",
+      "visible_lod_pop can no longer be marked absent without the native-4K LOD-walk probe."
+    ],
+    "automaticPoints": 0
+  },
+  "guardrails": {
+    "godotModified": false,
+    "baseMerged": false,
+    "forbiddenDisasterThemeAdded": false
+  },
+  "nextBlocker": "Actual Unity 6000.3.0f1 runner/editor execution. When available, stop speculative expansion, capture+seal the native still set and both temporal probes, review the exact 100% evidence for shimmer/LOD transitions, then score/fix only observed defects."
+}

@@ -1,0 +1,80 @@
+{
+  "schemaVersion": "1.0",
+  "runDate": "2026-09-12",
+  "branch": "gpt/unity-migration",
+  "startingHead": "3ea0dab20de2bf1577845133dd51ca90dd963a80",
+  "implementationHeadBeforeRunRecord": "d07581293c3ca15700884913ee56b7f2b24be354",
+  "objective": "Close the evidence-freshness gap where a valid native-4K temporal/LOD sequence could remain scoreable after render-affecting candidate inputs changed and new still evidence was sealed for a different candidate.",
+  "decision": {
+    "priorityReason": "Temporal/LOD/aliasing carries 5 points and two critical automatic FAIL conditions (severe aliasing/shimmering and visible LOD pop). Source/runtime validity of an old temporal sequence is insufficient unless it is also current for the exact still-render candidate being scored.",
+    "visualExpansionDeferred": true,
+    "reasonVisualExpansionDeferred": "No Unity Runner or actual rendered evidence is available. Provenance hardening increases scoring integrity without claiming unobserved visual quality."
+  },
+  "changes": [
+    {
+      "commit": "fc6674c560065c2bfd86066e5122dd78bb1eed14",
+      "summary": "Added QualityBlockTemporalCandidateCoherenceQA. It binds temporal runtime receipt bytes to the current fresh native-4K still candidate SHA-256, candidate epoch and persisted scene SHA-256, and refuses temporal evidence older than the candidate mutation/latest tracked input write."
+    },
+    {
+      "commit": "69d5c676d253112a3a2b7c44495a5e19e2f08e6b",
+      "summary": "Added machine-readable temporal_candidate_coherence_contract.json with zero automatic visual points and explicit stale-evidence failure policy."
+    },
+    {
+      "commit": "325ed82b50e9cd010f62f6ab10a3fb3a36367ee5",
+      "summary": "Raised reviewed visual evidence integrity contract to schema 1.3 and made current temporal-to-still candidate coherence a mandatory scoring precondition."
+    },
+    {
+      "commit": "d07581293c3ca15700884913ee56b7f2b24be354",
+      "summary": "Wired temporal candidate coherence directly into reviewed Visual Fidelity scoring before temporal runtime evidence validation; contract validation also fail-closes if the integration is weakened."
+    }
+  ],
+  "verification": {
+    "githubCompare": {
+      "base": "3ea0dab20de2bf1577845133dd51ca90dd963a80",
+      "head": "d07581293c3ca15700884913ee56b7f2b24be354",
+      "status": "ahead",
+      "aheadBy": 4,
+      "behindBy": 0,
+      "mergeBaseUnchanged": true,
+      "changedPathsOnlyUnderUnityProject": true,
+      "godotChanged": false
+    },
+    "sourceReview": [
+      "Reviewed scoring path calls QualityBlockTemporalCandidateCoherenceQA.ValidateForScoring before accepting temporal runtime evidence.",
+      "Coherence validation first requires QualityBlockRenderCandidateFreshnessQA.ValidateCurrentCandidateFreshness, so stale still evidence cannot legitimize stale temporal evidence.",
+      "Temporal runtime receipt SHA-256, capture session, scene SHA-256, candidate combined SHA-256 and exact candidate epoch must match the current coherence seal.",
+      "Temporal generatedUtc must not predate either current candidate mutation UTC or candidate latest tracked input write UTC.",
+      "Import-time sealing deletes/invalidates prior coherence on failure; a manual seal command applies the same fail-closed checks.",
+      "All new QA paths award zero Visual Fidelity points and cannot clear severe_aliasing_or_shimmer or visible_lod_pop."
+    ],
+    "unityCompile": "PENDING_RUNNER",
+    "unityRuntime": "PENDING_RUNNER",
+    "actual3840x2160StillEvidence": "NOT_AVAILABLE",
+    "actualTemporalPixelEvidence": "NOT_AVAILABLE",
+    "githubActionsRuns": 0,
+    "commitStatusContexts": 0
+  },
+  "scores": {
+    "implementationReadiness": 93,
+    "implementationReadinessMaximum": 100,
+    "visualFidelityStatus": "UNSCORED_UNTIL_REAL_4K_RENDER",
+    "visualFidelityPointsAwardedThisRun": 0,
+    "visualFidelityPassClaimed": false
+  },
+  "expectedVisualScoreImpactAfterRealRender": {
+    "temporal_lod_aliasing": "Evidence reliability improvement only. Does not predict or award any of the 5 points; it prevents stale temporal pixels from supporting this category.",
+    "criticalDefects": [
+      "severe_aliasing_or_shimmer",
+      "visible_lod_pop",
+      "unverified_render_claim"
+    ],
+    "note": "No critical defect is cleared by source/provenance checks. Direct 100%-pixel temporal review remains mandatory."
+  },
+  "nextBlocker": "Unity 6000.3.0f1 Runner/Editor execution. On first real run, verify compile, still candidate freshness seal, temporal runtime receipt import/coherence sealing, then mutate a tracked render input and prove old temporal coherence fails before recapturing actual native-4K still/temporal evidence.",
+  "constraints": {
+    "preserveGodot": true,
+    "baseMerged": false,
+    "forbiddenEarthquakeDisasterReconstructionThemesAdded": false,
+    "stopNewCommitsAfter2026_09_18": true
+  }
+}

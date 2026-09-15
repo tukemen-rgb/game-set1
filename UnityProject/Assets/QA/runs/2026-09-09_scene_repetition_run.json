@@ -1,0 +1,84 @@
+{
+  "runId": "2026-09-09_scene_repetition",
+  "recordedUtc": "2026-09-09T02:35:00Z",
+  "branch": "gpt/unity-migration",
+  "startHead": "f61a9bdfcafcd82a25b6a37b1b9a61a9951de305",
+  "substantiveWorkHead": "343b2e562f53f58d633ccad961a503ae5f3d089f",
+  "bookkeepingHeadBeforeRunRecord": "f7ee578ed4ed0cc98be3559dc6060d0c2e2d7755",
+  "substantiveCommits": [
+    { "sha": "3f3d04f3b43c275b740d860003a5900aec00c4eb", "summary": "Add physical window occupancy variation pass" },
+    { "sha": "4cf657975bc0e5a9d8ac8fa1c7cfc0f95962584b", "summary": "Record window dressing manufacture and PBR contract" },
+    { "sha": "ea23ad4dacd57bc0e49734ec83845c635a0fef80", "summary": "Add scene clone-risk and repetition preflight" },
+    { "sha": "88a31a6cbfe9c0fa2075d6dae1d853ad9fa01341", "summary": "Define causal scene repetition QA policy" },
+    { "sha": "343b2e562f53f58d633ccad961a503ae5f3d089f", "summary": "Enforce occupancy variation and clone QA on benchmark saves" }
+  ],
+  "bookkeepingCommits": [
+    { "sha": "f7ee578ed4ed0cc98be3559dc6060d0c2e2d7755", "summary": "Record scene repetition implementation readiness" }
+  ],
+  "scope": {
+    "changedRoot": "UnityProject",
+    "godotChanged": false,
+    "baseMerged": false,
+    "disasterThemeAdded": false
+  },
+  "implementation": {
+    "problem": "The exterior housing construction is authentically modular, but identical visible room cards behind all thirty windows would create a synthetic clone rhythm. Natural tree/ecology assemblies also needed an explicit source-level clone-risk preflight rather than relying only on random seeds.",
+    "windowDressing": {
+      "apartmentAssemblies": 30,
+      "physicalStack": ["dielectric glass", "curtain leaves", "coated aluminium track", "non-emissive room backing"],
+      "glassToCurtainSeparation_m": 0.135,
+      "curtainToBackingSeparation_m": 0.075,
+      "lodLevels": 4,
+      "lod0PleatPitch_m": 0.055,
+      "lod0PleatAmplitude_m": 0.012,
+      "fabricPhysicalTile_m": 0.18,
+      "fabricTextureResolution_px": 512,
+      "materialFamilies": 4,
+      "metallic": 0.0,
+      "emissive": false,
+      "deterministicLayoutRule": "curtain gap, left/right gather, hem height and cloth family derive from floor/bay hash while manufactured sash dimensions remain unchanged"
+    },
+    "staticRepetitionQA": {
+      "ground": "reuses existing metre-derived macro/detail scale and world-phase validator",
+      "apartments": "minimum 18 unique LOD0 signatures; maximum 3 exact repeats",
+      "generatedTrees": "root-normalized mesh/material/transform hierarchy fingerprints must be unique among active generated fallbacks",
+      "ecologyPatches": "minimum 5 unique fingerprints across six patches; maximum 2 exact matches",
+      "falsePositiveControl": "mass-produced sash/rail/curb/fastener repetition remains explicitly approved when construction causality supports it"
+    },
+    "enforcement": "InitializeOnLoad sceneSaving gate runs after GroundHighDetail and DanchiFacadeOptics exist. The current physical-environment build saves the scene after facade optics, so the 4K preparation path cannot persist a generated benchmark without occupancy variation and clone-risk validation."
+  },
+  "verification": {
+    "type": "GitHub source/static inspection only",
+    "deterministicCurtainOfflineCheck": { "uniqueSignatures": 30, "maximumExactRepeat": 1, "minimumGap_m": 0.2827, "maximumGap_m": 1.1311 },
+    "commitStatusContextsOnSubstantiveHead": 0,
+    "workflowRunsOnSubstantiveHead": 0,
+    "captures4KDirectoryPresent": false,
+    "unityVersionTarget": "6000.3.0f1",
+    "unityCompileExecuted": false,
+    "native3840x2160RenderProduced": false,
+    "hundredPercentCropsProduced": false,
+    "visualFidelityStatus": "UNSCORED_UNTIL_REAL_4K_RENDER",
+    "visualFidelityPointsAwarded": 0,
+    "notes": [
+      "Static fingerprint uniqueness does not prove perceptual uniqueness in a rendered frame.",
+      "Transparent-glass sorting, fabric moire, curtain over-contrast and LOD transitions are not observable without Unity runtime evidence.",
+      "No render-quality claim is made from source coverage."
+    ]
+  },
+  "implementationReadiness": {
+    "score": 93,
+    "possible": 100,
+    "unchanged": true,
+    "blocker": "unity_compile_verification"
+  },
+  "expectedVisualScoreImpact": [
+    "Period accuracy/scene authenticity: occupant-controlled interior variation breaks cloned-window rhythm without falsifying repeated housing construction.",
+    "Geometry & construction fidelity: curtain gap, physical pleats, track and optical depth are actual geometry/spacing, not painted shading.",
+    "Material/PBR plausibility: dry curtain textile and coated track are dielectric, non-emissive and separated from glass reflections.",
+    "Texture/microdetail: LOD0 textile uses metre-derived UVs and yarn-scale normal/albedo rather than per-window stretched cards.",
+    "Vegetation/natural complexity: exact generated-tree/ecology hierarchy clones become a save-blocking QA failure.",
+    "Temporal/LOD stability: window dressing explicitly supplies LOD0/1/2/3 animated cross-fade, pending runtime visual proof."
+  ],
+  "nextBlocker": "Obtain a real Unity 6000.3.0f1 compile and native 3840x2160 hero/oblique/grazing captures. Immediately stop speculative expansion when they exist; inspect facade_center/facade_right for curtain moire/repetition and glass sorting, balcony_services for optical depth, and vegetation_grounding/tree_shadow_contact for perceptual clones. Then score/fix only from rendered evidence.",
+  "stopPolicy": "No new commits on/after 2026-09-19 unless new instructions arrive."
+}

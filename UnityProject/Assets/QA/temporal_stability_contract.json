@@ -1,0 +1,70 @@
+{
+  "schemaVersion": "1.0",
+  "purpose": "Require actual native-4K motion evidence before Temporal/LOD/aliasing stability or the shimmer/LOD critical-defect checks can be cleared.",
+  "width": 3840,
+  "height": 2160,
+  "requirePixelExactCrops": true,
+  "probes": [
+    {
+      "id": "subpixel_grazing",
+      "frameCount": 13,
+      "fieldOfView": 38.0,
+      "motionMode": "parallel_lateral_translation",
+      "motionStartMeters": -0.012,
+      "motionEndMeters": 0.012,
+      "cropId": "sash_rail_response",
+      "cropX": 2050,
+      "cropY": 560,
+      "cropWidth": 1280,
+      "cropHeight": 720,
+      "reason": "A 24 mm total lateral camera translation at the grazing-light benchmark exposes subpixel instability on sash, rail, antenna, foliage edges and material microdetail without changing the underlying scene state."
+    },
+    {
+      "id": "lod_walk_oblique",
+      "frameCount": 17,
+      "fieldOfView": 42.0,
+      "motionMode": "radial_distance_sweep",
+      "motionStartMeters": 24.0,
+      "motionEndMeters": -16.0,
+      "cropId": "vegetation_grounding",
+      "cropX": 1900,
+      "cropY": 80,
+      "cropWidth": 1280,
+      "cropHeight": 720,
+      "reason": "A 40 m far-to-near sweep around the oblique benchmark spans a large projected-size range so 4-level building, furniture and vegetation LOD systems can be reviewed for distracting transitions, silhouette discontinuity and shimmer."
+    }
+  ],
+  "requiredProbeRefsForTemporalCategory": ["subpixel_grazing", "lod_walk_oblique"],
+  "requiredProbeRefsForCriticalDefects": {
+    "severe_aliasing_or_shimmer": ["subpixel_grazing", "lod_walk_oblique"],
+    "visible_lod_pop": ["lod_walk_oblique"]
+  },
+  "sealPolicy": {
+    "hashAlgorithm": "SHA-256",
+    "hashEveryFullFrame": true,
+    "hashEvery100PercentCrop": true,
+    "hashManifestInReceipt": true,
+    "allowResampling": false,
+    "allowSharpening": false,
+    "allowFrameInterpolation": false
+  },
+  "reviewPolicy": {
+    "visualFidelityStatusAfterCapture": "UNSCORED_REVIEW_REQUIRED",
+    "manualObservedEvidenceRequired": true,
+    "automaticVisualPointsFromCapture": 0,
+    "notes": [
+      "A sealed sequence proves only that Unity produced the referenced native frames; it does not prove that shimmer or LOD pop is absent.",
+      "Review frames at 100% pixel scale in order; do not use interpolated playback or rescaled crops to dismiss instability.",
+      "The still hero/oblique/grazing captures remain mandatory for the other eight categories and spatial aliasing evidence."
+    ]
+  },
+  "hardRules": [
+    "Both probe sequences must be produced by the same Unity project scene and coherent midsummer lighting state used by the 4K benchmark pipeline.",
+    "Every frame must be 3840x2160 and every review crop must copy source texels 1:1 with zero resampling.",
+    "A temporal evidence reference is invalid unless its capture session, manifest SHA-256, receipt SHA-256 and every frame/crop hash validate.",
+    "The Temporal/LOD/aliasing category cannot pass its hard minimum from still frames alone.",
+    "severe_aliasing_or_shimmer cannot be marked absent without subpixel_grazing and lod_walk_oblique review.",
+    "visible_lod_pop cannot be marked absent without lod_walk_oblique review.",
+    "No temporal capture or source-side heuristic awards Visual Fidelity points automatically."
+  ]
+}

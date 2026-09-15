@@ -1,0 +1,152 @@
+{
+  "schemaVersion": "1.0",
+  "runId": "2026-09-10_1234_notice_board_display_case",
+  "branch": "gpt/unity-migration",
+  "startHead": "38ad6b8bee5404c1e20f54a4ede62d4e82e6c07c",
+  "substantiveWorkHead": "b9219d2eadce91949dc0e17231f4fa62f2775591",
+  "commits": [
+    {"sha": "fe15fdd159453d21e6605e143dcf1f19c87a9229", "purpose": "add machine-readable notice-board weatherproof display-case manufacture/install/material contract"},
+    {"sha": "25b393ffc8172a8437f5bb09c2cc0bd630088a00", "purpose": "add front/section construction lookdev for case depth, cover, gasket, backing and paper separation"},
+    {"sha": "00d6541b7cf0b739645218502bd1104c5090ccb9", "purpose": "reconstruct HD_NoticeBoard with recessed backing, clear cover, gasket, hinges, latch, hood and individual notices"},
+    {"sha": "2a52926d328f520be199305ae88d7495d5db6653", "purpose": "bind notice-board case construction into benchmark furniture save gate before LOD rebind"},
+    {"sha": "611e1be41675f7177919aa3bf1158144a4e88470", "purpose": "align scene-wide park/street-furniture manufacture metadata to the constructed notice-board case"},
+    {"sha": "cbbf75b075e580f44def3f98c93845b7eeb3b55f", "purpose": "link notice-board construction contract into active-renderer scene metadata coverage"},
+    {"sha": "eb33e124709e771420a9c5f4a1a865d05352d2b3", "purpose": "route notice-board construction validation through formal four-tier furniture LOD validation"},
+    {"sha": "463a06fac9817b4ddeb2fce66349da6344a54f6d", "purpose": "add physical metre-UV normalization QA for unique printed notice sheets after shared microdetail rewrite"},
+    {"sha": "e8f448b904b641f70664aac534b5f3860988ebb7", "purpose": "run printed-notice UV normalization after park microdetail and validate it in persisted save chain"},
+    {"sha": "0e0b02b6b6b14cbc4a45fc11befa02d7a2148d5c", "purpose": "initially route printed-notice UV validation through formal LOD gate"},
+    {"sha": "629450efee3b237c379335488c9f09daac5656d4", "purpose": "self-audit correction: defer printed-UV validation during pre-microdetail LOD rebind and enforce it only on completed prepared scene"},
+    {"sha": "695ff7f1fd1dec5778b8333a5440ff58ed2b625a", "purpose": "self-audit correction: reconcile clear acrylic roughness with both case optical range and scene-wide furniture roughness floor"},
+    {"sha": "b9219d2eadce91949dc0e17231f4fa62f2775591", "purpose": "self-audit correction: enforce Standard Transparent premultiplied blending so clear acrylic retains physically plausible reflections rather than Fade semantics"}
+  ],
+  "problemFound": {
+    "assembly": "HD_NoticeBoard",
+    "sourceEvidence": [
+      "The prior generated notice board had two posts, one thick backing block, four frame rails and LOD0 corner fasteners, but no clear weather cover, dry display cavity, perimeter seal, hinge/latch hardware or actual posted notices. At benchmark distance this risked reading as a generic framed slab rather than a manufactured neighborhood information case.",
+      "The shared park-furniture microdetail pass rewrites generated meshes to metre-space planar UV0. The first notice-sheet implementation assumed legacy 0..1 UVs, which would crop/stretch the unique paper textures after that rewrite unless per-material tiling was normalized from physical sheet dimensions.",
+      "The first acrylic material used smoothness 0.89 (roughness 0.11). That was inside the case-specific acrylic range but below the existing scene-wide furniture roughness hard floor of 0.12, so the final pipeline normalizes it to smoothness 0.86 / roughness 0.14 rather than weakening either gate.",
+      "The first acrylic setup declared Standard shader mode 3 but used Fade-style SrcAlpha blending/ALPHABLEND. Unity documents Transparent mode as the appropriate mode for realistic clear plastic/glass because reflections and highlights remain visible; final prepared-scene normalization enforces premultiplied Transparent semantics instead."
+    ],
+    "criticalDefectRisk": [
+      "visible primitive-placeholder-like hero geometry",
+      "materially impossible or visually weak transparent-specular response",
+      "immediately obvious repeated/stretched texture mapping",
+      "floating/interpenetrating paper-cover/backing interfaces",
+      "visible LOD content/silhouette pop",
+      "missing required construction/material metadata"
+    ],
+    "affectedCategories": [
+      "Geometry & construction fidelity",
+      "Material/PBR physical plausibility",
+      "Texture/microdetail/texel fidelity",
+      "Period accuracy/scene authenticity",
+      "Temporal/LOD/aliasing stability"
+    ]
+  },
+  "implementation": {
+    "case": {
+      "outerFrameMetres": [2.42, 1.33, 0.075],
+      "backingMetres": [2.28, 1.23, 0.018],
+      "clearAcrylicMetres": [2.20, 1.11, 0.003],
+      "epdmFaceWidthMetres": 0.010,
+      "epdmDepthMetres": 0.006,
+      "paperCount": 5,
+      "paperThicknessMetres": 0.0004,
+      "hingeCount": 3,
+      "dripHoodMetres": [2.48, 0.025, 0.14]
+    },
+    "interfaces": {
+      "paperBackingGapBySourceMathMetres": 0.0,
+      "paperCoverDryAirGapBySourceMathMetres": 0.0411,
+      "coverEdgeClearanceBySourceMathMetres": 0.050,
+      "hoodFrameBearingGapBySourceMathMetres": 0.0,
+      "hardPaperBackingGapMaxMetres": 0.001,
+      "hardPaperCoverGapMinMetres": 0.020,
+      "hardCoverClearanceRangeMetres": [0.030, 0.070],
+      "hardHoodBearingGapMaxMetres": 0.0025
+    },
+    "materials": {
+      "framePosts": "rough painted dielectric steel",
+      "hingeLatch": "exposed metallic steel",
+      "backing": "rough non-metallic board",
+      "gasket": "matte EPDM dielectric",
+      "paper": "rough dielectric with five deterministic print textures; printed ink remains texture detail",
+      "clearCover": "transparent dielectric acrylic; final smoothness 0.86 / roughness 0.14, metallic 0, premultiplied Standard Transparent mode so real scene reflections/highlights are retained"
+    },
+    "printedTextureMapping": "After shared metric-UV rewrite, each notice material uses _MainTex scale = inverse physical sheet width/height and offset=(0.5,0.5), Clamp + mipmaps + sRGB. Five distinct paper textures persist through all four LOD tiers.",
+    "lod": "Case/cover/gasket/three hinges/latch and five-notice occupancy persist through LOD0/1/2/3; only ten 7 mm pin heads are LOD0-only. All generated case renderers are created before the explicit furniture LOD rebind and formal completed-scene validation rejects escape from the assigned tier.",
+    "lookdev": "Assets/QA/notice_board_display_case_lookdev.svg",
+    "contract": "Assets/QA/notice_board_display_case_contract.json"
+  },
+  "referenceResearch": [
+    {
+      "authority": "Unity Technologies",
+      "url": "https://docs.unity3d.com/ja/6000.0/Manual/StandardShaderMaterialParameters.html",
+      "use": "Built-in Standard shader Transparent mode is the appropriate mode for realistic clear plastic/glass because material alpha can be transparent while reflections and lighting highlights remain visible."
+    },
+    {
+      "authority": "Unity Technologies",
+      "url": "https://docs.unity3d.com/cn/6000.0/ScriptReference/TextureImporterCompression.CompressedHQ.html",
+      "use": "Confirms TextureImporterCompression.CompressedHQ is supported in Unity 6 and selects a high-quality platform-appropriate compression format."
+    }
+  ],
+  "qaEnforcement": [
+    "Machine-readable notice-board contract records components, dimensions/thickness, materials/finish, mounting sequence, interfaces/gaps/seals, orientation/exposure, cause-based aging, geometry-vs-material allocation, four-level LOD policy and zero automatic visual credit.",
+    "Scene construction QA rejects missing case parts, incorrect paper/backing seating, insufficient paper/cover air gap, incorrect cover clearance, hood/frame gap, wrong hinge count, wrong notice count, generated colliders, stock primitive meshes, metallic paper/acrylic and missing notice textures.",
+    "Printed-UV QA rejects physical sheet tiling drift, repeated/cropped sheet mapping, non-clamped/non-mipmapped/non-sRGB notice imports, missing UV0 and post-microdetail acrylic blend/roughness drift.",
+    "Benchmark save builds the case before LOD rebind, then runs metric microdetail, printed-UV/acrylic normalization and completed-scene validation. Formal native-4K review repeatedly calls the existing furniture LOD validator, which now also validates the completed notice-board case and printed mapping before/after capture stages.",
+    "No source-side PASS clears a rendered critical defect; native 3840x2160 and 100% crops remain mandatory."
+  ],
+  "verification": {
+    "sourceDimensionalAudit": "PASS_BY_CODE_MATH_ONLY",
+    "contractJson": "CREATED_MACHINE_READABLE",
+    "lookdevIllustration": "CREATED_SVG",
+    "unity6ApiCheck": "TextureImporterCompression.CompressedHQ verified in Unity 6 documentation; Standard Transparent chosen rather than Fade for physically plausible clear acrylic reflection retention.",
+    "selfAuditCorrections": [
+      "metric-UV rewrite interaction discovered and corrected with inverse physical sheet tiling",
+      "pre-microdetail LOD validation sequencing corrected so printed-UV validation does not run before the authoritative UV rewrite",
+      "acrylic roughness reconciled to 0.14 so case-specific and scene-wide gates both pass without relaxing thresholds",
+      "Mode-3/Fade blend mismatch corrected in final prepared-scene normalization to premultiplied Standard Transparent semantics"
+    ],
+    "runStartToSubstantiveHead": {
+      "aheadBy": 13,
+      "behindBy": 0,
+      "mergeBaseRemainedStartHead": true,
+      "changedPathsOnlyUnder": ["UnityProject/Assets/Editor", "UnityProject/Assets/QA"]
+    },
+    "godotTouched": false,
+    "baseMergePerformed": false,
+    "githubCommitStatusContextsAtSubstantiveHead": 0,
+    "githubWorkflowRunsAtSubstantiveHead": 0,
+    "unity6000_3_0f1Compile": "PENDING_NO_RUNNER",
+    "native3840x2160Render": "PENDING_NO_RUNNER",
+    "hundredPercentCropReview": "PENDING_NO_RUNNER",
+    "temporalRenderEvidence": "PENDING_NO_RUNNER"
+  },
+  "implementationReadiness": {
+    "score": 93,
+    "possible": 100,
+    "status": "UNCHANGED",
+    "reason": "The remaining seven readiness points are reserved for actual Unity compile/runtime evidence. Source-side construction reasoning, dimensional math and QA cannot satisfy them."
+  },
+  "visualFidelity": {
+    "status": "UNSCORED",
+    "pointsAwardedThisRun": 0,
+    "passClaimed": false
+  },
+  "expectedVisualScoreImpact": {
+    "geometryConstruction": "Potential deduction recovery because a benchmark-visible framed slab is now a physically layered weatherproof display case with depth, gasket, hinges/latch, hood and seated paper; no point is assumed until pixels prove it.",
+    "materialPbr": "Potential improvement because painted steel, exposed metal, board/paper, EPDM and clear acrylic now use separate physical material classes and the acrylic uses reflection-preserving Transparent semantics; grazing evidence is mandatory.",
+    "textureMicrodetail": "Potential improvement because five unique notice textures are mapped once per physical sheet after metre-UV conversion instead of being cropped/stretched/repeated; actual aliasing/legibility remains render-dependent.",
+    "periodAuthenticity": "Potential deduction recovery because a passive posted-notice weather case reads more plausibly as ordinary circa-2000 neighborhood infrastructure than a blank generic panel; exact historical-product credit is not claimed.",
+    "temporalLod": "Potential stability improvement because case/cover/notice occupancy persists through all four tiers and only sub-pixel pins disappear after LOD0; actual cross-fade/pop must be judged from temporal evidence.",
+    "automaticCredit": 0
+  },
+  "nextBlocker": "No Unity 6000.3.0f1 runner/workflow or native render evidence exists. When a Runner appears, stop speculative expansion and execute the formal native-4K packet. Inspect the notice board where visible in the oblique evidence at 100%: frame/case depth, paper seating, cover air gap, gasket continuity, hinge/latch attachment, hood bearing and transparent-cover sorting. In grazing/oblique pixels verify dielectric acrylic reflections remain distinct from metallic hinge/latch and rough paper/backing. Traverse all four LODs to detect cover/content pop, transparent cross-fade artifacts, print shimmer or moire. Fix rendered evidence failures rather than weakening thresholds.",
+  "constraints": {
+    "preserveGodot": true,
+    "mergeBaseWithoutApproval": false,
+    "excludedThemes": ["earthquake", "disaster", "reconstruction"],
+    "stopNewCommitsAfter": "2026-09-18"
+  }
+}

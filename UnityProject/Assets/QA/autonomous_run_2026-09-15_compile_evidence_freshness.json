@@ -1,0 +1,86 @@
+{
+  "schemaVersion": "1.0",
+  "date": "2026-09-15",
+  "branch": "gpt/unity-migration",
+  "startingHead": "1360db1c335cf988f810039095fde02c2227f470",
+  "substantiveCommits": [
+    {
+      "sha": "609a2e1b27d6e475f0643eb413c88b103e3ad66f",
+      "message": "Define fail-closed Unity compile verification contract"
+    },
+    {
+      "sha": "63c42ebe641db170a5fc013c3b4cb190ad59c015",
+      "message": "Add stale-proof Unity compile verification QA"
+    },
+    {
+      "sha": "aa0993f383653d51de51a36dabe356014e43953c",
+      "message": "Bind compile evidence freshness to readiness scoring"
+    },
+    {
+      "sha": "c4bf123f2c332e572ffc53c55866f47af03d90b3",
+      "message": "Fail-close stale compile evidence before readiness scoring"
+    },
+    {
+      "sha": "e1c7e0efc57da88c2902ffed46b98a2048e7a980",
+      "message": "Pin empty Unity package dependency set for compile provenance"
+    }
+  ],
+  "problemFound": {
+    "summary": "The central Implementation Readiness compile component was existence-based: a stale or fabricated Assets/QA/unity_compile_verified.json could have contributed the final 7 readiness points without proving a current Unity compile.",
+    "risk": "False 100/100 Implementation Readiness and weakened protection against unverified quality claims.",
+    "directPixelDefect": false
+  },
+  "changes": {
+    "requiredUnityVersion": "6000.3.0f1",
+    "cleanCompileMode": "CLEAN_BUILD_CACHE",
+    "deterministicCompileInputSha256": true,
+    "stableHashRequiredAcrossCompilation": true,
+    "scriptCompilationFailedMustBeFalse": true,
+    "staleEvidenceRejected": true,
+    "invalidEvidenceRemovedBeforeReadinessScoring": true,
+    "sourceSideQaMayCreateVerifiedEvidence": false,
+    "packageDependencyLockAdded": true,
+    "packageDependencySet": "empty"
+  },
+  "verification": {
+    "projectVersionSourceConfirmed": "6000.3.0f1",
+    "packageManifestDependencySet": "empty",
+    "packageLockDependencySet": "empty",
+    "compareStatusFromStartingHead": "ahead",
+    "aheadByBeforeRunRecord": 5,
+    "behindByBeforeRunRecord": 0,
+    "mergeBaseBeforeRunRecord": "1360db1c335cf988f810039095fde02c2227f470",
+    "workflowRunsOnHeadBeforeRunRecord": 0,
+    "realUnityCompileVerified": false,
+    "actual3840x2160RenderVerified": false,
+    "actual100PercentCropsVerified": false,
+    "temporalRenderEvidenceVerified": false,
+    "sourceSideContractAndQaAdded": true
+  },
+  "scores": {
+    "implementationReadiness": 93,
+    "implementationReadinessMaximum": 100,
+    "compileReadinessPointsAwardedThisRun": 0,
+    "visualFidelityStatus": "UNSCORED_UNTIL_REAL_4K_RENDER",
+    "visualFidelityPointsAwardedThisRun": 0,
+    "visualFidelityPassClaimed": false
+  },
+  "expectedVisualScoreImpact": {
+    "direct": "none until actual rendered evidence exists",
+    "indirect": "prevents stale/fabricated compile evidence from being mistaken for current readiness and strengthens provenance before the real 4K gate"
+  },
+  "failureInjectionForNextUnityRunner": [
+    "place fabricated unity_compile_verified.json and require fail-closed removal",
+    "change a tracked C# input after valid evidence and require stale SHA rejection",
+    "change Packages/packages-lock.json after valid evidence and require stale SHA rejection",
+    "alter evidence Unity version and require rejection",
+    "alter evidence compile mode away from CLEAN_BUILD_CACHE and require rejection",
+    "introduce a script compilation error and require that no verified evidence is retained"
+  ],
+  "nextBlocker": "A real Unity 6000.3.0f1 runner/editor session must execute the requested CleanBuildCache compilation. Only then may the missing 7 Implementation Readiness points become eligible. After compile verification, produce fresh 3840x2160 frontal/oblique/grazing captures, 100% crops and temporal evidence before any Visual Fidelity score is awarded.",
+  "constraints": {
+    "godotChanged": false,
+    "baseMerged": false,
+    "earthquakeDisasterReconstructionThemeAdded": false
+  }
+}

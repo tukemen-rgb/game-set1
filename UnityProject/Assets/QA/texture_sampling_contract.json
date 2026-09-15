@@ -1,0 +1,65 @@
+{
+  "contractVersion": "texture-sampling-v1.0.0",
+  "target": "QualityBlock1990s native 3840x2160 benchmark and real-time Unity playback",
+  "purpose": "Prevent physically co-authored PBR maps from drifting in UV scale and prevent generated hero textures from entering the 4K benchmark without mipmapped trilinear anisotropic sampling. This is implementation QA only and cannot award Visual Fidelity points without sealed native render evidence.",
+  "scoreCategoriesSupported": [
+    "Material/PBR physical plausibility",
+    "Texture/microdetail/texel fidelity",
+    "Temporal/LOD/aliasing stability"
+  ],
+  "criticalDefectRisksReduced": [
+    "severe_aliasing_or_shimmering",
+    "materially_impossible_metallic_specular_values"
+  ],
+  "sceneScope": {
+    "scene": "Assets/Scenes/QualityBlock1990s.unity",
+    "managedMaterialPathPrefix": "Assets/Art/Generated",
+    "minimumManagedTextureDimensionPx": 512,
+    "minimumAnisotropy": 8,
+    "requiredFilterMode": "Trilinear",
+    "requiredWrapMode": "Repeat",
+    "mipmapsRequired": true,
+    "globalAnisotropicFiltering": "Enable"
+  },
+  "semanticImportRules": {
+    "albedo": {
+      "shaderProperty": "_MainTex",
+      "sRGB": true,
+      "textureType": "Default"
+    },
+    "normal": {
+      "shaderProperty": "_BumpMap",
+      "sRGB": false,
+      "textureType": "NormalMap"
+    },
+    "metallicSmoothness": {
+      "shaderProperty": "_MetallicGlossMap",
+      "sRGB": false,
+      "textureType": "Default",
+      "channelMeaning": "R=metallic, A=smoothness for Standard-derived generated materials"
+    }
+  },
+  "mapRegistration": {
+    "rule": "For generated Standard materials with co-authored _MainTex plus _BumpMap and/or _MetallicGlossMap, secondary map scale and offset must exactly follow _MainTex within 0.0001. This prevents albedo, normal and roughness/metallic features from representing different physical sizes on the same manufactured surface.",
+    "customFoliageNote": "NewTown/FoliageTransmission deliberately transforms one UV with _MainTex_ST and samples albedo, normal and smoothness at that same coordinate; importer sampling rules still apply to all three textures.",
+    "bakedHighlightPolicy": "No texture may compensate for UV or sampling defects with painted highlight/shadow information. Angular response remains shader/geometry/light driven."
+  },
+  "physicalTexelReasoning": {
+    "generatedBasePBR": "1024 px tileable source sets are retained with mip chains; physical scale is authored by mesh metric UV or material tiling and must stay map-registered.",
+    "curtainTextile": "512 px repeating textile maps are sampled on 0.18 m physical UVs; mipmaps and anisotropy are mandatory because yarn structure becomes sub-pixel at oblique/grazing views.",
+    "groundAndFurnitureMicrodetail": "1024 px microstructure maps use metre-derived tiling; trilinear mip selection plus anisotropy reduces grazing-angle crawl without blurring the native 100% crop through post-resampling."
+  },
+  "runtimeEvidenceRequired": {
+    "stillViews": ["hero", "oblique", "grazing"],
+    "required100PercentCrops": ["hero/facade_center", "oblique/ground_contact", "grazing/material_grazing"],
+    "temporalSequences": ["subpixel_grazing", "lod_walk_oblique"],
+    "inspection": [
+      "moire or crawling in curtain weave and thin rails",
+      "normal/roughness feature scale mismatch against albedo",
+      "grazing-angle ground texture blur or sparkle",
+      "foliage texture shimmer and unstable mip transitions"
+    ]
+  },
+  "visualFidelityPointsAwarded": 0,
+  "runtimeRenderVerification": "PENDING_UNITY_RUNTIME"
+}

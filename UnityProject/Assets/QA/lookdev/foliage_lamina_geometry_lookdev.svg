@@ -1,0 +1,53 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="1000" viewBox="0 0 1600 1000">
+  <rect width="1600" height="1000" fill="#f4f1e8"/>
+  <text x="70" y="74" font-family="Arial, sans-serif" font-size="34" font-weight="700" fill="#1f2b25">Foliage Lamina Geometry Lookdev — source design only, NOT render evidence</text>
+  <text x="70" y="112" font-family="Arial, sans-serif" font-size="19" fill="#45544a">Generic healthy midsummer deciduous fallback. Preserve twig attachment and two-sided topology; remove perfectly planar card response.</text>
+
+  <g transform="translate(75 175)">
+    <rect x="0" y="0" width="690" height="330" rx="20" fill="#fffdf7" stroke="#9da79f" stroke-width="2"/>
+    <text x="28" y="42" font-family="Arial, sans-serif" font-size="25" font-weight="700" fill="#263a2e">A. Legacy planar lamina — reject for hero evidence</text>
+    <line x1="105" y1="240" x2="315" y2="100" stroke="#527b4f" stroke-width="5"/>
+    <line x1="315" y1="100" x2="525" y2="240" stroke="#527b4f" stroke-width="5"/>
+    <line x1="525" y1="240" x2="315" y2="292" stroke="#527b4f" stroke-width="5"/>
+    <line x1="315" y1="292" x2="105" y2="240" stroke="#527b4f" stroke-width="5"/>
+    <line x1="315" y1="100" x2="315" y2="292" stroke="#7d8d80" stroke-width="2" stroke-dasharray="8 8"/>
+    <path d="M130 80 L255 145" stroke="#d69444" stroke-width="5" marker-end="url(#arrow)"/>
+    <text x="70" y="72" font-family="Arial, sans-serif" font-size="18" fill="#8a5d27">grazing midsummer sun</text>
+    <text x="380" y="95" font-family="Arial, sans-serif" font-size="18" fill="#98493e">single planar normal → synchronized flat flash</text>
+    <text x="70" y="316" font-family="Arial, sans-serif" font-size="17" fill="#59655e">Diamond silhouette + coplanar triangles are a source-side CG risk; actual severity must be judged in native 4K.</text>
+  </g>
+
+  <g transform="translate(835 175)">
+    <rect x="0" y="0" width="690" height="330" rx="20" fill="#fffdf7" stroke="#9da79f" stroke-width="2"/>
+    <text x="28" y="42" font-family="Arial, sans-serif" font-size="25" font-weight="700" fill="#263a2e">B. Required shallow midrib fold</text>
+    <line x1="110" y1="238" x2="315" y2="100" stroke="#527b4f" stroke-width="5"/>
+    <line x1="315" y1="100" x2="520" y2="238" stroke="#527b4f" stroke-width="5"/>
+    <line x1="520" y1="238" x2="315" y2="292" stroke="#527b4f" stroke-width="5"/>
+    <line x1="315" y1="292" x2="110" y2="238" stroke="#527b4f" stroke-width="5"/>
+    <line x1="315" y1="100" x2="315" y2="292" stroke="#305c3b" stroke-width="6"/>
+    <path d="M110 238 Q212 265 315 210 Q418 265 520 238" fill="none" stroke="#79a66f" stroke-width="4"/>
+    <path d="M130 80 L255 145" stroke="#d69444" stroke-width="5" marker-end="url(#arrow)"/>
+    <text x="365" y="116" font-family="Arial, sans-serif" font-size="18" fill="#355e40">tip→base midrib hinge</text>
+    <text x="365" y="148" font-family="Arial, sans-serif" font-size="18" fill="#355e40">3°–28° hard source window</text>
+    <text x="365" y="180" font-family="Arial, sans-serif" font-size="18" fill="#355e40">bounded left/right asymmetry</text>
+    <text x="55" y="316" font-family="Arial, sans-serif" font-size="17" fill="#59655e">Geometry owns macro normal break. Material owns micro-normal, roughness, dielectric Fresnel and transmission.</text>
+  </g>
+
+  <g transform="translate(75 555)">
+    <rect x="0" y="0" width="1450" height="355" rx="20" fill="#fffdf7" stroke="#9da79f" stroke-width="2"/>
+    <text x="28" y="42" font-family="Arial, sans-serif" font-size="25" font-weight="700" fill="#263a2e">C. Installation / evidence rules</text>
+    <text x="45" y="86" font-family="Arial, sans-serif" font-size="19" fill="#39483f">• Keep: woody twig → LeafCluster transform → spray asset. Do not move tree, branch, cluster, collider or gameplay interface.</text>
+    <text x="45" y="124" font-family="Arial, sans-serif" font-size="19" fill="#39483f">• Geometry: shallow V-fold, bounded asymmetry, existing silhouette scale, LOD identity. No tears, storm cues or damage storytelling.</text>
+    <text x="45" y="162" font-family="Arial, sans-serif" font-size="19" fill="#39483f">• Material: non-metallic living dielectric, broad rough response, vein micro-normal, modest transmitted sunlight. Never paint highlights/fold shadows.</text>
+    <text x="45" y="200" font-family="Arial, sans-serif" font-size="19" fill="#39483f">• LOD0/1/2/3: retained LeafCluster ordinals must keep the same morphology mesh; fold must survive all generated base/derived assets.</text>
+    <text x="45" y="238" font-family="Arial, sans-serif" font-size="19" fill="#39483f">• Native evidence: hero + oblique + grazing at 3840×2160; inspect vegetation_grounding, tree_shadow_contact and temporal/subpixel_grazing at 100%.</text>
+    <text x="45" y="276" font-family="Arial, sans-serif" font-size="19" fill="#9b413b">AUTO-FAIL if visible planar/placeholder foliage, obvious clone pattern, severe edge/normal shimmer, LOD pop, floating foliage, or unverified quality claim.</text>
+    <text x="45" y="322" font-family="Arial, sans-serif" font-size="18" font-weight="700" fill="#6b4a31">This diagram is a generation/lookdev reference. It contributes 0 Visual Fidelity points and cannot substitute for an actual Unity render.</text>
+  </g>
+
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L0,6 L9,3 z" fill="#d69444"/>
+    </marker>
+  </defs>
+</svg>

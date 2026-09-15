@@ -1,0 +1,48 @@
+{
+  "schemaVersion": "1.0",
+  "requiredUnityVersion": "6000.3.0f1",
+  "evidencePath": "Assets/QA/unity_compile_verified.json",
+  "requestSentinelPath": "Library/QualityBlockUnityCompileVerificationRequest.json",
+  "compileMode": "CLEAN_BUILD_CACHE",
+  "sourceRoots": [
+    "Assets",
+    "Packages"
+  ],
+  "includedSuffixes": [
+    ".cs",
+    ".asmdef",
+    ".asmref",
+    ".rsp",
+    ".dll",
+    ".winmd",
+    ".dll.meta",
+    ".winmd.meta",
+    ".asmdef.meta",
+    ".asmref.meta",
+    ".rsp.meta"
+  ],
+  "explicitInputPaths": [
+    "Packages/manifest.json",
+    "Packages/packages-lock.json",
+    "ProjectSettings/ProjectVersion.txt",
+    "ProjectSettings/ProjectSettings.asset"
+  ],
+  "rules": {
+    "requireCleanBuildCacheRequest": true,
+    "requireExactUnityVersion": true,
+    "requireStableCompileInputHashAcrossCompile": true,
+    "requireScriptCompilationFailedFalse": true,
+    "rejectMissingEvidence": true,
+    "rejectStaleInputHash": true,
+    "deletePriorEvidenceBeforeVerificationRequest": true,
+    "readinessPoints": 7,
+    "visualFidelityPointsAwarded": 0
+  },
+  "verification": {
+    "runtimeCompileVerified": false,
+    "implementationReadinessPointsAwardedNow": 0,
+    "visualFidelityPointsAwarded": 0,
+    "status": "PENDING_REAL_UNITY_CLEAN_COMPILE",
+    "note": "Source-side contract only. The 7 Implementation Readiness points are awarded only when a real Unity Editor clean script compilation writes fresh evidence whose deterministic compile-input SHA-256 still matches the current project. This contract never creates Visual Fidelity points."
+  }
+}

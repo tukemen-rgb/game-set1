@@ -1,0 +1,13 @@
+{
+  "id": "PinchHangerSmallLaundryReview_LOD0",
+  "triangles": 51152,
+  "sha256": "f5b9c06e12fec4cb2316d6157dc1d296525159401c8012e8bd8573c30cca9be7",
+  "formalBenchmarkSceneChanged": false,
+  "unityVerified": false,
+  "placement": "diagnostic arrangement only; hanger + socks + handkerchief, metres Y-up",
+  "knownLimitations": [
+    "cloth-to-clip contact is visually arranged, not physics-solved",
+    "clip spring preload/load not simulated",
+    "Unity coordinate/material/LOD parity pending"
+  ]
+}

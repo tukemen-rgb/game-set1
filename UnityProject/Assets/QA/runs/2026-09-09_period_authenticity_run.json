@@ -1,0 +1,70 @@
+{
+  "runId": "2026-09-09_period_authenticity",
+  "startHead": "4cb2921e651fd66edef882c6fe067265315a08dd",
+  "substantiveWorkHead": "9f3c8545345c5f900575d3d8eea2f5dac9421c2b",
+  "substantiveCommits": [
+    "9f3c8545345c5f900575d3d8eea2f5dac9421c2b"
+  ],
+  "scope": "Year-2000 rooftop period-authenticity pass for the generated Unity benchmark; Godot preserved.",
+  "implementationReadiness": {
+    "score": 93,
+    "possible": 100,
+    "changeThisRun": 0,
+    "reason": "Source/pipeline coverage improved, but the existing 7-point Unity editor/runner compile-verification blocker is still unresolved. Readiness is not Visual Fidelity."
+  },
+  "visualFidelity": {
+    "status": "UNSCORED_UNTIL_REAL_4K_RENDER",
+    "pointsAwardedThisRun": 0,
+    "passClaimed": false,
+    "reason": "No native Unity 3840x2160 render or pixel-exact 100% crop exists for this commit."
+  },
+  "work": [
+    {
+      "asset": "Assets/Editor/QualityBlockPeriodAuthenticityUpgrade.cs",
+      "result": "Adds a single communal late-analogue-era rooftop receiving assembly: four precast ballast blocks, paired galvanized base rails, mast saddle, 48 mm galvanized mast, physically separate large VHF and compact UHF Yagi arrays, dielectric feed boxes, coax drop, roof conduit and junction box. Visible pieces use the authored detail-mesh cache rather than Unity primitive renderers."
+    },
+    {
+      "asset": "Assets/Editor/QualityBlockPeriodAuthenticitySaveGate.cs",
+      "result": "Makes the period-authentic assembly a persisted benchmark invariant after DanchiHighDetail exists; scene save is blocked if construction/material/LOD QA fails."
+    },
+    {
+      "asset": "Assets/QA/period_authenticity_contract.json",
+      "result": "Records target era, components, dimensions, manufacture, mounting/load path, interfaces, materials, roughness/metallic/F0/normal/microstructure/wetness/UV aging/Fresnel behavior, LOD0-3 policy, lookdev checks, critical-fail conditions and render-verification status."
+    }
+  ],
+  "verification": {
+    "method": "GitHub source/static inspection only",
+    "changedFilesFromStart": 3,
+    "changedFilesAllUnderUnityProject": true,
+    "aheadBy": 1,
+    "behindBy": 0,
+    "commitStatusContexts": 0,
+    "workflowRuns": 0,
+    "captures4KDirectoryPresent": false,
+    "unity6000_3_0f1CompileVerified": false,
+    "native3840x2160RenderVerified": false,
+    "pixelExact100PercentCropsVerified": false,
+    "staticChecks": [
+      "LOD0 specification carries 8 VHF elements and 14 UHF elements; LOD1/2/3 reduce element counts while retaining separate VHF/UHF silhouettes.",
+      "Four explicit LOD levels use animated cross-fade in source.",
+      "No Collider is created by the period-authentic visual assembly; validation rejects any collider beneath the root.",
+      "Validation rejects visible meshes not sourced from the GM_HD authored detail-mesh cache.",
+      "Hot-dip galvanized visible metal is constrained to metallic near 1.0; ABS, coax PVC and precast concrete are constrained to dielectric metallic values near 0.",
+      "All period renderers must cast and receive the same coherent scene shadows; no baked highlight geometry/material is introduced."
+    ]
+  },
+  "constraints": {
+    "godotModified": false,
+    "baseMerged": false,
+    "earthquakeDisasterReconstructionThemeIntroduced": false
+  },
+  "expectedVisualScoreImpact": [
+    "Period accuracy/scene authenticity: strongest expected benefit. The roofline gains a restrained late-analogue-era VHF/UHF communal receiving system instead of a generic modern flat antenna or arbitrary nostalgia prop.",
+    "Geometry & construction fidelity: ballast-to-rail-to-saddle-to-mast-to-boom load path plus explicit coax route gives the rooftop service assembly a reconstructable installation logic.",
+    "Material/PBR physical plausibility: galvanized conductive surfaces are metallic while feed-box plastic, coax jacket and concrete ballast remain dielectric; angular highlights must come from the lighting/reflection environment.",
+    "Cinematic image specificity: the roofline acquires an era-specific infrastructure silhouette without randomizing authentic mass-produced apartment repetition.",
+    "Temporal/LOD stability: four cross-faded LODs are implemented source-side, but actual pop and thin-element shimmer remain unverified until runtime motion evidence exists."
+  ],
+  "nextBlocker": "Unity 6000.3.0f1 editor/runner compile plus actual 3840x2160 hero/oblique/grazing frames. On first real render, stop speculative expansion and inspect the rooftop receiving silhouette for thin-element aliasing/shimmer, LOD pop, ballast-to-roof contact, boom/mast interpenetration, cable continuity and galvanized highlight behavior before adding further period detail.",
+  "recordingNote": "This bookkeeping file is committed separately from the substantive implementation commit and is not counted in substantiveCommits."
+}

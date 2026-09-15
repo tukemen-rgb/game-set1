@@ -1,0 +1,101 @@
+{
+  "schemaVersion": "1.0",
+  "runDate": "2026-09-11",
+  "branch": "gpt/unity-migration",
+  "startHead": "bd2db8b954c768f528900d7a2b7679c44c3c37fe",
+  "preRecordHead": "dd727cf15c43e798713de7fcb0c3edb98a2cade1",
+  "scope": "Generated foliage lamina geometry: remove perfectly-planar leaf-card normal response while preserving existing tree construction, two-sided topology, morphology diversity and LOD identity.",
+  "constraintsObserved": {
+    "godotPreserved": true,
+    "baseMerged": false,
+    "forbiddenThemesIntroduced": false,
+    "visualFidelityClaimWithoutRender": false,
+    "visualPointsAwarded": 0
+  },
+  "sourceFinding": {
+    "problem": "The generated GM_LeafSpray_A/B/C masters use contiguous eight-vertex groups made from two coincident copies of a four-vertex planar diamond lamina. Morphology diversity rotates/scales those groups but does not add macro curvature, so every leaf can retain a synchronized planar BRDF response under grazing sun even when cluster silhouettes differ.",
+    "evidence": [
+      "QualityBlockTreeDetailUpgrade.BuildLeafSprayMesh constructs tip/right/base/left planar front vertices plus coincident reversed back vertices.",
+      "QualityBlockFoliageMorphologyVariationUpgrade preserves source triangle/UV topology and applies bounded per-leaf transform variation.",
+      "NewTown/FoliageTransmission provides physically constrained material-side normal/Fresnel/transmission behavior, but material micro-normal cannot replace missing macro lamina curvature."
+    ]
+  },
+  "implementation": {
+    "geometry": [
+      "Added QualityBlockFoliageLaminaGeometryUpgrade with a deterministic shallow V-fold around the existing tip-to-base midrib diagonal.",
+      "Fold depth is 8.5-15.5% of lamina half-width; right/left depth receives bounded deterministic variation.",
+      "Added +/-3.5% longitudinal side asymmetry and +/-1.8% tip/base lateral asymmetry without moving LeafCluster transforms or woody construction.",
+      "Preserved the canonical eight-vertex/twelve-index two-sided topology and exact front/back positional coincidence, so existing material, shadow and morphology paths remain compatible.",
+      "Added idempotence: already-folded meshes are detected and not folded repeatedly."
+    ],
+    "pipelineBinding": [
+      "Registered a benchmark-scene save binding. When upstream tree-detail generation recreates planar base sprays and saves the benchmark scene, the base meshes are folded before downstream morphology regeneration.",
+      "Derived morphology variants generated from folded bases inherit the physical lamina construction; existing derived variants are also opportunistically converged on scene save.",
+      "Explicit Build Folded Foliage Lamina Geometry menu path persists morphology renderer assignments and mesh assets."
+    ],
+    "qa": [
+      "Added foliage_lamina_geometry_contract.json with biological assembly, dimensions, material/geometry ownership, installation boundaries, LOD policy, canonical critical-defect IDs and native-4K review targets.",
+      "Added QualityBlockFoliageLaminaGeometryQA formal pre-cull binding for QA4K_ and QAPreparedTemporal_ 3840x2160 targets.",
+      "QA requires all three base sprays plus twelve derived variants, canonical topology, coincident front/back vertices, complete UV/normals/tangents and every lamina inside the 3-28 degree fold window.",
+      "QA cross-checks critical defect IDs against visual_fidelity_gate.json and enforces zero automatic Visual Fidelity points."
+    ],
+    "lookdev": "Added Assets/QA/lookdev/foliage_lamina_geometry_lookdev.svg contrasting rejected planar normal response with the required shallow fold and documenting geometry-vs-material ownership. It is explicitly non-render evidence."
+  },
+  "commitsBeforeRunRecord": [
+    "2cdcb2780a6eb365e40b5ff6ff67b9d17bc23eda",
+    "037830d68968aee5bf3952895172a52a254088c2",
+    "f18575acf13db8f542e902906b9799aab34e662b",
+    "3fe7618e40e8640b0241251acb292bf7b3c8ee53",
+    "cfe1fd442e71f76a137ddb3e29378fac3c8b5ed1",
+    "f056409906462cb5dd87507b74b214190a7b3714",
+    "dd727cf15c43e798713de7fcb0c3edb98a2cade1"
+  ],
+  "selfAudit": [
+    "Initial explicit build path did not persist scene renderer assignments after morphology ApplyToOpenScene; fixed by marking/saving the active scene before final AssetDatabase save.",
+    "Initial fold comment stated an overly broad millimetre range; replaced with a scale-relative statement rather than claiming unverified absolute dimensions.",
+    "Lookdev existed but was not contract-bound; contract and QA were tightened so the illustration must exist and must remain non-render evidence."
+  ],
+  "verification": {
+    "repositoryCompare": "startHead -> preRecordHead is ahead by 7, behind by 0; merge base remains startHead",
+    "changedPathsBeforeRunRecord": [
+      "UnityProject/Assets/Editor/QualityBlockFoliageLaminaGeometryUpgrade.cs",
+      "UnityProject/Assets/Editor/QualityBlockFoliageLaminaGeometryQA.cs",
+      "UnityProject/Assets/QA/foliage_lamina_geometry_contract.json",
+      "UnityProject/Assets/QA/lookdev/foliage_lamina_geometry_lookdev.svg"
+    ],
+    "githubWorkflowRunsAtPreRecordHead": 0,
+    "githubCommitStatusContextsAtPreRecordHead": 0,
+    "unityCompileVerified": false,
+    "unityRuntimeVerified": false,
+    "actual3840x2160RenderReviewed": false,
+    "renderVerificationState": "PENDING_UNITY_6000_3_0f1_RUNNER"
+  },
+  "scores": {
+    "implementationReadiness": 93,
+    "visualFidelityStatus": "UNSCORED_UNTIL_REAL_4K_RENDER",
+    "visualFidelityPointsAddedThisRun": 0,
+    "passClaimed": false
+  },
+  "expectedVisualScoreImpact": {
+    "vegetationNaturalComplexity": "positive candidate: macro leaf normals are no longer forced planar, reducing card-like synchronized highlights; must be confirmed from actual hero/oblique/grazing pixels",
+    "lightingShadowsReflections": "positive candidate: leaf-facing normals and dapple response become geometry-derived rather than entirely planar; no points until actual render",
+    "temporalLodAliasing": "mixed candidate: de-synchronized normals can reduce coherent flash but extra angular variation can increase shimmer; temporal/subpixel_grazing is mandatory",
+    "criticalDefectRisk": [
+      "visible_primitive_placeholder",
+      "obvious_repetition",
+      "severe_aliasing_or_shimmer",
+      "visible_lod_pop"
+    ]
+  },
+  "nextBlocker": {
+    "primary": "No Unity 6000.3.0f1 Runner / workflow / commit-status context is available, so compile, scene-save callback behavior, generated mesh mutation, shader response and actual pixels are unverified.",
+    "whenRunnerAppears": [
+      "Stop speculative expansion.",
+      "Compile/import the current branch and run the standard prepared-scene build.",
+      "Confirm the scene-save binding folds GM_LeafSpray_A/B/C before morphology variants are generated and that all 15 required spray assets pass the 3-28 degree QA window.",
+      "Confirm retained LOD proxies still reference the same morphology assets and that reflection synchronization completes without geometry drift.",
+      "Produce sealed 3840x2160 hero/oblique/grazing frames plus 100% vegetation_grounding and tree_shadow_contact crops and temporal/subpixel_grazing evidence.",
+      "Review for flat-card highlights, diamond silhouette, faceted dapple starbursts, foliage plastic flash, edge/normal shimmer and LOD pop before assigning any Visual Fidelity points."
+    ]
+  }
+}

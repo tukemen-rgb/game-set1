@@ -1,0 +1,65 @@
+{
+  "schemaVersion": "1.0.0",
+  "gateId": "sash_hardware_uniqueness",
+  "benchmarkScenePath": "Assets/Scenes/QualityBlock1990s.unity",
+  "authorizedRootName": "FacadeSashLatchHardware",
+  "authorizedAssemblyId": "apartment_sliding_sash_crescent_latch",
+  "physicalLatchContractPath": "Assets/QA/facade_sash_latch_contract.json",
+  "metadataAuthorityContractPath": "Assets/QA/sash_latch_metadata_authority_contract.json",
+  "legacyHandlePrefix": "HD_WindowHandle_",
+  "expectedWindowCount": 30,
+  "expectedLegacyRendererCount": 60,
+  "candidateNameTokens": [
+    "SashLatch",
+    "SashCrescent",
+    "CrescentLock",
+    "CrescentLatch",
+    "WindowLock"
+  ],
+  "authorityRule": "For the generated fallback there is exactly one active manufactured window-lock system: FacadeSashLatchHardware, governed by facade_sash_latch_contract.json and the sash-latch metadata-authority chain. Any second active renderer-bearing sash/crescent/window-lock hierarchy outside that authorized root is a hard failure, even if its individual dimensions or material values look plausible. The 60 HD_WindowHandle_ fallback renderers remain provenance only and must stay disabled. Authored danchi replacement may omit the generated latch root, but may not leave any generated candidate sash-lock hierarchy active.",
+  "constructionReasoning": "One two-panel aluminum sliding sash receives one crescent lock/receiver assembly at the meeting stiles. Installing a second independently generated lock at the same aperture would be mechanically nonsensical, risk floating/interpenetrating hero geometry and create immediately repeated dark/specular motifs across all 30 windows. Uniqueness is therefore a construction invariant, not merely a naming preference.",
+  "renderBoundaryRule": "Validation is read-only and fail-closed before QA4K_, QATemporal_, QAPreparedTemporal_ and CameraType.Reflection culls. The gate delegates to the existing physical latch + metadata-authority validation, then rejects any active renderer-bearing candidate hierarchy that is not a descendant of FacadeSashLatchHardware. It performs no repair inside render callbacks.",
+  "lookdevBrief": "Native 3840x2160 frontal and 35-degree oblique evidence must show one lock silhouette per two-panel window, never doubled or offset. The 100-percent sash-latch crop must resolve a single base/pivot/crescent/keeper system with no second dark plate, overlapping lever or duplicate specular centroid. Grazing-light and temporal oblique evidence must be checked for doubled highlights, z-fight, shimmer or an apparent extra lock as LODs cross-fade.",
+  "formalCameraCoverage": [
+    "QA4K_*",
+    "QATemporal_*",
+    "QAPreparedTemporal_*",
+    "CameraType.Reflection"
+  ],
+  "qa": {
+    "requireExactlyOneAuthorizedRootForGeneratedFallback": true,
+    "requireAuthorizedRootDirectlyUnderDanchi": true,
+    "rejectActiveCandidateOutsideAuthorizedRoot": true,
+    "requireLegacyFallbackDisabled": true,
+    "delegatePhysicalLatchValidation": true,
+    "delegateMetadataAuthorityValidation": true,
+    "readOnlyDuringFormalCull": true,
+    "automaticVisualPoints": 0,
+    "renderVerificationPending": true
+  },
+  "failureInjection": [
+    "Create an active Danchi/SashCrescentLocks hierarchy with a MeshRenderer while FacadeSashLatchHardware remains active; formal pre-cull must fail.",
+    "Create an active nested CrescentLockExtra hierarchy outside FacadeSashLatchHardware with an LODGroup or MeshRenderer; formal pre-cull must fail.",
+    "Rename a duplicate to WindowLockExperimental and leave it active; the candidate-token scan must fail.",
+    "Move FacadeSashLatchHardware away from direct Danchi parentage; validation must fail.",
+    "Enable any of the 60 HD_WindowHandle_ legacy fallback renderers; delegated physical latch validation must fail.",
+    "Delete the authorized root for generated fallback; validation must fail rather than creating it during formal cull.",
+    "Use an authored danchi replacement while leaving generated FacadeSashLatchHardware or another candidate lock hierarchy active; validation must fail.",
+    "Set automaticVisualPoints above zero or renderVerificationPending=false before real native-4K review; contract validation must fail."
+  ],
+  "expectedVisualScoreImpact": {
+    "geometryConstructionFidelity": "small-to-medium: prevents two contradictory manufactured lock assemblies occupying the same sash interface",
+    "periodAccuracySceneAuthenticity": "small: preserves one authoritative sourced period-plausible latch system instead of accumulating speculative alternatives",
+    "temporalLodAliasingStability": "small: prevents duplicate cross-fading hardware from creating false shimmer or apparent LOD pop",
+    "criticalDefectRisk": "medium: directly reduces hero-geometry intersection, obvious-repetition and missing-construction-metadata failure risk",
+    "automaticVisualPoints": 0
+  },
+  "criticalDefectIds": [
+    "obvious_repetition",
+    "hero_geometry_intersection",
+    "severe_aliasing_or_shimmer",
+    "visible_lod_pop",
+    "missing_construction_material_metadata",
+    "unverified_render_claim"
+  ]
+}

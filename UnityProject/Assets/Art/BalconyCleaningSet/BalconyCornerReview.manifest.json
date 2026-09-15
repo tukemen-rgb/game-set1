@@ -1,0 +1,26 @@
+{
+  "schema":1,
+  "id":"BalconyCornerReview_LOD0",
+  "status":"DIAGNOSTIC_ACTUAL_MESH_ASSEMBLY_NOT_UNITY_NOT_VISUAL_PASS",
+  "units":"metres",
+  "purpose":"Measured reversible placement review of already-authored LOD0 assets; not the formal benchmark scene and not a new construction owner.",
+  "context":{"balconyDepth":1.15,"balconyLength":3.0,"wallHeight":2.35,"parapetHeight":1.05,"contextGeometryScored":false},
+  "placements":[
+    {"id":"LaundryAssembly","translation":[0,1.58,0],"rotationDegXYZ":[0,0,0]},
+    {"id":"TerracottaSaucer214","translation":[0.82,0,-1.04],"rotationDegXYZ":[0,0,0]},
+    {"id":"TerracottaPot240","translation":[0.82,0.01,-1.04],"rotationDegXYZ":[0,0,0]},
+    {"id":"MorningGloryTrellisPlant_surfaceRepaired","translation":[0.82,0,-1.04],"rotationDegXYZ":[0,0,0]},
+    {"id":"WateringCanCompact","translation":[0.72,0,-0.63],"rotationDegXYZ":[0,-22,0]},
+    {"id":"ClothespinBasket224","translation":[0.70,0,0.48],"rotationDegXYZ":[0,18,0]},
+    {"id":"BalconySlipperPair","translation":[0.35,0,0.78],"rotationDegXYZ":[0,-12,0]},
+    {"id":"EnamelWashBasin280","translation":[0.82,0,0.96],"rotationDegXYZ":[0,6,0]},
+    {"id":"MosquitoCoilTray140","translation":[0.66,0.001,0.12],"rotationDegXYZ":[0,0,0]},
+    {"id":"OutdoorBroom900","translation":[0.13,0,-1.08],"rotationDegXYZ":[0,12,-4]},
+    {"id":"PlasticDustpan265","translation":[0.14,0,-0.45],"rotationDegXYZ":[0,92,0]},
+    {"id":"HandScrubBrush185","translation":[0.38,0,0.20],"rotationDegXYZ":[0,28,0]}
+  ],
+  "externalActualAssembly":{"trianglesIncludingDiagnosticContext":159460,"glbSHA256":"8a4bbe49157305066191c2059414c72ceea61c99dce75aef4fb38f587aabfc3f","placementAabbUnexpectedOverlaps":0,"detailedManifestSHA256":"e6c4d8ec7e31c8fc2129bb7f365dac5d83e7efcad892a5766253b2430bbdd83b"},
+  "verificationLimits":["AABB separation is coarse and does not prove mesh clearance/contact","plant/pot/saucer overlap is intentional assembly interface","laundry hardware is intentionally suspended at the wall","Unity import/material/lighting/temporal performance remains unverified"],
+  "formalBenchmarkSceneChanged":false,
+  "visualFidelityScore":null
+}

@@ -1,0 +1,48 @@
+{
+  "runDate": "2026-09-11",
+  "status": "IMPLEMENTATION_READY_RENDER_PENDING",
+  "startHead": "b2a2908bcf4700589597711ec630168f16d84929",
+  "substantiveWorkHead": "6b345cfdf8de8a6da875fc00b980b06c76e0103c",
+  "substantiveCommits": [
+    "d6c44e95f1468762fb69e21f6a6e99bc0bcd1fb2",
+    "8872b440adc596f425fa160c7fe139acd16e64a0",
+    "1050dfed5071c053cc3f904b73e4720fcd15f17e",
+    "6b345cfdf8de8a6da875fc00b980b06c76e0103c"
+  ],
+  "problemFound": "The canonical Danchi LOD generator creates LOD1-3 as renderer-subset proxies that initially share the LOD0 metric physical-UV mesh and material references, but existing LOD QA only checked renderer counts, transition thresholds and proxy-root ownership. A later mesh/material/property-block/transform drift could therefore leave LOD0 physical-UV QA green while a retained proxy changes texture phase, manufacture-grain scale, BRDF response, shadow/probe behavior or position during cross-fade. ReflectionProbe.RenderProbe can also render these proxies while bypassing MainCamera pre-cull.",
+  "implemented": [
+    "Added Assets/QA/detail_lod_physical_uv_binding_contract.json with exact four-level/cross-fade/proxy-identity requirements, canonical 100 percent crops and exact critical-defect IDs visible_lod_pop plus severe_aliasing_or_shimmer.",
+    "Added QualityBlockDetailLodPhysicalUvBindingQA. It validates exact source-to-proxy shared mesh/material identity, no source/proxy MaterialPropertyBlock, world transform/layer/render-state identity, persisted physical-UV mesh location, complete UV0/tangents, proxy-root ownership, progressive LOD reduction and canonical transition heights.",
+    "Registered a formal-camera pre-cull guard for QA4K_ and QAPreparedTemporal_ native 3840x2160 targets so retained LOD proxy continuity is fail-closed before formal still or temporal evidence can render.",
+    "Upgraded reflection_detail_physical_uv_binding_contract.json to schema 1.1 and routed reflection fingerprint validation through the LOD continuity guard, which itself chains to the source physical-UV contract. The existing reflection fingerprint lifecycle therefore revalidates source plus retained proxies before RenderProbe request, on every observed Editor poll, at completion and immediately before still capture.",
+    "Confirmed the canonical Visual Fidelity gate uses visible_lod_pop and severe_aliasing_or_shimmer; the new contract validator also verifies those IDs exist in visual_fidelity_gate.json rather than accepting local aliases."
+  ],
+  "verification": {
+    "type": "GitHub source/config review only",
+    "unityVersionTarget": "6000.3.0f1",
+    "unityCompileVerified": false,
+    "runtimeVerified": false,
+    "native3840x2160RenderVerified": false,
+    "actualPixelReviewPerformed": false,
+    "visualFidelityPassClaimed": false,
+    "notes": "Reviewed the current LOD generator and confirmed retained proxies are authored by copying sharedMesh/sharedMaterials plus world transform and lighting/probe flags from LOD0. The new QA makes those assumptions executable and fail-closed. No Unity Runner, sealed render, workflow artifact or runtime evidence was available in this run, so cross-fade appearance remains unverified."
+  },
+  "implementationReadinessScore": 93,
+  "implementationReadinessPossible": 100,
+  "visualFidelityStatus": "UNSCORED_UNTIL_REAL_4K_RENDER",
+  "visualFidelityPointsAwarded": 0,
+  "expectedVisualScoreImpact": [
+    "Temporal/LOD/aliasing stability (5): prevents silent source-to-proxy texture-phase/material/transform drift from entering formal cross-fades; actual points remain dependent on rendered temporal evidence.",
+    "Texture/microdetail/texel fidelity (10): exact shared metric-UV mesh identity keeps retained LOD components on the same manufacture-scale UV field rather than allowing normalized or differently phased proxy UVs.",
+    "Material/PBR physical plausibility (20): exact shared material identity plus MaterialPropertyBlock rejection prevents a retained proxy from changing the registered BRDF inputs during an LOD transition.",
+    "Lighting/shadows/reflections (15): source/proxy shadow, light-probe and reflection-probe usage must remain identical, and the same continuity guard now runs inside the reflection fingerprint lifecycle.",
+    "Critical defects: reduces source-side risk for visible_lod_pop and severe_aliasing_or_shimmer but clears neither defect without actual pixels.",
+    "Automatic Visual Fidelity impact: 0 points because no actual Unity render exists."
+  ],
+  "nextBlocker": "Unity 6000.3.0f1 compile/runtime. At first Runner availability stop speculative expansion, build the prepared scene, run the complete native 4K review packet, verify the new LOD continuity guard passes before formal still/temporal frames and before every reflection fingerprint boundary, then inspect actual transition motion plus grazing/sash_rail_response and oblique/balcony_services 100 percent crops for phase snap, grain-scale snap, material-response discontinuity, shimmer and visible component pop.",
+  "constraintsPreserved": {
+    "godotChanged": false,
+    "baseMerged": false,
+    "earthquakeDisasterReconstructionThemeAdded": false
+  }
+}

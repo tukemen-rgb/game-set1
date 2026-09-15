@@ -1,0 +1,66 @@
+{
+  "schemaVersion": "1.0",
+  "assemblyId": "apartment_sliding_sash_crescent_latch_lod0_curve_refinement",
+  "parentContractPath": "Assets/QA/facade_sash_latch_contract.json",
+  "lookdevIllustrationPath": "Assets/QA/lookdev/facade_sash_latch_curve_refinement.svg",
+  "manufacture": "The LOD0 operating lever is reconstructed as one continuous swept metal body around a crescent centerline rather than six overlapping box segments. The cross-section uses broad manufactured faces connected by a small corner break so the silhouette and grazing highlight are produced by real geometry. This is a conservative die-cast/formed-hard-surface reconstruction, not identification of an exact historical lock product.",
+  "dimensionsThickness": "The parent assembly retains the 34 mm nominal crescent centerline radius. The refinement uses a 130 degree sweep from -65 to +65 degrees, a 10 mm x 10 mm lever section and a 2 mm geometric corner break. Thirty-two arc rings resolve the LOD0 curve; these section dimensions are benchmark reconstruction assumptions and must be corrected if native-4K evidence makes the lever read overbuilt or undersized.",
+  "materialsFinish": "The renderer continues to use the parent canonical aged sash-metal material MAT_AgedAluminum. It remains a metallic workflow surface with no emission or painted highlight. Albedo/roughness/normal microstructure represent subdued aged metal; geometric corner breaks alone create edge rolloff. The benchmark is dry and no wet-film layer is permitted.",
+  "installation": "The refined mesh occupies exactly the parent CrescentLever renderer and asset path, preserving the existing pivot, base plate, receiver, fasteners, renderer identity, local transform and cause-based weathering metadata. It is prepared before the first formal reflection baseline so cubemap and still geometry cannot disagree merely because an old six-box cache was loaded.",
+  "interfacesGapsSeals": "The curve rotates around the existing pivot and must preserve a visible mechanical relationship to the separate receiver while clearing meeting-stile metal, optical glass and glazing gasket geometry. The refinement may not enlarge into those interfaces, float away from the pivot, or hide penetration behind material shading.",
+  "orientationExposure": "Vertical sheltered window hardware exposed to coherent midsummer Japanese daylight, sky fill, contact shadow and reflection-probe response. The crescent edge is specifically expected to reveal its physical curvature in oblique and grazing light; direct illumination and reflection direction must remain coherent with the scene sun.",
+  "aging": "Aging remains inherited from the parent lever weathering metadata: localized hand/contact polish plus restrained sheltered oxidation/UV drift. No random rust field, damage narrative, bright edge paint or independent dirt decal is introduced by the curve refinement.",
+  "geometryVsMaterial": "The 34 mm swept centerline, 130 degree silhouette, 10 mm section, 2 mm corner break, cap geometry and all LOD simplification are geometry. Fine extrusion/pitting, approximately 0.45 mm microstructure, oxidation, micro-scratches and localized contact polish remain material/normal response. Lighting and Fresnel are never baked into albedo.",
+  "weatheringCausality": "No new stain layer is generated. The parent QualityBlockWeatheringSurface on CrescentLever remains authoritative: sheltered/recessed exposure drives grime and UV dulling, while the higher contact term is limited to the operating lever because it is handled. The refinement only changes manufactured form.",
+  "lookdevBrief": "Front native-4K view: the crescent must read as one continuous metal operating lever with no six-piece stepping. 35-degree oblique: verify the 10 mm physical section, pivot seating and receiver clearance. Midsummer grazing view: highlight should roll continuously around the 2 mm corner break without a faceted staircase, chrome stripe or baked edge. 100-percent sash crop: inspect silhouette faceting, cap shape, glass/gasket intersection, UV-phase repetition and z-fighting. Temporal oblique motion: the smoother LOD0 does not waive the existing LOD1 transition; verify no visible pop or sub-pixel shimmer.",
+  "geometry": {
+    "phaseBins": 8,
+    "phaseStepM": 0.011,
+    "arcRings": 32,
+    "sectionSides": 8,
+    "expectedVertexCount": 306,
+    "expectedTriangleCount": 512,
+    "centerlineRadiusM": 0.034,
+    "sweepDegrees": 130.0,
+    "sectionWidthM": 0.010,
+    "sectionThicknessM": 0.010,
+    "cornerBreakM": 0.002
+  },
+  "material": {
+    "baseColorSrgb": [0.55, 0.57, 0.56],
+    "metallicMin": 0.5,
+    "metallicMax": 1.0,
+    "roughnessMin": 0.38,
+    "roughnessMax": 0.72,
+    "normalScale": 0.08,
+    "microstructureMm": 0.45,
+    "wetness": 0.0,
+    "uvAging": "Restrained oxidation/value/roughness drift; local hand contact may polish but cannot paint a highlight or override the geometric curve.",
+    "angularFresnelResponse": "Aged metallic environment response strengthens naturally at grazing angle; the continuous swept mesh and 2 mm corner break should broaden highlight travel without behaving like chrome."
+  },
+  "qa": {
+    "automaticVisualPoints": 0,
+    "runtimeRenderVerified": false,
+    "prepareBeforeFirstReflectionBaseline": true,
+    "readOnlyAfterFormalEpochArm": true,
+    "requireNative4kFrontalObliqueGrazing": true,
+    "require100PercentCrop": true
+  },
+  "requiredEvidenceRefs": [
+    "hero/facade_center",
+    "oblique/construction_depth",
+    "grazing/sash_rail_response",
+    "crop/sash_latch_100pct"
+  ],
+  "criticalDefectIds": [
+    "visible_primitive_placeholder",
+    "baked_or_painted_highlights",
+    "impossible_material_physics",
+    "obvious_repetition",
+    "hero_geometry_intersection",
+    "severe_aliasing_or_shimmer",
+    "visible_lod_pop",
+    "missing_construction_material_metadata",
+    "unverified_render_claim"
+  ]
+}

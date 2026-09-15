@@ -1,0 +1,32 @@
+{
+  "schemaVersion": "1.0",
+  "purpose": "Make the authoritative temporal evidence use the exact already-prepared benchmark scene and the asynchronously completed reflection-probe state used by the sealed still review packet, instead of rebuilding the scene and attempting a same-call-stack probe refresh.",
+  "authoritativeEntryPoint": "QualityBlockPreparedTemporalCapture.CaptureAndSealPreparedScene",
+  "scenePath": "Assets/Scenes/QualityBlock1990s.unity",
+  "width": 3840,
+  "height": 2160,
+  "requiredTemporalContract": "Assets/QA/temporal_stability_contract.json",
+  "requiredReflectionCompletionReceipt": "Assets/QA/reflection_probe_refresh_receipt.json",
+  "requiredAsyncWaitProof": "Assets/QA/reflection_probe_async_wait_receipt.json",
+  "bindingReceipt": "Assets/QA/temporal_prepared_scene_binding.json",
+  "requirements": {
+    "sceneRebuildAfterReflectionSynchronization": false,
+    "sceneReopenAfterReflectionSynchronization": false,
+    "samePreparedSceneAsStillCapture": true,
+    "requireFreshAsyncReflectionWaitProofBeforeFirstTemporalFrame": true,
+    "hashReflectionCompletionReceipt": true,
+    "hashAsyncWaitProof": true,
+    "hashTemporalManifest": true,
+    "manualPixelReviewRequired": true,
+    "automaticVisualPoints": 0
+  },
+  "hardFailIf": [
+    "active scene is not the persisted QualityBlock1990s benchmark scene",
+    "reflection runtime receipt is invalid",
+    "async reflection wait proof is missing, stale or not SHA-256-bound to the current completion receipt",
+    "the prepared-scene binding receipt does not match the current temporal manifest and reflection proof hashes",
+    "temporal frame/crop provenance validation fails",
+    "any path rebuilds or reopens the benchmark scene between the accepted reflection synchronization and the first temporal frame"
+  ],
+  "visualFidelityStatus": "UNSCORED_REVIEW_REQUIRED"
+}

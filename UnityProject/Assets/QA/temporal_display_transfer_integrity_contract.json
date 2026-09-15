@@ -1,0 +1,53 @@
+{
+  "schemaVersion": "1.0",
+  "purpose": "Bind native-4K temporal shimmer/LOD evidence to the same final-pixel display-transfer and MSAA-resolve contract as the still packet. This contract awards zero Visual Fidelity points and remains PENDING_UNITY_RUNTIME until a real Unity 6000.3.0f1 session verifies the target state.",
+  "temporalCaptureSourcePath": "Assets/Editor/QualityBlockTemporalStabilityCapture.cs",
+  "scenePath": "Assets/Scenes/QualityBlock1990s.unity",
+  "formalTargetPrefix": "QATemporal_",
+  "requirements": {
+    "linearProjectColorSpaceRequired": true,
+    "hdrCameraRequired": true,
+    "filmicLdrTransformRequired": true,
+    "nativeLdrTargetMustUseSrgbReadWrite": true,
+    "bindTextureMSMustBeFalse": true,
+    "inPlaceFixedFunctionResolveRequired": true,
+    "postTonemapShaderCopyForbidden": true,
+    "directReadbackFromCanonicalResolvedSurface": true,
+    "native3840x2160Required": true,
+    "actualUnityRenderRequiredForVisualPoints": true,
+    "visualPointsAwardedByThisGateMustRemainZero": true
+  },
+  "allowedTemporalTargets": [
+    "QATemporal_subpixel_grazing_<frame>_MSAA",
+    "QATemporal_lod_walk_oblique_<frame>_MSAA"
+  ],
+  "visualFidelityRiskMapping": [
+    {
+      "category": "temporal_lod_aliasing",
+      "risk": "A shader copy, wrong sRGB state, or secondary resolve can change thin-edge contrast and shimmer between frames and invalidate temporal judgment."
+    },
+    {
+      "category": "cinematic_image",
+      "risk": "Temporal frames must use the same exposure/display transfer as hero/oblique/grazing stills or review comparisons are not colorimetrically coherent."
+    },
+    {
+      "category": "texture_microdetail",
+      "risk": "Post-tonemap resampling can soften or alter high-frequency texture evidence at native 100% scale."
+    }
+  ],
+  "criticalDefectRiskMapping": [
+    "severe_aliasing_or_shimmer",
+    "visible_lod_pop",
+    "unverified_render_claim"
+  ],
+  "failureInjection": [
+    "Reintroduce Graphics.Blit(msaaTarget, resolvedTarget) in QualityBlockTemporalStabilityCapture and require config validation to fail.",
+    "Set bindMS=true on a formal QATemporal target and require Camera.onPreCull to fail before the frame can be sealed.",
+    "Set the temporal target sRGB state false and require runtime validation to fail.",
+    "Enable dynamic resolution on MainCamera and require runtime validation to fail.",
+    "Disable or duplicate QualityBlockFilmicTonmap on MainCamera and require runtime validation to fail."
+  ],
+  "runtimeVerificationStatus": "PENDING_UNITY_RUNTIME",
+  "runtimeVerified": false,
+  "visualFidelityPointsAwarded": 0
+}

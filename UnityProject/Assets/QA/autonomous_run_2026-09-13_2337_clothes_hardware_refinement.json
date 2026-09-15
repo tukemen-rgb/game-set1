@@ -1,0 +1,105 @@
+{
+  "schemaVersion": "1.0",
+  "runDate": "2026-09-13",
+  "branch": "gpt/unity-migration",
+  "startingHead": "295207845e0347c39398dfefa95ad24ff406d767",
+  "objective": "Increase Geometry & construction fidelity and period/scene authenticity by replacing the generated balcony clothes-pole support placeholder with a mechanically coherent assembly, while preserving zero visual-score claims until native Unity pixels exist.",
+  "problemFound": {
+    "legacyState": "Each of 60 supports was represented by a tilted rectangular bracket plus a solid cylinder. The cylinder axis did not establish a physically usable left/right pole bore and the mounting load path lacked a back plate, anchors and pivot.",
+    "visualRisk": "At frontal/oblique 4K framing the support could read as primitive-placeholder geometry, while a solid receiver would fail construction causality and could trigger the critical visible-primitive/hero-geometry defects.",
+    "materialQaIssueCaughtDuringRun": "The first refinement draft incorrectly treated the legacy scalar _Metallic field as authoritative. Existing detail materials use a canonical metallic/smoothness R/A map, and the danchi builder may rewrite ignored fallback scalars. The final validator delegates to QualityBlockDetailMaterialMicrostructureUpgrade and only requires finite normalized scalar fallbacks."
+  },
+  "implementation": {
+    "supports": 60,
+    "bays": 30,
+    "componentsPerSupport": [
+      "rigid authored support arm",
+      "annular receiver with real 38 mm clear bore",
+      "thin side-wall back plate",
+      "pivot",
+      "two anchor heads"
+    ],
+    "loadPath": "side/divider substrate -> back plate -> two anchors -> pivot -> 340 mm arm centerline -> annular receiver",
+    "receiverAxis": "facade X; paired receivers are required to remain coaxial in Y/Z",
+    "materialAuthority": "MAT_DarkGalvanizedSteel using canonical Standard metallic/smoothness map and generated micro-normal authority; emission/baked-highlight energy forbidden",
+    "weathering": "Every LOD0 source renderer carries cause-based rain/sun/recess/contact metadata; fastener heads identify ferrous-fixture causality",
+    "lod": "Parent DanchiHighDetail four-level LODGroup remains authoritative. Every refined source component must be present in LOD0; smaller hardware may reduce/cull with physical scale at later levels.",
+    "formalEvidenceBehavior": "QA4K_, QATemporal_ and QAPreparedTemporal_ pre-cull paths validate read-only and fail closed; no formal-camera auto-repair is permitted.",
+    "lookdev": "Technical SVG records front/side construction, pole-axis relationship, PBR target and required frontal/oblique/grazing/100%-crop/temporal evidence."
+  },
+  "machineReadableQa": {
+    "contract": "Assets/QA/clothes_drying_hardware_contract.json",
+    "sourceQa": "Assets/Editor/QualityBlockClothesDryingHardwareRefinement.cs",
+    "lookdev": "Assets/QA/clothes_drying_hardware_lookdev.svg",
+    "requiredCounts": {
+      "bays": 30,
+      "supports": 60,
+      "refinedSourceRenderers": 360,
+      "receivers": 60,
+      "plates": 60,
+      "pivots": 60,
+      "anchorHeads": 120
+    },
+    "requiredGeometryMeters": {
+      "armCenterline": 0.34,
+      "receiverOuterDiameter": 0.09,
+      "receiverInnerDiameter": 0.038,
+      "receiverAxialDepth": 0.024,
+      "anchorPitch": 0.11
+    },
+    "failureInjectionRequired": [
+      "solid receiver/stock primitive reintroduction",
+      "receiver bore rotation away from facade X",
+      "paired receiver Y/Z misalignment above 4 mm",
+      "missing plate/pivot/anchor topology",
+      "non-canonical material or broken metallic-map authority",
+      "emission/baked-highlight energy",
+      "missing cause-based weathering metadata",
+      "manifest/dimension drift",
+      "post-LOD removal from LOD0"
+    ],
+    "visualFidelityPointsAwarded": 0
+  },
+  "substantiveCommits": [
+    "17c4494aed60e6338ce83d15f28c547d0f06f403",
+    "87abfed71a7f62aa71acdbac281909d76c7b32b2",
+    "ee688620f31dff6205c499dc6ea0dc61ad571c8c",
+    "5a4fd9dade5a3bae482586d77117813b4f962eb1",
+    "a0644ede19cc2fc275ebd876b8d208bee2ed7d2c",
+    "5646de70f9675fe375dc91a0577157beee617ebc"
+  ],
+  "verification": {
+    "unityVersionTarget": "6000.3.0f1",
+    "unityCompileRuntime": "PENDING_NO_RUNNER",
+    "native3840x2160Render": "PENDING_NO_RUNNER",
+    "hundredPercentCrops": "PENDING_NO_RUNNER",
+    "temporalEvidence": "PENDING_NO_RUNNER",
+    "githubCommitStatusesAtStart": 0,
+    "githubWorkflowRunsAtStart": 0,
+    "githubCommitStatusesBeforeRecord": 0,
+    "githubWorkflowRunsBeforeRecord": 0,
+    "staticCrossChecks": [
+      "Existing fallback positions and receiver orientation inspected before replacement.",
+      "Danchi four-level LOD classifier inspected; clothes receiver/bracket silhouette persists in near/mid LODs and all source renderers belong to LOD0.",
+      "Physical-UV pass inspected; generated bevel-cylinder naming supports cylindrical metric UV rebake.",
+      "Canonical detail microstructure validator inspected; metallic/smoothness texture map is authoritative and legacy scalar rewrites are explicitly allowed only as finite [0,1] fallbacks.",
+      "Net branch diff from starting head is UnityProject-only before this record; no Godot path changed and merge-base remains the starting head."
+    ]
+  },
+  "implementationReadiness": 93,
+  "visualFidelityStatus": "UNSCORED_UNTIL_REAL_4K_RENDER",
+  "visualFidelityPassClaimed": false,
+  "expectedVisualScoreImpactNotAwarded": {
+    "geometryConstructionFidelity": "medium",
+    "materialPbrPhysicalPlausibility": "small-to-medium",
+    "periodAccuracySceneAuthenticity": "small-to-medium",
+    "temporalLodAliasingStability": "small-to-medium"
+  },
+  "nextBlocker": "Unity Runner/runtime evidence. Stop speculative expansion when it appears; compile the new editor QA, run the listed failure injections, then capture fresh 3840x2160 frontal/oblique/grazing frames plus clothes_receiver_100pct crop and temporal oblique evidence before assigning any Visual Fidelity points.",
+  "preservation": {
+    "godotChanged": false,
+    "baseMerged": false,
+    "forbiddenThemesIntroduced": false,
+    "forbiddenThemes": ["earthquake", "disaster", "reconstruction"]
+  }
+}

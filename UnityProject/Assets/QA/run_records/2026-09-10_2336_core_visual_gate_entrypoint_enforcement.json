@@ -1,0 +1,99 @@
+{
+  "schemaVersion": "1.1",
+  "runId": "2026-09-10_2336_core_visual_gate_entrypoint_enforcement",
+  "startHead": "d2b051bb9c1927806c1c70ac2c69a25673f870eb",
+  "substantiveWorkHeadBeforeRunRecordUpdate": "34151c2264ba4f8692c259dddb1bc4e0f88a1a02",
+  "substantiveCommits": [
+    {
+      "sha": "864fae376151d92a3d02338f5b40e7ba563da572",
+      "message": "qa: enforce gate integrity inside core evaluator"
+    },
+    {
+      "sha": "b34f34fb466baf2bc1227e3d5ed04dca7baef0b6",
+      "message": "qa: record core evaluator enforcement rule"
+    },
+    {
+      "sha": "faf5aa4607780be0666a0ba1125883f080254687",
+      "message": "qa: seal rooftop period crops in native capture"
+    },
+    {
+      "sha": "d275bb558af33ab8e7b4c55672b2c194d06137bf",
+      "message": "qa: declare sealed rooftop period crops"
+    },
+    {
+      "sha": "7195ee9f917768d21472a564e409c75c4eff92a4",
+      "message": "qa: require rooftop period evidence for authenticity score"
+    },
+    {
+      "sha": "34151c2264ba4f8692c259dddb1bc4e0f88a1a02",
+      "message": "qa: bind rooftop observability to sealed capture"
+    }
+  ],
+  "findings": [
+    {
+      "severity": "HIGH_EVIDENCE_INTEGRITY",
+      "summary": "The exact owner-approved Visual Fidelity Gate and reviewed-evidence exact-set checks were strongly enforced by MenuItem validators, but the public core evaluator could be invoked directly by -executeMethod, reflection, or another runner entry point without traversing those menu validators.",
+      "priorCoreBehavior": [
+        "QualityBlockVisualFidelityGate.ValidateConfig enforced threshold 92, native 3840x2160, nine category IDs, weights summing to 100, and only a coarse critical-defect-count floor.",
+        "Exact per-category weights/hard minima and the exact canonical twelve critical-defect IDs lived in QualityBlockVisualGateIntegrityQA.",
+        "Duplicate/unknown reviewed categories, duplicate/unknown critical-defect reviews, mandatory correctiveAction text, and exact reviewed-entry counts lived in QualityBlockReviewedVisualEvidenceIntegrityQA.",
+        "Render provenance was already intrinsic to the core evaluator, so this finding concerns scoring-schema integrity rather than still-image byte provenance."
+      ],
+      "risk": "A non-menu caller could theoretically evaluate a rebalanced or otherwise weakened but still 100-point-total configuration, or bypass reviewed-document exact-set hardening, creating a false PASS path even though normal editor UI remained guarded."
+    },
+    {
+      "severity": "MEDIUM_PERIOD_EVIDENCE_PROVENANCE",
+      "summary": "The period-authentic rooftop receiving assembly already had dedicated hero/oblique 1280x720 exact-texel crops and projection QA, but those two crop IDs were outside the canonical QualityBlock4KCapture cropRecords and outside the scoring observability allow-list.",
+      "risk": "The dedicated roof crops could be useful for human review but were not first-class scoreable evidence sealed through the same runtime 4K manifest/receipt path. Period authenticity scoring therefore relied on broader facade/service crops even though more discriminating rooftop evidence existed."
+    }
+  ],
+  "changes": [
+    "QualityBlockVisualFidelityGate.ValidateGateConfig now invokes QualityBlockVisualGateIntegrityQA.ValidateContract from inside the core method.",
+    "QualityBlockVisualFidelityGate.EvaluateVisualGate now invokes QualityBlockVisualGateIntegrityQA.ValidateContract and QualityBlockReviewedVisualEvidenceIntegrityQA.ValidateReviewedEvidence before category scoring.",
+    "visual_gate_integrity_contract.json records the core-entrypoint enforcement rule so later refactors cannot silently move protection back to menu-only validation.",
+    "QualityBlock4KCapture now emits hero/rooftop_period_hardware and oblique/rooftop_reception_oblique as canonical native 1280x720 100% cropRecords from the 3840x2160 frames.",
+    "The capture contract rejects blank/duplicate crop IDs and locks both rooftop crop rectangles to x=1280, y=1440, width=1280, height=720.",
+    "The static 4k_capture_manifest template now declares both roof crops while remaining renderProducedByUnity=false and UNSCORED until Unity runtime replaces it.",
+    "visual_evidence_observability_contract schema 1.2 adds both canonical roof crop references and requires Period Authenticity to cite facade_right, balcony_services, frontal rooftop hardware, and oblique rooftop reception evidence before scoring.",
+    "benchmark_observability_contract schema 1.1 now identifies QualityBlock4KCapture as canonical crop owner and QualityBlockRenderEvidenceProvenanceQA as the sealing authority; the separate rooftop observability manifest remains an observability receipt rather than an alternate provenance source."
+  ],
+  "verification": {
+    "type": "GITHUB_SOURCE_STATIC_ONLY",
+    "unityCompileVerified": false,
+    "unityRuntimeAvailable": false,
+    "native3840x2160CaptureAvailable": false,
+    "visualPixelReviewPerformed": false,
+    "sourceChecks": [
+      "Fetched the modified core evaluator after commit and confirmed intrinsic gate-integrity and reviewed-evidence calls are present before category scoring.",
+      "Confirmed the new core validation calls do not recurse into QualityBlockVisualFidelityGate.",
+      "Confirmed existing render provenance accepts a positive number of cropRecords per view rather than hard-coding the previous three-crop count, so adding the two canonical roof crops does not intentionally weaken provenance semantics.",
+      "The canonical roof crop rectangles match the existing BenchmarkObservability view requirements exactly and stay inside 3840x2160 at native scale.",
+      "No runtime receipt, compile artifact, or actual capture was fabricated."
+    ],
+    "selfAudit": "After the first gate-entrypoint fix, the run inspected the existing period observability pipeline and found that its high-value rooftop crops were separate from canonical scoreable cropRecords. The run therefore promoted those crops into the sealed native capture path and made them mandatory for period-authenticity review instead of leaving the run at a purely schema-level hardening change."
+  },
+  "scores": {
+    "implementationReadiness": 93,
+    "implementationReadinessMaximum": 100,
+    "visualFidelityStatus": "UNSCORED",
+    "visualFidelityPointsAwardedThisRun": 0,
+    "visualPassClaimed": false
+  },
+  "expectedVisualScoreImpactWhenRenderedAndReviewed": {
+    "automaticPoints": 0,
+    "gateValidity": "Any future >=92 result must survive immutable exact category weights/minima, exact twelve critical defects, reviewed-entry integrity, and existing render provenance even when invoked outside the editor menu.",
+    "periodAuthenticity": "The 7-point Period Authenticity category now requires two dedicated rooftop crops in addition to occupied facade/service evidence, making analogue-era rooftop hardware and its installation directly inspectable from frontal and oblique native pixels.",
+    "geometryConstruction": "The same sealed roof crops expose ballast-to-roof contact, mast/base load path, boom/element structure, feed boxes and coax routing for construction deductions if they fail in actual pixels.",
+    "materialPbr": "The oblique sealed roof crop provides a dedicated angular view for galvanized steel versus dielectric ABS/PVC/concrete response, but no Material/PBR points are awarded without actual render review."
+  },
+  "constraints": {
+    "godotChanged": false,
+    "baseMerged": false,
+    "forbiddenNarrativeThemesAdded": false,
+    "unityOnlyPathsChanged": true
+  },
+  "nextBlocker": "Actual Unity 6000.3.0f1 editor/runner compile and runtime execution. At first availability, stop speculative expansion and run Prepare Complete Native 4K Review Packet. Confirm the two new rooftop cropRecords are produced, survive exact-pixel provenance validation, and are bound into the same sealed receipt as their source full frames. Then inspect real hero/oblique/grazing frames and temporal evidence before assigning any Visual Fidelity points.",
+  "nextSourceSideTargetIfRuntimeStillUnavailable": "Strengthen camera/crop synchronization by making BenchmarkObservability consume or cross-check the authoritative QualityBlock4KCapture view definitions rather than maintaining duplicated camera pose/FOV constants, while keeping physical antenna dimensions unchanged.",
+  "recordingNote": "The earlier create/update commits for this run-record file are bookkeeping and intentionally excluded from substantiveCommits.",
+  "note": "This run improves score validity and the observability/provenance of a real period-authentic asset, but does not claim any visual quality from source alone. Implementation Readiness remains separate from Visual Fidelity."
+}

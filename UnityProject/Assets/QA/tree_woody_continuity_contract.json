@@ -1,0 +1,125 @@
+{
+  "schemaVersion": "1.0.0",
+  "scenePath": "Assets/Scenes/QualityBlock1990s.unity",
+  "purpose": "Fail-closed source/runtime contract for the six generated benchmark trees. It corrects discontinuous segmented woody radii and exact bark-UV restarts without awarding Visual Fidelity points. Native 3840x2160 rendered evidence remains authoritative.",
+  "expectedTrees": 6,
+  "biologicalConstruction": {
+    "loadPath": [
+      "visible root flare and radial surface roots broaden the trunk into grade rather than entering soil as a telephone-pole cylinder",
+      "trunk radius decreases continuously through the seven generated trunk sections",
+      "primary branch A tapers into primary branch B without a reverse radius jump",
+      "secondary branches and twigs remain subordinate in diameter to their parents",
+      "foliage remains attached to twig tips and is evaluated separately by the foliage optical-physicality contract"
+    ],
+    "orientationExposure": "Outdoor deciduous park trees in a midsummer Japanese new-town scene. Trunk/branch surfaces receive direct sun, sky fill, occlusion at unions and ordinary dry-weather exposure; no disaster, impact or reconstruction cues are permitted.",
+    "groundInterface": "The root flare remains visible at grade. Existing cause-based maintained tree-pit/understory logic remains authoritative for the surrounding soil/paving interface.",
+    "aging": {
+      "allowed": ["subtle longitudinal bark roughness variation", "small ordinary UV-driven chroma variation", "slightly darker sheltered crotches only when produced by lighting/occlusion"],
+      "forbidden": ["random painted dark seams", "burn/scorch cues", "storm-breakage cues", "disaster damage", "painted specular highlights"]
+    }
+  },
+  "sourceAudit": {
+    "legacyTreeSegmentUv": "GM_Tree* woody meshes used normalized 0..1 UVs per segment and a shared PBR_Bark tiling value, causing every trunk/branch segment to restart the same bark phase.",
+    "legacyTrunkRadiusDiscontinuitiesM": [0.040343, 0.034214, 0.028086, 0.021957, 0.015829, 0.009700],
+    "legacyPrimaryBranchABRadiusJumpM": 0.014400,
+    "risk": "At native 4K, repeated bark phase plus 10-40 mm reverse radius steps can read as modular pipe sections rather than a continuous living trunk and can trigger obvious repeated-module/geometry deductions."
+  },
+  "geometry": {
+    "trunk": {
+      "sections": 7,
+      "baseRadiusM": 0.31,
+      "topTargetRadiusM": 0.115,
+      "radialSegments": 12,
+      "ringCount": 4,
+      "jointCenterGapMaxM": 0.002,
+      "jointRadiusMismatchMaxM": 0.002,
+      "reverseTaperToleranceM": 0.001
+    },
+    "primaryBranches": {
+      "pairsPerTree": 7,
+      "radialSegments": 10,
+      "pairJointCenterGapMaxM": 0.002,
+      "pairJointRadiusMismatchMaxM": 0.002
+    },
+    "rootFlares": {
+      "countPerTree": 7,
+      "radialSegments": 10,
+      "tipHeightAboveAnchorMinM": -0.01,
+      "tipHeightAboveAnchorMaxM": 0.12,
+      "note": "Root flare visibility is biologically intentional; do not hide the trunk base below the soil surface."
+    },
+    "secondaryBranches": {"countPerTree": 14, "radialSegments": 8},
+    "twigs": {"countPerTree": 28, "radialSegments": 7},
+    "geometryVsMaterialDetail": {
+      "geometry": ["root flare silhouette", "trunk/branch taper", "branch direction", "major bark silhouette irregularity", "branch unions"],
+      "material": ["sub-centimeter bark fissures", "fibrous breakup", "small chroma variation", "dry roughness variation"],
+      "forbiddenShortcut": "Do not paint geometry seams, branch collars, contact shadows or highlights into albedo."
+    }
+  },
+  "material": {
+    "name": "PBR_Bark",
+    "class": "dry dielectric bark",
+    "albedoSrgbNominal": [0.25, 0.16, 0.095],
+    "roughnessTarget": 0.95,
+    "roughnessHardMin": 0.78,
+    "metallicMax": 0.02,
+    "dielectricF0Target": 0.04,
+    "normalScale": 0.85,
+    "microstructure": "Longitudinal/fissured bark breakup; macro silhouette stays geometric while sub-centimeter relief stays in the normal map.",
+    "wetness": 0.0,
+    "uvAging": "Ordinary exposed-surface fading may be subtle and low-frequency only; current dry benchmark does not add a wet/dark coating.",
+    "angularFresnel": "Dielectric Fresnel only. Grazing response may brighten through the BRDF but must never resemble polished metal or painted/baked edge highlights."
+  },
+  "textureMapping": {
+    "mode": "metric cylindrical UV along each woody segment with continuity through trunk and primary A/B chains",
+    "barkCyclesPerMeter": 0.55,
+    "physicalTileLengthM": 1.818182,
+    "textureResolutionPx": 1024,
+    "approxTexelsPerMeter": 563.2,
+    "channelScaleSynchronizationRequired": true,
+    "channels": ["_MainTex", "_BumpMap", "_MetallicGlossMap"],
+    "perTreePhaseVariationRequired": true,
+    "minimumDistinctTrunkStartPhasesAcrossSixTrees": 5,
+    "mipmapsRequired": true,
+    "filtering": "trilinear",
+    "anisotropyMin": 8
+  },
+  "lodPolicy": {
+    "levels": 4,
+    "crossFadeRequired": true,
+    "sourceAndProxyMeshIdentityRequired": true,
+    "invariant": "Corrected trunk/branch taper and bark UV mapping must persist through every LOD proxy that retains that woody segment; LODs may remove smaller biological tiers but may not reintroduce legacy normalized-UV or stock primitive woody geometry."
+  },
+  "hardFailRules": [
+    "any generated fallback tree retains a stock Cube/Cylinder/Sphere/Capsule renderer as visible woody art",
+    "trunk joint center gap exceeds 2 mm",
+    "trunk joint radius mismatch exceeds 2 mm",
+    "trunk radius reverses/increases materially toward the crown",
+    "primary branch A/B joint center or radius mismatch exceeds 2 mm",
+    "trunk UV V restarts at an internal section joint instead of remaining continuous",
+    "fewer than five distinct bark start phases are present across the six generated trees",
+    "albedo/normal/metallic-smoothness texture scales are not synchronized",
+    "bark metallic exceeds 0.02 or emission is enabled",
+    "root flare is buried/raised outside the contracted grade envelope",
+    "a retained LOD proxy uses a different legacy mesh from its corrected source segment",
+    "required biological/material metadata is absent",
+    "any disaster/reconstruction theme is introduced",
+    "source checks are represented as rendered Visual Fidelity evidence"
+  ],
+  "renderEvidencePlan": {
+    "requiredWhenUnityAvailable": true,
+    "views": [
+      "oblique/vegetation_grounding 3840x2160 source plus 100% crop: root flare, grade contact, trunk taper and bark phase",
+      "grazing/tree_shadow_contact 3840x2160 source plus 100% crop: branch unions, bark roughness/Fresnel and contact shadow",
+      "hero full frame: natural silhouette and absence of obvious cloned bark modules",
+      "temporal prepared evidence: LOD transition continuity and bark/leaf shimmer"
+    ],
+    "manualChecks": ["no modular trunk rings", "no obvious bark texture restart", "no floating root flare", "no metallic bark flash", "no severe shimmer", "no visible LOD pop"]
+  },
+  "visualCreditPolicy": {
+    "autoVisualPoints": 0,
+    "criticalDefectClearedBySourcePass": false,
+    "visualFidelityStatusUntilRenderedReview": "UNSCORED",
+    "note": "This contract can improve Implementation Readiness and reduce known source risk only. It cannot self-award Vegetation, Geometry, Texture or Material/PBR points."
+  }
+}

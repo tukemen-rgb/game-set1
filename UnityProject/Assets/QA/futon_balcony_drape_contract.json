@@ -1,0 +1,122 @@
+{
+  "schemaVersion": "1.0.1",
+  "scenePath": "Assets/Scenes/QualityBlock1990s.unity",
+  "assemblyId": "balcony_futon_airing_drape",
+  "expectedAssemblies": 2,
+  "purpose": "Replace benchmark-visible flat Cube futon placeholders with ordinary circa-2000 household bedding draped over the final rendered balcony handrail. This contract specifies construction and installation logic only; it does not assert a specific manufacturer or award rendered-quality credit.",
+  "manufacture": {
+    "components": [
+      "cotton/poly-cotton woven outer ticking",
+      "lofted batting/fill represented by closed 22 mm render thickness under gravity/compression",
+      "stitched quilting and edge-binding microstructure represented by textile normal response rather than painted lighting"
+    ],
+    "constructionLogic": "A flexible filled textile is modeled as a continuous closed ribbon with two outer faces plus side and end hems. It bends around the rail under gravity instead of remaining a planar rigid slab.",
+    "geometryVsMaterial": "Centimetre-scale loft, rail wrap, front/back drops, gravity sag, silhouette and closed hems are geometry. Thread weave, fine quilting/stitch impression, fibre breakup, UV fading and tiny abrasion are material/normal response. Highlights and folds may not be painted into albedo."
+  },
+  "dimensionsThickness": {
+    "visibleWidthM": 1.15,
+    "bodyThicknessM": 0.022,
+    "legacyRailCenterAboveFloorM": 0.770,
+    "variantA": { "source": "Futon_2_1", "nominalFrontDropM": 0.700, "backDropM": 0.480, "centerSagM": 0.012 },
+    "variantB": { "source": "Futon_3_4", "nominalFrontDropM": 0.680, "backDropM": 0.515, "centerSagM": 0.009 },
+    "railEnvelopeCenterlineOffsetM": 0.051,
+    "fabricMicrostructureTileM": 0.14,
+    "minFloorClearanceM": 0.030,
+    "maxFloorClearanceM": 0.090,
+    "note": "Nominal front drops preserve the original 0.770 m rail-center datum. At build time the front drop increases by finalRailCenterAboveFloor - 0.770 m, so raising the reconstructed guardrail to a 1.10 m top does not leave the textile floating hundreds of millimetres above the slab. The two variants retain different balanced drops/sag and do not read as cloned rigid panels."
+  },
+  "materials": [
+    {
+      "id": "washed_blue_cotton_A",
+      "finish": "dry aged woven bedding textile",
+      "albedoLinearApprox": [0.46, 0.56, 0.66],
+      "roughness": 0.85,
+      "smoothness": 0.15,
+      "metallic": 0.0,
+      "dielectricF0Approx": 0.04,
+      "normalScale": 0.34,
+      "microstructure": "512 px deterministic asymmetric warp/weft plus fibre-breakup normal, physically tiled at 0.14 m; mipmapped, trilinear and anisotropic",
+      "wetness": "0.0 in the benchmark dry midsummer state; no uniform wet sheen",
+      "uvAging": "moderate exposure fading on outward-facing bedding; represented by restrained base-color family, not directional painted light",
+      "angularFresnel": "dielectric cloth response only; no metallic edge flash and no baked highlight"
+    },
+    {
+      "id": "washed_blue_cotton_B",
+      "finish": "dry slightly lighter aged woven bedding textile",
+      "albedoLinearApprox": [0.53, 0.61, 0.69],
+      "roughness": 0.83,
+      "smoothness": 0.17,
+      "metallic": 0.0,
+      "dielectricF0Approx": 0.04,
+      "normalScale": 0.34,
+      "microstructure": "same manufacture-scale weave family as A but a different visible drape/sag installation; no macro illumination is encoded",
+      "wetness": "0.0 in the benchmark dry midsummer state",
+      "uvAging": "slightly lighter dye state representing household/UV variation without damage narrative",
+      "angularFresnel": "rough dielectric cloth; grazing response must come from Standard PBR and geometry"
+    }
+  ],
+  "mounting": {
+    "method": "gravity-balanced airing placement over the final rendered balcony top rail",
+    "loadPath": "front textile drop -> compressed crest/rail wrap -> back textile drop; no invisible rigid bracket is invented",
+    "legacyHandling": "Keep each legacy Futon_* GameObject/collider as an occupancy/gameplay anchor but disable its Cube Renderer. Generated drape geometry is render-only and collider-free.",
+    "railReference": "QualityBlockBalconyGuardrailInstallationQA.ResolveTopRailBounds(<floor>,<bay>) is the installation datum when the reconstructed guardrail exists; otherwise it falls back to the active legacy RailTop_* renderer for standalone source work.",
+    "heightCompensation": "resolvedFrontDropM = nominalFrontDropM + max(0, finalRailCenterAboveFloorM - 0.770). This preserves the intended lower-edge/slab relationship when the physically reconstructed guardrail raises the crest above the old undersized fallback rail."
+  },
+  "interfacesGapsSeals": {
+    "railContact": "The inner face of the 22 mm textile loft uses a 51 mm centerline envelope offset. That gives a 40 mm inner envelope, matching the reconstructed 70 x 80 mm top rail depth exactly and remaining within the 12 mm source tolerance of the old 90 x 90 mm fallback datum. Native oblique/grazing pixels must still prove absence of visible air gap or hard interpenetration.",
+    "floorClearance": "The hanging lower edge must remain 0.030-0.090 m above the rendered balcony slab top after resolved rail-height compensation. A lower edge entering the slab is a construction failure, not a weathering effect.",
+    "sideEnds": "Both lateral hems and both hanging ends are closed geometry so 22 mm loft remains visible at oblique angles rather than exposing a zero-thickness sheet.",
+    "seals": "Not applicable; this is an exposed flexible textile assembly."
+  },
+  "orientationExposure": {
+    "orientation": "Outward/front drop faces the benchmark camera and exterior summer sun; back drop is more sheltered by the rail/balcony depth.",
+    "sun": "Coherent midsummer Japanese directional sun must create cloth form shading from the drape itself; no local painted highlight or contradictory shadow direction is permitted.",
+    "rain": "Benchmark state is dry. Historical rain exposure may contribute mild dye/fibre aging but does not justify current wet gloss.",
+    "contact": "Rail crest receives local compression/contact occlusion; the lower hem receives no invented ground grime because it clears the slab."
+  },
+  "aging": {
+    "allowedCauses": ["ordinary UV fading", "repeated folding/airing", "fibre softening", "minor household wash variation"],
+    "forbiddenAppearance": ["random structural tears used as detail", "uniform dirt mask", "painted shadow/highlight", "wet-plastic sheen"],
+    "causality": "Aging must follow textile exposure/use and stay subordinate to construction form."
+  },
+  "lodPolicy": {
+    "levels": 4,
+    "crossFadeRequired": true,
+    "lod0": { "widthSegments": 24, "pathSegments": 30, "role": "hero/oblique closed-volume drape" },
+    "lod1": { "widthSegments": 16, "pathSegments": 24, "role": "retain rail wrap and lower silhouette" },
+    "lod2": { "widthSegments": 10, "pathSegments": 12, "role": "retain macro U-drape and thickness" },
+    "lod3": { "widthSegments": 6, "pathSegments": 6, "role": "retain occupancy silhouette; never revert to a Cube/plane" },
+    "hardRule": "Vertex count must decrease at every LOD and renderer bounds must remain within 18 mm size / 10 mm center of LOD0. Visible pop remains a temporal rendered critical check."
+  },
+  "qaRules": {
+    "legacyPrimitiveRendererEnabled": "FAIL",
+    "generatedBuiltInPrimitiveMesh": "FAIL",
+    "missingClosedDrapeAssembly": "FAIL",
+    "missingFourLodsOrCrossFade": "FAIL",
+    "nonDecreasingLodComplexity": "FAIL",
+    "floorClearanceOutsideM": [0.030, 0.090],
+    "railContactToleranceM": 0.012,
+    "cottonMetallicMax": 0.01,
+    "cottonSmoothnessRange": [0.10, 0.22],
+    "normalMicrostructureRequired": true,
+    "emissionAllowed": false,
+    "renderVerification": "PENDING until native 3840x2160 hero/oblique/grazing evidence plus 100% crops exist"
+  },
+  "renderEvidencePlan": {
+    "hero": "Confirm the old rigid rectangular Cube silhouette is absent and the front drop has gravity sag/cloth shading rather than painted folds.",
+    "oblique": "At 100% crop verify 22 mm closed loft, crest wrapping around the reconstructed 70 x 80 mm top rail, side/end hems, slab clearance and no floating/interpenetrating hero geometry.",
+    "grazing": "Verify rough dielectric Fresnel, textile normal response without plastic/metallic flash, and no baked highlight.",
+    "temporal": "Verify all four LOD transitions retain the same hanging silhouette without visible pop, shimmer or normal-map aliasing."
+  },
+  "expectedVisualScoreImpact": {
+    "geometryConstruction": "Potentially removes a critical primitive-placeholder/interpenetration risk and keeps textile installation physically attached after the guardrail is corrected to a realistic height.",
+    "materialPbr": "Potentially replaces flat generic material response with rough dielectric textile microstructure.",
+    "periodAuthenticity": "Retains ordinary household balcony-airing occupancy without introducing a branded/anachronistic product claim.",
+    "temporalLod": "Dedicated four-level cross-faded drape LODs reduce the risk of occupancy silhouette popping.",
+    "automaticCredit": 0
+  },
+  "visualCreditPolicy": {
+    "autoVisualPoints": 0,
+    "reason": "Source geometry/material/QA readiness is not rendered evidence. The 100-point Visual Fidelity Gate remains UNSCORED until actual Unity captures are reviewed."
+  }
+}

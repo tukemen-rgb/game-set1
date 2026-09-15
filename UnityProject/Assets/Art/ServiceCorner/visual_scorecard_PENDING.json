@@ -1,0 +1,34 @@
+{
+  "authority": "Assets/QA/visual_fidelity_gate.json",
+  "status": "UNSCORED_UNTIL_REAL_4K_RENDER",
+  "total": null,
+  "pass": false,
+  "threshold": 92,
+  "notSubmittableToFormalEvaluator": true,
+  "categories": [
+    {"id":"geometry_construction","weight":20,"hardMinimum":18,"score":null,"renderEvidence":[],"correctiveActions":["Verify cap/seals/collars, drain slot edges, floor interfaces and hose grounding from Unity hero/oblique/grazing pixels."]},
+    {"id":"material_pbr","weight":20,"hardMinimum":18,"score":null,"renderEvidence":[],"correctiveActions":["Verify conductor chrome/brass/stainless and dielectric EPDM/PVC response after Unity import."]},
+    {"id":"lighting_shadows_reflections","weight":15,"hardMinimum":13,"score":null,"renderEvidence":[],"correctiveActions":["Use coherent midsummer Japanese sun, sky fill, contact shadow and reflection behavior in Unity."]},
+    {"id":"texture_microdetail","weight":10,"hardMinimum":9,"score":null,"renderEvidence":[],"correctiveActions":["Inspect hero-faucet UV seams, texel density, normal strength and repetition at 100% crop."]},
+    {"id":"weathering_causality","weight":10,"hardMinimum":9,"score":null,"renderEvidence":[],"correctiveActions":["Only add scale, drain residue, PVC chalking or touch marks after final exposure/flow/contact is established."]},
+    {"id":"vegetation_natural_complexity","weight":8,"hardMinimum":7,"score":null,"renderEvidence":[],"correctiveActions":["No vegetation points implied by this service-corner batch; evaluate complete scene."]},
+    {"id":"period_authenticity","weight":7,"hardMinimum":6,"score":null,"renderEvidence":[],"correctiveActions":["Keep assets generic/unbranded and validate final circa-2000 scene context; no exact historical SKU claims."]},
+    {"id":"cinematic_image","weight":5,"hardMinimum":4,"score":null,"renderEvidence":[],"correctiveActions":["Require native 3840x2160 Unity hero/oblique/grazing stills and 100% crops."]},
+    {"id":"temporal_lod_aliasing","weight":5,"hardMinimum":4,"score":null,"renderEvidence":[],"correctiveActions":["Check drain slots, faucet highlights, hose curve and nozzle silhouette under moving camera and LOD transitions."]}
+  ],
+  "criticalDefects": [
+    {"id":"visible_primitive_placeholder","present":null,"reviewStatus":"unchecked"},
+    {"id":"baked_or_painted_highlights","present":null,"reviewStatus":"unchecked"},
+    {"id":"impossible_material_physics","present":null,"reviewStatus":"unchecked"},
+    {"id":"obvious_repetition","present":null,"reviewStatus":"unchecked"},
+    {"id":"hero_geometry_intersection","present":null,"reviewStatus":"unchecked"},
+    {"id":"sun_shadow_inconsistency","present":null,"reviewStatus":"unchecked"},
+    {"id":"forbidden_disaster_theme","present":null,"reviewStatus":"unchecked"},
+    {"id":"severe_aliasing_or_shimmer","present":null,"reviewStatus":"unchecked"},
+    {"id":"visible_lod_pop","present":null,"reviewStatus":"unchecked"},
+    {"id":"major_light_leak","present":null,"reviewStatus":"unchecked"},
+    {"id":"missing_construction_material_metadata","present":null,"reviewStatus":"unchecked"},
+    {"id":"unverified_render_claim","present":null,"reviewStatus":"unchecked"}
+  ],
+  "comment": "Unknown is not absent. External mesh previews and glTF material data are implementation evidence, not Unity visual evidence."
+}

@@ -1,0 +1,107 @@
+{
+  "schemaVersion": "1.0",
+  "runDate": "2026-09-12",
+  "startHead": "f22d7ac31122cd209308abe205e2746659552250",
+  "substantiveWorkHead": "b1c0a75c92927b22f92ed7cb350b78301e6ca891",
+  "branch": "gpt/unity-migration",
+  "objective": "Raise expected facade construction/material/period fidelity by replacing the known low-fidelity pair of rubber-looking window handle blocks with a period-plausible mechanically assembled metal crescent latch and receiver, while preserving fail-closed native-4K evidence discipline.",
+  "decision": {
+    "whyThisTask": "The existing sliding-window metadata explicitly described HD_WindowHandle_* as fallback dark hardware using the EPDM/rubber palette. That is a high-value close-crop material/construction mismatch: a circa-2000 Japanese two-panel sliding sash should read as mechanically fastened lock hardware, not two rubber bars. Correcting this improves a repeatedly visible hero interface and reduces future impossible-material/period-authenticity deductions more directly than adding another provenance-only guard.",
+    "researchBasis": [
+      "LIXIL sliding-window parts taxonomy separates crescent lock, crescent receiver and pull handle as distinct components.",
+      "LIXIL/Tostem AAAZC07L is documented as a metal crescent lock with 50 mm mounting-screw pitch and compatibility including Atmos II from 1996-10 and Thermal II/PG from 1999-02, directly supporting a circa-2000 part class and pitch.",
+      "Older LIXIL/Tostem metal crescent replacements also document mechanically fastened lock construction with different pitches; therefore only the 50 mm pitch and general part class are treated as period-supported here. Other dimensions remain explicit reconstruction assumptions."
+    ],
+    "references": [
+      "https://store.lixil.co.jp/window/window-parts/sash/slidingwindow.html",
+      "https://store.lixil.co.jp/aaazc07l.html",
+      "https://store.lixil.co.jp/netbl00029.html"
+    ]
+  },
+  "implementation": {
+    "source": "Assets/Editor/QualityBlockFacadeSashLatchUpgrade.cs",
+    "contract": "Assets/QA/facade_sash_latch_contract.json",
+    "lookdev": "Assets/QA/lookdev/facade_sash_latch_lookdev.svg",
+    "reflectionBinding": "Assets/Editor/QualityBlockReflectionMaterialPhysicalityBindingQA.cs",
+    "windowCount": 30,
+    "legacyRenderersDisabled": 60,
+    "locksPerTwoPanelWindow": 1,
+    "mountingScrewPitchM": 0.05,
+    "lod0RenderersPerWindow": 6,
+    "lod1RenderersPerWindow": 1,
+    "lod2RenderersPerWindow": 1,
+    "lod3RenderersPerWindow": 1,
+    "lod0Components": [
+      "30 x chamfered metal base plate",
+      "30 x beveled pivot boss",
+      "30 x combined six-segment crescent lever mesh",
+      "30 x combined U receiver/keeper mesh",
+      "60 x beveled mounting screw heads"
+    ],
+    "geometryPolicy": "No Unity stock Cube/Cylinder/Plane/Quad is used as finished latch geometry. Metric-UV clones of the existing authored detail mesh library are cached under GeneratedFacadeHardwareMeshes/SashLatch. Eight deterministic physical-UV phases at 11 mm spacing reduce synchronized microresponse across thirty windows.",
+    "materialPolicy": "Primary latch/receiver uses canonical aged sash aluminum; screws use canonical dark galvanized hardware. Both are physically metallic Standard materials, dry in the benchmark, non-emissive, and reflection-driven rather than carrying painted highlights.",
+    "weatheringPolicy": "LOD0 body/pivot/receiver are sheltered+recessed with low rain, mild UV/recess grime and increased contact only on the operating lever. Fasteners add a localized ferrous-fixture source. No arbitrary damage or source-free rust is introduced.",
+    "lodPolicy": "Thirty independent per-window four-level LODGroups use animated cross-fade. Close LOD0 preserves lock construction; LOD1/2/3 progressively remove sub-pixel fastener/pivot complexity while retaining hardware silhouette before culling.",
+    "formalEvidencePolicy": "The reflection-material fingerprint now requires the latch contract, may build a genuinely missing latch pass only on the first pre-probe evaluation, freezes the generated root instance ID, and fails closed if the root is removed/replaced or legacy rubber handles are re-enabled during later reflection polls. MainCamera native-4K pre-cull independently validates the same state."
+  },
+  "commits": [
+    "f10f020ccca2df5336708a3300b3e5534d1d6a3e",
+    "5bc73529ee77fc69ec912502d3783ac8376916c0",
+    "8e8b81aadad182ea9d0bd6ed5ef66c9e912cc936",
+    "0bb9e20f31571bf0112b85f253b52739388a703a",
+    "b1c0a75c92927b22f92ed7cb350b78301e6ca891"
+  ],
+  "verification": {
+    "gitCompare": "startHead..substantiveWorkHead is 5 commits ahead / 0 behind with merge-base equal to startHead; all five changed files are under UnityProject/.",
+    "sourceAudit": "Reviewed the new construction dimensions, LOD counts, material constraints, metric UV generation, weathering metadata, old-handle disable requirement, reflection epoch freeze and zero-point/render-pending language. No Godot path was changed and no base merge was performed.",
+    "githubActionsAtSubstantiveHead": 0,
+    "commitStatusContextsAtSubstantiveHead": 0,
+    "unityCompile": "PENDING_RUNNER",
+    "unityRuntime": "PENDING_RUNNER",
+    "native4K": "PENDING_RUNNER",
+    "pixelReview": "PENDING_RUNNER"
+  },
+  "implementationReadiness": {
+    "score": 93,
+    "possible": 100,
+    "status": "UNCHANGED",
+    "reason": "This run adds source-side construction, lookdev and formal-evidence coverage but does not supply the missing Unity 6000.3.0f1 compile/runtime verification artifact worth the remaining 7 readiness points."
+  },
+  "visualFidelity": {
+    "status": "UNSCORED_UNTIL_REAL_4K_RENDER",
+    "pointsAwardedThisRun": 0,
+    "passClaimed": false,
+    "expectedImpactOnly": {
+      "geometryConstruction": "medium-high: replaces two generic handle blocks with a mounted lock/pivot/crescent/receiver/fastener assembly",
+      "materialPbr": "medium: removes active rubber-look handle material from the lock role and uses canonical aged metals",
+      "textureMicrodetail": "low-medium: introduces metric UV phase diversity on small close-crop hardware",
+      "weatheringCausality": "low-medium: lever contact/recess aging is causal and component-specific",
+      "periodAuthenticity": "medium-high: one crescent lock per two-panel sliding sash and 50 mm period-supported mounting pitch",
+      "temporalLod": "medium: adds independent four-level cross-fade policy but requires motion pixels before any score"
+    }
+  },
+  "criticalDefects": {
+    "autoCleared": [],
+    "stillPendingRenderedReview": [
+      "impossible_material_physics",
+      "obvious_repetition",
+      "hero_geometry_intersection",
+      "severe_aliasing_or_shimmer",
+      "visible_lod_pop",
+      "unverified_render_claim"
+    ],
+    "specificPixelRisks": [
+      "The reconstructed 30 x 82 mm plate and 34 mm crescent radius may read too large/small against the generated meeting stiles despite source-side plausibility.",
+      "The six-segment crescent may facet visibly in a 100% 4K crop and require a true curved extrusion after rendered review.",
+      "Small metallic hardware may sparkle or alias under grazing midsummer sun if mip/AA/LOD behavior is insufficient.",
+      "Latch/receiver may intersect the meeting-stile or gasket depth stack because Unity runtime scene serialization has not been inspected.",
+      "The global material/construction registry still describes the disabled legacy HD_WindowHandle_* fallback; active latch construction is instead governed by the new dedicated contract and Danchi-domain metadata. Runtime metadata coverage validation must confirm no critical gap before scoring."
+    ]
+  },
+  "nextBlocker": "Unity 6000.3.0f1 Runner/runtime. At first availability stop speculative expansion: compile, execute formal pre-probe preparation, confirm exactly 60 legacy rubber handle renderers disabled plus 30 latch LODGroups and 180 LOD0 renderers, confirm the reflection fingerprint remains stable across request/polls/completion, then capture native 3840x2160 hero/facade_center, oblique/construction_depth and grazing/sash_rail_response plus a 100% sash-latch crop and temporal oblique motion. Score only the actual pixels; if crescent faceting, scale, metal response, intersection, shimmer or LOD pop is visible, fix that render evidence before adding new scene features.",
+  "constraintsPreserved": {
+    "godotUntouched": true,
+    "baseMerged": false,
+    "forbiddenThemesAdded": false
+  }
+}

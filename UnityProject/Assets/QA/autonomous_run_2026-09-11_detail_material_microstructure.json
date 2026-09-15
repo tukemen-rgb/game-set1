@@ -1,0 +1,78 @@
+{
+  "schemaVersion": "1.0",
+  "runDate": "2026-09-11",
+  "branch": "gpt/unity-migration",
+  "startHead": "c0bd1d5300acf91f701182d86ec410d117e1cdf6",
+  "substantiveWorkHead": "6a5eb26a963a61e10d4cf1f464cd4f8743e0b4c0",
+  "objective": "Increase expected Material/PBR and Texture/Microdetail quality rather than adding further evidence-only plumbing: replace scalar-only facade detail fallback response with deterministic lighting-neutral manufacture-scale normal and metallic/smoothness microstructure, while keeping actual-pixel scoring fail-closed.",
+  "substantiveCommits": [
+    "00ff91e791866cdbbde48a691f173c23ae72ee2b",
+    "8688414a4705bb52a1ced052b5907d293f2cf83d",
+    "64ac8232a991312ede77778c246826c1733ff228",
+    "b2536debfc9b8d5f67086336a0448e168836d2f8",
+    "783f605acdfc9e555e016b000f62ac9cf6f325e2",
+    "155b633ff5e289853342dece909d60e46f689073",
+    "6a5eb26a963a61e10d4cf1f464cd4f8743e0b4c0"
+  ],
+  "changes": [
+    {
+      "path": "Assets/Editor/QualityBlockDetailMaterialMicrostructureUpgrade.cs",
+      "summary": "Adds deterministic 1024x1024 tangent-space normal plus Standard metallic/smoothness source-map generation for anodized aluminum, galvanized steel, EPDM, aged AC plastic, pipe insulation wrap and PVC drain hose. Data maps are linear, repeat/trilinear/mipped, anisotropy 16, CompressedHQ; no albedo lighting or weathering is baked. Generated canonical materials remain opaque, non-emissive and use map R=metallic / A=smoothness with GlossMapScale=1."
+    },
+    {
+      "path": "Assets/Editor/QualityBlockDetailMaterialMicrostructureQA.cs",
+      "summary": "Adds fail-closed formal 3840x2160 pre-cull validation of the microstructure contract, canonical generated asset binding/importer state and native-4K review requirements; mapped BRDF ranges remain independently enforced by the existing registered-material physicality guard."
+    },
+    {
+      "path": "Assets/QA/detail_material_microstructure_contract.json",
+      "summary": "Machine-readable physical/material and evidence contract including manufacture intent, numeric metallic/roughness ranges, anti-alias sampling, canonical 100% crops, explicit limitations and zero awarded Visual Fidelity points."
+    },
+    {
+      "path": "Assets/QA/detail_material_microstructure_lookdev.svg",
+      "summary": "Lookdev illustration for front-fill versus grazing-light intent, material-specific microstructure and required native-4K review questions. Explicitly marked as a diagram rather than render evidence."
+    }
+  ],
+  "manufactureAndMaterialReasoning": {
+    "anodized_aluminum": "Fine extrusion-scale relief; aged anodized surface remains metallic per project registry but rough enough to avoid chrome response. Direction/orientation must be confirmed in the sash-rail grazing crop because procedural primitive UV axes are not yet metric-orientation proof.",
+    "galvanized_steel": "Broad zinc-like mottling without glitter pixels; high metallic response with oxidation-broadened roughness.",
+    "epdm_rubber": "Fine matte elastomer grain, metallic=0; grazing edge response must come from lighting/Fresnel rather than painted rims.",
+    "aged_abs_ac": "Fine mould orange peel, metallic=0; oxidation/chalking remains a separate aging/albedo concern.",
+    "pipe_insulation_cover": "Shallow wrap seam plus skin microrelief; macro bends/collars remain geometry.",
+    "pvc_drain_hose": "Shallow circumferential ribbing plus polymer grain; routing and silhouette remain geometry."
+  },
+  "selfAudit": [
+    "The first generator validator incorrectly required ignored fallback _Metallic/_Glossiness scalars to stay inside the mapped registry range. The legacy detail builder rewrites those scalar fallbacks after bootstrap even while _METALLICGLOSSMAP remains authoritative. Validation was corrected to require fallback scalars only to remain finite normalized values; mapped source R/A ranges remain the formal BRDF contract and are independently checked by QualityBlockRegisteredMaterialAssetPhysicalityQA.",
+    "The initial microstructure contract used a non-canonical repetition risk alias. The canonical visual gate ID is obvious_repetition; both the contract and C# exact-set guard were corrected before this run record.",
+    "Exact millimetre-scale texture density and extrusion/corrugation orientation are not claimed because the fallback primitives use normalized procedural UVs. Existing texel-density QA plus real 100% crops remain authoritative.",
+    "One canonical material is reused across repeated assemblies. High-frequency microstructure is intentionally subtle, but repeated phase/synchronization is not declared safe until rendered repetition diagnostics and human native-4K review pass.",
+    "No generated PNG or MAT asset is committed by this source-only run. They are authored deterministically inside Unity on script reload and must be observed/imported on the real Editor/Runner before being treated as runtime assets."
+  ],
+  "verification": {
+    "sourceReview": "PASS for repository-level consistency: existing visual_fidelity_gate.json canonical IDs, 4k_capture_manifest canonical crops, registered material map-aware physicality guard and reflection pre-probe binding were inspected before finalizing this pass.",
+    "branchCompare": "At substantiveWorkHead the branch is 7 commits ahead / 0 behind startHead, merge-base=startHead, with changes limited to four UnityProject files.",
+    "godotPreserved": true,
+    "baseMerged": false,
+    "forbiddenThemesIntroduced": false,
+    "unity6000_3_0f1CompileVerified": false,
+    "unityRuntimeVerified": false,
+    "native3840x2160RenderProduced": false,
+    "renderVerificationPending": true,
+    "visualFidelityScored": false
+  },
+  "readiness": {
+    "implementationReadinessScore": 93,
+    "possibleScore": 100,
+    "visualFidelityStatus": "UNSCORED_UNTIL_REAL_4K_RENDER",
+    "visualFidelityPointsAwardedThisRun": 0,
+    "passClaimed": false,
+    "reasonReadinessNotRaised": "The remaining seven readiness points are reserved for real Unity 6000.3.0f1 compile/runtime verification; adding source material detail cannot substitute for Runner evidence."
+  },
+  "expectedVisualScoreImpactNotAwarded": [
+    "Material/PBR physical plausibility: positive potential from map-driven roughness/metallic variation and non-emissive lighting-neutral microrelief, especially anodized aluminum and galvanized hardware.",
+    "Texture/microdetail/texel fidelity: positive potential from material-specific normal microstructure at 1024 source resolution with mip/trilinear/aniso filtering.",
+    "Temporal/LOD/aliasing stability: neutral-to-positive intent only; fine normal structure could still shimmer or moire and therefore must be tested rather than assumed.",
+    "Critical defects: source design reduces baked_or_painted_highlights and impossible_material_physics risk, but obvious_repetition and severe_aliasing_or_shimmer remain actual-pixel decisions."
+  ],
+  "nextBlocker": "Unity 6000.3.0f1 Runner/Editor execution. On first real Runner, stop speculative source expansion; confirm this script compiles, confirm 12 generated PNG maps plus 6 MAT assets import and remain bound after the danchi rebuild, run the registered-material physicality/pre-probe guards, then produce the sealed native 3840x2160 hero/oblique/grazing packet and inspect the exact 100% material_grazing, sash_rail_response and balcony_services crops for chrome-like response, dielectric errors, repeated phase, wrong grain/rib direction, UV scale/stretch and temporal shimmer.",
+  "stopPolicy": "No new commits after 2026-09-18 without new user instruction; on or after 2026-09-19 summarize rather than extending the branch."
+}

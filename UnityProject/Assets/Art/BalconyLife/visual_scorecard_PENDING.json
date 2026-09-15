@@ -1,0 +1,34 @@
+{
+  "authority":"Assets/QA/visual_fidelity_gate.json",
+  "status":"UNSCORED_UNTIL_REAL_4K_RENDER",
+  "total":null,
+  "pass":false,
+  "threshold":92,
+  "notSubmittableToFormalEvaluator":true,
+  "categories":[
+    {"id":"geometry_construction","weight":20,"hardMinimum":18,"score":null,"deductions":null,"renderEvidence":[],"correctiveActions":["Obtain native Unity stills and construction-detail crops; inspect apertures and join volumes."]},
+    {"id":"material_pbr","weight":20,"hardMinimum":18,"score":null,"deductions":null,"renderEvidence":[],"correctiveActions":["Verify Unity material conversion, conductor/dielectric response and angular highlights."]},
+    {"id":"lighting_shadows_reflections","weight":15,"hardMinimum":13,"score":null,"deductions":null,"renderEvidence":[],"correctiveActions":["Use coherent midsummer sun/sky and inspect contact shadows and reflections in Unity."]},
+    {"id":"texture_microdetail","weight":10,"hardMinimum":9,"score":null,"deductions":null,"renderEvidence":[],"correctiveActions":["Inspect UV seams, true texel density, wood endgrain and microtexture repetition."]},
+    {"id":"weathering_causality","weight":10,"hardMinimum":9,"score":null,"deductions":null,"renderEvidence":[],"correctiveActions":["Place assets and establish exposure/maintenance before adding aging masks."]},
+    {"id":"vegetation_natural_complexity","weight":8,"hardMinimum":7,"score":null,"deductions":null,"renderEvidence":[],"correctiveActions":["Review whole-scene vegetation; no points from household props alone."]},
+    {"id":"period_authenticity","weight":7,"hardMinimum":6,"score":null,"deductions":null,"renderEvidence":[],"correctiveActions":["Check period scene context; these are unbranded interpretations, not verified historical SKUs."]},
+    {"id":"cinematic_image","weight":5,"hardMinimum":4,"score":null,"deductions":null,"renderEvidence":[],"correctiveActions":["Judge composition/exposure from actual 3840x2160 Unity capture."]},
+    {"id":"temporal_lod_aliasing","weight":5,"hardMinimum":4,"score":null,"deductions":null,"renderEvidence":[],"correctiveActions":["Run Unity camera motion/LOD transitions; inspect rose apertures, slots and spring shimmer."]}
+  ],
+  "criticalDefects":[
+    {"id":"visible_primitive_placeholder","present":null,"reviewStatus":"unchecked"},
+    {"id":"baked_or_painted_highlights","present":null,"reviewStatus":"unchecked"},
+    {"id":"impossible_material_physics","present":null,"reviewStatus":"unchecked"},
+    {"id":"obvious_repetition","present":null,"reviewStatus":"unchecked"},
+    {"id":"hero_geometry_intersection","present":null,"reviewStatus":"unchecked"},
+    {"id":"sun_shadow_inconsistency","present":null,"reviewStatus":"unchecked"},
+    {"id":"forbidden_disaster_theme","present":null,"reviewStatus":"unchecked"},
+    {"id":"severe_aliasing_or_shimmer","present":null,"reviewStatus":"unchecked"},
+    {"id":"visible_lod_pop","present":null,"reviewStatus":"unchecked"},
+    {"id":"major_light_leak","present":null,"reviewStatus":"unchecked"},
+    {"id":"missing_construction_material_metadata","present":null,"reviewStatus":"unchecked"},
+    {"id":"unverified_render_claim","present":null,"reviewStatus":"unchecked"}
+  ],
+  "comment":"Draft only. Unknown is not absent. Null/unchecked decisions must fail closed if submitted to formal evaluation. No automatic visual points."
+}

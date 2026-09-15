@@ -1,0 +1,142 @@
+{
+  "runId": "2026-09-11_0436_facade_weathering_optical_refinement",
+  "branch": "gpt/unity-migration",
+  "startHead": "8150778973cabf0ef81aade11a327d1e91e3f3de",
+  "substantiveWorkHead": "1b26b16ad92f790fe54b16c082e261802bc2a5e8",
+  "substantiveCommits": [
+    {
+      "sha": "76a5f9428e8880c33cd69301d8574284cc8c53a2",
+      "message": "Add physically feathered facade weathering shader"
+    },
+    {
+      "sha": "28d98c5989d1f48e87c93c788ef63cb58b074210",
+      "message": "Add optical weathering refinement contract"
+    },
+    {
+      "sha": "947fc752ee6a68b387230a467feefe1a3962a204",
+      "message": "Add facade weathering optical lookdev"
+    },
+    {
+      "sha": "51a584a3066982b54ecdb1fb423ad46e37fd6a1b",
+      "message": "Add facade weathering optical QA and pre-render guard"
+    },
+    {
+      "sha": "6670455d7925b92065035fee0bed044f70a312a7",
+      "message": "Enforce optical weathering on every benchmark save"
+    },
+    {
+      "sha": "ec265fe2916900314f949b0c3710db5736fdcb82",
+      "message": "Bind optical weathering to formal 4K evidence path"
+    },
+    {
+      "sha": "d4f5fce95759149ec1bc2a3c89bd9adc269d5f84",
+      "message": "Lock weathering residue physical material scalars"
+    },
+    {
+      "sha": "b857bd38e512f2ff8e48a0e561eb8f58007947fe",
+      "message": "Use Standard BRDF and reflection probes for weathering residue"
+    },
+    {
+      "sha": "1b26b16ad92f790fe54b16c082e261802bc2a5e8",
+      "message": "Declare weathering UV carrier sampler explicitly"
+    }
+  ],
+  "scope": {
+    "primaryScoreCategories": [
+      "Weathering/context causality",
+      "Material/PBR physical plausibility",
+      "Texture/microdetail/texel fidelity"
+    ],
+    "criticalDefectRisksAddressed": [
+      "visible primitive-placeholder geometry in benchmark framing",
+      "obviously painted/baked highlights",
+      "materially impossible metallic/specular values",
+      "missing required construction/material metadata"
+    ],
+    "godotPreserved": true,
+    "baseMerged": false,
+    "forbiddenThemeAdded": false
+  },
+  "discovery": {
+    "rejectedInitialHypothesis": "The legacy WeatheringOverlays Cube strips were initially suspected to survive into the benchmark. Source inspection showed QualityBlockFacadeWeatheringDetailUpgrade already destroys that legacy root and rebuilds five combined non-primitive meshes, while its structural QA rejects built-in primitive weathering meshes.",
+    "actualHighValueDefect": "The replacement geometry still used Standard transparent materials with a single uniform alpha per material. Its UVs were present and normalized, but optical density did not feather at ribbon/strip/ellipse boundaries. At native 4K this could read as a hard decal/paint stripe even though the geometry itself was source-anchored.",
+    "evidenceInvariantGap": "QualityBlockNative4KReviewPacket did not explicitly rebuild/revalidate the final facade-weathering optical state before ReflectionProbe, still Camera.Render and sealed temporal evidence. The save gate only guaranteed the older structural weathering state."
+  },
+  "implementation": {
+    "shader": {
+      "path": "Assets/Shaders/NewTownWeatheringResidue.shader",
+      "name": "NewTown/QualityBlockWeatheringResidue",
+      "model": "Unity Standard surface BRDF with alpha-fade masking, live direct/shadow/GI/reflection-probe response, hard-coded dielectric metallic output 0, high roughness and zero emission.",
+      "profiles": {
+        "verticalRibbon": "UV0 cross-edge feather plus short source and long causal tail fade",
+        "gradeStrip": "strongest optical density at grade with upward fade while geometry retains the irregular splash-height boundary",
+        "horizontalEllipse": "radial fade around AC condensate discharge residue"
+      },
+      "microVariation": "Low-amplitude world-space deposit-density modulation only. It does not encode sun direction, AO, contact shadow or highlight."
+    },
+    "materialPhysicality": {
+      "rainMineral": {"opacity": 0.105, "roughness": 0.92, "metallic": 0.0, "f0": 0.04, "normalScale": 0.0, "wetness": 0.0},
+      "gradeSplash": {"opacity": 0.135, "roughness": 0.95, "metallic": 0.0, "f0": 0.04, "normalScale": 0.0, "wetness": 0.0},
+      "ferrousRunoff": {"opacity": 0.12, "roughness": 0.90, "metallic": 0.0, "f0": 0.04, "normalScale": 0.0, "wetness": 0.0},
+      "acMineral": {"opacity": 0.085, "roughness": 0.94, "metallic": 0.0, "f0": 0.04, "normalScale": 0.0, "wetness": 0.0}
+    },
+    "machineReadableContract": "Assets/QA/facade_weathering_optical_refinement_contract.json",
+    "lookdev": "Assets/QA/Lookdev/facade_weathering_optical_feathering.svg",
+    "qa": "Assets/Editor/QualityBlockFacadeWeatheringOpticalRefinementQA.cs",
+    "persistence": "QualityBlockFacadeWeatheringSaveGate now rebuilds causal weathering, applies optical refinement and validates both during every benchmark save once DanchiHighDetail exists.",
+    "formalEvidenceBinding": "QualityBlockNative4KReviewPacket validates contract configuration up front, applies the optical refinement after final facade/rail/AC/rainwater/futon host construction, then revalidates before ReflectionProbe, before native still Camera.Render and again before sealed temporal capture. MainCamera onPreCull also fail-closes if the final optical state drifts."
+  },
+  "selfAuditCorrections": [
+    {
+      "issue": "The first shader implementation used a custom ForwardBase GGX path. Although it had live sun/shadow response, it omitted environment/reflection-probe specular, weakening grazing-angle dielectric plausibility.",
+      "correction": "Replaced the manual forward fragment lighting with Unity's Standard surface BRDF so the thin residue shares direct light, shadows, GI and reflection-probe environment response with the host facade. Metallic remains forced to zero and roughness remains 0.90-0.95."
+    },
+    {
+      "issue": "The first physical-material version did not expose explicit locked material scalar slots for metallic, normal scale and wetness even though the contract defined them.",
+      "correction": "Added _Metallic, _NormalScale and _Wetness shader properties with zero defaults; Standard surface output still hard-codes metallic=0 and no invented normal relief/emission."
+    },
+    {
+      "issue": "The surface shader relied on UV0 naming convention without an explicit sampler declaration for the no-scale-offset mask carrier.",
+      "correction": "Declared sampler2D _MaskTex explicitly so uv_MaskTex has an unambiguous source in Unity surface-shader generation."
+    }
+  ],
+  "verification": {
+    "level": "SOURCE_AND_GITHUB_ONLY",
+    "compare": {
+      "base": "8150778973cabf0ef81aade11a327d1e91e3f3de",
+      "head": "1b26b16ad92f790fe54b16c082e261802bc2a5e8",
+      "aheadBy": 9,
+      "behindBy": 0,
+      "mergeBase": "8150778973cabf0ef81aade11a327d1e91e3f3de",
+      "changedFiles": 6,
+      "changedRoots": ["UnityProject/Assets/Editor", "UnityProject/Assets/QA", "UnityProject/Assets/Shaders"]
+    },
+    "sourceFacts": [
+      "Parent weathering already removes legacy WeatheringOverlays and rejects built-in primitive meshes.",
+      "Parent weathering mesh UV0 semantics cover 0..1 for vertical ribbons, facade grade strips and horizontal ellipses, enabling analytic opacity feathering without new texture masks.",
+      "Formal weathering evidence is already required from hero/facade_center, oblique/balcony_services and grazing/material_grazing by the visual observability contract.",
+      "New optical QA requires exactly five weathering MeshRenderers, exact material identities, the dedicated shader, normalized UV0 for every vertex, configured opacity/roughness/F0/profile values, transparent queue, shadow casting Off, receiveShadows true and no collider."
+    ],
+    "commitStatusContexts": 0,
+    "workflowRunsOnBranch": 0,
+    "captures4kPresent": false,
+    "unity6000_3_0f1CompileVerified": false,
+    "shaderCompiledInUnity": false,
+    "actualRenderObserved": false
+  },
+  "scores": {
+    "implementationReadiness": 93,
+    "implementationReadinessPossible": 100,
+    "visualFidelity": "UNSCORED",
+    "visualFidelityPointsAwardedThisRun": 0,
+    "visualFidelityPassClaimed": false
+  },
+  "expectedVisualScoreImpact": [
+    "Weathering/context causality: likely deduction risk reduced because residue extent remains construction-source-driven while optical boundaries now fade as deposited material instead of ending at a uniform-alpha polygon edge. No points awarded without pixels.",
+    "Material/PBR: likely deduction risk reduced because dry residue is explicitly dielectric/nonmetallic, high roughness, zero-emission and receives live Standard lighting plus reflection probes rather than carrying a baked highlight. No points awarded without pixels.",
+    "Texture/microdetail: likely hard-edge/decal-read risk reduced through analytic UV feathering and low-frequency world-space density breakup. Native 100% crops must still prove that the breakup is neither visible as a procedural pattern nor temporally unstable.",
+    "Critical defects: source-side risk is lower for primitive-placeholder weathering, painted/baked highlights, impossible metallic response and missing weathering material metadata, but none of these defects is cleared from the Visual Fidelity Gate until actual sealed render evidence exists."
+  ],
+  "nextBlocker": "Unity 6000.3.0f1 runtime/compile evidence. At the first real Runner, stop speculative expansion and run Prepare Complete Native 4K Review Packet. Fail immediately on shader compile/import error or optical QA failure. Then inspect hero/facade_center, oblique/balcony_services and grazing/material_grazing at 100% for hard alpha contours, transparent sorting/overlap bands, dark halos, disconnected runoff starts, overly uniform procedural residue, reflection-response mismatch and any view-dependent painted look. Inspect sealed temporal frames for edge shimmer. Fix actual pixel defects before assigning Weathering, Material/PBR or Texture points.",
+  "recordingNote": "Implementation Readiness stays 93/100 because this run improves source implementation and evidence invariants but does not provide the missing Unity compile/runtime verification. Visual Fidelity remains UNSCORED and 0 render-derived points were awarded."
+}

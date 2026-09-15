@@ -1,0 +1,126 @@
+{
+  "contractVersion": "1.0.0",
+  "targetPeriod": "late-1990s-to-circa-2000",
+  "targetRegion": "Kanto Japanese new-town fallback benchmark",
+  "scope": "camera-facing apartment facade coating, aluminum sash interfaces, clear float-glass panes, and non-emissive interior backing",
+  "renderingConstraint": "Unity 6000.3.0f1 built-in Standard shader fallback; authored replacement art may supersede generated fallback",
+  "visualTarget": "4K live-action-film plausibility with angular response produced by lighting/PBR rather than painted highlights",
+  "researchStatus": "Period-plausible generated fallback. Exact housing-complex glazing specification, coating manufacturer, and curtain/interior layout remain pending field/photo or drawing verification.",
+  "materials": [
+    {
+      "id": "facade_painted_rc",
+      "assetPaths": [
+        "Assets/Art/GeneratedFacadeOptics/MAT_FacadePaintedRC_Main.mat",
+        "Assets/Art/GeneratedFacadeOptics/MAT_FacadePaintedRC_Stair.mat"
+      ],
+      "construction": "reinforced-concrete substrate with cementitious leveling/render and aged exterior protective coating",
+      "finish": "matte mineral-looking coating with low-frequency application/aging variation and sub-millimetric-to-millimetric aggregate relief",
+      "baseColorSrgb": [0.63, 0.62, 0.58],
+      "roughnessMin": 0.79,
+      "roughnessMax": 0.93,
+      "metallicMin": 0.0,
+      "metallicMax": 0.0,
+      "specularF0": 0.04,
+      "normalAmplitudeMm": 0.55,
+      "detailNormalAmplitudeMm": 0.12,
+      "macroRepeatMeters": 2.4,
+      "detailRepeatMeters": 0.22,
+      "wetAlbedoMultiplier": 0.82,
+      "wetRoughnessMultiplier": 0.58,
+      "uvFadeMax": 0.12,
+      "angularResponse": {
+        "front": "broad diffuse return, weak dielectric highlight, no polished-stone sparkle",
+        "oblique": "coating relief and local roughness breakup become readable without a uniform sheen",
+        "grazing": "subtle Fresnel lift only; shallow relief catches light without a mirror stripe"
+      },
+      "geometryVsMaterial": "window returns, slab lips, drip edges, penetrations, construction joints and facade offsets are geometry; coating grain, aggregate, chalking and micro-roughness are material response",
+      "forbidden": [
+        "metallic concrete",
+        "shadow or highlight baked into albedo",
+        "facade-wide random dark stains without a runoff/contact cause",
+        "single-scale texture repetition visible in 4K crop"
+      ]
+    },
+    {
+      "id": "clear_float_glass",
+      "assetPath": "Assets/Art/GeneratedFacadeOptics/MAT_WindowClearGlass.mat",
+      "construction": "clear soda-lime float-glass fallback installed in aluminum sliding sash; nominal generated pane thickness concept 4 mm",
+      "finish": "clear dielectric glazing with mild age/dust/water-spot roughness; no tint painted as a dark opaque rectangle",
+      "nominalThicknessMm": 4.0,
+      "iorReference": 1.52,
+      "specularF0": 0.043,
+      "metallic": 0.0,
+      "roughnessDryMin": 0.06,
+      "roughnessDryMax": 0.18,
+      "standardShaderAlphaProxy": 0.18,
+      "wetRoughnessMultiplier": 0.72,
+      "uvFadeMax": 0.01,
+      "angularResponse": {
+        "front": "high transmission with restrained sky/environment reflection; interior layer remains visible",
+        "oblique": "reflection gains strength while transmitted interior darkens comparatively",
+        "grazing": "strong dielectric Fresnel reflection while the material remains non-metallic"
+      },
+      "agingCauses": [
+        "water spotting on rain-exposed exterior surface",
+        "dust accumulation near lower sash/track interface",
+        "cleaner hand-contact zones only where physically reachable"
+      ],
+      "forbidden": [
+        "opaque blue-gray window block",
+        "metallic glass",
+        "emissive glass",
+        "Fade transparency that removes reflections together with alpha",
+        "painted sky highlight",
+        "uniform mirror/chrome response"
+      ]
+    },
+    {
+      "id": "interior_backing",
+      "assetPath": "Assets/Art/GeneratedFacadeOptics/MAT_InteriorBacking_*.mat",
+      "construction": "non-emissive interior darkness/curtain backing positioned physically behind glazing only to provide transmitted depth cues in the generated fallback",
+      "finish": "very rough dielectric cloth/interior surfaces with low saturation and deterministic bay-to-bay variation",
+      "metallic": 0.0,
+      "roughnessMin": 0.88,
+      "roughnessMax": 0.98,
+      "emission": 0.0,
+      "forbidden": [
+        "self-lit window",
+        "pure black void across every bay",
+        "identical backing color in every apartment"
+      ]
+    }
+  ],
+  "assembly": {
+    "id": "sliding_window_optical_stack",
+    "outerOpeningNominalMeters": [2.36, 1.76],
+    "generatedVisiblePaneMeters": [1.03, 1.46],
+    "paneCountPerApartmentWindow": 2,
+    "slidingPaneDepthSeparationMm": 14.0,
+    "backingDepthBehindGlassMm": 180.0,
+    "mounting": "glass captured in separate aluminum sash leaves; glazing plane sits behind outer frame face; interior backing is not coplanar with glass",
+    "interfaces": "aluminum frame, EPDM track/seal, sill/drip edge and backing depth must remain spatially distinct",
+    "lodPolicy": "transparent panes remain only where their projected size supports stable reflection; no abrupt near-camera replacement or visible LOD pop is allowed",
+    "captureEvidence": [
+      "hero/facade_center",
+      "oblique/construction_depth",
+      "grazing/material_grazing",
+      "grazing/sash_rail_response"
+    ]
+  },
+  "lookdevBrief": {
+    "front": "One apartment bay in midsummer daylight. Read wall coating, anodized frame, two sliding clear panes and interior backing as four different materials. Glass must transmit interior tone and still retain a modest sky reflection.",
+    "oblique": "35-degree view emphasizing pane depth offset, frame extrusion, sill projection and wall return. No coplanar z-fighting or opaque glass slab.",
+    "grazing": "Low-angle view along the facade so glass reflection strengthens from Fresnel while concrete stays matte and aluminum remains a broader aged metallic lobe.",
+    "crop100Percent": "Inspect coating repetition, window edge aliasing, transparent sorting, duplicate reflections, light leaks, z-fighting, and whether any disabled opaque Window_* renderer remains visible."
+  },
+  "automaticFailConditions": [
+    "base opaque Window_* or StairWindow_* renderer remains visible behind replacement glazing",
+    "generated glazing has a Collider",
+    "glass metallic value is nonzero",
+    "glass uses Fade instead of premultiplied Transparent mode",
+    "glass is emissive",
+    "facade material metallic value is nonzero",
+    "window pane is coplanar with backing or sibling sliding pane",
+    "required facade/glass construction metadata missing"
+  ]
+}

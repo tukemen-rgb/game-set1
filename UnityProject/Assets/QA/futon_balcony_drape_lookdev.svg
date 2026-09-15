@@ -1,0 +1,57 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="900" viewBox="0 0 1400 900">
+  <rect width="1400" height="900" fill="#f2f0e9"/>
+  <text x="70" y="70" font-family="sans-serif" font-size="34" font-weight="700" fill="#20242a">Balcony futon airing drape — construction lookdev</text>
+  <text x="70" y="110" font-family="sans-serif" font-size="18" fill="#4c545e">Render-only reconstruction datum: existing RailTop renderer bounds. Dimensions are modeling constraints, not a branded product claim.</text>
+
+  <g transform="translate(80,165)">
+    <text x="0" y="0" font-family="sans-serif" font-size="24" font-weight="700" fill="#20242a">Oblique section through top rail</text>
+    <rect x="365" y="255" width="90" height="90" rx="4" fill="#858d92" stroke="#30363c" stroke-width="3"/>
+    <text x="475" y="310" font-family="sans-serif" font-size="18" fill="#30363c">existing ~90 mm top rail envelope</text>
+
+    <path d="M335 590 C340 470 338 370 350 335 C360 300 374 260 410 244 C446 260 460 300 470 335 C482 390 495 500 500 655"
+          fill="none" stroke="#8299ad" stroke-width="22" stroke-linecap="round"/>
+    <path d="M335 590 C340 470 338 370 350 335 C360 300 374 260 410 244 C446 260 460 300 470 335 C482 390 495 500 500 655"
+          fill="none" stroke="#3f5669" stroke-width="2"/>
+
+    <line x1="312" y1="590" x2="312" y2="655" stroke="#bf4c3a" stroke-width="2"/>
+    <line x1="292" y1="590" x2="332" y2="590" stroke="#bf4c3a" stroke-width="2"/>
+    <line x1="292" y1="655" x2="520" y2="655" stroke="#bf4c3a" stroke-width="2"/>
+    <text x="55" y="630" font-family="sans-serif" font-size="18" fill="#8c382c">lower hem remains 30–90 mm above slab</text>
+
+    <rect x="190" y="675" width="500" height="45" fill="#aaa79d" stroke="#5d5b55" stroke-width="2"/>
+    <text x="705" y="706" font-family="sans-serif" font-size="18" fill="#30363c">balcony slab top</text>
+
+    <line x1="410" y1="218" x2="410" y2="244" stroke="#2b6b87" stroke-width="2"/>
+    <text x="435" y="225" font-family="sans-serif" font-size="18" fill="#2b6b87">22 mm closed textile loft</text>
+    <text x="560" y="405" font-family="sans-serif" font-size="18" fill="#30363c">front drop: 0.700 / 0.680 m</text>
+    <text x="70" y="390" font-family="sans-serif" font-size="18" fill="#30363c">back drop: 0.480 / 0.515 m</text>
+    <text x="560" y="445" font-family="sans-serif" font-size="18" fill="#30363c">center gravity sag: 12 / 9 mm</text>
+  </g>
+
+  <g transform="translate(820,180)">
+    <text x="0" y="0" font-family="sans-serif" font-size="24" font-weight="700" fill="#20242a">Manufacture → installation → optics</text>
+    <rect x="0" y="45" width="500" height="115" rx="12" fill="#ffffff" stroke="#68727c" stroke-width="2"/>
+    <text x="22" y="78" font-family="sans-serif" font-size="19" font-weight="700" fill="#20242a">1. Filled textile body</text>
+    <text x="22" y="108" font-family="sans-serif" font-size="17" fill="#4c545e">Closed 22 mm ribbon; physical silhouette and broad sag.</text>
+    <text x="22" y="135" font-family="sans-serif" font-size="17" fill="#4c545e">Weave/stitch/fibre breakup belongs to the normal response.</text>
+
+    <rect x="0" y="185" width="500" height="115" rx="12" fill="#ffffff" stroke="#68727c" stroke-width="2"/>
+    <text x="22" y="218" font-family="sans-serif" font-size="19" font-weight="700" fill="#20242a">2. Rail-wrap interface</text>
+    <text x="22" y="248" font-family="sans-serif" font-size="17" fill="#4c545e">Gravity-balanced drape; no invisible rigid mount invented.</text>
+    <text x="22" y="275" font-family="sans-serif" font-size="17" fill="#4c545e">Inner textile envelope targets contact within 12 mm.</text>
+
+    <rect x="0" y="325" width="500" height="145" rx="12" fill="#ffffff" stroke="#68727c" stroke-width="2"/>
+    <text x="22" y="358" font-family="sans-serif" font-size="19" font-weight="700" fill="#20242a">3. Dry cotton PBR</text>
+    <text x="22" y="388" font-family="sans-serif" font-size="17" fill="#4c545e">Metallic 0.00 · dielectric F0 ≈ 0.04</text>
+    <text x="22" y="415" font-family="sans-serif" font-size="17" fill="#4c545e">Roughness 0.83–0.85 · normal scale 0.34</text>
+    <text x="22" y="442" font-family="sans-serif" font-size="17" fill="#4c545e">No emission, baked highlights or current wet-plastic sheen.</text>
+
+    <rect x="0" y="495" width="500" height="150" rx="12" fill="#ffffff" stroke="#68727c" stroke-width="2"/>
+    <text x="22" y="528" font-family="sans-serif" font-size="19" font-weight="700" fill="#20242a">4. LOD invariants</text>
+    <text x="22" y="558" font-family="sans-serif" font-size="17" fill="#4c545e">LOD0/1/2/3: 24×30 / 16×24 / 10×12 / 6×6 segments.</text>
+    <text x="22" y="585" font-family="sans-serif" font-size="17" fill="#4c545e">All retain the U-drape, thickness and occupancy silhouette.</text>
+    <text x="22" y="612" font-family="sans-serif" font-size="17" fill="#4c545e">Cross-fade required; visible pop is judged only from temporal pixels.</text>
+  </g>
+
+  <text x="70" y="858" font-family="sans-serif" font-size="18" fill="#7b3329">Source lookdev only — it cannot clear the primitive/interpenetration critical defect without native 3840×2160 render evidence.</text>
+</svg>

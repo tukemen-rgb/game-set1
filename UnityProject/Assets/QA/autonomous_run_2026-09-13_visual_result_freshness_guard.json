@@ -1,0 +1,95 @@
+{
+  "schema_version": "1.0",
+  "run_id": "2026-09-13-visual-result-freshness-guard",
+  "branch": "gpt/unity-migration",
+  "starting_head": "142103da9fba6e0ea5e457903f4ac1279f425c9f",
+  "substantive_commits": [
+    {
+      "sha": "a8bbe046fe277f1b6fce31bbbfe0cecf5db9a648",
+      "summary": "Add an InitializeOnLoad fail-closed guard that independently revalidates any persisted Visual Fidelity PASS and invalidates it when current evidence/provenance/candidate/gate state can no longer be proven."
+    },
+    {
+      "sha": "950909fa7ac317263e684914ae7dec3f2f157d68",
+      "summary": "Add the machine-readable Visual Fidelity result freshness contract and SHA-256-bound runtime report requirements."
+    }
+  ],
+  "problem_found": [
+    "QualityBlockVisualFidelityGate correctly validates real 4K still/temporal evidence and writes PASS/FAIL after scoring, but its result file is written only after several fail-closed validators complete.",
+    "If an older PASS result already exists and a later evaluation throws before WriteJson(ResultPath, result), the old visual_fidelity_result.json can remain on disk even though current reviewed evidence, candidate freshness, provenance, or scoring contracts are no longer valid.",
+    "QualityBlockRenderCandidateFreshnessQA invalidates the render receipt when the candidate changes, but it does not invalidate visual_fidelity_result.json itself. Therefore a consumer looking only at the persisted result file could mistake a stale PASS for the current candidate."
+  ],
+  "change": {
+    "new_guard": "Assets/Editor/QualityBlockVisualResultFreshnessQA.cs",
+    "new_contract": "Assets/QA/visual_result_freshness_contract.json",
+    "automatic_behavior": [
+      "InitializeOnLoad bootstrap plus Editor project/hierarchy monitoring",
+      "only positive PASS assertions are protected; FAIL/UNSCORED states are not converted into PASS",
+      "an existing PASS re-runs visual gate integrity, reviewed-evidence integrity, render provenance, current candidate freshness and temporal candidate coherence",
+      "category totals are independently recomputed against the immutable 20/20/15/10/10/8/7/5/5 weights and 18/18/13/9/9/7/6/4/4 hard minima",
+      "the current reviewed total must remain >=92, every critical defect must remain absent, and the persisted result score/threshold must equal current evidence",
+      "any validation exception replaces the previous PASS with INVALIDATED_REEVALUATION_REQUIRED and visualScore=0; the guard never emits PASS",
+      "a machine-readable freshness report hashes the result, reviewed evidence, still receipt/seal/epoch/manifest, temporal receipt/coherence seal and key gate contracts"
+    ],
+    "automatic_visual_points": 0
+  },
+  "critical_gate_reasoning": {
+    "risk_addressed": "stale PASS persistence after an early fail-closed validation exception",
+    "why_priority": "A numeric 92/100 gate is not trustworthy if an earlier PASS artifact can survive candidate/evidence drift. This is an evidence-lifecycle integrity defect rather than a pixel-quality improvement, so no visual points are awarded.",
+    "critical_defect_mapping": [
+      "unverified_render_claim",
+      "missing_construction_material_metadata",
+      "severe_aliasing_or_shimmer",
+      "visible_lod_pop"
+    ],
+    "note": "The guard does not clear any critical defect. It only prevents a previously positive result from surviving when the current still/temporal evidence chain can no longer be proven."
+  },
+  "static_verification": {
+    "new_source_refetch": "PASS",
+    "source_brace_structure_review": "PASS_STATIC",
+    "machine_readable_contract_refetch": "PASS",
+    "existing_gate_requires_real_3840x2160_and_pixel_exact_crops": "PASS_SOURCE_REVIEW",
+    "existing_review_integrity_requires_category_evidence_deductions_corrective_actions_and_observed_refs": "PASS_SOURCE_REVIEW",
+    "existing_candidate_freshness_invalidates_render_receipt_but_not_visual_result": "PASS_SOURCE_REVIEW_GAP_CONFIRMED",
+    "visual_fidelity_result_committed_on_branch": "ABSENT_EXPECTED_NO_RUNTIME_RESULT",
+    "branch_compare_before_run_record": "PASS_AHEAD_2_BEHIND_0_MERGE_BASE_STARTING_HEAD",
+    "changed_scope_before_run_record": "PASS_ONLY_UNITYPROJECT_EDITOR_AND_QA_FILES",
+    "github_actions_before_run_record": "ZERO_RUNS",
+    "commit_status_contexts_before_run_record": "ZERO_CONTEXTS",
+    "unity_6000_3_0f1_compile": "PENDING_RUNNER",
+    "initialize_on_load_runtime_behavior": "PENDING_RUNNER",
+    "stale_pass_failure_injection": "PENDING_RUNNER",
+    "3840x2160_render": "PENDING_RUNNER",
+    "100_percent_crops": "PENDING_RUNNER",
+    "temporal_lod_render_evidence": "PENDING_RUNNER",
+    "visual_fidelity_scoring": "NOT_PERMITTED_WITHOUT_ACTUAL_RENDER"
+  },
+  "implementation_readiness": {
+    "score_100": 93,
+    "delta_this_run": 0,
+    "reason": "Gate lifecycle coverage improved, but the reserved seven readiness points still require an actual Unity 6000.3.0f1 compile/runtime session and real render evidence."
+  },
+  "visual_fidelity": {
+    "status": "UNSCORED_UNTIL_REAL_4K_RENDER",
+    "points_awarded_this_run": 0,
+    "pass_claimed": false,
+    "expected_score_impact_not_awarded": {
+      "all_categories": "No direct pixel score increase. The change protects the validity of future category scores by preventing stale PASS persistence.",
+      "Temporal/LOD/aliasing stability": "Evidence-integrity confidence improves because a current temporal candidate/coherence proof is re-required for any persisted PASS.",
+      "Lighting/shadows/reflections": "Evidence-integrity confidence improves because current render provenance/candidate freshness must remain valid; no lighting point is claimed."
+    }
+  },
+  "preservation": {
+    "godot_changed": false,
+    "base_merged": false,
+    "forbidden_disaster_theme_added": false,
+    "scope": "Only UnityProject/Assets/Editor and UnityProject/Assets/QA additions in substantive commits."
+  },
+  "next_blocker_and_runner_plan": [
+    "Compile under Unity 6000.3.0f1 and confirm InitializeOnLoad registration plus contract parsing.",
+    "After a legitimate real-render PASS exists, mutate one tracked reviewed-evidence/provenance input and verify the guard overwrites PASS with INVALIDATED_REEVALUATION_REQUIRED rather than leaving an old score.",
+    "Failure-inject a category below its hard minimum while keeping total >=92 and verify stale PASS invalidates.",
+    "Failure-inject one critical defect present=true and verify stale PASS invalidates.",
+    "Mutate the persisted benchmark candidate so render_candidate freshness fails and verify the result invalidates even if old PNG bytes still exist.",
+    "Recapture fresh native 3840x2160 hero/oblique/grazing stills plus 100% crops and temporal probes before any new PASS is accepted."
+  ]
+}

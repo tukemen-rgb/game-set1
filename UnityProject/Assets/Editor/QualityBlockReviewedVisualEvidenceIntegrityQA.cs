@@ -1,0 +1,446 @@
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Text.RegularExpressions;
+using UnityEditor;
+using UnityEngine;
+
+/// <summary>
+/// Fail-closed integrity checks for the manually reviewed Visual Fidelity evidence document.
+///
+/// This layer is intentionally non-scoring. It rejects structurally ambiguous review packets before
+/// the canonical numeric gate can consume them, then requires current source/pixel/temporal proofs.
+/// </summary>
+public static class QualityBlockReviewedVisualEvidenceIntegrityQA
+{
+    private const string ContractPath = "Assets/QA/reviewed_visual_evidence_integrity_contract.json";
+    private const string EvidencePath = "Assets/QA/visual_fidelity_evidence.json";
+    private const string ScoreArithmeticSchemaVersion = "1.0";
+
+    private static readonly string[] CanonicalViews =
+    {
+        "hero",
+        "oblique",
+        "grazing"
+    };
+
+    private static readonly CategorySpec[] CanonicalCategories =
+    {
+        new CategorySpec("geometry_construction", 20, 18),
+        new CategorySpec("material_pbr", 20, 18),
+        new CategorySpec("lighting_shadows_reflections", 15, 13),
+        new CategorySpec("texture_microdetail", 10, 9),
+        new CategorySpec("weathering_causality", 10, 9),
+        new CategorySpec("vegetation_natural_complexity", 8, 7),
+        new CategorySpec("period_authenticity", 7, 6),
+        new CategorySpec("cinematic_image", 5, 4),
+        new CategorySpec("temporal_lod_aliasing", 5, 4)
+    };
+
+    private static readonly string[] CanonicalCriticalDefectIds =
+    {
+        "visible_primitive_placeholder",
+        "baked_or_painted_highlights",
+        "impossible_material_physics",
+        "obvious_repetition",
+        "hero_geometry_intersection",
+        "sun_shadow_inconsistency",
+        "forbidden_disaster_theme",
+        "severe_aliasing_or_shimmer",
+        "visible_lod_pop",
+        "major_light_leak",
+        "missing_construction_material_metadata",
+        "unverified_render_claim"
+    };
+
+    [MenuItem("NewTown/QA/Validate Reviewed Visual Evidence Integrity")]
+    public static void ValidateReviewedEvidence()
+    {
+        ValidateContractConfigOnly();
+
+        if (!File.Exists(EvidencePath))
+            throw new FileNotFoundException(
+                "Reviewed visual evidence does not exist yet. Capture, seal and review real Unity 4K evidence first.",
+                EvidencePath);
+
+        string evidenceJson = File.ReadAllText(EvidencePath);
+
+        // Validate the raw JSON before JsonUtility is trusted. JsonUtility maps a missing bool to false;
+        // for an automatic critical FAIL this could otherwise turn an omitted `present` decision into an
+        // apparent "defect absent" result. This validator requires one explicit boolean plus one terminal
+        // reviewStatus for every canonical defect, and requires those two signals to agree exactly.
+        QualityBlockCriticalDefectDecisionEncodingQA.ValidateEvidenceEncoding(evidenceJson);
+
+        QualityBlockVisualFidelityGate.VisualEvidence evidence =
+            JsonUtility.FromJson<QualityBlockVisualFidelityGate.VisualEvidence>(evidenceJson);
+        if (evidence == null)
+            throw new InvalidOperationException("visual_fidelity_evidence.json could not be parsed.");
+        if (!evidence.renderVerified)
+            throw new InvalidOperationException(
+                "Reviewed Visual Fidelity evidence must have renderVerified=true only after actual Unity pixels were reviewed.");
+
+        ValidateCaptureEntries(evidence.captures);
+        ValidateCategoryEntries(evidence.categories);
+        ValidateScoreArithmetic(evidenceJson, evidence.categories);
+        ValidateCriticalDefectEntries(evidence.criticalDefects);
+
+        // Pixel review cannot prove source metadata completeness. Revalidate the live scene/registry inside
+        // the scoring path; human notes cannot override this machine proof.
+        QualityBlockSceneMetadataCoverageQA.ValidateOpenScene();
+
+        // These pixel-domain diagnostics are mandatory current-candidate preconditions but remain warning-only.
+        // They cannot automatically clear or assert their associated critical defects.
+        QualityBlockRenderedRepetitionDiagnostics.ValidateLatestReportForScoring();
+        QualityBlockRenderedLightLeakDiagnostics.ValidateLatestReportForScoring();
+
+        // Temporal evidence must belong to the same current still candidate and must carry per-frame runtime
+        // lighting + filmic HDR->LDR proof. Neither bridge awards points or clears temporal critical defects.
+        QualityBlockTemporalCandidateCoherenceQA.ValidateForScoring();
+        QualityBlockTemporalRuntimeEvidenceGuard.ValidateLatestReceiptForScoring();
+
+        Debug.Log(
+            "Reviewed Visual Fidelity evidence integrity valid: hero/oblique/grazing entries, nine categories, " +
+            "twelve explicit terminal critical-defect decisions, no duplicate/unknown IDs, complete evidence/corrective-action text, " +
+            "explicit integer deductionPoints with score + deductionPoints == category weight, machine-revalidated construction/material metadata, " +
+            "current SHA-256-bound repetition/light-leak diagnostics, current still/temporal candidate coherence and sealed temporal runtime evidence. " +
+            "This QA awards 0 Visual Fidelity points; direct pixel review, render provenance and the canonical numeric gate still decide PASS.");
+    }
+
+    public static void ValidateContractConfigOnly()
+    {
+        if (!File.Exists(ContractPath))
+            throw new FileNotFoundException($"Reviewed-evidence integrity contract missing: {ContractPath}");
+
+        IntegrityContract contract = JsonUtility.FromJson<IntegrityContract>(File.ReadAllText(ContractPath));
+        if (contract == null)
+            throw new InvalidOperationException("Reviewed-evidence integrity contract could not be parsed.");
+        if (!string.Equals(contract.schemaVersion, "1.4", StringComparison.Ordinal))
+            throw new InvalidOperationException(
+                $"Unexpected reviewed-evidence integrity schemaVersion '{contract.schemaVersion}'. Expected 1.4.");
+        if (contract.runtimeRenderVerified)
+            throw new InvalidOperationException(
+                "Reviewed-evidence integrity contract may not claim runtime render verification.");
+        if (contract.visualScoreAwardedByThisQA)
+            throw new InvalidOperationException(
+                "Reviewed-evidence integrity QA is structural only and may not award Visual Fidelity points.");
+
+        RequireExactSet(contract.requiredViews, CanonicalViews, "integrity contract requiredViews");
+        ValidateContractCategories(contract.categories);
+        RequireExactSet(contract.criticalDefectIds, CanonicalCriticalDefectIds,
+            "integrity contract criticalDefectIds");
+        ValidateScoreArithmeticContract(contract.scoreArithmetic);
+
+        IntegrityRules rules = contract.rules;
+        if (rules == null ||
+            !rules.rejectDuplicateViewEntries ||
+            !rules.rejectDuplicateCategoryEntries ||
+            !rules.rejectDuplicateCriticalDefectEntries ||
+            !rules.rejectUnknownEntries ||
+            !rules.requireExactlyNineCategoryEntries ||
+            !rules.requireExactlyTwelveCriticalDefectEntries ||
+            !rules.requireCategoryEvidenceText ||
+            !rules.requireCategoryCorrectiveActionText ||
+            !rules.requireDeductionTextWhenScoreBelowWeight ||
+            !rules.requireScoreArithmeticSchemaVersion ||
+            !rules.requireExplicitIntegerDeductionPointsPerCategory ||
+            !rules.requireScorePlusDeductionPointsEqualsWeight ||
+            !rules.requireCriticalDefectEvidenceText ||
+            !rules.requireAtLeastOneObservedReferencePerCategory ||
+            !rules.requireAtLeastOneObservedReferencePerCriticalDefect ||
+            !rules.requireRenderVerifiedTrueForReviewedEvidence ||
+            !rules.requireCurrentRenderedRepetitionDiagnostics ||
+            !rules.renderedRepetitionDiagnosticsCannotClearCriticalDefect ||
+            !rules.requireCurrentRenderedLightLeakDiagnostics ||
+            !rules.renderedLightLeakDiagnosticsCannotDecideCriticalDefect ||
+            !rules.requireCurrentTemporalCandidateCoherence ||
+            !rules.temporalCandidateCoherenceCannotAwardPointsOrClearCriticalDefects)
+            throw new InvalidOperationException(
+                "Reviewed-evidence integrity rules were weakened or are incomplete.");
+
+        QualityBlockCriticalDefectDecisionEncodingQA.ValidateContractConfigOnly();
+        QualityBlockTemporalCandidateCoherenceQA.ValidateContractConfigOnly();
+    }
+
+    private static void ValidateCaptureEntries(QualityBlockVisualFidelityGate.CaptureEvidence[] captures)
+    {
+        if (captures == null || captures.Length != CanonicalViews.Length)
+            throw new InvalidOperationException(
+                $"Reviewed evidence must contain exactly {CanonicalViews.Length} capture entries, got {captures?.Length ?? 0}.");
+
+        string[] ids = captures.Select(x => x == null ? null : x.viewId).ToArray();
+        RequireExactSet(ids, CanonicalViews, "reviewed evidence capture viewIds");
+
+        foreach (QualityBlockVisualFidelityGate.CaptureEvidence capture in captures)
+        {
+            if (capture.width != 3840 || capture.height != 2160)
+                throw new InvalidOperationException(
+                    $"Reviewed capture '{capture.viewId}' is not native 3840x2160: {capture.width}x{capture.height}.");
+            if (string.IsNullOrWhiteSpace(capture.assetPath))
+                throw new InvalidOperationException($"Reviewed capture '{capture.viewId}' is missing assetPath.");
+            if (capture.cropPaths == null || capture.cropPaths.Length == 0 ||
+                capture.cropPaths.Any(string.IsNullOrWhiteSpace))
+                throw new InvalidOperationException(
+                    $"Reviewed capture '{capture.viewId}' must reference its real 100% crop assets.");
+            if (capture.cropPaths.Distinct(StringComparer.Ordinal).Count() != capture.cropPaths.Length)
+                throw new InvalidOperationException(
+                    $"Reviewed capture '{capture.viewId}' contains duplicate crop paths.");
+        }
+    }
+
+    private static void ValidateCategoryEntries(QualityBlockVisualFidelityGate.CategoryEvidence[] categories)
+    {
+        if (categories == null || categories.Length != CanonicalCategories.Length)
+            throw new InvalidOperationException(
+                $"Reviewed evidence must contain exactly {CanonicalCategories.Length} category entries, got {categories?.Length ?? 0}.");
+
+        string[] ids = categories.Select(x => x == null ? null : x.id).ToArray();
+        RequireExactSet(ids, CanonicalCategories.Select(x => x.id).ToArray(),
+            "reviewed evidence category IDs");
+
+        foreach (CategorySpec spec in CanonicalCategories)
+        {
+            QualityBlockVisualFidelityGate.CategoryEvidence category =
+                categories.Single(x => string.Equals(x.id, spec.id, StringComparison.Ordinal));
+
+            if (category.score < 0 || category.score > spec.weight)
+                throw new InvalidOperationException(
+                    $"Category '{spec.id}' score {category.score} is outside 0..{spec.weight}.");
+            if (string.IsNullOrWhiteSpace(category.evidence))
+                throw new InvalidOperationException($"Category '{spec.id}' is missing observed evidence text.");
+            if (string.IsNullOrWhiteSpace(category.correctiveAction))
+                throw new InvalidOperationException(
+                    $"Category '{spec.id}' must record correctiveAction text; use an explicit no-action rationale when none is required.");
+            if (category.score < spec.weight && string.IsNullOrWhiteSpace(category.deductions))
+                throw new InvalidOperationException(
+                    $"Category '{spec.id}' lost points but has no deduction rationale.");
+            if (!HasObservedReference(category.observedViews, category.observedCropRefs, category.observedTemporalRefs))
+                throw new InvalidOperationException(
+                    $"Category '{spec.id}' has no observed view/crop/temporal reference and cannot be treated as pixel-observed.");
+        }
+    }
+
+    private static void ValidateScoreArithmetic(
+        string evidenceJson,
+        QualityBlockVisualFidelityGate.CategoryEvidence[] categories)
+    {
+        if (string.IsNullOrWhiteSpace(evidenceJson))
+            throw new InvalidOperationException("Reviewed evidence JSON is blank; numeric score arithmetic cannot be proven.");
+
+        DeductionEvidenceDocument arithmetic = JsonUtility.FromJson<DeductionEvidenceDocument>(evidenceJson);
+        if (arithmetic == null ||
+            !string.Equals(arithmetic.scoreArithmeticSchemaVersion, ScoreArithmeticSchemaVersion, StringComparison.Ordinal))
+            throw new InvalidOperationException(
+                $"Reviewed evidence must declare scoreArithmeticSchemaVersion='{ScoreArithmeticSchemaVersion}'. " +
+                "Legacy or unversioned score packets require explicit re-review; no score arithmetic is inferred.");
+
+        if (arithmetic.categories == null || arithmetic.categories.Length != CanonicalCategories.Length)
+            throw new InvalidOperationException(
+                $"Score arithmetic packet must contain exactly {CanonicalCategories.Length} category entries, got {arithmetic.categories?.Length ?? 0}.");
+
+        MatchCollection explicitDeductionFields = Regex.Matches(
+            evidenceJson,
+            "\"deductionPoints\"\\s*:\\s*-?\\d+\\s*(?=[,}])",
+            RegexOptions.CultureInvariant);
+        if (explicitDeductionFields.Count != CanonicalCategories.Length)
+            throw new InvalidOperationException(
+                $"Reviewed evidence must contain exactly one explicit integer deductionPoints field per category " +
+                $"({CanonicalCategories.Length} total), got {explicitDeductionFields.Count}. Missing fields are never inferred as zero.");
+
+        string[] arithmeticIds = arithmetic.categories.Select(x => x == null ? null : x.id).ToArray();
+        RequireExactSet(arithmeticIds, CanonicalCategories.Select(x => x.id).ToArray(),
+            "score arithmetic category IDs");
+
+        if (categories == null || categories.Length != CanonicalCategories.Length)
+            throw new InvalidOperationException("Canonical reviewed category entries are unavailable for score arithmetic validation.");
+
+        foreach (CategorySpec spec in CanonicalCategories)
+        {
+            DeductionCategoryEvidence arithmeticCategory = arithmetic.categories.Single(
+                x => string.Equals(x.id, spec.id, StringComparison.Ordinal));
+            QualityBlockVisualFidelityGate.CategoryEvidence reviewedCategory = categories.Single(
+                x => string.Equals(x.id, spec.id, StringComparison.Ordinal));
+
+            if (arithmeticCategory.score != reviewedCategory.score)
+                throw new InvalidOperationException(
+                    $"Category '{spec.id}' score arithmetic parser disagrees with reviewed score: " +
+                    $"{arithmeticCategory.score} vs {reviewedCategory.score}.");
+            if (arithmeticCategory.deductionPoints < 0 || arithmeticCategory.deductionPoints > spec.weight)
+                throw new InvalidOperationException(
+                    $"Category '{spec.id}' deductionPoints {arithmeticCategory.deductionPoints} is outside 0..{spec.weight}.");
+            if (reviewedCategory.score + arithmeticCategory.deductionPoints != spec.weight)
+                throw new InvalidOperationException(
+                    $"Category '{spec.id}' score arithmetic is inconsistent: score {reviewedCategory.score} + " +
+                    $"deductionPoints {arithmeticCategory.deductionPoints} != weight {spec.weight}.");
+        }
+    }
+
+    private static void ValidateCriticalDefectEntries(QualityBlockVisualFidelityGate.CriticalDefectEvidence[] criticalDefects)
+    {
+        if (criticalDefects == null || criticalDefects.Length != CanonicalCriticalDefectIds.Length)
+            throw new InvalidOperationException(
+                $"Reviewed evidence must contain exactly {CanonicalCriticalDefectIds.Length} critical-defect reviews, " +
+                $"got {criticalDefects?.Length ?? 0}.");
+
+        string[] ids = criticalDefects.Select(x => x == null ? null : x.id).ToArray();
+        RequireExactSet(ids, CanonicalCriticalDefectIds, "reviewed evidence critical-defect IDs");
+
+        foreach (QualityBlockVisualFidelityGate.CriticalDefectEvidence defect in criticalDefects)
+        {
+            if (string.IsNullOrWhiteSpace(defect.evidence))
+                throw new InvalidOperationException(
+                    $"Critical defect '{defect.id}' must contain explicit observed evidence for present/absent review.");
+            if (!HasObservedReference(defect.observedViews, defect.observedCropRefs, defect.observedTemporalRefs))
+                throw new InvalidOperationException(
+                    $"Critical defect '{defect.id}' has no observed view/crop/temporal reference.");
+        }
+    }
+
+    private static bool HasObservedReference(string[] views, string[] crops, string[] temporal)
+    {
+        return HasNonBlank(views) || HasNonBlank(crops) || HasNonBlank(temporal);
+    }
+
+    private static bool HasNonBlank(string[] values)
+    {
+        return values != null && values.Any(x => !string.IsNullOrWhiteSpace(x));
+    }
+
+    private static void ValidateContractCategories(CategoryRule[] categories)
+    {
+        if (categories == null || categories.Length != CanonicalCategories.Length)
+            throw new InvalidOperationException(
+                $"Reviewed-evidence integrity contract must contain exactly {CanonicalCategories.Length} categories.");
+        if (categories.Any(x => x == null || string.IsNullOrWhiteSpace(x.id)))
+            throw new InvalidOperationException("Reviewed-evidence integrity contract has a null/unnamed category.");
+        if (categories.Select(x => x.id).Distinct(StringComparer.Ordinal).Count() != categories.Length)
+            throw new InvalidOperationException("Reviewed-evidence integrity contract has duplicate category IDs.");
+
+        foreach (CategorySpec spec in CanonicalCategories)
+        {
+            CategoryRule rule = categories.SingleOrDefault(x => string.Equals(x.id, spec.id, StringComparison.Ordinal));
+            if (rule == null || rule.weight != spec.weight || rule.hardMinimum != spec.hardMinimum)
+                throw new InvalidOperationException(
+                    $"Reviewed-evidence integrity category drift for {spec.id}; expected {spec.weight}/{spec.hardMinimum}.");
+        }
+    }
+
+    private static void ValidateScoreArithmeticContract(ScoreArithmeticContract arithmetic)
+    {
+        if (arithmetic == null ||
+            !string.Equals(arithmetic.evidenceSchemaVersion, ScoreArithmeticSchemaVersion, StringComparison.Ordinal) ||
+            !string.Equals(arithmetic.equation, "score + deductionPoints == category.weight", StringComparison.Ordinal) ||
+            arithmetic.deductionPointsMinimum != 0 ||
+            !arithmetic.requireDeductionPointsAtMostCategoryWeight ||
+            !string.Equals(arithmetic.missingDeductionPointsPolicy, "FAIL_REVIEW_REQUIRED", StringComparison.Ordinal) ||
+            !string.Equals(arithmetic.legacyEvidencePolicy, "FAIL_REVIEW_REQUIRED", StringComparison.Ordinal) ||
+            arithmetic.visualPointsAwardedAutomatically != 0)
+            throw new InvalidOperationException(
+                "Reviewed-evidence numeric score-arithmetic contract drifted or was weakened.");
+    }
+
+    private static void RequireExactSet(string[] actual, string[] expected, string label)
+    {
+        if (actual == null)
+            throw new InvalidOperationException($"{label} is missing.");
+        if (actual.Any(string.IsNullOrWhiteSpace))
+            throw new InvalidOperationException($"{label} contains a blank value.");
+        if (actual.Distinct(StringComparer.Ordinal).Count() != actual.Length)
+            throw new InvalidOperationException($"{label} contains duplicates.");
+
+        var actualSet = new HashSet<string>(actual, StringComparer.Ordinal);
+        var expectedSet = new HashSet<string>(expected ?? Array.Empty<string>(), StringComparer.Ordinal);
+        if (!actualSet.SetEquals(expectedSet))
+            throw new InvalidOperationException(
+                $"{label} must be exactly [{string.Join(", ", expectedSet)}], got [{string.Join(", ", actualSet)}].");
+    }
+
+    private readonly struct CategorySpec
+    {
+        public readonly string id;
+        public readonly int weight;
+        public readonly int hardMinimum;
+
+        public CategorySpec(string id, int weight, int hardMinimum)
+        {
+            this.id = id;
+            this.weight = weight;
+            this.hardMinimum = hardMinimum;
+        }
+    }
+
+    [Serializable]
+    private sealed class IntegrityContract
+    {
+        public string schemaVersion;
+        public string[] requiredViews;
+        public CategoryRule[] categories;
+        public string[] criticalDefectIds;
+        public IntegrityRules rules;
+        public ScoreArithmeticContract scoreArithmetic;
+        public bool visualScoreAwardedByThisQA;
+        public bool runtimeRenderVerified;
+    }
+
+    [Serializable]
+    private sealed class CategoryRule
+    {
+        public string id;
+        public int weight;
+        public int hardMinimum;
+    }
+
+    [Serializable]
+    private sealed class IntegrityRules
+    {
+        public bool rejectDuplicateViewEntries;
+        public bool rejectDuplicateCategoryEntries;
+        public bool rejectDuplicateCriticalDefectEntries;
+        public bool rejectUnknownEntries;
+        public bool requireExactlyNineCategoryEntries;
+        public bool requireExactlyTwelveCriticalDefectEntries;
+        public bool requireCategoryEvidenceText;
+        public bool requireCategoryCorrectiveActionText;
+        public bool requireDeductionTextWhenScoreBelowWeight;
+        public bool requireScoreArithmeticSchemaVersion;
+        public bool requireExplicitIntegerDeductionPointsPerCategory;
+        public bool requireScorePlusDeductionPointsEqualsWeight;
+        public bool requireCriticalDefectEvidenceText;
+        public bool requireAtLeastOneObservedReferencePerCategory;
+        public bool requireAtLeastOneObservedReferencePerCriticalDefect;
+        public bool requireRenderVerifiedTrueForReviewedEvidence;
+        public bool requireCurrentRenderedRepetitionDiagnostics;
+        public bool renderedRepetitionDiagnosticsCannotClearCriticalDefect;
+        public bool requireCurrentRenderedLightLeakDiagnostics;
+        public bool renderedLightLeakDiagnosticsCannotDecideCriticalDefect;
+        public bool requireCurrentTemporalCandidateCoherence;
+        public bool temporalCandidateCoherenceCannotAwardPointsOrClearCriticalDefects;
+    }
+
+    [Serializable]
+    private sealed class ScoreArithmeticContract
+    {
+        public string evidenceSchemaVersion;
+        public string equation;
+        public int deductionPointsMinimum;
+        public bool requireDeductionPointsAtMostCategoryWeight;
+        public string missingDeductionPointsPolicy;
+        public string legacyEvidencePolicy;
+        public int visualPointsAwardedAutomatically;
+    }
+
+    [Serializable]
+    private sealed class DeductionEvidenceDocument
+    {
+        public string scoreArithmeticSchemaVersion;
+        public DeductionCategoryEvidence[] categories;
+    }
+
+    [Serializable]
+    private sealed class DeductionCategoryEvidence
+    {
+        public string id;
+        public int score;
+        public int deductionPoints;
+    }
+}

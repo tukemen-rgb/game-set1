@@ -1,0 +1,81 @@
+{
+  "schemaVersion": "1.0",
+  "status": "IMPLEMENTED_RENDER_VERIFICATION_PENDING",
+  "pipeline": "Unity Built-in Render Pipeline",
+  "purpose": "Deterministic global display transform for physically lit midsummer Japan benchmark frames; never a substitute for correct geometry, PBR, lighting or exposure evidence.",
+  "project": {
+    "requiredColorSpace": "Linear",
+    "cameraHDR": true,
+    "cameraMSAAAllowed": true,
+    "dynamicResolutionAllowedForBenchmark": false,
+    "anisotropicFiltering": "ForceEnable"
+  },
+  "displayTransform": {
+    "shader": "Hidden/NewTown/FilmicTonemap",
+    "exposureEV": -0.45,
+    "curve": "ACES-style fitted global shoulder/toe approximation",
+    "contrast": 1.03,
+    "saturation": 0.97,
+    "shadowSoftening": 0.025,
+    "autoExposure": false,
+    "reasonForFixedExposure": "hero, oblique and grazing evidence must remain directly comparable under one coherent sun/sky state",
+    "forbiddenDefectMaskingEffects": [
+      "bloom used to hide clipping or geometry",
+      "sharpening used to fabricate texture detail",
+      "chromatic aberration",
+      "vignette",
+      "local contrast / clarity masking",
+      "painted or baked highlights"
+    ]
+  },
+  "lookdevAcceptance": {
+    "sunlitConcrete": [
+      "white/off-white facade retains visible roughness and macro variation instead of becoming a featureless clipped patch",
+      "sun-facing bevels may approach display white but must retain a coherent rolloff into adjacent surfaces",
+      "no color-channel clipping that creates neon or posterized edge colors"
+    ],
+    "shadowRecesses": [
+      "balcony, stair and sash recesses preserve material separation and construction depth",
+      "true black remains black; shadow toe may not turn cavities into flat grey fill",
+      "shadow opening must come from sky/ambient/contact-light transport first, with only restrained display toe softening"
+    ],
+    "glassAndMetal": [
+      "window and railing specular peaks compress smoothly rather than hard-clipping",
+      "grazing-angle Fresnel response remains visible after the display transform",
+      "no bloom halo is accepted as evidence of physically correct reflection"
+    ],
+    "skyAndFoliage": [
+      "summer sky remains saturated but not electric blue",
+      "foliage greens retain hue separation without crushed dark canopies or fluorescent saturation",
+      "no obvious 8-bit posterization or severe banding in the 3840x2160 benchmark frame"
+    ]
+  },
+  "visualFidelityGateRelationship": {
+    "directCategories": [
+      "Lighting/shadows/reflections",
+      "Cinematic image quality/composition/color/exposure",
+      "Temporal/LOD/aliasing stability"
+    ],
+    "pointsAwardedWithoutRender": 0,
+    "visualFidelityStatus": "UNSCORED_UNTIL_REAL_4K_RENDER",
+    "criticalFailProtection": [
+      "claiming render quality without an actual render",
+      "severe aliasing/shimmering",
+      "inconsistent sun/shadow direction"
+    ]
+  },
+  "verificationRequired": [
+    "Unity 6000.3.0f1 compile/import success",
+    "actual 3840x2160 hero/oblique/grazing frames",
+    "100% crops showing sunlit concrete highlight retention",
+    "100% crops showing balcony/stair shadow separation",
+    "100% grazing crop showing glass/metal highlight rolloff",
+    "confirm no visible color banding, posterization or hidden clipping"
+  ],
+  "correctiveActionOrderAfterFirstRender": [
+    "fix physical light intensity / sky fill before changing tonemap",
+    "fix material albedo/roughness/specular before changing tonemap",
+    "adjust fixed exposure EV only when the whole scene is coherently over/under exposed",
+    "adjust shoulder/toe constants only from rendered evidence and keep one setting for all benchmark views"
+  ]
+}

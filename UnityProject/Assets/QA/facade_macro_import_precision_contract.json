@@ -1,0 +1,71 @@
+{
+  "schemaVersion": "1.0.0",
+  "purpose": "Preserve the approved low-amplitude 7.9 m facade anti-repetition signal from source PNG through Unity texture import so block compression cannot flatten, contour or macroblock the field before formal render evidence.",
+  "scenePath": "Assets/Scenes/QualityBlock1990s.unity",
+  "texturePath": "Assets/Art/GeneratedFacadeOptics/FacadeRC_AntiRepeatAlbedo.png",
+  "sourcePrecisionReasoning": {
+    "approvedMinimumSrgb": 0.49,
+    "approvedMaximumSrgb": 0.516,
+    "sourceDynamicRange8BitCodes": 6.63,
+    "risk": "The authored field occupies fewer than seven 8-bit code values peak-to-peak. GPU block compression can quantize or spatially block a signal this subtle even when the source PNG and source-pixel integrity checks are exact.",
+    "decision": "Keep the deterministic 8-bit source for provenance, but require Unity to import the formal runtime texture uncompressed so the authored code values reach the shader without BC/ASTC-style block quantization.",
+    "memoryTradeoff": "A 1024x1024 uncompressed facade macro map plus mip chain costs more GPU memory than block compression, but it is a single benchmark-critical field and the precision benefit is prioritized for the 4K fidelity target."
+  },
+  "requiredImportState": {
+    "resolution": [1024, 1024],
+    "requiredTextureCompression": "Uncompressed",
+    "crunchCompressionAllowed": false,
+    "minimumMaxTextureSize": 1024,
+    "sRGB": true,
+    "mipmapsRequired": true,
+    "trilinearRequired": true,
+    "wrapMode": "Repeat",
+    "minimumAnisotropy": 8,
+    "alphaSource": "None",
+    "standalonePlatformOverrideAllowed": false,
+    "forceFastCompressorAllowedDuringFormalCapture": false
+  },
+  "formalEvidenceGate": {
+    "targets": ["QA4K_*", "QATemporal_*", "QAPreparedTemporal_*"],
+    "failureMode": "FAIL_CLOSED_BEFORE_RENDER_EVIDENCE",
+    "preCullMutationAllowed": false,
+    "preparationBehavior": "Apply canonical importer state on editor load and after source reimport via deferred preparation; formal pre-cull only validates.",
+    "runtimeTextureMustRemain1024": true,
+    "runtimeTextureMustContainMipChain": true
+  },
+  "visualFidelityGateMapping": {
+    "categories": [
+      "Texture/microdetail/texel fidelity",
+      "Material/PBR physical plausibility",
+      "Cinematic image quality/composition/color/exposure",
+      "Temporal/LOD/aliasing stability"
+    ],
+    "criticalDefectRisks": [
+      "immediately_obvious_repeated_texture_or_module_pattern",
+      "severe_aliasing_or_shimmering"
+    ],
+    "expectedEffectNotScored": "Preserves low-amplitude macro breakup without compression blocks or flattening; mipmaps/trilinear/aniso remain required to avoid grazing-angle shimmer.",
+    "visualFidelityPointsAwarded": 0,
+    "runtimeRenderVerification": "PENDING_UNITY_RUNTIME"
+  },
+  "failureInjection": [
+    "set facade macro TextureImporter.textureCompression to CompressedHQ -> formal capture must fail",
+    "enable Crunch compression -> formal capture must fail",
+    "set Standalone platform override -> formal capture must fail",
+    "reduce maxTextureSize below 1024 -> formal capture must fail",
+    "disable mipmaps or set Bilinear filtering -> formal capture must fail",
+    "reduce anisotropy below 8 -> formal capture must fail",
+    "set EditorUserBuildSettings.overrideTextureCompression to ForceFastCompressor -> formal capture must fail"
+  ],
+  "renderVerification": {
+    "requiredViews": ["hero", "oblique", "grazing"],
+    "required100PercentCrops": ["hero/facade_center", "grazing/material_grazing"],
+    "inspectFor": [
+      "4x4-style compression blocking or contouring in low-frequency facade breakup",
+      "loss of the neutral macro signal compared with source intent",
+      "grazing-angle mip transition shimmer",
+      "false repeated blocks introduced by texture compression"
+    ],
+    "scoreOnlyFromRenderedEvidence": true
+  }
+}

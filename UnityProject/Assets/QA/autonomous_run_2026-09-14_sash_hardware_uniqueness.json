@@ -1,0 +1,105 @@
+{
+  "schemaVersion": "1.0.0",
+  "runDate": "2026-09-14",
+  "branch": "gpt/unity-migration",
+  "startingHead": "9f8c208e1016559a4dcebaa321e8f48575f651a2",
+  "focus": "Prevent duplicate apartment sash-lock systems from entering formal 4K/reflection evidence and preserve the repository's already-authoritative period-plausible FacadeSashLatchHardware implementation.",
+  "decisionCorrection": {
+    "issueFound": "An initial repository pass added a second SashCrescentLocks implementation before the full Editor tree audit surfaced the existing FacadeSashLatchHardware system plus its curve, LOD-continuity, metadata-authority and reflection-binding QA. Keeping both would contradict real manufacture (one lock system per two-panel sash) and increase obvious-repetition, interpenetration, doubled-highlight and temporal-shimmer risk.",
+    "action": "Removed the duplicate implementation, duplicate contract and superseded run record. No duplicate sash-lock files remain in the net diff from startingHead.",
+    "transientCommits": [
+      "1828d8bf147145625fb3df48f3d18e44db0bb2a3",
+      "74ba418a3ce3f9aa9047ea446744ace3ec204a64",
+      "5e52f13b2bf0cf60108303986aee6199a5e9c7ba"
+    ],
+    "cleanupCommits": [
+      "d428fe3efa0a6c0994b24b7755d0bd327a316974",
+      "77b04bc146ac47ee0db39c4f47a792701a1e4a98",
+      "74a4188c4b72ef3731503ef681053a6684cdb779"
+    ]
+  },
+  "existingAuthoritativeEvidence": {
+    "assemblyContract": "Assets/QA/facade_sash_latch_contract.json",
+    "implementation": "Assets/Editor/QualityBlockFacadeSashLatchUpgrade.cs",
+    "curveRefinement": "Assets/QA/facade_sash_latch_curve_refinement_contract.json",
+    "farLodContinuity": "Assets/QA/facade_sash_latch_far_lod_continuity_contract.json",
+    "metadataAuthority": "Assets/QA/sash_latch_metadata_authority_contract.json",
+    "reflectionBinding": "Assets/Editor/QualityBlockFacadeSashLatchReflectionBindingQA.cs",
+    "constructionSummary": "30 one-lock-per-two-panel-window assemblies; sourced 50 mm mounting pitch; continuous swept crescent; separate receiver/fasteners; purpose-built LOD0/1/2/3; legacy EPDM rectangles disabled; material/metadata and reflection state already guarded.",
+    "externalPeriodBasis": "Official LIXIL/Tostem service-part record AAAZC07L documents a metal crescent lock with 50 mm screw pitch for Atmos II from 1996-10 and Thermal II/PG from 1999-02. Reviewed 2026-09-14: https://store.lixil.co.jp/aaazc07l.html"
+  },
+  "substantiveCommits": [
+    {
+      "sha": "a9a32ad2a8dd995461110b82319cba5aa3126b0a",
+      "message": "Specify fail-closed sash hardware uniqueness gate",
+      "files": ["UnityProject/Assets/QA/sash_hardware_uniqueness_contract.json"]
+    },
+    {
+      "sha": "bd75b35e7673bc268d847470d7c2a350d9ee6488",
+      "message": "Enforce single authoritative sash hardware system",
+      "files": ["UnityProject/Assets/Editor/QualityBlockSashHardwareUniquenessQA.cs"]
+    }
+  ],
+  "implementation": {
+    "rule": "Generated fallback must contain exactly one authoritative FacadeSashLatchHardware root directly under Danchi. Any active renderer-bearing hierarchy outside that root whose name identifies sash-latch/crescent/window-lock hardware is rejected. Authored danchi replacement must not retain generated candidate hardware.",
+    "candidateTokens": ["SashLatch", "SashCrescent", "CrescentLock", "CrescentLatch", "WindowLock"],
+    "formalBoundaries": ["QA4K_*", "QATemporal_*", "QAPreparedTemporal_*", "CameraType.Reflection"],
+    "delegation": "Each uniqueness validation first runs the existing SashLatchMetadataAuthority formal scene validation, preserving physical latch construction/material/LOD rules and disabled legacy-handle requirements.",
+    "readOnlyDuringCull": true,
+    "oncePerFrameCache": false,
+    "reasonForNoFrameCache": "Reflection and final/temporal culls in the same frame must each observe uniqueness so a mid-frame hierarchy toggle cannot evade the render boundary.",
+    "automaticVisualPoints": 0
+  },
+  "failureInjection": [
+    "Add active SashCrescentLocks with MeshRenderer while FacadeSashLatchHardware remains active; formal pre-cull must fail.",
+    "Add nested CrescentLockExtra or WindowLockExperimental renderer-bearing hierarchy outside the authorized root; formal pre-cull must fail.",
+    "Move the authorized root away from direct Danchi parentage; validation must fail.",
+    "Enable any legacy HD_WindowHandle_ renderer; delegated physical latch QA must fail.",
+    "Delete the authorized root in generated fallback; validation must fail rather than auto-repair during formal cull.",
+    "Use authored danchi replacement while generated candidate lock hardware remains; validation must fail."
+  ],
+  "verification": {
+    "repositoryCompareAtSubstantiveHead": {
+      "base": "9f8c208e1016559a4dcebaa321e8f48575f651a2",
+      "head": "bd75b35e7673bc268d847470d7c2a350d9ee6488",
+      "aheadBy": 8,
+      "behindBy": 0,
+      "mergeBaseUnchanged": true,
+      "netChangedPaths": [
+        "UnityProject/Assets/Editor/QualityBlockSashHardwareUniquenessQA.cs",
+        "UnityProject/Assets/QA/sash_hardware_uniqueness_contract.json"
+      ],
+      "godotChanged": false,
+      "baseMerged": false
+    },
+    "githubStatusContexts": 0,
+    "githubWorkflowRuns": 0,
+    "unityCompileVerified": false,
+    "unityRuntimeVerified": false,
+    "native4KRenderVerified": false,
+    "renderVerification": "PENDING_UNITY_RUNTIME"
+  },
+  "scores": {
+    "implementationReadiness": 93,
+    "visualFidelityStatus": "UNSCORED_UNTIL_REAL_4K_RENDER",
+    "visualPointsAwardedThisRun": 0,
+    "passClaimed": false
+  },
+  "expectedVisualScoreImpact": {
+    "prospectiveOnly": true,
+    "geometryConstructionFidelity": "small-to-medium: enforces the real construction invariant that one two-panel sash has one lock/receiver mechanism instead of accumulating overlapping alternatives",
+    "periodAccuracySceneAuthenticity": "small: preserves the already-sourced late-1990s/circa-2000 latch implementation as the single authority",
+    "temporalLodAliasingStability": "small: prevents duplicate independently cross-fading hardware from manufacturing false shimmer or apparent LOD pop",
+    "criticalDefectRisk": "medium: directly reduces obvious_repetition, hero_geometry_intersection and missing_construction_material_metadata risk",
+    "automaticVisualFidelityImpact": 0
+  },
+  "nextRunnerActions": [
+    "Compile under Unity 6000.3.0f1.",
+    "Inject an active duplicate SashCrescentLocks hierarchy and verify QA4K, prepared temporal and reflection culls fail closed.",
+    "Inject nested CrescentLockExtra/WindowLockExperimental candidates and verify rejection outside the authorized root.",
+    "Verify clean scene passes existing latch physical/metadata QA plus uniqueness QA with 30 per-window LODGroups and 60 disabled legacy handles.",
+    "Capture fresh 3840x2160 frontal, oblique and grazing views plus crop/sash_latch_100pct and temporal oblique evidence.",
+    "Score only actual rendered pixels for single-lock silhouette, receiver clearance, doubled highlights, repetition, intersection, shimmer and LOD pop."
+  ],
+  "nextBlocker": "No GitHub status context or workflow run is attached to the branch head, so Unity 6000.3.0f1 compile/runtime behavior and real pixel evidence remain unavailable. At first Runner/screenshots, stop speculative expansion and execute the failure-injection + native-4K review sequence."
+}

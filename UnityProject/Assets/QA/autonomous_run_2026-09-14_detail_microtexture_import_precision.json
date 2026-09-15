@@ -1,0 +1,123 @@
+{
+  "schemaVersion": "1.0.0",
+  "runId": "2026-09-14_detail_microtexture_import_precision",
+  "branch": "gpt/unity-migration",
+  "startHead": "ac5267f1a3585a7517ced43d45b1198f2201e76f",
+  "objective": "Increase readiness for the 100-point Visual Fidelity Gate by preventing block-compression loss in generated apartment-detail normal and metallic/smoothness physical-data textures before native 4K evidence exists.",
+  "observedGap": {
+    "source": "QualityBlockDetailMaterialMicrostructureUpgrade configures generated MicroNormal and MetallicSmoothness textures with TextureImporterCompression.CompressedHQ.",
+    "risk": "The authored signals are intentionally subtle. Block compression can quantize tangent-space normal direction and roughness/metallic variation, creating flatter highlights, block structure or subpixel sparkle before frontal/oblique/grazing evidence is reviewed.",
+    "whyPrioritized": "This affects multiple hero-detail materials at once and directly supports Material/PBR, Texture/Microdetail, grazing-light reflection quality and temporal stability without speculative scene expansion."
+  },
+  "changes": [
+    {
+      "commit": "7a0b1545d87e1037ab045cf16e4c1c08ff826993",
+      "file": "UnityProject/Assets/QA/detail_material_microtexture_import_precision_contract.json",
+      "summary": "Added machine-readable physical-data import contract, formal capture policy, failure injections, evidence requirements and zero pre-render Visual Fidelity award."
+    },
+    {
+      "commit": "26fb99aba337bad3222e4776501273f5b5a2ea86",
+      "file": "UnityProject/Assets/Editor/QualityBlockDetailMaterialMicrotextureImportPrecisionQA.cs",
+      "summary": "Added preparation-time repair plus formal-camera read-only fail-closed validation for twelve 1024 detail-material physical-data textures."
+    }
+  ],
+  "protectedProfiles": [
+    "MAT_AgedAluminum",
+    "MAT_DarkGalvanizedSteel",
+    "MAT_WindowRubber",
+    "MAT_AgedACPlastic",
+    "MAT_PipeInsulation",
+    "MAT_DrainHose"
+  ],
+  "canonicalState": {
+    "protectedTextures": 12,
+    "rolesPerProfile": [
+      "MicroNormal",
+      "MetallicSmoothness"
+    ],
+    "textureCompression": "Uncompressed",
+    "crunchedCompression": false,
+    "standalonePlatformOverrideAllowed": false,
+    "minimumMaxTextureSize": 1024,
+    "runtimeDimensions": "1024x1024",
+    "mipmapsRequired": true,
+    "filterMode": "Trilinear",
+    "wrapMode": "Repeat",
+    "minimumAnisotropy": 8,
+    "sRGB": false,
+    "normalTextureType": "NormalMap",
+    "metallicSmoothnessTextureType": "Default",
+    "alphaSource": "FromInput"
+  },
+  "formalEvidenceBehavior": {
+    "targets": [
+      "QA4K_*",
+      "QATemporal_*",
+      "QAPreparedTemporal_*"
+    ],
+    "preCull": "READ_ONLY_FAIL_CLOSED",
+    "repairDuringFormalCapture": false,
+    "visualScoreFromImplementationAlone": false
+  },
+  "verification": {
+    "githubCompareAfterSubstantiveChanges": {
+      "base": "ac5267f1a3585a7517ced43d45b1198f2201e76f",
+      "head": "26fb99aba337bad3222e4776501273f5b5a2ea86",
+      "aheadBy": 2,
+      "behindBy": 0,
+      "mergeBaseUnchanged": true,
+      "changedPaths": [
+        "UnityProject/Assets/Editor/QualityBlockDetailMaterialMicrotextureImportPrecisionQA.cs",
+        "UnityProject/Assets/QA/detail_material_microtexture_import_precision_contract.json"
+      ]
+    },
+    "commitStatusContextsAtSubstantiveHead": 0,
+    "workflowRunsAtSubstantiveHead": 0,
+    "unity6000_3_0f1Compile": "NOT_VERIFIED_NO_RUNNER",
+    "unityRuntime": "NOT_VERIFIED_NO_RUNNER",
+    "native4KRenderedEvidence": "NOT_AVAILABLE",
+    "godotModified": false,
+    "baseMerged": false,
+    "excludedThemesIntroduced": false
+  },
+  "failureInjectionForNextRunner": [
+    "Set one protected texture to CompressedHQ and require formal pre-cull failure.",
+    "Enable Crunch and require failure.",
+    "Enable Standalone platform override and require failure.",
+    "Lower maxTextureSize below 1024 and require failure.",
+    "Disable mipmaps and require failure.",
+    "Set Bilinear or Point filtering and require failure.",
+    "Set anisotropy below 8 and require failure.",
+    "Enable sRGB and require failure.",
+    "Change a MicroNormal away from NormalMap and require failure.",
+    "Change a MetallicSmoothness texture away from Default or remove input alpha preservation and require failure."
+  ],
+  "scores": {
+    "implementationReadiness": 93,
+    "implementationReadinessMax": 100,
+    "visualFidelity": "UNSCORED_UNTIL_REAL_4K_RENDER",
+    "visualFidelityPointsAwardedThisRun": 0,
+    "visualPassClaimed": false,
+    "expectedImpactNotAwarded": {
+      "Geometry & construction fidelity": "none",
+      "Material/PBR physical plausibility": "medium",
+      "Lighting/shadows/reflections": "small-medium",
+      "Texture/microdetail/texel fidelity": "medium-large",
+      "Weathering/context causality": "none",
+      "Vegetation/natural complexity": "none",
+      "Period accuracy/scene authenticity": "none",
+      "Cinematic image quality/composition/color/exposure": "small",
+      "Temporal/LOD/aliasing stability": "small-medium"
+    }
+  },
+  "nextBlocker": "A real Unity 6000.3.0f1 runner or fresh screenshots. When one appears, stop speculative expansion, execute the failure injections, then capture fresh 3840x2160 oblique/grazing frames, 100% detail-material/construction crops and subpixel grazing temporal evidence. Score only the rendered pixels.",
+  "constraints": {
+    "preserveGodot": true,
+    "neverMergeBaseWithoutExplicitApproval": true,
+    "excludedThemes": [
+      "earthquake",
+      "disaster",
+      "reconstruction"
+    ]
+  }
+}

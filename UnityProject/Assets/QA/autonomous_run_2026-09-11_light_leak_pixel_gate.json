@@ -1,0 +1,60 @@
+{
+  "schemaVersion": "1.0",
+  "runDateUtc": "2026-09-10T23:52:00Z",
+  "branch": "gpt/unity-migration",
+  "startHead": "084f0563430616b4b59d09f00ddb0853280bc65a",
+  "substantiveWorkHead": "643b32a0ed01118bcb8190fbd1b08e9cd2607d02",
+  "readinessRecordHead": "07cbc4050a7ee0bbd4e63f9230a588f806aeb126",
+  "constraints": {
+    "preserveGodot": true,
+    "mergeBaseWithoutApproval": false,
+    "excludedThemeContentAdded": false,
+    "visualPassThreshold": 92,
+    "actualRenderRequiredForVisualPoints": true
+  },
+  "problemSelected": "The major_light_leak critical automatic-fail path had direct still references but lacked a mandatory current pixel-domain triage artifact bound to the real native-4K crop bytes. Source construction and lighting QA cannot prove that post-tonemap seams or holes are visually absent.",
+  "implementation": [
+    "Added rendered_light_leak_diagnostics_contract.json with guarded bright-on-dark sampling, clustering, five canonical leak-sensitive crops, zero-point policy and non-authoritative warning semantics.",
+    "Added QualityBlockRenderedLightLeakDiagnostics.cs. Runtime analysis requires an actual Unity-produced 3840x2160 manifest, loads canonical 100% unresampled crops, measures bright centers against a dark annulus, clusters candidates in 32px blocks, records SHA-256 for manifest/crops, and emits warning-only triage.",
+    "Integrated contract validation and runtime analysis into QualityBlockNative4KReviewPacket after sealed still/temporal evidence generation.",
+    "Updated reviewed visual evidence integrity schema to 1.2 so the core score path requires a current SHA-256-bound light-leak report in addition to repetition and temporal runtime evidence.",
+    "Expanded major_light_leak observability from two crops to five: hero/facade_center, hero/ground_contact, oblique/construction_depth, oblique/balcony_services, grazing/material_grazing. Human review, not the heuristic, remains authoritative."
+  ],
+  "selfAudit": [
+    "An intermediate edit introduced a stray source character in QualityBlockReviewedVisualEvidenceIntegrityQA.cs. It was corrected immediately in commit b8fc5b7934e521bb7bee405655042e341159a1e4, and the affected final source region was re-fetched after correction.",
+    "The light-leak detector is deliberately not an automatic FAIL rule because legitimate sun glints, reflective edges and true sky apertures can produce the same local bright-on-dark signal. Automatically deciding the critical defect from this heuristic would create false failures and encourage physically wrong suppression of highlights.",
+    "Zero warnings are explicitly insufficient to clear major_light_leak; scoring requires direct reviewed evidence across all five canonical crops.",
+    "No Unity compile/runtime result was available, so no render quality, no diagnostic measurements and no Visual Fidelity points are claimed."
+  ],
+  "commits": [
+    "0c92f495285c7e20fbf2396d7b3199de73153f6e",
+    "730139712d4895ff408793f59073ff5594527dbb",
+    "690a626c82277517d8c055de62b313d09a3a92a5",
+    "cd88b08f122ed8e6fdcb3f78688452f60f9ad65b",
+    "b8fc5b7934e521bb7bee405655042e341159a1e4",
+    "fab31263951bc357c4bf2b040729156f68bc8974",
+    "643b32a0ed01118bcb8190fbd1b08e9cd2607d02",
+    "07cbc4050a7ee0bbd4e63f9230a588f806aeb126"
+  ],
+  "verification": {
+    "unityRuntimeAvailable": false,
+    "native3840x2160CaptureAvailable": false,
+    "visualFidelityStatus": "UNSCORED",
+    "visualFidelityPointsAwardedThisRun": 0,
+    "implementationReadiness": 93,
+    "sourceComparison": "All run changes are under UnityProject/; no Godot path was changed and compare-to-start remains a linear ahead-only history.",
+    "pending": [
+      "Unity 6000.3.0f1 editor compile/import",
+      "actual hero/oblique/grazing native 4K render",
+      "pixel-exact crop generation/sealing",
+      "light-leak report runtime generation and human cluster review"
+    ]
+  },
+  "expectedVisualScoreImpact": {
+    "geometryConstruction": "Better evidence coverage for visible closure/interface defects; no points awarded until pixels exist.",
+    "lightingShadowsReflections": "Better triage for anomalous bright leakage not provable from source sun/shadow state; no points awarded until pixels exist.",
+    "materialPbr": "Grazing material crop participates so legitimate/specular edges can be distinguished by human review from actual leaks.",
+    "criticalMajorLightLeak": "Mandatory current pixel triage plus five-crop direct human review before clearance. The detector itself cannot clear or assert the defect."
+  },
+  "nextBlocker": "Unity Runner/runtime. When it appears, stop speculative expansion, execute Prepare Complete Native 4K Review Packet, verify the new C# imports/compiles, then inspect every suspicious block in the five canonical crops at 100% before scoring."
+}

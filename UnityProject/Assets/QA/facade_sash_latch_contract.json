@@ -1,0 +1,64 @@
+{
+  "schemaVersion": "1.0",
+  "assemblyId": "apartment_sliding_sash_crescent_latch",
+  "expectedWindowCount": 30,
+  "curveRefinementContractPath": "Assets/QA/facade_sash_latch_curve_refinement_contract.json",
+  "manufacture": "Generated fallback reconstruction of a metal crescent-style lock used at the meeting stiles of a two-panel Japanese aluminum sliding sash. One lock body carries a pivoted continuous crescent lever and engages a separate metal receiver/keeper on the opposing sash. Fasteners are separate geometry. The previous pair of generic rubber handle blocks is disabled rather than treated as finished hardware.",
+  "dimensionsThickness": "Each two-panel apartment window receives one lock assembly. The reconstruction uses a 30 mm x 82 mm x 10 mm base plate, 50 mm mounting-screw pitch, approximately 34 mm crescent centerline radius, 22 mm pivot boss diameter and a 20 mm-wide receiver with projecting capture arms. LOD0 refines the lever to a 130 degree continuous sweep with a 10 mm x 10 mm section and 2 mm geometric corner break. The 50 mm screw pitch is period-supported by LIXIL/Tostem replacement parts covering Atmos II from 1996 and Thermal II/PG from 1999; all other section dimensions are conservative benchmark reconstruction assumptions rather than identification of an exact historical lock model.",
+  "materialsFinish": "Primary body, pivot, crescent and receiver use the canonical aged sash-metal family (MAT_AgedAluminum) with physically metallic reflection, restrained smoothness and no emission. Small screw heads use canonical dark galvanized hardware metal (MAT_DarkGalvanizedSteel). No black rubber, painted silver edge highlight or emissive accent is permitted. The continuous lever curvature and 2 mm corner break must create highlight rolloff geometrically rather than through albedo paint.",
+  "mounting": "The lock base plate is mechanically fastened to one meeting stile with two visible screws on a 50 mm vertical pitch. A pivot boss carries the crescent lever. The opposing receiver is a separate U-like capture component on the other meeting stile. Components sit proud of the sash face by millimetres and may not float in front of, sink through or bridge unrelated glazing/gasket geometry.",
+  "interfacesGapsSeals": "The lever-to-pivot joint, lever-to-receiver engagement zone, receiver opening, screw seating and metal-to-sash contact are explicit geometry. The swept LOD0 lever must remain outside the optical glass surface and glazing gasket, preserve the two sash-leaf depth relationship and avoid coplanar overlap with meeting-stile faces.",
+  "orientationExposure": "Vertical sheltered sash hardware on the exterior-facing window assembly. It receives coherent midsummer daylight and sky/reflection fill but is partly shielded by the meeting-stile recess. The benchmark state is dry; rain wet-film gloss is zero.",
+  "aging": "Cause-based aging is limited to light UV/oxide dulling, recess grime near plate edges and localized hand/contact polish on the operating lever. Fasteners may show restrained ferrous-source aging only. No random rust cloud, chipped-damage narrative or baked highlight is allowed.",
+  "geometryVsMaterial": "Base plate thickness, pivot boss, continuous swept crescent silhouette, its 2 mm corner break, receiver throat, screw heads, contact offsets and all LOD simplification are geometry. Fine extrusion direction, sub-millimetre oxidation, micro-scratches and contact polish are material/microstructure response. Illumination, Fresnel and contact shadow must come from Unity lighting rather than albedo paint.",
+  "lodPolicy": "Each of the 30 windows owns an independent four-level LODGroup. LOD0 preserves base, pivot, a 32-ring continuous swept crescent, U receiver and two fasteners as six renderers. LOD1 combines the manufactured silhouette into one proxy, LOD2 removes sub-pixel pivot/fastener detail while retaining lock-versus-receiver separation in the mesh, and LOD3 retains only a thin low-profile hardware silhouette before culling. All levels use purpose-built meshes and animated cross-fade at 0.006/0.003/0.0012/0.0004 screen-relative height; visible pop remains a rendered temporal critical defect.",
+  "weatheringCausality": "LOD0 body/pivot/receiver use sheltered+recessed exposure with low rain, mild UV/recess grime and higher contact only on the operating lever. Fastener weathering adds the ferrous-fixture source but remains low-intensity and localized. No source-independent dirt mask is generated.",
+  "lookdevBrief": "Front diffuse view: one narrow metal lock should read as discrete hardware on the meeting stile, not two rubber rectangles. 35-degree oblique: verify plate thickness, pivot projection, receiver throat, continuous crescent curvature and sash seating. Midsummer grazing view: metal highlight must roll continuously around the swept lever and geometric corner break, arise from actual BRDF/reflection and remain broadened by age; no painted edge stripe. 100-percent sash crop: resolve the 50 mm screw spacing, continuous crescent silhouette without six-piece stepping, receiver gap, no glass/gasket penetration, no repeated bright phase and no z-fight. Temporal oblique motion: verify per-window LOD cross-fade without visible pop or subpixel shimmer.",
+  "sourceBasis": "LIXIL's sliding-window parts taxonomy identifies separate crescent lock, lock receiver and pull-handle components rather than treating them as one rubber insert. LIXIL/Tostem part AAAZC07L is documented for Atmos II (from 1996-10), Thermal II/PG (from 1999-02) and other window families, with a 50 mm mounting-screw pitch and metal construction. LIXIL also documents older metal crescent locks with larger pitches, confirming the same mechanically fastened lock/receiver construction family. These sources support the part class and the 50 mm period-plausible pitch; they do not identify the exact benchmark building product. The 32-ring swept lever geometry is a benchmark fidelity refinement documented separately and is not claimed as source-derived product geometry. References reviewed 2026-09-12: https://store.lixil.co.jp/window/window-parts/sash/slidingwindow.html ; https://store.lixil.co.jp/aaazc07l.html ; https://store.lixil.co.jp/netbl00029.html .",
+  "geometry": {
+    "locksPerTwoPanelWindow": 1,
+    "mountingScrewPitchM": 0.05,
+    "basePlateWidthM": 0.03,
+    "basePlateHeightM": 0.082,
+    "crescentRadiusM": 0.034
+  },
+  "material": {
+    "primaryAssetPath": "Assets/Art/GeneratedDetailMaterials/MAT_AgedAluminum.mat",
+    "fastenerAssetPath": "Assets/Art/GeneratedDetailMaterials/MAT_DarkGalvanizedSteel.mat",
+    "baseColorSrgb": [0.55, 0.57, 0.56],
+    "primaryMetallicMin": 0.5,
+    "primaryMetallicMax": 1.0,
+    "roughnessMin": 0.38,
+    "roughnessMax": 0.72,
+    "normalScale": 0.08,
+    "microstructureMm": 0.45,
+    "wetness": 0.0,
+    "uvAging": "small oxidation/value/roughness drift only; lever contact may locally polish but never paint a highlight",
+    "angularFresnelResponse": "metallic environment reflection strengthens at grazing angle according to the real BRDF; age broadens response and prevents a chrome-like mirror stripe"
+  },
+  "qa": {
+    "lodCount": 4,
+    "phaseBins": 8,
+    "phaseStepM": 0.011,
+    "automaticVisualPoints": 0,
+    "renderVerificationPending": true,
+    "disableLegacyRubberHandles": true,
+    "requireReflectionFingerprintBinding": true
+  },
+  "requiredEvidenceRefs": [
+    "hero/facade_center",
+    "oblique/construction_depth",
+    "grazing/sash_rail_response",
+    "crop/sash_latch_100pct"
+  ],
+  "criticalDefectIds": [
+    "visible_primitive_placeholder",
+    "impossible_material_physics",
+    "obvious_repetition",
+    "hero_geometry_intersection",
+    "severe_aliasing_or_shimmer",
+    "visible_lod_pop",
+    "missing_construction_material_metadata",
+    "unverified_render_claim"
+  ]
+}

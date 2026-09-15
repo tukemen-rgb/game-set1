@@ -1,0 +1,118 @@
+{
+  "schemaVersion": "1.0",
+  "runUtc": "2026-09-09T09:40:00Z",
+  "branch": "gpt/unity-migration",
+  "startHead": "8eb45e5eea1af79ce89b1fdc3f04ce2e166b5b9b",
+  "implementationHead": "fd4ac00d5d1e3625175f6a19efc42db07c95af81",
+  "objective": "Reduce the critical visible-primitive-placeholder risk in benchmark framing by replacing retained structural Unity Cube/Cylinder renderer meshes with dimension-baked physical edge geometry while preserving world footprint and gameplay collision.",
+  "commits": [
+    {
+      "sha": "d6bcb977c7acc1f86015d710aaa123939ed9e823",
+      "summary": "Added deterministic dimension-baked chamfered structural surface mesh library."
+    },
+    {
+      "sha": "04eb5d99f20a64f3cc9dae4db38244170b378f32",
+      "summary": "Added retained structural surface refinement with renderer/collider footprint preservation and raw-primitive QA."
+    },
+    {
+      "sha": "d64f382b591fa474757207d10b51010252b9fa36",
+      "summary": "Added machine-readable manufacture/construction and geometry responsibility contract."
+    },
+    {
+      "sha": "1afb3a771e35215dca40ea26afa0c438b55a4571",
+      "summary": "Added quality-scene save gate so high-detail saves enforce structural primitive replacement."
+    },
+    {
+      "sha": "fd4ac00d5d1e3625175f6a19efc42db07c95af81",
+      "summary": "Bound structural-surface contract and persisted-scene validation into the complete native-4K review packet."
+    }
+  ],
+  "implementation": {
+    "targetedAssemblies": [
+      "reinforced-concrete main/stair masses",
+      "30 balcony slabs",
+      "30 balcony dividers",
+      "30 rail tops plus 210 rail posts",
+      "15 AC fallback casings",
+      "roof parapets/canopy/facade bands",
+      "building downpipe",
+      "coarse ground support layers",
+      "legacy park/street furniture only when still actively rendered"
+    ],
+    "physicalEdgePolicy": {
+      "reinforcedConcreteMaxBevelMm": 6.0,
+      "paintedSteelRailMaxBevelMm": 2.0,
+      "acCasingMaxBevelMm": 4.0,
+      "groundLayerMaxBevelMm": 3.0,
+      "paintedOrBakedHighlightUsed": false
+    },
+    "preservation": {
+      "rendererBoundsMaxDeltaMm": 2.0,
+      "colliderBoundsMaxDeltaMm": 2.0,
+      "unsupportedColliderMutation": "FAIL",
+      "negativeScale": "FAIL",
+      "ellipticalLegacyCylinder": "FAIL_REQUIRES_EXPLICIT_AUTHORED_GEOMETRY",
+      "godotModified": false,
+      "baseMerged": false,
+      "disasterThemeAdded": false
+    },
+    "qa": {
+      "minimumActiveStructuralTargets": 300,
+      "minimumChamferedBoxes": 300,
+      "minimumBeveledCylinders": 1,
+      "targetedActiveBuiltInPrimitiveMeshCount": 0,
+      "legacyLampGlobeSphereMustBeInactive": true,
+      "native4kReviewStillRequiredToClearCriticalDefect": true
+    }
+  },
+  "verification": {
+    "sourceCompare": {
+      "base": "8eb45e5eea1af79ce89b1fdc3f04ce2e166b5b9b",
+      "head": "fd4ac00d5d1e3625175f6a19efc42db07c95af81",
+      "ahead": 5,
+      "behind": 0,
+      "changedFiles": 5,
+      "allChangedFilesUnderUnityProject": true
+    },
+    "staticReview": [
+      "Dimensions are baked from the existing local primitive scale and transform scale is normalized only after collider dimensions are adjusted.",
+      "Renderer and collider world bounds are compared before/after conversion with a 2 mm maximum deviation.",
+      "Square rail sections use a 2 mm bevel cap so the cleanup does not turn manufactured square stock into rounded tubing.",
+      "Large concrete masses use a restrained 6 mm arris break rather than a stylized roundover.",
+      "No visual score or critical-defect clearance is inferred from source structure."
+    ],
+    "unityCompile": "PENDING_UNITY_6000_3_0F1_RUNNER",
+    "native3840x2160StillCapture": "ABSENT",
+    "native100PercentCrops": "ABSENT",
+    "nativeTemporalSequences": "ABSENT",
+    "githubCommitStatusCount": 0,
+    "githubWorkflowRunCount": 0
+  },
+  "scores": {
+    "implementationReadiness": {
+      "score": 93,
+      "possible": 100,
+      "changeThisRun": 0,
+      "blocker": "unity_compile_verification"
+    },
+    "visualFidelity": {
+      "status": "UNSCORED",
+      "pointsAwardedThisRun": 0,
+      "passClaimed": false
+    }
+  },
+  "expectedVisualScoreImpact": {
+    "geometry_construction": "HIGH_EXPECTED_RISK_REDUCTION: removes razor-edge/raw-primitive shading from more than 300 benchmark-facing structural target slots when the Unity pass executes.",
+    "lighting_shadows_reflections": "MEDIUM_EXPECTED: physical millimetric edge strips can produce real grazing highlights instead of impossible infinitely sharp edges.",
+    "temporal_lod_aliasing": "LOW_TO_MEDIUM_EXPECTED: normalized dimension-baked geometry avoids scale-dependent edge response, but native temporal probes are still required.",
+    "critical_visible_primitive_placeholder_geometry": "HIGH_EXPECTED_RISK_REDUCTION_BUT_NOT_CLEARED_WITHOUT_RENDER"
+  },
+  "nextBlocker": "A Unity 6000.3.0f1 editor/runner is still required to compile the new scripts, execute the save gate, confirm generated mesh/collider bounds in-engine, and produce sealed 3840x2160 hero/oblique/grazing evidence plus temporal probes.",
+  "nextActionWhenRunnerAppears": [
+    "Stop speculative expansion.",
+    "Run Prepare Complete Native 4K Review Packet.",
+    "Fix any compile/save-gate/footprint-preservation failure before scoring.",
+    "Inspect hero/oblique/grazing 100% crops for residual primitive silhouettes, oversized bevel highlights, concrete edge plasticity, rail edge response and legacy LampGlobe regression.",
+    "Score only the sealed rendered evidence and fix the largest actual deductions first."
+  ]
+}

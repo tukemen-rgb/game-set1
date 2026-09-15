@@ -1,0 +1,49 @@
+{
+  "schemaVersion": "1.0",
+  "purpose": "Fail-closed lifecycle guard for persisted Visual Fidelity PASS results. An older PASS must not remain a valid release assertion after reviewed evidence, still/temporal provenance, candidate freshness, or gate contracts change. This QA never creates PASS and awards zero visual points.",
+  "resultPath": "Assets/QA/visual_fidelity_result.json",
+  "evidencePath": "Assets/QA/visual_fidelity_evidence.json",
+  "reportPath": "Assets/QA/visual_fidelity_result_freshness.json",
+  "rules": {
+    "protectOnlyPassAssertions": true,
+    "automaticEditorMonitoring": true,
+    "invalidatePassOnAnyValidationException": true,
+    "requireVisualGateIntegrityValidation": true,
+    "requireReviewedEvidenceIntegrityValidation": true,
+    "requireRenderEvidenceProvenanceValidation": true,
+    "requireCurrentCandidateFreshnessValidation": true,
+    "requireTemporalCandidateCoherenceValidation": true,
+    "independentlyRecomputeCategoryTotal": true,
+    "requireEveryCategoryHardMinimum": true,
+    "requireThreshold92": true,
+    "requireNoCriticalDefects": true,
+    "requireResultScoreEqualsEvidenceTotal": true,
+    "requireResultFailuresEmptyForPass": true,
+    "invalidationCannotProducePass": true,
+    "automaticVisualPoints": 0
+  },
+  "automatic_invalidation_effect": {
+    "status": "INVALIDATED_REEVALUATION_REQUIRED",
+    "visualScoreStoredInInvalidationRecord": 0,
+    "meaning": "No Visual Fidelity score remains valid. Only a new successful QualityBlockVisualFidelityGate evaluation over current real Unity render evidence may create PASS."
+  },
+  "machine_readable_runtime_report": {
+    "path": "Assets/QA/visual_fidelity_result_freshness.json",
+    "binds_sha256": [
+      "visual_fidelity_result.json",
+      "visual_fidelity_evidence.json",
+      "render_capture_receipt.json",
+      "render_candidate_seal.json",
+      "render_candidate_epoch.json",
+      "4k_capture_manifest.json",
+      "temporal_runtime_evidence_receipt.json",
+      "temporal_candidate_coherence_seal.json",
+      "visual_fidelity_gate.json",
+      "visual_evidence_observability_contract.json",
+      "reviewed_visual_evidence_integrity_contract.json"
+    ],
+    "note": "Hash report is provenance/status only and cannot award points or clear a critical defect."
+  },
+  "runtimeRenderVerified": false,
+  "visualScoreAwardedByThisQA": false
+}

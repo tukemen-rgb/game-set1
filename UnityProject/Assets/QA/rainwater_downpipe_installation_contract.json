@@ -1,0 +1,156 @@
+{
+  "schemaVersion": "1.1.0",
+  "scenePath": "Assets/Scenes/QualityBlock1990s.unity",
+  "assemblyId": "danchi.rainwater.downpipe.east",
+  "assemblyRoot": "Danchi/HD_RainwaterDownpipeAssembly",
+  "legacyMacroBody": "RainGutter",
+  "policy": "Reconstruct the visible rainwater leader as a manufactured, wall-fixed drainage assembly. Source QA may reduce risk but never clears a rendered critical defect or awards Visual Fidelity points.",
+  "criticalDefectRiskReduced": "floating_interpenetrating_hero_geometry",
+  "criticalDefectRisksReduced": [
+    "floating_interpenetrating_hero_geometry",
+    "materially_impossible_metallic_specular_values",
+    "missing_required_construction_material_metadata",
+    "visible_lod_pop"
+  ],
+  "visualFidelityPointsAwarded": 0,
+  "runtimeRenderVerification": "PENDING_UNITY_RUNTIME",
+  "manufactureAndInstallation": {
+    "manufacture": "Representative late-1990s/circa-2000 Japanese exterior rainwater leader: round weather-resistant rigid PVC-U pipe sections with hollow socket/coupler joints, separate galvanized wall bands/standoffs/anchor plates, a roof-line offset connection and a hollow ground drain receiver. The current product references below establish generic construction principles only; they are not claimed as an exact historical product match.",
+    "components": [
+      "continuous macro pipe body retained as the all-distance silhouette",
+      "four hollow visible socket/coupler sleeves defining manufactured section joints",
+      "eight hollow pipe bands",
+      "eight wall standoff arms physically overlapping both band and wall plate interfaces",
+      "eight wall anchor plates",
+      "sixteen visible anchor/strap fastener heads",
+      "roof-line diagonal offset pipe and hollow wall/scupper collar",
+      "hollow ground receiver socket with deliberate pipe insertion"
+    ],
+    "dimensionsThickness": {
+      "pipeOuterDiameterMetres": 0.075,
+      "pipeNominalWallThicknessMetres": 0.002,
+      "verticalBottomMetres": 0.16,
+      "verticalTopMetres": 12.92,
+      "pipeCentreXMetres": 4.45,
+      "facadeFrontPlaneZMetres": -7.30,
+      "pipeCentreZMetres": -7.18,
+      "pipeBackFaceToFacadeClearanceMetres": 0.0825,
+      "couplerOuterDiameterMetres": 0.084,
+      "couplerInnerDiameterMetres": 0.0765,
+      "couplerHeightMetres": 0.09,
+      "pipeBandOuterDiameterMetres": 0.084,
+      "pipeBandInnerDiameterMetres": 0.077,
+      "pipeBandHeightMetres": 0.032,
+      "wallStandoffArmCrossSectionMetres": [0.025, 0.025],
+      "wallStandoffNominalDepthMetres": 0.074,
+      "wallAnchorPlateMetres": [0.075, 0.065, 0.008],
+      "fastenerHeadDiameterMetres": 0.012,
+      "fastenerHeadProjectionMetres": 0.006,
+      "groundReceiverOuterDiameterMetres": 0.115,
+      "groundReceiverInnerDiameterMetres": 0.08,
+      "groundReceiverHeightMetres": 0.16,
+      "groundReceiverTopMetres": 0.18,
+      "requiredPipeInsertionIntoReceiverMetres": 0.02,
+      "roofCollarOuterDiameterMetres": 0.105,
+      "roofCollarInnerDiameterMetres": 0.078,
+      "hollowSleevesRequired": true
+    },
+    "mounting": "The pipe centreline is held roughly 120 mm proud of the facade reference plane; the rear pipe surface remains about 82.5 mm clear of the wall. Each visible hollow band encircles the pipe, connects through a short stand-off arm to a discrete wall anchor plate, and uses two visible fastener heads. The standoff arm deliberately overlaps each adjacent manufactured part by about 2 mm so the source geometry cannot leave a visible floating gap. The lower pipe inserts into a larger hollow ground receiver rather than stopping above the paving. The upper leader offsets back to a hollow wall/scupper collar at the roof line.",
+    "interfacesGapsSeals": "Pipe-to-wall is a controlled stand-off, not a floating gap. Hollow bands and couplers surround the straight pipe with approximately 0.75-1.0 mm radial assembly clearance per side rather than intersecting it with solid end caps. Wall plates sit against the facade plane. Standoff arm-to-plate and arm-to-band gaps may not exceed 3 mm and controlled overlap may not exceed 6 mm. Coupler sleeves overlap the straight pipe body and hide section interfaces. The lower pipe inserts 10-35 mm into the hollow receiver with radial clearance. The upper offset overlaps both the vertical body and wall collar so no open service-line gap is visible.",
+    "orientation": "Vertical leader on the camera-right/east end of the apartment facade; outward direction is +Z toward the benchmark cameras. Upper offset returns toward -Z into the wall/scupper collar.",
+    "exposure": "Fully exterior, strongly rain-exposed and partly sun-exposed. Wall-side recesses and coupler lower lips remain more sheltered; lower 0.5 m receives splash and persistent grime.",
+    "aging": "Cause-based only: mild PVC chalking/UV desaturation on outward faces, darker grime beneath socket lips and bands, localized ferrous residue only at galvanized fastener/bracket interfaces, and stronger splash/damp response at the ground receiver. No disaster, impact or reconstruction cues.",
+    "geometryVsMaterialDetail": "Pipe diameter, true hollow socket sleeves/bands/receiver, stand-off distance, wall plates, fasteners, upper offset and collar are geometry. PVC extrusion grain, fine scratches, chalking, galvanized crystal-scale breakup, water spotting and dirt films are material/microdetail; highlights must come from lighting/BRDF rather than albedo paint."
+  },
+  "materials": [
+    {
+      "id": "aged_pvc_u_downpipe",
+      "asset": "Assets/Art/GeneratedDetailMaterials/MAT_AgedDownpipePVC.mat",
+      "baseAlbedoLinearApprox": [0.31, 0.315, 0.30],
+      "roughnessRange": [0.65, 0.92],
+      "unitySmoothnessTarget": 0.18,
+      "metallicRange": [0.0, 0.02],
+      "dielectricF0Approx": 0.04,
+      "normalScale": 0.18,
+      "microstructure": "sub-millimetre extrusion/scuff structure only; no embossed fake seams",
+      "wetnessResponse": "rain darkens local grime and raises grazing reflectance modestly; benchmark remains dry unless the environment contract explicitly changes wetness",
+      "uvAging": "outward faces may desaturate/chalk slightly; avoid global uniform bleaching",
+      "angularFresnelResponse": "dielectric Fresnel only; grazing highlight strengthens physically while face-on response stays restrained",
+      "paintedOrBakedHighlightsForbidden": true
+    },
+    {
+      "id": "aged_galvanized_bracket_hardware",
+      "asset": "Assets/Art/GeneratedDetailMaterials/MAT_DarkGalvanizedSteel.mat",
+      "baseAlbedoLinearApprox": [0.30, 0.31, 0.30],
+      "roughnessRange": [0.48, 0.78],
+      "unitySmoothnessTarget": 0.40,
+      "metallicRange": [0.75, 1.0],
+      "specularF0": "conductor response derived from metallic workflow; no dielectric-painted fake glints",
+      "normalScale": 0.20,
+      "microstructure": "fine galvanized crystalline breakup below silhouette scale",
+      "wetnessResponse": "small roughness reduction only when environment wetness is non-zero",
+      "uvAging": "minimal color shift; oxidation/dirt remains localized around water traps and anchors",
+      "angularFresnelResponse": "broad rough-metal grazing response, never a painted white highlight stripe",
+      "paintedOrBakedHighlightsForbidden": true
+    }
+  ],
+  "lodPolicy": {
+    "levelsRequired": 4,
+    "lod0": "Macro pipe body plus all hollow couplers/bands, standoffs, plates, fasteners, roof-line offset/collar and ground receiver.",
+    "lod1": "Macro body remains outside the accessory group; major hollow couplers/bracket forms are retained through the existing DanchiHighDetail proxy classification while millimetre fasteners disappear first.",
+    "lod2": "Macro pipe silhouette remains continuously rendered outside the accessory proxy set; small wall hardware is removed before it becomes sub-pixel.",
+    "lod3": "Macro pipe silhouette only. No new coarse replacement is introduced, avoiding a late silhouette swap.",
+    "transitionSystem": "Existing DanchiHighDetail four-level animated cross-fade; temporal evidence is still required to clear visible pop/shimmer.",
+    "visualLodPopClearance": "REQUIRES_SEALED_TEMPORAL_4K_EVIDENCE"
+  },
+  "qa": {
+    "requiredLegacyMacroPipeCount": 1,
+    "requiredCouplerSleeveCount": 4,
+    "requiredBandCount": 8,
+    "requiredStandoffArmCount": 8,
+    "requiredAnchorPlateCount": 8,
+    "requiredFastenerHeadCount": 16,
+    "requiredRoofOffsetCount": 1,
+    "requiredRoofCollarCount": 1,
+    "requiredGroundReceiverCount": 1,
+    "pipeDiameterToleranceMetres": 0.004,
+    "pipeCentreToleranceMetres": 0.01,
+    "wallClearanceRangeMetres": [0.05, 0.15],
+    "wallPlateContactToleranceMetres": 0.006,
+    "couplerCentreToleranceMetres": 0.015,
+    "receiverInsertionRangeMetres": [0.01, 0.035],
+    "maximumBracketInterfaceGapMetres": 0.003,
+    "maximumBracketInterfaceOverlapMetres": 0.006,
+    "hollowSleevesRequired": true,
+    "minimumAnnularMeshSides": 24,
+    "requireFourLevelDanchiLodGroup": true,
+    "requirePipeBodyVisibleAtAllDistances": true,
+    "automaticVisualScore": 0,
+    "native4KInspectionRequired": true,
+    "requiredViews": ["hero", "oblique", "grazing"],
+    "priorityCrop": "oblique/construction_depth"
+  },
+  "lookdevIllustration": "Assets/QA/Lookdev/rainwater_downpipe_installation.svg",
+  "referenceBasis": [
+    {
+      "source": "Panasonic current large downpipe specification",
+      "url": "https://sumai.panasonic.jp/amatoi/o_gata/lineup/chicline/",
+      "usedFor": "generic rigid-PVC round downpipe construction and the order of magnitude of 60 mm outside diameter / 1.8 mm wall thickness; not asserted as the historical product installed in the scene"
+    },
+    {
+      "source": "CAINZ / Japanese rain-gutter fitting listings",
+      "url": "https://www.cainz.com/g/4904861000482.html",
+      "usedFor": "2.7 m manufactured straight-pipe length and 60 mm class rigid-PVC leader concept"
+    },
+    {
+      "source": "CAINZ T-shaped 60 mm downpipe bracket listing",
+      "url": "https://www.cainz.com/g/4935967162156.html",
+      "usedFor": "separate metal wall restraint / pipe-band construction principle"
+    },
+    {
+      "source": "Panasonic 60 mm downpipe wall-restraint listing",
+      "url": "https://ec.kirii.co.jp/shop/g/gB133200307250/",
+      "usedFor": "independent wall restraint with approximately 80 mm driven stand-off/anchor member; current product used only as generic installation evidence"
+    }
+  ]
+}

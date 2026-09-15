@@ -1,0 +1,197 @@
+{
+  "schema": 1,
+  "batchId": "PinchHangerSmallLaundry_2026_09_16",
+  "units": "metres",
+  "coordinates": "right-handed Y-up external exports; Unity import/coordinate parity pending",
+  "historicalScope": "Original unbranded household interpretations suitable for an around-2000 Japanese summer scene. Dimensions/manufacture are modeling assumptions, not certified historical SKU reproductions.",
+  "authoringSource": "UnityProject/Tools/pinch_hanger_generator_source.zip",
+  "assets": [
+    {
+      "id": "RoundPinchHanger360_24Clips",
+      "manufacture": "Assumed injection-molded PP circular frame, molded central hub/spokes and hook, 24 PP suspension links, 24 two-jaw clips with real pivot apertures and wound steel torsion springs.",
+      "components": [
+        "circular PP frame",
+        "central hub ring",
+        "3 radial spokes",
+        "open carry hook",
+        "24 suspension links",
+        "48 clip jaws",
+        "24 wound spring/leg parts"
+      ],
+      "dimensionsMm": {
+        "outerDiameter": 378.6,
+        "nominalFrameDiameter": 360,
+        "frameTubeDiameter": 13,
+        "clipCount": 24,
+        "clipJawLength": 76,
+        "pivotHoleDiameter": 4.4,
+        "springWireDiameter": 0.9,
+        "springTurns": 2.7
+      },
+      "interfaces": "Suspension links terminate inside frame/clip join volumes. Jaw pair shares a common pivot aperture axis but is separated front/back. Spring geometry wraps the pivot and extends to upper lever contact areas. Load, preload and exhaustive interpenetration/contact simulation are not verified.",
+      "mounting": "Hangs from modeled hook. All 24 clips are retained at every LOD; only angular/spring tessellation reduces.",
+      "orientationExposure": "Horizontal ring in use, hook upward, clips hang downward. Upper ring/hook sky exposed; clip interiors partly sheltered.",
+      "agingCausality": "Dry maintained reference. No arbitrary yellowing, cracking, rust, laundry residue or painted wear before placement/usage history exists.",
+      "geometryVsMaterial": "Frame tubes, spokes, hook, clip jaws, real pivot holes, springs and suspension links are geometry. Molding grain and micro-roughness are material."
+    },
+    {
+      "id": "AnkleSockPair240",
+      "manufacture": "Assumed tubular cotton-knit ankle socks with doubled rib cuff, shaped heel/instep/toe, open cuff cavity and closed toe material volume.",
+      "components": [
+        "2 hollow knit sock shells with open cuffs and closed toes"
+      ],
+      "dimensionsMm": {
+        "overallLengthApprox": 240,
+        "cuffOuterAxesApprox": [
+          65,
+          35
+        ],
+        "baseFabricThickness": 0.8,
+        "cuffThicknessMax": 1.7
+      },
+      "interfaces": "Outer and inner surfaces join at cuff rim; inner cavity terminates at a separate inner toe cap so the opening is real. No hidden black cap. Pair shapes differ slightly to avoid obvious duplicate silhouettes.",
+      "mounting": "Diagnostic hanging orientation has cuff uppermost. Cloth-to-clip compression is not physics solved.",
+      "orientationExposure": "Dry laundered reference; outer knit exposed, inner cavity sheltered. Pair receives slightly different curvature.",
+      "agingCausality": "No invented dirt, holes, sweat, discoloration or laundry wear. Later wear must follow contact/laundering/exposure history.",
+      "geometryVsMaterial": "Cuff opening, cloth thickness, heel/foot curve and toe closure are geometry. Knit loops/fibers remain material microdetail."
+    },
+    {
+      "id": "Handkerchief380Pinned",
+      "manufacture": "Assumed woven cotton square with folded perimeter hems; hanging shape includes broad gravity folds and two top-corner clip pinches.",
+      "components": [
+        "single closed thin cloth material volume with folded-thickness border"
+      ],
+      "dimensionsMm": {
+        "finishedWidth": 380,
+        "finishedHeight": 380,
+        "baseFabricThickness": 0.65,
+        "foldedHemThickness": 1.35
+      },
+      "interfaces": "Top pinch deformations indicate clip contact without duplicating clip geometry. Perimeter remains a closed material wall; stitches are not yet geometry.",
+      "mounting": "Diagnostic two-corner hanging state only; no wind/cloth simulation claim.",
+      "orientationExposure": "Dry hanging woven cloth; front/back sky exposure depends on final balcony placement.",
+      "agingCausality": "No baked crease dirt, fading or water marks. Later changes must follow laundering, sun and handling.",
+      "geometryVsMaterial": "Physical cloth thickness, folded hem thickness, folds and pinches are geometry. Weave and stitching/fiber detail remain material."
+    }
+  ],
+  "materials": [
+    {
+      "id": "PaleBluePP",
+      "albedoSRGB": [
+        0.35,
+        0.58,
+        0.7
+      ],
+      "roughness": 0.52,
+      "metallic": 0,
+      "dielectricF0": 0.04,
+      "normalScale": 0,
+      "normalMapPresent": false,
+      "wetness": 0,
+      "microstructure": "128x128 deterministic subtle molding color/roughness variation",
+      "uvAging": "none baked",
+      "angularResponse": "dielectric Fresnel; no painted highlights"
+    },
+    {
+      "id": "WarmWhitePP",
+      "albedoSRGB": [
+        0.74,
+        0.73,
+        0.67
+      ],
+      "roughness": 0.55,
+      "metallic": 0,
+      "dielectricF0": 0.04,
+      "normalScale": 0,
+      "normalMapPresent": false,
+      "wetness": 0,
+      "microstructure": "128x128 subtle molding variation",
+      "uvAging": "none baked",
+      "angularResponse": "dielectric Fresnel; no painted highlights"
+    },
+    {
+      "id": "SpringSteel",
+      "albedoSRGB": [
+        0.48,
+        0.5,
+        0.52
+      ],
+      "roughness": 0.36,
+      "metallic": 1,
+      "dielectricF0": null,
+      "normalScale": 0,
+      "normalMapPresent": false,
+      "wetness": 0,
+      "microstructure": "128x128 fine conductor roughness proxy",
+      "uvAging": "none baked",
+      "angularResponse": "conductor response from base reflectance; no painted highlight"
+    },
+    {
+      "id": "WarmWhiteCotton",
+      "albedoSRGB": [
+        0.78,
+        0.78,
+        0.73
+      ],
+      "roughness": 0.82,
+      "metallic": 0,
+      "dielectricF0": 0.04,
+      "normalScale": 0,
+      "normalMapPresent": false,
+      "wetness": 0,
+      "microstructure": "128x128 knit/weave proxy; measured loop normal map pending",
+      "uvAging": "none baked",
+      "angularResponse": "dielectric Fresnel; no baked sheen"
+    },
+    {
+      "id": "PaleMintCotton",
+      "albedoSRGB": [
+        0.47,
+        0.68,
+        0.59
+      ],
+      "roughness": 0.78,
+      "metallic": 0,
+      "dielectricF0": 0.04,
+      "normalScale": 0,
+      "normalMapPresent": false,
+      "wetness": 0,
+      "microstructure": "128x128 plain-weave proxy",
+      "uvAging": "none baked",
+      "angularResponse": "dielectric Fresnel; no baked sheen"
+    }
+  ],
+  "lodPolicy": "MASTER plus LOD0/1/2/3 separate exports. Hanger keeps all 24 clips at every LOD; garments preserve real openings/thickness. Only curve/ring/grid sampling decreases.",
+  "lookdev": {
+    "label": "ACTUAL MESH DIAGNOSTIC - NOT UNITY - NO VISUAL FIDELITY SCORE",
+    "views": [
+      "hanger oblique",
+      "hanger underside",
+      "single clip close-up",
+      "sock oblique",
+      "sock cuff cavity",
+      "handkerchief frontal/oblique",
+      "combined review"
+    ],
+    "method": "Actual generated GLB, all submitted triangles, CPU depth buffer and one-sided backface culling. Diffuse/ambient diagnostic only.",
+    "lightingBrief": "When Unity becomes available use coherent midsummer Japanese sun, cool sky fill, contact shadow and reflections; inspect spring/pivot highlights and cloth edge transmission without baked highlights."
+  },
+  "integration": {
+    "reviewId": "PinchHangerSmallLaundryReview_LOD0",
+    "triangles": 51152,
+    "formalBenchmarkSceneChanged": false,
+    "unityCompile": false,
+    "unityImport": false,
+    "unityRender": false,
+    "temporalVerified": false,
+    "performanceVerified": false
+  },
+  "nextProductionTarget": "If no Unity runner appears, refine the existing CottonTShirtM_Hanger sleeve/waist openings and camera-visible cloth hems instead of adding another duplicate laundry-system owner.",
+  "sourceArchiveSHA256": "a3fda7f41f590f76828979c5c97ab475015b0f667ae453a12a5df0fd0431683f",
+  "sourceModulesSHA256": {
+    "generate_pinch_hanger_set.py": "c7dd8859295ab73738d7bcfa91f8a2e372a37cefe13ecd766a5c61a52a96dbc5",
+    "pinch_hanger_meshlib.py": "24c8b601e3a2ee7504bbef04a6605ea4ad300f8e6e6be836c6738d301da07dc4",
+    "pinch_hanger_models.py": "a31799fb4f84033c040d1dcfb26b7e199493cac10b7271d334a6dee7fd95a4db"
+  },
+  "externalGeometryReportSHA256": "767548abba7a6fa44f1271d73769643606583eabb220726aa2e7c4da53697812"
+}

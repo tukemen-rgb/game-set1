@@ -1,0 +1,84 @@
+{
+  "schemaVersion": "1.0",
+  "branch": "gpt/unity-migration",
+  "runDate": "2026-09-09",
+  "startHead": "8aa4d0ae856f957a38048295cdc5535bc12efe5d",
+  "implementationHead": "f225286e6bfc1cd5f827f3de1e0f68865535e134",
+  "focus": "Fixed-exposure filmic display transform, highlight rolloff, shadow-toe separation and grazing-angle texture clarity for the 4K live-action target.",
+  "constraints": {
+    "godotPreserved": true,
+    "baseMerged": false,
+    "disasterThemeIntroduced": false,
+    "visualFidelityClaimedWithoutRender": false
+  },
+  "implementationCommits": [
+    {
+      "sha": "549557cc597a621dad38fe6cc0f91c9ca9383605",
+      "message": "Add deterministic filmic tonemap shader"
+    },
+    {
+      "sha": "8a430e0ee62dc92908c63659af4f44342f3aca22",
+      "message": "Add deterministic cinematic camera display transform"
+    },
+    {
+      "sha": "02df3fa1b56519b73fd0d1fb595874d9e193fbaa",
+      "message": "Add cinematic exposure and tonemap QA pass"
+    },
+    {
+      "sha": "f849592fcf17c6abe527679e4f4bb29cf4830d3e",
+      "message": "Add machine-readable cinematic image contract"
+    },
+    {
+      "sha": "53ea06c6e877c9a23c64b441c1c2e8b981714525",
+      "message": "Integrate cinematic transform with physical lighting pipeline"
+    },
+    {
+      "sha": "f225286e6bfc1cd5f827f3de1e0f68865535e134",
+      "message": "Preserve HDR precision through filmic rolloff"
+    }
+  ],
+  "verification": {
+    "gitComparison": "startHead -> implementationHead is ahead by 6, behind by 0",
+    "changedPaths": [
+      "UnityProject/Assets/Editor/QualityBlockCinematicImageUpgrade.cs",
+      "UnityProject/Assets/Editor/QualityBlockEnvironmentLightingUpgrade.cs",
+      "UnityProject/Assets/QA/cinematic_image_contract.json",
+      "UnityProject/Assets/Scripts/Art/QualityBlockFilmicTonemap.cs",
+      "UnityProject/Assets/Shaders/NewTownFilmicTonemap.shader"
+    ],
+    "godotPathsChanged": 0,
+    "unityVersionContract": "6000.3.0f1",
+    "packageManifest": "No SRP dependencies declared; benchmark remains on Built-in Render Pipeline contract.",
+    "commitStatuses": 0,
+    "workflowRuns": 0,
+    "unityCompile": "UNVERIFIED_NO_RUNNER",
+    "native4KCaptures": "ABSENT",
+    "renderReview": "PENDING",
+    "visualFidelityStatus": "UNSCORED_NO_ACTUAL_RENDER"
+  },
+  "implementationReadiness": {
+    "score": 93,
+    "outOf": 100,
+    "changeFromPreviousRun": 0,
+    "reason": "Do not award readiness for visual code that has not compiled in Unity 6000.3.0f1; the remaining blocker is still real runtime verification."
+  },
+  "expectedVisualScoreImpact": {
+    "pointsAwardedNow": 0,
+    "lightingShadowsReflections": "Potentially high: HDR peaks now pass through a deterministic shoulder instead of relying on hard display clipping.",
+    "cinematicImageQuality": "Potentially high: fixed cross-view exposure, restrained saturation/contrast and shadow toe establish a stable filmic display baseline.",
+    "textureMicrodetail": "Potentially modest: forced anisotropic filtering improves grazing-angle material sampling without post sharpening.",
+    "temporalStability": "Potentially positive: no auto exposure or dynamic resolution is allowed in benchmark capture, reducing cross-view exposure pumping and pixel-scale instability."
+  },
+  "criticalFailProtectionAdded": [
+    "No bloom/sharpening/chromatic aberration/vignette/local-contrast masking in the benchmark filmic pass.",
+    "HDR precision is retained until after exposure and shoulder compression.",
+    "Linear color space and fixed benchmark exposure are enforced by QA.",
+    "Dynamic resolution is rejected for pixel-exact 4K evidence."
+  ],
+  "nextBlocker": "Unity 6000.3.0f1 compile/import plus actual 3840x2160 hero/oblique/grazing capture. Until that exists, Visual Fidelity remains unscored. If runtime remains unavailable, the next safe score-oriented implementation target is shadow/contact quality and thin-geometry anti-aliasing stability rather than additional grading.",
+  "externalTechnicalBasis": [
+    "Unity 6 Built-in Render Pipeline supports OnRenderImage image filters on Camera components.",
+    "Camera.Render executes attached image filters during manual capture.",
+    "Unity HDR camera paths use floating-point HDR buffers before display mapping."
+  ]
+}

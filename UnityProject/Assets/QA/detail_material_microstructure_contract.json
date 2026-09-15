@@ -1,0 +1,132 @@
+{
+  "schemaVersion": "1.0",
+  "status": "IMPLEMENTATION_READY_RENDER_PENDING",
+  "purpose": "Upgrade scalar-only generated apartment-detail materials with deterministic lighting-neutral normal and Standard metallic-smoothness microstructure while preserving fail-closed native-4K review. Manufacturing-scale placement and per-piece phase are now supplied by the separate bound physical-UV pass; this contract does not award Visual Fidelity points.",
+  "generator": "Assets/Editor/QualityBlockDetailMaterialMicrostructureUpgrade.cs",
+  "registry": "Assets/QA/material_construction_lookdev.json",
+  "physicalUvContract": "Assets/QA/detail_physical_uv_contract.json",
+  "target": {
+    "engine": "Unity",
+    "renderPipeline": "Built-in / Standard shader",
+    "textureSize": [1024, 1024],
+    "normalSpace": "tangent",
+    "metallicSmoothnessChannels": {
+      "R": "metallic",
+      "A": "smoothness",
+      "glossMapScale": 1.0,
+      "smoothnessTextureChannel": "metallic-map alpha"
+    },
+    "lightingNeutral": true,
+    "albedoHighlightBakeForbidden": true,
+    "weatheringExcludedFromMicrostructure": true,
+    "weatheringPolicy": "Cause-based aging remains a separate scene/material layer; this pass only represents manufacture-scale surface structure."
+  },
+  "sampling": {
+    "wrap": "Repeat",
+    "filter": "Trilinear",
+    "mipmapsRequired": true,
+    "anisotropy": 16,
+    "compression": "CompressedHQ",
+    "sRGBForDataMaps": false,
+    "rationale": "Reduce 4K minification shimmer while retaining grazing-light microresponse; actual temporal stability must still be judged from prepared native render evidence."
+  },
+  "materials": [
+    {
+      "materialId": "anodized_aluminum",
+      "assetPath": "Assets/Art/GeneratedDetailMaterials/MAT_AgedAluminum.mat",
+      "normalMap": "Assets/Art/GeneratedDetailMaterials/MAT_AgedAluminum_MicroNormal.png",
+      "maskMap": "Assets/Art/GeneratedDetailMaterials/MAT_AgedAluminum_MetallicSmoothness.png",
+      "metallicRange": [0.82, 0.94],
+      "roughnessRange": [0.43, 0.55],
+      "microstructure": "fine low-amplitude extrusion-oriented grain plus secondary irregularity",
+      "manufactureReasoning": "Extruded aluminum members carry fine manufacturing direction; the aged anodized oxide broadens reflection and prevents chrome-like response."
+    },
+    {
+      "materialId": "galvanized_steel",
+      "assetPath": "Assets/Art/GeneratedDetailMaterials/MAT_DarkGalvanizedSteel.mat",
+      "normalMap": "Assets/Art/GeneratedDetailMaterials/MAT_DarkGalvanizedSteel_MicroNormal.png",
+      "maskMap": "Assets/Art/GeneratedDetailMaterials/MAT_DarkGalvanizedSteel_MetallicSmoothness.png",
+      "metallicRange": [0.82, 0.94],
+      "roughnessRange": [0.54, 0.70],
+      "microstructure": "broad zinc-like mottling without glitter-scale pixels",
+      "manufactureReasoning": "Zinc-coated ferrous hardware remains metallic but oxidation and grime broaden the lobe; no bright chrome fastener response."
+    },
+    {
+      "materialId": "epdm_rubber",
+      "assetPath": "Assets/Art/GeneratedDetailMaterials/MAT_WindowRubber.mat",
+      "normalMap": "Assets/Art/GeneratedDetailMaterials/MAT_WindowRubber_MicroNormal.png",
+      "maskMap": "Assets/Art/GeneratedDetailMaterials/MAT_WindowRubber_MetallicSmoothness.png",
+      "metallicRange": [0.0, 0.0],
+      "roughnessRange": [0.82, 0.92],
+      "microstructure": "fine matte elastomer grain",
+      "manufactureReasoning": "Extruded EPDM weather seals are dielectric and highly rough; edge response must arise from Fresnel/light rather than a painted rim."
+    },
+    {
+      "materialId": "aged_abs_ac",
+      "assetPath": "Assets/Art/GeneratedDetailMaterials/MAT_AgedACPlastic.mat",
+      "normalMap": "Assets/Art/GeneratedDetailMaterials/MAT_AgedACPlastic_MicroNormal.png",
+      "maskMap": "Assets/Art/GeneratedDetailMaterials/MAT_AgedACPlastic_MetallicSmoothness.png",
+      "metallicRange": [0.0, 0.0],
+      "roughnessRange": [0.63, 0.76],
+      "microstructure": "fine injection-mould orange-peel relief",
+      "manufactureReasoning": "Exterior ABS/HIPS casing remains dielectric; oxidation/chalking belongs to aging/albedo policy, not to directional baked lighting."
+    },
+    {
+      "materialId": "pipe_insulation_cover",
+      "assetPath": "Assets/Art/GeneratedDetailMaterials/MAT_PipeInsulation.mat",
+      "normalMap": "Assets/Art/GeneratedDetailMaterials/MAT_PipeInsulation_MicroNormal.png",
+      "maskMap": "Assets/Art/GeneratedDetailMaterials/MAT_PipeInsulation_MetallicSmoothness.png",
+      "metallicRange": [0.0, 0.0],
+      "roughnessRange": [0.76, 0.88],
+      "microstructure": "shallow wrap-seam cadence with fine polymer/foam skin",
+      "manufactureReasoning": "Insulated refrigerant lines use weathered vinyl/PVC wrapping; seam relief is material-scale while pipe bends/collars remain geometry."
+    },
+    {
+      "materialId": "pvc_drain_hose",
+      "assetPath": "Assets/Art/GeneratedDetailMaterials/MAT_DrainHose.mat",
+      "normalMap": "Assets/Art/GeneratedDetailMaterials/MAT_DrainHose_MicroNormal.png",
+      "maskMap": "Assets/Art/GeneratedDetailMaterials/MAT_DrainHose_MetallicSmoothness.png",
+      "metallicRange": [0.0, 0.0],
+      "roughnessRange": [0.73, 0.86],
+      "microstructure": "shallow circumferential corrugation signal with fine polymer grain",
+      "manufactureReasoning": "Flexible condensate hose is dielectric PVC; macro hose routing is geometry and the shallow ribbing is a material response."
+    }
+  ],
+  "formalEvidenceRequirements": {
+    "nativeResolution": [3840, 2160],
+    "requiredViews": ["hero", "oblique", "grazing"],
+    "required100PercentCrops": ["grazing/material_grazing", "grazing/sash_rail_response", "oblique/balcony_services"],
+    "humanReviewRequired": true,
+    "reviewFor": [
+      "chrome-like or materially impossible metal response",
+      "dielectric materials reading as metal",
+      "painted or baked highlight appearance",
+      "obvious repeated microtexture/module synchronization",
+      "incorrect extrusion/corrugation orientation",
+      "UV stretch or scale mismatch",
+      "moire, aliasing or temporal shimmer"
+    ],
+    "actualRenderRequiredForVisualPoints": true
+  },
+  "criticalDefectRisksReduced": [
+    "baked_or_painted_highlights",
+    "impossible_material_physics",
+    "obvious_repetition",
+    "severe_aliasing_or_shimmer"
+  ],
+  "limitations": [
+    "Manufacturing-scale placement now depends on detail_physical_uv_contract.json and its scene manifest. The microstructure generator alone does not prove correct physical scale or orientation; formal scene QA fails closed if the metric UV pass is absent or drifted.",
+    "Canonical materials are intentionally reused across repeated assemblies, but deterministic per-piece metric UV phases now decorrelate their cut origins. Rendered repetition diagnostics and human 100% review still decide whether any synchronization remains visible.",
+    "Source maps, metric UVs and importer settings cannot prove final filtered BRDF/Fresnel response, compression behaviour, or temporal stability on the target GPU.",
+    "Legacy scalar _Metallic/_Glossiness fields can be overwritten by the older detail builder; while _METALLICGLOSSMAP is active the formal material guard evaluates the Standard texture channels. The mapped source range, not an ignored fallback scalar, is the visual contract."
+  ],
+  "expectedVisualScoreImpactIfRenderedAndObserved": {
+    "material_pbr_physical_plausibility": "positive",
+    "texture_microdetail_texel_fidelity": "positive",
+    "temporal_lod_aliasing_stability": "must be verified; could regress if the maps shimmer",
+    "pointsAwardedNow": 0
+  },
+  "implementationReadinessScore": 93,
+  "visualFidelityStatus": "UNSCORED_UNTIL_REAL_4K_RENDER",
+  "runtimeRenderVerified": false
+}

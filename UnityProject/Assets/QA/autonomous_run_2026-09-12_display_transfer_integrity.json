@@ -1,0 +1,100 @@
+{
+  "schemaVersion": "1.0",
+  "runId": "2026-09-12-display-transfer-integrity",
+  "objective": "Increase trustworthiness of the native 4K Cinematic/Lighting/Material evidence by enforcing one and only one linear-to-sRGB display transfer on every canonical still without claiming visual quality before real pixels exist.",
+  "branch": "gpt/unity-migration",
+  "startHead": "9f17d11c8c2075b2e31f768e0de7f36543adddeb",
+  "substantiveWorkHead": "378a74af3eb5042cdec7e0354d262b27ee671fa3",
+  "substantiveCommits": [
+    "aa949c058fcc3bf2cc0cbf9f6f2fb95e6bf04434",
+    "378a74af3eb5042cdec7e0354d262b27ee671fa3"
+  ],
+  "constraints": {
+    "godotPreserved": true,
+    "baseMergePerformed": false,
+    "themeScopeChanged": false,
+    "changedPathsRestrictedToUnityProject": true
+  },
+  "problemFound": {
+    "summary": "The existing HDR runtime receipt proved three HDR sources, three LDR destinations and no fallback, while the 4K capture source configured its non-HDR targets as sRGB. However, there was no independent fail-closed render-time guard requiring the actual canonical MainCamera target to report RenderTexture.sRGB=true on hero, oblique and grazing. A future descriptor/color-space drift could therefore produce linear-coded LDR PNG evidence or a duplicated gamma transfer while still looking structurally valid to unrelated geometry/material gates.",
+    "whyItMatters": "Incorrect display transfer changes apparent exposure, color, shadow separation, highlight rolloff and dielectric/metal response across the entire frame, so it can invalidate Cinematic Image, Lighting and Material/PBR judgments even when geometry is unchanged."
+  },
+  "implementation": [
+    {
+      "path": "Assets/Editor/QualityBlockDisplayTransferIntegrityQA.cs",
+      "changes": [
+        "Added an InitializeOnLoad MainCamera pre-cull guard scoped only to QA4K_hero_MSAA, QA4K_oblique_MSAA and QA4K_grazing_MSAA.",
+        "Requires Linear project color space, exact 3840x2160 target dimensions, a non-HDR final camera target, RenderTexture.sRGB=true, HDR-enabled camera path, dynamic resolution off, one enabled QualityBlockFilmicTonemap and ImageEffectTransformsToLDR.",
+        "Requires the canonical still order hero -> oblique -> grazing so an interrupted/mixed capture epoch cannot silently pass the new guard.",
+        "On any failure disables the mandatory filmic tonemap before rethrowing, preventing the existing exact-invocation HDR runtime receipt from later sealing the packet if a Unity callback exception does not abort Camera.Render immediately.",
+        "Added source-binding checks proving that the MSAA and single-sample resolve descriptors inherit the same Linear-project sRGB intent and that final readback is from the resolved target.",
+        "Added source-binding checks that the filmic shader consumes scene-linear values and contains no explicit LinearToGammaSpace/GammaToLinearSpace/manual pow-based gamma encoding; the sRGB target owns the single output encoding step."
+      ]
+    },
+    {
+      "path": "Assets/QA/display_transfer_integrity_contract.json",
+      "changes": [
+        "Added machine-readable Linear HDR -> linear filmic LDR -> sRGB target policy.",
+        "Documented canonical target names/order, 3840x2160 requirement, resolve descriptor inheritance, failure behavior, zero automatic visual points and Unity-runtime-pending status.",
+        "Recorded Unity 6 documentation references for RenderTextureReadWrite, RenderTexture.sRGB and GL.sRGBWrite semantics."
+      ]
+    }
+  ],
+  "selfAudit": {
+    "issuesFoundAndCorrected": [
+      "The first implementation revision incorrectly searched QualityBlockFilmicTonemap.cs for the shader-local token 'sceneLinear'. That would have failed source preflight unconditionally. The follow-up commit moved the sceneLinear/AcesApprox checks to NewTownFilmicTonemap.shader and checks the component for its real OnRenderImage signature instead."
+    ],
+    "staticBindingsVerified": [
+      "QualityBlock4KCapture.cs contains ARGB32 native descriptors, Linear-project sRGB descriptor assignment, resolveDescriptor inheritance, single-sample resolve, resolvedTarget readback and RGB24 PNG staging.",
+      "QualityBlockFilmicTonemap.cs contains ImageEffectTransformsToLDR, OnRenderImage, the material blit and source/destination sRGB telemetry properties.",
+      "NewTownFilmicTonemap.shader contains sceneLinear and AcesApprox(sceneLinear * _ExposureMultiplier) and does not contain the forbidden explicit gamma helper tokens covered by the guard."
+    ]
+  },
+  "researchBasis": [
+    {
+      "source": "Unity 6 RenderTextureReadWrite",
+      "url": "https://docs.unity3d.com/6000.0/ScriptReference/RenderTextureReadWrite.html",
+      "finding": "In Linear color space, ordinary non-HDR color render textures can use sRGB read/write conversion, while floating-point HDR formats are always treated as linear data."
+    },
+    {
+      "source": "Unity 6 RenderTexture.sRGB",
+      "url": "https://docs.unity3d.com/6000.0/ScriptReference/RenderTexture-sRGB.html",
+      "finding": "RenderTexture.sRGB exposes whether the render texture uses sRGB read/write conversion and can therefore be checked on the actual authoritative camera target."
+    },
+    {
+      "source": "Unity 6 GL.sRGBWrite",
+      "url": "https://docs.unity3d.com/6000.0/ScriptReference/GL-sRGBWrite.html",
+      "finding": "In Linear color space, fragment outputs are linear and non-HDR sRGB targets perform Linear-to-sRGB conversion; Unity recommends correct RenderTexture color-space flags rather than ad-hoc state switching."
+    }
+  ],
+  "verification": {
+    "mode": "GitHub/source review only",
+    "unityVersionTarget": "6000.3.0f1",
+    "unityCompileExecuted": false,
+    "unityRuntimeExecuted": false,
+    "native3840x2160RenderProduced": false,
+    "workflowRunsAtSubstantiveHead": 0,
+    "commitStatusContextsAtSubstantiveHead": 0,
+    "renderVerification": "PENDING_UNITY_RUNTIME"
+  },
+  "scores": {
+    "implementationReadiness": 93,
+    "implementationReadinessPossible": 100,
+    "visualFidelity": "UNSCORED_UNTIL_REAL_4K_RENDER",
+    "visualFidelityPointsAwardedThisRun": 0,
+    "visualFidelityPassClaimed": false
+  },
+  "expectedVisualScoreImpact": [
+    "Cinematic image quality/composition/color/exposure (5): prevents canonical PNG evidence from silently omitting the Linear-to-sRGB output transfer or receiving a second manual gamma encoding. No point is awarded until actual pixels are reviewed.",
+    "Lighting/shadows/reflections (15): preserves trustworthy highlight/shadow appearance for the existing physical sun, sky and reflection evidence; does not prove those pixels are visually good.",
+    "Material/PBR physical plausibility (20): keeps roughness/specular/Fresnel judgments from being made on color-transfer-corrupted display values; does not clear any material critical defect.",
+    "Automatic Visual Fidelity impact: 0 points."
+  ],
+  "criticalDefectPolicy": {
+    "sourceOrRuntimeGuardAutomaticallyClearsCriticalDefects": false,
+    "renderQualityClaimWithoutActualRender": false,
+    "actualPixelReviewRequired": true
+  },
+  "nextBlocker": "Unity 6000.3.0f1 compile/runtime remains the gating blocker. On first Runner availability, stop speculative expansion, compile the new InitializeOnLoad guard, run the complete native-4K packet, prove hero/oblique/grazing targets report sRGB=true while the image-effect source remains floating-point HDR, then inspect the sealed 3840x2160 frames and 100% crops for actual exposure, rolloff, clipping, color and material response before assigning any Visual Fidelity points.",
+  "readinessNote": "Implementation Readiness remains 93/100 because this run strengthens formal evidence plumbing but does not supply the missing 7-point Unity compile/runtime verification."
+}

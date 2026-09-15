@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="720" viewBox="0 0 1280 720">
+  <rect width="1280" height="720" fill="#f2f1eb"/>
+  <text x="64" y="62" font-family="sans-serif" font-size="30" fill="#1d241c">Foliage silhouette optics — source lookdev, not render evidence</text>
+  <text x="64" y="100" font-family="sans-serif" font-size="17" fill="#424a40">Healthy broadleaf margin only. No tears, storm damage, disaster cues or painted lighting.</text>
+
+  <g transform="translate(90,165)">
+    <text x="0" y="0" font-family="sans-serif" font-size="24" fill="#253027">Previous risk: ruler-straight diamond card</text>
+    <polygon points="210,55 390,215 210,375 30,215" fill="#5f7f3a" stroke="#253027" stroke-width="5"/>
+    <line x1="210" y1="55" x2="210" y2="375" stroke="#d6e3c2" stroke-width="4" opacity="0.8"/>
+    <text x="20" y="425" font-family="sans-serif" font-size="17" fill="#424a40">Straight macro edge repeats at every leaf.</text>
+    <text x="20" y="451" font-family="sans-serif" font-size="17" fill="#424a40">Shadow caster previously retained the same card outline.</text>
+  </g>
+
+  <g transform="translate(680,165)">
+    <text x="0" y="0" font-family="sans-serif" font-size="24" fill="#253027">Target: folded geometry + analytic healthy margin</text>
+    <path d="M210 55 C182 92,158 122,144 158 C126 185,91 204,40 215 C92 226,128 248,144 276 C159 313,182 346,210 375 C239 345,265 312,278 276 C296 248,331 226,380 215 C331 203,296 183,278 156 C263 120,238 89,210 55 Z"
+          fill="#668844" stroke="#253027" stroke-width="5"/>
+    <path d="M210 55 C198 118,201 180,210 215 C219 253,221 313,210 375" fill="none" stroke="#dce9c9" stroke-width="5"/>
+    <path d="M144 158 l-8 8 l10 5 l-9 9 l11 5 l-8 9 l12 4" fill="none" stroke="#30452a" stroke-width="3"/>
+    <path d="M278 156 l8 8 l-10 5 l9 9 l-11 5 l8 9 l-12 4" fill="none" stroke="#30452a" stroke-width="3"/>
+    <text x="18" y="425" font-family="sans-serif" font-size="17" fill="#424a40">Geometry: size, fold, attachment, orientation.</text>
+    <text x="18" y="451" font-family="sans-serif" font-size="17" fill="#424a40">Shader: sub-centimetre margin irregularity only.</text>
+    <text x="18" y="477" font-family="sans-serif" font-size="17" fill="#424a40">Visible and shadow passes share one canonical edge function.</text>
+  </g>
+
+  <g transform="translate(64,625)">
+    <line x1="0" y1="0" x2="1152" y2="0" stroke="#a7aaa2" stroke-width="1"/>
+    <text x="0" y="34" font-family="sans-serif" font-size="16" fill="#4b514a">Formal review: native 3840×2160 hero / oblique / grazing + 100% vegetation and tree-shadow crops + temporal/subpixel_grazing.</text>
+    <text x="0" y="58" font-family="sans-serif" font-size="16" fill="#4b514a">This diagram awards 0 Visual Fidelity points. Actual Unity pixels remain authoritative.</text>
+  </g>
+</svg>

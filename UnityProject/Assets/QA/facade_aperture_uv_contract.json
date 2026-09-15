@@ -1,0 +1,43 @@
+{
+  "schemaVersion": "1.0.0",
+  "scenePath": "Assets/Scenes/QualityBlock1990s.unity",
+  "apertureRootName": "DanchiFacadeApertureShell",
+  "sourceMaterial": "Assets/Art/GeneratedFacadeOptics/MAT_FacadePaintedRC_Main.mat",
+  "physicalUvMaterial": "Assets/Art/GeneratedFacadeOptics/MAT_FacadePaintedRC_AperturePhysicalUV.mat",
+  "generatedMeshRoot": "Assets/Art/GeneratedFacadeApertureMeshes",
+  "macroTileMeters": 2.4,
+  "detailTileMeters": 0.22,
+  "mainTextureScale": 1.0,
+  "detailTextureScale": 10.909091,
+  "projection": "world-aligned tri-planar-style UV0 selection baked per face by dominant transformed normal; front/back use building-local X/Y, ends use Z/Y, top/bottom use X/Z",
+  "phasePolicy": "UV0 is derived from Danchi-local absolute position divided by macroTileMeters, not reset to 0..1 for every repeated bay. Adjacent wall pieces therefore preserve continuous physical phase and repeated apartment modules do not restart the same concrete patch at each opening.",
+  "materialPolicy": "The aperture shell copies the existing two-scale painted-RC Standard material but resets main/bump/metallic-smoothness tiling to 1 because the physical scale is baked into UV0. Detail-normal tiling is macroTileMeters/detailTileMeters. Albedo remains lighting-neutral; no per-window highlight or shadow is baked to hide repetition.",
+  "qa": {
+    "minimumFacadeCellRenderers": 120,
+    "minimumDistinctQuantizedUvPhasesAcrossApartmentCells": 20,
+    "quantizedPhaseStep": 0.02,
+    "hardMinimumExpectedMacroTexelsPerMeter": 256,
+    "sourceTextureResolution": 1024,
+    "expectedNominalMacroTexelsPerMeter": 426.666667,
+    "automaticVisualPoints": 0,
+    "renderVerificationPending": true,
+    "automaticFailConditions": [
+      "aperture shell uses the original MainBlock-sized texture tiling on each small wall piece",
+      "repeated apartment wall pieces restart indistinguishable 0..1 UV phase in benchmark framing",
+      "physical UV mesh is unreadable or missing UV0",
+      "painted-RC main/bump/metallic tiling differs from 1 after physical UV baking",
+      "detail-normal scale differs from 2.4/0.22 without an updated physical contract",
+      "source UV QA is used to clear repeated-pattern or texel-fidelity visual defects without native 4K/temporal evidence"
+    ]
+  },
+  "visualReview": {
+    "priorityViews": ["hero", "oblique", "grazing"],
+    "inspectAt100Percent": [
+      "concrete pores/aggregate retain consistent real-world scale across piers, spandrels, reveals, ends and roof edges",
+      "adjacent facade pieces do not show obvious UV seams at cell boundaries",
+      "thirty apartment modules do not restart the same concrete stain/grain patch",
+      "grazing light reveals BRDF/normal microstructure without periodic sparkle or moire",
+      "temporal movement shows no texture swimming or aliasing"
+    ]
+  }
+}

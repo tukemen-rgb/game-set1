@@ -1,0 +1,61 @@
+{
+  "schema": 1,
+  "updated": "2026-09-16",
+  "isInventoryDelta": true,
+  "baseInventory": "Assets/Art/GardenProps/asset_inventory.json",
+  "baseAuthoredAssetSets": 23,
+  "effectiveAuthoredAssetSets": 24,
+  "newAssets": [
+    {
+      "id": "HangingBlueSoapNet",
+      "metadata": "Assets/Art/HangingSoapNet/HangingBlueSoapNet.metadata.json",
+      "masterTriangles": 88480,
+      "lodTriangles": [
+        51552,
+        25872,
+        14352,
+        8672
+      ],
+      "logicalComponents": 37,
+      "materialMeshesPerLevel": 4,
+      "actualOBJGLBExports": true,
+      "unityVerified": false
+    }
+  ],
+  "modifiedExistingAssets": [
+    {
+      "id": "BalconyFaucetG13",
+      "refinementMetadata": "Assets/Art/FaucetHose/BalconyFaucetG13.photo_reference_refinement.metadata.json",
+      "heroTriangles": {
+        "MASTER": 13472,
+        "LOD0": 8712,
+        "LOD1": 4992,
+        "LOD2": 3080,
+        "LOD3": 2012
+      },
+      "components": 17,
+      "actualOBJGLBExports": true,
+      "unityVerified": false,
+      "duplicateOwnerCreated": false
+    }
+  ],
+  "reviewIntegrations": [
+    {
+      "id": "FaucetWithHangingSoapNetReferenceV2_LOD0",
+      "triangles": 60264,
+      "actualGlbGeneratedOutsideUnity": true,
+      "formalBenchmarkChanged": false,
+      "unityVerified": false
+    }
+  ],
+  "visualFidelity": {
+    "status": "UNSCORED_UNTIL_REAL_4K_RENDER",
+    "score": null,
+    "pass": false
+  },
+  "readiness": {
+    "lastRecordedScore": 93,
+    "recomputed": false
+  },
+  "nextProductionTarget": "If no Unity evidence appears, create one more scene-visible utility asset around the faucet/service corner and then improve close-range fibre/soap microdetail; if Unity evidence appears, score/fix pixels before further speculative expansion."
+}

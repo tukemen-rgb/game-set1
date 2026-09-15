@@ -1,0 +1,122 @@
+{
+  "schemaVersion": "1.0.0",
+  "id": "grass_blade_field",
+  "scenePath": "Assets/Scenes/QualityBlock1990s.unity",
+  "rootPath": "QualityBlock1990s/Ground/GrassBladeFieldDetail",
+  "generator": "grass-blade-field-v1.0.1",
+  "runtimeRenderVerified": false,
+  "visualPointsAwarded": 0,
+  "status": "IMPLEMENTATION_ONLY_RENDER_VERIFICATION_PENDING",
+  "intent": "Supplement the metre-scaled GrassField PBR substrate with real silhouette-scale lamina geometry while keeping sub-pixel turf mass in the base material. Source QA is not rendered proof.",
+  "construction": {
+    "landscapeType": "maintained circa-2000 Japanese new-town common lawn",
+    "components": [
+      "existing prepared turf/topsoil substrate represented by GrassField",
+      "grass crowns originating at the finish-grade datum",
+      "curved double-sided two-segment lamina blade geometry",
+      "combined 9 m patch meshes used only as a render batching boundary"
+    ],
+    "bladeHeightMinMeters": 0.04,
+    "bladeHeightMaxMeters": 0.18,
+    "nominalTuftHeightRangeMeters": [0.055, 0.165],
+    "bladeWidthRangeMeters": [0.0042, 0.0092],
+    "laminaThicknessRepresentation": "Biological lamina thickness is below reliable benchmark pixel scale and is represented as explicitly double-sided surface geometry rather than a centimetre-scale solid slab.",
+    "patchSizeMeters": [9.0, 9.0],
+    "fieldEnvelopeMeters": [54.0, 36.0],
+    "substrateInterface": "Blade bases originate 4 mm above the zero-grade GrassField top to avoid coplanar z-fighting while remaining within the visible turf/contact zone; no blade receives a gameplay collider.",
+    "mounting": "Biological crowns are rooted into the existing lawn substrate. Patch roots are batching containers only and may not imply visible manufactured seams.",
+    "interfacesGapsSeals": "A 0.16 m construction-clearance margin excludes apartment, plaza, park-path and worn-path footprints so blades cannot visibly interpenetrate hardscape. There are no manufactured seals in the biological lawn assembly.",
+    "orientationExposure": "Upward/outward laminae receive coherent midsummer sun and sky fill; near-circulation edges are maintained shorter; shaded faces rely on scene fill, contact shadow and occlusion rather than painted darkness.",
+    "aging": "Ordinary mowing, dry-summer UV exposure, local shade and pedestrian-edge maintenance only. Variation is causal and does not introduce a narrative damage layer.",
+    "geometryVsMaterial": "Blade height, width, bend, lean, taper, double-sided silhouette and hardscape clearance are geometry. Chlorophyll/color breakup, fine venation-equivalent normal response and sub-pixel turf mass remain material/microtexture.",
+    "manufactureReasoning": "This is living planted turf rather than a manufactured panel: the reconstruction unit is crown-to-lamina growth from prepared grade, with explicit hardscape maintenance interfaces and blade-scale silhouette only where benchmark pixels can resolve it."
+  },
+  "placement": {
+    "grid": [6, 4],
+    "candidateSamplesPerFullPatch": 240,
+    "hardscapeExclusionMarginMeters": 0.16,
+    "densityRule": "Each patch evaluates one fixed deterministic candidate budget. Rejected hardscape candidates are not retried, so exposed-lawn fraction controls geometric density instead of concentrating a full-patch population into narrow remnants.",
+    "heightCausality": "Accepted blades near hardscape/circulation edges receive a deterministic maintained-height reduction; open-lawn blades retain the wider nominal range.",
+    "excludedInterfaces": [
+      "apartment footprint",
+      "danchi plaza",
+      "park path",
+      "worn shortcut A",
+      "worn shortcut B"
+    ],
+    "antiRepetition": "Patch/candidate hashing changes position, height, width, yaw, bend and texture phase. Structural QA requires at least ten distinct LOD0 geometry signatures when ten or more patches are populated."
+  },
+  "material": {
+    "canonicalMaterial": "MAT_GrassBladeField",
+    "sourceMaterial": "PBR_GrassWorn",
+    "albedo": "Inherit canonical grass albedo/microtexture without directional illumination marks or baked highlight streaks.",
+    "roughnessIntent": "Dry cut grass remains predominantly rough; the inherited physical-data map is attenuated by smoothness scale 0.28 so isolated grazing response stays restrained.",
+    "metallic": 0.0,
+    "specular": "dielectric only; no conductor response",
+    "normalScale": 0.65,
+    "microstructure": "Inherited grass physical-data texture represents sub-pixel fibrous/chlorophyll breakup while explicit lamina geometry owns silhouette-scale bends and tips.",
+    "wetness": 0.0,
+    "uvAging": "Dry midsummer baseline with mild ordinary UV desaturation only; current wet sheen is zero.",
+    "angularFresnelResponse": "At grazing angles, brightness may rise only from dielectric Fresnel plus the coherent SummerSun/sky/reflection state. Highlight direction may not be painted into albedo or masks."
+  },
+  "lod": {
+    "levelCount": 4,
+    "crossFade": true,
+    "animatedCrossFade": true,
+    "transitionScreenRelativeHeights": [0.18, 0.08, 0.035, 0.012],
+    "fullPatchCaps": [240, 120, 54, 22],
+    "sparsePatchRatios": [1.0, 0.50, 0.23, 0.09],
+    "bladesPerTuft": [3, 3, 2, 2],
+    "policy": "Each lower LOD retains a deterministic prefix of the same accepted tuft set and strictly reduces tuft/vertex count. It may remove sub-pixel blades but may not reshuffle the retained lawn footprint between levels.",
+    "temporalRenderRequired": true
+  },
+  "lighting": {
+    "baseline": "dry midsummer Japanese sun",
+    "direct": "Use the scene SummerSun only for directional key response and blade shadows.",
+    "fill": "Use sky/ambient fill and probes for shadow-side readability.",
+    "contact": "Blade bases must read as embedded in the turf substrate through contact shadow/occlusion, not as hovering cards.",
+    "reflection": "Use synchronized scene reflection state; the lawn system does not author fake environment highlights."
+  },
+  "formalQa": {
+    "preCullReadOnly": true,
+    "cameraClasses": [
+      "Reflection",
+      "QA4K_*",
+      "QATemporal_*",
+      "QAPreparedTemporal_*"
+    ],
+    "minimumPopulatedPatches": 12,
+    "minimumDistinctLod0GeometrySignatures": 10,
+    "failureInjection": [
+      "replace an authored patch mesh with a primitive plane",
+      "set blade material metallic above 0.01",
+      "enable emission on the blade material",
+      "add a collider under the grass detail root",
+      "remove one LOD level",
+      "disable animated cross-fade",
+      "duplicate one LOD0 geometry mesh across otherwise different patches",
+      "place blades inside a hardscape exclusion footprint"
+    ]
+  },
+  "renderEvidenceRequired": {
+    "resolution": [3840, 2160],
+    "views": ["frontal/hero", "oblique", "grazing"],
+    "existingRelevantCrops": ["oblique/vegetation_grounding", "grazing/tree_shadow_contact"],
+    "additionalReview": "Inspect 100% lawn-edge and grazing silhouettes plus temporal movement/LOD sequence before assigning any Visual Fidelity points.",
+    "rejectIf": [
+      "square patch boundary is visible",
+      "blade repetition is immediately obvious",
+      "grass intersects hardscape",
+      "severe sub-pixel shimmer is visible",
+      "LOD density pop is visible",
+      "blade bases appear to float",
+      "lighting reads as painted rather than scene-driven"
+    ]
+  },
+  "expectedVisualFidelityImpact": {
+    "vegetationNaturalComplexity": "medium-high expected improvement; not awarded until render review",
+    "textureMicrodetailTexelFidelity": "small-medium expected improvement from geometry/material scale separation; not awarded",
+    "cinematicImageQuality": "medium expected improvement in grazing silhouette and foreground depth; not awarded",
+    "temporalLodAliasingStability": "implementation supports cross-fade but remains a render risk until temporal evidence is reviewed"
+  }
+}

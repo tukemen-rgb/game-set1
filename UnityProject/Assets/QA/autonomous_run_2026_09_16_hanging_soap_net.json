@@ -1,0 +1,22 @@
+{
+  "runId":"2026_09_16_user_reference_hanging_soap_net",
+  "startHead":"0293ea4b32391b790d9604887e8abf71c0c0fd4a",
+  "branch":"gpt/unity-migration",
+  "commitResolution":"The containing commit is this run's one substantive commit; download receipt records its SHA after branch update.",
+  "newAssetSets":1,
+  "sourceGitBlobSHA":"d3c110865b0aa2e4851a507e0df038dc3f4fc99e",
+  "sourceSHA256":"86ef510fd37a1d5dbbf909b9793acf1dc203d016d05429776646d7ab63a21381",
+  "triangles":{"MASTER":103904,"LOD0":61968,"LOD1":32136,"LOD2":17200,"LOD3":9840},
+  "logicalComponentsPerLevel":41,
+  "checkedComponentSurfacesAcrossLevels":205,
+  "materialMeshesPerLevel":4,
+  "standaloneGlbCount":5,"standaloneObjCount":5,"combinedReviewGlbCount":1,
+  "executed":["five complete mesh builds","finite vertices/normals","nondegenerate triangles","closed welded material surfaces","edge incidence 2","consistent winding and positive component volumes","GLB triangle/bounds roundtrip","OBJ triangle roundtrip","strict LOD triangle reduction","vertices and triangle centres outside analytic soap volume","four actual-geometry views with backface culling"],
+  "failureCorrections":["Initial lower soap/net clearance failed on some LOD variants. Expanded soap clearance envelope and reran all levels.","First uncommitted upload did not match tested source. Corrected blob and confirmed exact Git blob SHA before branch update."],
+  "notVerified":["Unity compile/import/render","all triangle-triangle intersections and knot contacts","cloth/contact simulation","temporal LOD/shimmer","render PBR","native runtime performance"],
+  "readiness":{"lastRecordedScore":93,"recomputed":false},
+  "visualFidelity":{"score":null,"pass":false,"pointsAwarded":0,"expectedImpact":"Construction, material separation and lived-in scene context; no scored Unity pixels."},
+  "workflowRunsObservedAtStart":0,
+  "godotChanges":0,"baseMerge":false,"formalBenchmarkSceneChanged":false,"sourcePhotoPixelsReused":false,
+  "nextTarget":"Refine knitted loops and user-photo faucet silhouette within existing owner rather than create duplicate faucet systems. Score actual Unity pixels first if available."
+}

@@ -1,0 +1,76 @@
+{
+  "runDate": "2026-09-13",
+  "branch": "gpt/unity-migration",
+  "startHead": "5f03963d4ba3a010b69311feec33ba0d691d163b",
+  "objective": "Close the remaining provenance hole in the 7.9 m facade anti-repetition layer so a dimensionally/import-correct but visually invalid replacement texture cannot enter formal 4K evidence.",
+  "finding": {
+    "priorGateStrength": "The existing facade macro gate checked shader/material binding, texture resolution, mipmaps, sRGB, wrap, filtering, anisotropy and physical frequency, but did not inspect the source pixels once an existing texture asset was present.",
+    "risk": "A stale/replaced 1024x1024 image could retain all importer settings yet contain colored modulation, directional/baked highlights, or other unreviewed content, undermining Material/PBR and the automatic-fail prohibition on painted/baked highlights.",
+    "resolution": "Added a fail-closed formal-camera gate that decodes the PNG, verifies every RGBA pixel against the approved deterministic neutral procedural field, verifies shader-side neutral diffuse usage and zero emission, and caches successful source verification by SHA-256 content hash rather than timestamp/length metadata."
+  },
+  "substantiveCommits": [
+    {
+      "sha": "f529995cabe7ec5346f0c5fd097c60fc7aba0272",
+      "message": "Add facade macro neutrality source integrity gate"
+    },
+    {
+      "sha": "0d9884c423c69ab76c767d640fc32d85180e07a1",
+      "message": "Add machine-readable facade macro neutrality contract"
+    },
+    {
+      "sha": "80065a25aa769469341845b6031f41c7c082e7e6",
+      "message": "Harden facade macro source cache with content hash"
+    }
+  ],
+  "filesChangedBeforeRunRecord": [
+    "UnityProject/Assets/Editor/QualityBlockFacadeMacroNeutralityIntegrityQA.cs",
+    "UnityProject/Assets/QA/facade_macro_neutrality_integrity_contract.json"
+  ],
+  "formalEvidenceBehavior": {
+    "targets": ["QA4K_*", "QATemporal_*", "QAPreparedTemporal_*"],
+    "sourceResolution": "1024x1024",
+    "neutralSrgb": 0.504,
+    "modulationSrgb": 0.0115,
+    "allowedSrgbRange": [0.49, 0.516],
+    "pixelPolicy": "every pixel must exactly match the approved grayscale procedural field with alpha 255",
+    "shaderPolicy": "macro field may multiply base diffuse albedo only; emission must remain zero",
+    "cachePolicy": "SHA-256 of source PNG content; any byte-content change forces full pixel revalidation",
+    "visualPointsAwarded": 0
+  },
+  "verification": {
+    "repositoryStaticReview": "PASS",
+    "contractTokenReview": "PASS",
+    "branchScope": "Only UnityProject/Assets/Editor and UnityProject/Assets/QA changed before this run record.",
+    "godotChanged": false,
+    "baseMerged": false,
+    "prohibitedThemeAdded": false,
+    "unityCompile": "PENDING_UNITY_RUNTIME",
+    "unityRender": "PENDING_UNITY_RUNTIME",
+    "native4KFrames": "NOT_AVAILABLE",
+    "visualFidelityScored": false
+  },
+  "failureInjectionPlan": [
+    "change one macro source pixel to non-grayscale RGB -> formal capture must fail",
+    "replace macro PNG while preserving resolution/import settings -> formal capture must fail",
+    "alter source content while preserving file size/timestamp -> SHA-256 change must force revalidation and fail if pixels differ",
+    "route macroVariation into emission -> shader semantic gate must fail",
+    "remove neutral multiplicative albedo path -> shader semantic gate must fail",
+    "flatten macro field -> source integrity must fail"
+  ],
+  "implementationReadiness": {
+    "score": 93,
+    "outOf": 100,
+    "status": "IMPLEMENTATION_READINESS_ONLY"
+  },
+  "visualFidelity": {
+    "status": "UNSCORED_UNTIL_REAL_4K_RENDER",
+    "pointsAwardedThisRun": 0,
+    "passClaimed": false
+  },
+  "expectedVisualScoreImpactNotAwarded": {
+    "Material/PBR physical plausibility": "medium risk reduction: rejects baked/directional or colored macro content before evidence",
+    "Texture/microdetail/texel fidelity": "medium risk reduction: binds anti-repeat source to reviewed deterministic content",
+    "Cinematic image quality/composition/color/exposure": "small-to-medium risk reduction: prevents macro layer from becoming hidden exposure/highlight manipulation"
+  },
+  "nextBlocker": "No Unity 6000.3.0f1 Runner/render evidence is available. When runtime appears, stop speculative expansion, compile the new gate, execute failure injections, then render fresh 3840x2160 frontal/oblique/grazing frames plus 100% facade-center/material-grazing crops and temporal evidence before assigning any Visual Fidelity points."
+}

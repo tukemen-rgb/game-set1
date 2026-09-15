@@ -1,0 +1,93 @@
+{
+  "schemaVersion": "1.0",
+  "scenePath": "Assets/Scenes/QualityBlock1990s.unity",
+  "detailRootName": "DanchiHighDetail",
+  "expectedBayAssemblies": 30,
+  "policy": "Correct and then fail-closed on generated-fallback balcony slab/railing interfaces before realtime reflection or native-4K evidence. This is source/scene construction QA only and awards zero Visual Fidelity points without actual rendered evidence.",
+  "manufactureModel": [
+    "The benchmark railing is treated as a circa-2000 manufactured aluminum/metal balcony handrail assembly rather than geometry emerging directly from the concrete slab.",
+    "Vertical posts are mechanically anchored at the balcony slab edge through discrete base plates/anchor fasteners; the post can extend into/through the attachment zone, but the visible base plate must sit on the slab top rather than be buried inside the slab.",
+    "The slab fascia is reinforced-concrete/cementitious construction and therefore must inherit the balcony-floor concrete material response, not the anodized-aluminum rail material.",
+    "The lower horizontal rail is a fabricated rail member above the slab top; it must not be hidden below the walking-surface plane.",
+    "The low divider bracket is mechanically grounded at the slab top so its contact shadow and fastener relationship have a physical cause."
+  ],
+  "dimensionsMetres": {
+    "expectedFloorTopLocalY": -0.79,
+    "floorTopTolerance": 0.003,
+    "fasciaHeight": 0.18,
+    "basePlateHeight": 0.025,
+    "boltHeight": 0.020,
+    "boltEmbedTarget": 0.003,
+    "boltEmbedMin": 0.001,
+    "boltEmbedMax": 0.006,
+    "lowerRailHeight": 0.040,
+    "lowerRailBottomClearance": 0.070,
+    "lowerRailClearanceMin": 0.050,
+    "lowerRailClearanceMax": 0.100,
+    "dividerBracketLowHeight": 0.160,
+    "contactTolerance": 0.003
+  },
+  "installationSequence": [
+    "Resolve each bay's actual balcony-floor top plane from the persisted renderer bounds and verify it remains within the locked generated-fallback floor-top tolerance.",
+    "Place the concrete fascia directly below that top plane so its upper face is flush with the walking-surface elevation and its extra thickness projects downward rather than upward into the railing zone.",
+    "Seat each galvanized base plate on the slab top with zero intentional air gap.",
+    "Seat each visible anchor-bolt head into the base-plate top by the small controlled embed target so it reads as tightened hardware rather than a floating cylinder.",
+    "Keep the lower rail bottom roughly 70 mm above the slab top so it is visibly separate from the slab and mechanically intersects the vertical post line.",
+    "Seat the low divider bracket on the slab top; preserve the existing higher bracket and fasteners as separate manufactured hardware."
+  ],
+  "interfacesGapsSeals": [
+    "fascia top to balcony-floor top: flush within contactTolerance",
+    "base-plate bottom to slab top: flush within contactTolerance",
+    "anchor-bolt head to base-plate top: controlled 1-6 mm visual embed, target 3 mm",
+    "lower-rail bottom to slab top: 50-100 mm allowed, target 70 mm",
+    "low divider-bracket bottom to slab top: flush within contactTolerance",
+    "base plate must laterally contain the corresponding existing vertical rail-post centerline"
+  ],
+  "materialsFinish": {
+    "fascia": "same concrete/cementitious PBR material as BalconyFloor_<floor>_<bay>; dielectric mineral surface, no metallic response",
+    "basePlateAndBolts": "aged dark galvanized steel hardware; metallic response only where physically exposed",
+    "rails": "aged anodized-aluminum manufactured sections",
+    "weatheringRule": "rain/UV/runoff changes roughness/albedo only where exposure/source metadata provides a cause; no arbitrary rust or baked highlight"
+  },
+  "orientationExposureAging": [
+    "fascia front edge receives sun/rain and can show ledge-driven runoff below the top edge",
+    "base plates and anchor heads are rain/sun exposed and may carry localized oxidation/runoff at fastener sources",
+    "horizontal rail upward faces collect water/dust more than vertical faces",
+    "contact/grime must accumulate at interfaces and recesses rather than as uniform random noise"
+  ],
+  "geometryVsMaterialDetail": [
+    "slab/fascia thickness, base plate, bolt head, bracket, rail clearance and post relationship are geometry",
+    "oxide dulling, micro-scratches, chalking, concrete aggregate-scale normal response and water spotting are material/microdetail",
+    "contact shadows and grazing highlights must arise from real geometry + coherent lighting, never painted into albedo"
+  ],
+  "lookdevBrief": {
+    "frontal": "Native 3840x2160 facade crop: verify fascia reads as concrete, all seven post base plates sit on the slab top, and no plate/lower rail disappears into the slab.",
+    "oblique": "35-45 degree oblique balcony-services crop: reveal slab thickness, plate thickness, bolt heads, lower-rail clearance and bracket contact with coherent contact shadow.",
+    "grazing": "Midsummer grazing-light crop: concrete fascia must retain broad dielectric response while aluminum/galvanized hardware separates by angular highlight width/Fresnel; reject painted edge highlights.",
+    "macro100Percent": "Inspect plate/slab and bolt/plate interfaces at 100% pixels for floating gaps, z-fighting, buried hardware, light leaks or impossible intersection."
+  },
+  "researchReferences": [
+    {
+      "title": "LIXIL / TOSTEM ベランダ手すりII technical archive",
+      "url": "https://kinken.lixil.co.jp/e/products/csseresdet_775884/documents/technical",
+      "relevance": "Period fit: product series sales start 1996-10, supporting manufactured balcony handrail/anchor hardware as plausible around 2000. Exact project product is not claimed."
+    },
+    {
+      "title": "LIXIL ベランダ手すりII support/manual listing",
+      "url": "https://www.lixil.co.jp/support/purpose/manualsearch?pid=223242",
+      "relevance": "Confirms the long-running balcony-hand-rail product family and its installation/maintenance documentation context."
+    },
+    {
+      "title": "LIXIL ME-1674 base-plate post installation example",
+      "url": "https://www2.lixil.co.jp/rp/dfw/exsas4/torisetu/files/J14407C.pdf",
+      "relevance": "Modern installation reference showing explicit base-plate post, M10 adjust anchors, washers and bolts. Used only for the physical attachment principle, not for claiming circa-2000 product dimensions."
+    }
+  ],
+  "criticalDefectRelationship": [
+    "floating/interpenetrating hero geometry",
+    "materially impossible metallic/specular values",
+    "missing required construction/material metadata"
+  ],
+  "automaticVisualPoints": 0,
+  "renderVerificationRequired": true
+}

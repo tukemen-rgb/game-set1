@@ -1,0 +1,150 @@
+{
+  "schemaVersion": "1.0",
+  "runId": "2026-09-10_1136_slide_access_load_path",
+  "branch": "gpt/unity-migration",
+  "startHead": "2a3a26f13799f75cb10b9adb4b3dde9aa72a74a7",
+  "substantiveWorkHead": "08f60181a1314dec9cf0dc51deef6390761a3f2f",
+  "commits": [
+    {"sha": "caf371b2375fe437c2dbbd7321e9206c97734f2d", "purpose": "add machine-readable slide access/head/runout installation contract"},
+    {"sha": "dd87c1d3263d694e4fb9e88dcefcb06d7c1b6c55", "purpose": "add dimensional slide access/load-path lookdev illustration"},
+    {"sha": "3acaef14d64352086a1d4fbc43b2955338a3d027", "purpose": "first source-math correction of the inclined stringer/tread interface"},
+    {"sha": "cadcc5bf1bc05e92738bf76f1642a6a7c3f29de7", "purpose": "add source/runtime slide access and support reconstruction QA"},
+    {"sha": "8a446bb3688ff0bd4fcfbe553fba8426420c37e3", "purpose": "apply slide access before park-furniture LOD renderer rebinding on benchmark save"},
+    {"sha": "117743d6c252fca59780ead7470370e904a7a04e", "purpose": "bind slide construction QA into formal native-4K review checkpoints"},
+    {"sha": "3e8e982b45fea083f9fb0ad7bfc8bf6756365b58", "purpose": "replace unrealistic direct tread/tube intersection with side stringers and welded tread brackets"},
+    {"sha": "11f865de444118f9d0a72023b8ffcba9c11a7b64", "purpose": "update lookdev to show the bracketed tread-to-stringer load path"},
+    {"sha": "1a771ab80d840cfbe19e440d5b69072dac931582", "purpose": "make runtime QA measure tread/bracket contact, stringer clearance and bracket/stringer overlap"},
+    {"sha": "8cc093d2cb701d6cd3a569af9fd5d01b97608639", "purpose": "lock bracket dimensions and separation limits in the park save gate"},
+    {"sha": "116cbb491f02cf3673e7ae0197a3397ae3a7880b", "purpose": "correct formal native-4K packet description to the bracketed load path"},
+    {"sha": "0e2e6e20f2919c544255bcc5b5ea3b15527cbe9a", "purpose": "lock coarse-LOD platform guard continuity and rail join tolerance"},
+    {"sha": "3630a551a615eab36d7404495dd6f2584910f096", "purpose": "fix shared material lookup and restore/validate the omitted LOD3 platform transition guard"},
+    {"sha": "08f60181a1314dec9cf0dc51deef6390761a3f2f", "purpose": "link slide and bench interface contracts into scene-wide park metadata coverage"}
+  ],
+  "problemFound": {
+    "assembly": "HD_Slide",
+    "sourceEvidence": [
+      "The generated slide platform is approximately 2.03 m high and the refined stainless chute descends from it, but the existing HD_Slide source contained no climbable stair/access assembly at any LOD.",
+      "The source LOD0-2 platform guard exists while LOD3 omits HandrailL, HandrailR and HandrailTop; preserving a new stair at all four LODs without restoring that transition would make the coarse-LOD access rail terminate into empty space and create a topology-scale temporal discontinuity.",
+      "The first attempted direct tread-to-inclined-round-stringer concept was rejected during this run: a horizontal plate tangent in elevation to an inclined tube would cut through the tube over the tread depth. The final design moves the stringers outside the 780 mm tread envelope and transfers load through explicit welded brackets.",
+      "The first implementation also tried to resolve the exposed-steel material independently inside every LOD tier, but that material is only represented by LOD0 fasteners in the source. The final code resolves authoritative materials once from the full HD_Slide hierarchy, avoiding false failure on LOD1-3."
+    ],
+    "criticalDefectRisk": [
+      "floating/interpenetrating hero geometry",
+      "visible LOD pop",
+      "missing required construction/material metadata"
+    ],
+    "affectedCategories": [
+      "Geometry & construction fidelity",
+      "Material/PBR physical plausibility",
+      "Period accuracy/scene authenticity",
+      "Temporal/LOD/aliasing stability"
+    ]
+  },
+  "implementation": {
+    "accessStair": {
+      "treadCount": 10,
+      "treadWidthMetres": 0.78,
+      "treadDepthMetres": 0.18,
+      "treadThicknessMetres": 0.0032,
+      "nominalRiseMetres": 0.19,
+      "nominalRunMetres": 0.15444444,
+      "accessAngleDegreesBySourceMath": 50.89353,
+      "topPlatformVerticalRiseMetresBySourceMath": 0.1459,
+      "topPlatformHorizontalGapMetresBySourceMath": 0.0200
+    },
+    "stringerBracketLoadPath": {
+      "stringerDiameterMetres": 0.0486,
+      "stringerCenterAbsXMetres": 0.44,
+      "treadHalfWidthMetres": 0.39,
+      "minimumPhysicalLateralClearanceMetresBySourceMath": 0.0257,
+      "hardMinimumLateralClearanceMetres": 0.015,
+      "bracketCount": 20,
+      "bracketSizeMetres": [0.06, 0.025, 0.06],
+      "bracketCenterAbsXMetres": 0.42,
+      "maximumAllowedBracketStringerAxisMissMetres": 0.004,
+      "contactRule": "Each horizontal tread seats on two brackets. The bracket inner edge meets the tread edge; the bracket outer volume overlaps the side-stringer axis envelope. The tread plate itself remains laterally clear of the inclined round tube."
+    },
+    "platformTransition": {
+      "sourceGuardPresentLod": [0, 1, 2],
+      "sourceGuardMissingLod": [3],
+      "generatedLod3Fallback": "two 34 mm vertical transition posts plus a dimension-matched top rail are generated only when the source guard is absent; access bridge rails must join the guard within 4 mm",
+      "guardPostCenterAbsXMetres": 0.72,
+      "guardPostHeightMetres": 1.08,
+      "guardTopLengthMetres": 1.42
+    },
+    "chuteSupports": {
+      "headBearerDiameterMetres": 0.0486,
+      "headBearingGapMetresBySourceMath": 0.000106,
+      "headBearerTiedToExistingLegs": true,
+      "runoutBearerDiameterMetres": 0.04,
+      "runoutBearingGapMetresBySourceMath": 0.00000045,
+      "runoutShortPostsAndFootPlates": true
+    },
+    "materials": "Coated structural steel remains dielectric (metallic 0, F0 target about 0.04), exposed fastener steel remains metallic, and the existing physical chute remains SUS304-like metallic material. Highlights are produced by BRDF/Fresnel and scene lighting rather than albedo.",
+    "lod": "Treads, welded brackets, side stringers, access rails, platform transition continuity, chute-head bearing and runout support persist through LOD0/1/2/3. Only small chute-head fastener heads are LOD0-only. New renderers are created before the existing explicit LOD rebind and are then required to be members of the corresponding LOD renderer set.",
+    "lookdev": "Assets/QA/slide_access_installation_lookdev.svg"
+  },
+  "referenceResearch": [
+    {
+      "authority": "Yokohama City Environmental Planning Bureau",
+      "url": "https://www.city.yokohama.lg.jp/business/nyusatsu/youshiki/kankyo/koenshiryo/download/1sekkeikijun-shiryou.files/zushuuikkatsu3004-3011.pdf",
+      "use": "Construction-principle/safety-envelope reference for a large public-park slide: explicit stair/access section, tread depth >=170 mm, step rise <=220 mm, access angle 50-75 degrees, stainless running surface >=1.5 mm and low landing/runout. The document lineage lists partial revisions in April 1999 and April 2002, but the current sheet is not claimed as one exact circa-2000 product."
+    }
+  ],
+  "qaEnforcement": [
+    "Machine-readable slide contract records manufacture sequence, dimensions/thickness, materials/finish, mounting, gaps/interfaces, orientation/exposure, cause-based aging, geometry-vs-material detail, four-level LOD policy and zero automatic Visual Fidelity credit.",
+    "Source/runtime QA rejects tread depth below 170 mm, rise above 220 mm, access angle outside 50-75 degrees, tread/stringer lateral clearance below 15 mm, bracket/stringer axis miss over 4 mm, rail joins over 4 mm, unsupported head/runout bearings, generated colliders, built-in Unity primitive meshes and generated renderers outside the rebound LOD sets.",
+    "Benchmark scene save rebuilds the furniture/physical slide, constructs access/support geometry before LOD rebind, then validates the final rebound state.",
+    "Complete Native 4K Review Packet validates the slide contract before preparation and validates the final slide assembly before reflection capture, after reflection synchronization immediately before Camera.Render, and after still sealing before temporal capture.",
+    "Scene-wide park metadata coverage now explicitly links both the slide access and bench construction-interface contracts, reducing the chance that detailed load-path metadata becomes orphaned from benchmark renderer coverage."
+  ],
+  "verification": {
+    "sourceDimensionalAudit": "PASS_BY_CODE_MATH_ONLY",
+    "contractJson": "CREATED_MACHINE_READABLE",
+    "lookdevIllustration": "CREATED_SVG",
+    "selfAuditCorrections": [
+      "direct horizontal tread / inclined tube intersection rejected and replaced with side-stringer brackets",
+      "per-LOD exposed-steel material lookup replaced by full-slide authoritative lookup",
+      "LOD3 missing platform guard discovered and restored with dimension-matched transition geometry"
+    ],
+    "runStartToSubstantiveHead": {
+      "aheadBy": 14,
+      "behindBy": 0,
+      "mergeBaseRemainedStartHead": true,
+      "changedPathsOnlyUnder": ["UnityProject/Assets/Editor", "UnityProject/Assets/QA"]
+    },
+    "godotTouched": false,
+    "baseMergePerformed": false,
+    "githubCommitStatusContextsAtSubstantiveHead": 0,
+    "githubWorkflowRunsAtSubstantiveHead": 0,
+    "unity6000_3_0f1Compile": "PENDING_NO_RUNNER",
+    "native3840x2160Render": "PENDING_NO_RUNNER",
+    "hundredPercentCropReview": "PENDING_NO_RUNNER",
+    "temporalRenderEvidence": "PENDING_NO_RUNNER"
+  },
+  "implementationReadiness": {
+    "score": 93,
+    "possible": 100,
+    "status": "UNCHANGED",
+    "reason": "The remaining seven readiness points are reserved for actual Unity compile/runtime evidence. Source-side construction reasoning and QA cannot satisfy them."
+  },
+  "visualFidelity": {
+    "status": "UNSCORED",
+    "pointsAwardedThisRun": 0,
+    "passClaimed": false
+  },
+  "expectedVisualScoreImpact": {
+    "geometryConstruction": "Potentially removes a conspicuous authenticity/construction deficiency around the benchmark-visible slide and protects against floating/interpenetrating support geometry. Roughly 1-2 Geometry points could become recoverable only if native 4K evidence proves the stair/bracket/head/runout assembly cleanly constructed and proportioned.",
+    "materialPbr": "Potential small improvement because coated steel, exposed fasteners and SUS304 retain separate physical material classes; no points are assumed until grazing-light pixels verify the response.",
+    "periodAuthenticity": "Potential small deduction recovery because the slide now reads as a climbable fabricated public-park assembly rather than an inaccessible platform/chute prop; period credit still requires rendered context review.",
+    "temporalLod": "Potential stability improvement because the stair/support silhouette persists through all four LODs and LOD3 no longer drops the receiving platform guard. Actual pop/shimmer must be judged in temporal evidence.",
+    "automaticCredit": 0
+  },
+  "nextBlocker": "No Unity 6000.3.0f1 runner/workflow or native render evidence exists. When a Runner appears, stop speculative expansion and execute the formal native-4K packet. At 100% inspect the slide stair from oblique view for tread/bracket/stringer daylight, horizontal-plate/tube interpenetration, top-step/platform continuity, rail-to-platform-guard continuity, chute-head bearing contact and runout support contact; inspect grazing light for coated-steel versus exposed-metal/SUS response; then traverse all four slide LODs for guard/stair/support pop or shimmer. Fix the rendered defect instead of weakening the gate.",
+  "constraints": {
+    "preserveGodot": true,
+    "mergeBaseWithoutApproval": false,
+    "excludedThemes": ["earthquake", "disaster", "reconstruction"],
+    "stopNewCommitsAfter": "2026-09-18"
+  }
+}

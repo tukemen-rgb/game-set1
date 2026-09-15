@@ -1,0 +1,60 @@
+{
+  "schemaVersion": "1.0",
+  "runDate": "2026-09-13",
+  "branch": "gpt/unity-migration",
+  "startHead": "747eb54e4bd368fd7a0eafdcee9d9346cad00737",
+  "substantiveCommits": [
+    "acaca5c8ec13b9d33b44f8698b54bd875231efc1",
+    "22d88da3b2001229a65f71e7a0e31bf93f54555b",
+    "0c82a4eeecef47c5df373d0a3295355ed760a1e6"
+  ],
+  "problem": {
+    "summary": "The authoritative native-4K packet validated prepared-scene shadow/AA/LOD state before its deterministic scene rebuild. UnityProject does not repository-author ProjectSettings/QualitySettings.asset on this branch, so a clean runner could inherit machine/default QualitySettings and fail before the rebuild that establishes the benchmark state.",
+    "risk": "A clean Unity runner could be unable to reach reflection synchronization or any real 3840x2160 evidence even though the deterministic benchmark builder is capable of establishing the required 8x MSAA, VeryHigh shadows, four cascades, StableFit, high LOD bias and coherent SummerSun state.",
+    "visualGateCategoriesAtRisk": [
+      "lighting_shadows_reflections",
+      "temporal_lod_aliasing_stability",
+      "cinematic_image_quality_composition_color_exposure"
+    ]
+  },
+  "changes": [
+    "Added native_4k_clean_session_preflight_contract.json to machine-bind the two-phase preflight policy.",
+    "Added QualityBlockNative4KCleanSessionPreflightQA.ValidateContractConfigOnly() for clean-session contract checks that do not judge unestablished machine-global scene/QualitySettings state.",
+    "Added QualityBlockNative4KCleanSessionPreflightQA.ValidatePreparedBaseline() to require the full shadow-stability and solar-shadow scene validators immediately after deterministic benchmark rebuild/reopen.",
+    "Changed QualityBlockNative4KReviewPacket.Prepare() so contract-only preflight occurs before rebuild and prepared-baseline validation occurs immediately after QualityBlock4KCapture.PrepareSceneForSynchronizedCapture(), before period/weathering/vegetation/post-build evidence mutations and before reflection request."
+  ],
+  "verification": {
+    "staticSourceReview": true,
+    "nativePacketOrderReviewed": true,
+    "environmentQualityAuthoringReviewed": true,
+    "projectQualitySettingsAssetRepositoryAuthored": false,
+    "unityCompileVerified": false,
+    "unityRuntimeVerified": false,
+    "real3840x2160EvidenceAvailable": false,
+    "visualFidelityScored": false,
+    "visualFidelityPassClaimed": false
+  },
+  "implementationReadiness": 93,
+  "visualFidelityStatus": "UNSCORED_UNTIL_REAL_4K_RENDER",
+  "visualFidelityPointsAdded": 0,
+  "expectedVisualScoreImpact": {
+    "lighting_shadows_reflections": "medium-to-large reachability impact: clean runners can now reach the deterministic VeryHigh/four-cascade physical-sun baseline instead of being rejected by pre-build machine defaults; no points until actual pixels are reviewed",
+    "temporal_lod_aliasing_stability": "medium reachability impact: clean runners can now reach the deterministic MSAA/high-LOD baseline before temporal evidence; no points until actual temporal pixels are reviewed",
+    "cinematic_image_quality_composition_color_exposure": "small-to-medium evidence-path impact only; display quality is not scored without real frames",
+    "automaticPoints": 0
+  },
+  "failureInjectionForRunner": [
+    "Start a clean editor session with low/default machine QualitySettings: contract-only preflight must not reject the packet before deterministic rebuild.",
+    "After deterministic rebuild, verify the prepared baseline establishes at least 4x AA and the canonical shadow contract; the environment builder is expected to set 8x AA, VeryHigh shadow resolution, StableFit and four cascades.",
+    "After rebuild set QualitySettings.shadowCascades != 4: prepared-baseline validation must fail before reflection request.",
+    "After rebuild set QualitySettings.antiAliasing < 4: prepared-baseline validation must fail before reflection request.",
+    "After rebuild alter the sole SummerSun direction or add a second directional light: prepared-baseline solar/shadow validation must fail before reflection request."
+  ],
+  "constraints": {
+    "godotPreserved": true,
+    "baseMerged": false,
+    "excludedDisasterThemesAdded": false,
+    "newVisualPointsWithoutRender": false
+  },
+  "nextBlocker": "A real Unity 6000.3.0f1 runner is still required. On runner availability, stop speculative expansion, execute the clean native-4K packet, perform the preflight failure injections, refresh realtime reflection probes, capture 3840x2160 hero/oblique/grazing frames plus 100% crops and temporal evidence, then score only observed pixels through the locked 100-point Visual Fidelity Gate."
+}

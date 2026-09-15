@@ -1,0 +1,64 @@
+{
+  "runDate": "2026-09-13",
+  "objective": "Close the authored-facade evidence hole in the formal reflection/still epoch: previously authored mode froze only the benchmark scene GUID and authored/fallback flag, so the danchi replacement root, transforms, renderer meshes/materials or LOD state could change after ReflectionProbe baseline and still inherit the old formal epoch.",
+  "startHead": "af549d58cfcfc0d64ab6a096c2ce6b33ae670361",
+  "substantiveWorkHead": "541e55daa43e270aba7710b1444fda790c71c403",
+  "substantiveCommits": [
+    "5aa2b6ff904cd5c4976365315f97402323e6661a",
+    "541e55daa43e270aba7710b1444fda790c71c403"
+  ],
+  "changes": [
+    "Upgraded QualityBlockFacadeFormalBuildBinding authored mode from scene-GUID-only provenance to a deterministic SHA-256 representation fingerprint persisted in UnityEditor.SessionState.",
+    "Authored baseline now requires exactly one active persisted danchi.main QualityBlockArtSlot, an active authored prefab/model instance, an inactive generated fallback, benchmark-scene membership and at least one enabled active renderer.",
+    "Fingerprint freezes stable GlobalObjectIds for slot/authored/fallback identities, the authored source prefab/model path+GUID+AssetDatabase dependency hash, slot world transform, every authored hierarchy object's activeSelf/local transform, renderer enabled/shadow/probe state, persistent mesh identity+dependency hash, ordered material identity+dependency hashes, and authored/slot LODGroup thresholds and renderer membership.",
+    "Repeated reflection request/poll/completion/pre-still validation recomputes the fingerprint read-only and aborts on any mismatch; it never repairs, regenerates or silently re-arms authored art while evidence may be in flight.",
+    "A SessionState-authored epoch with no schema-1.2 fingerprint now fails closed, so an assembly reload after upgrading the QA code cannot grandfather a pre-1.2 authored baseline.",
+    "Multiple danchi.main slots now fail deterministically instead of relying on FirstOrDefault ordering.",
+    "Updated facade_formal_build_binding_contract.json to schema 1.2 with machine-readable authored fingerprint coverage, assembly-reload persistence, mutation policy, legacy-epoch rejection and zero automatic Visual Fidelity points."
+  ],
+  "verification": {
+    "performed": [
+      "Reviewed QualityBlockArtSlot and QualityBlockArtReplacement to confirm danchi.main authored replacements are instantiated as persisted prefab/model children of the art slot and expose AuthoredInstance/FallbackRoot for fail-closed identity binding.",
+      "Reviewed the updated source after commit and confirmed contract schema 1.2 fields are enforced by ValidateContractConfigOnly.",
+      "Checked Unity 6 official API documentation for GlobalObjectId stable scene/object identity, the long localId AssetDatabase.TryGetGUIDAndLocalFileIdentifier overload, AssetDatabase.GetAssetDependencyHash, PrefabUtility.GetPrefabAssetPathOfNearestInstanceRoot and LODGroup.localReferencePoint used by the fingerprint implementation.",
+      "Compared startHead to substantiveWorkHead: 2 commits ahead, 0 behind; merge base remains startHead and only UnityProject/Assets/Editor/QualityBlockFacadeFormalBuildBinding.cs plus UnityProject/Assets/QA/facade_formal_build_binding_contract.json changed.",
+      "Checked substantiveWorkHead GitHub Actions: 0 workflow runs.",
+      "Checked substantiveWorkHead commit statuses: 0 status contexts."
+    ],
+    "pending": [
+      "Unity 6000.3.0f1 compilation of SHA256/CultureInfo, PrefabUtility, AssetDatabase dependency-hash, GlobalObjectId component identity and LODGroup fingerprint code.",
+      "Authored-mode failure injection in a clean Editor session: arm authored epoch, force script/assembly reload, confirm SessionState fingerprint survives, then alter authored root identity, one hierarchy transform, one renderer enabled state, one mesh/material dependency and one LOD threshold independently and verify each causes hard failure without mutation.",
+      "Legacy-epoch failure injection: simulate AuthoredEpoch=true with empty AuthoredFingerprint and verify schema-1.2 validation refuses formal evidence until clean Editor restart.",
+      "Fallback visibility failure injection: reactivate generated fallback while authored art remains active and verify formal evidence aborts.",
+      "Fresh synchronized reflection request/poll/completion/pre-still cycle and native 3840x2160 hero/oblique/grazing captures plus 100% crops and temporal LOD review."
+    ],
+    "runtimeRenderVerified": false
+  },
+  "implementationReadiness": {
+    "score": 93,
+    "possible": 100,
+    "reason": "Evidence provenance is stricter for future authored replacements, but the existing 7-point Unity compile/editor-runtime/build-runtime verification blocker remains unresolved because no Runner or workflow result exists."
+  },
+  "visualFidelity": {
+    "status": "UNSCORED_UNTIL_REAL_4K_RENDER",
+    "pointsAwardedThisRun": 0,
+    "passClaimed": false,
+    "expectedVisualScoreImpact": [
+      "Geometry & construction fidelity: medium evidence-integrity impact by preventing a swapped or repositioned authored facade from inheriting an older reflection baseline; no awarded points without actual pixels.",
+      "Material/PBR physical plausibility: medium evidence-integrity impact because in-place material/texture/shader dependency edits and mesh swaps now change the authored fingerprint; no awarded points without actual pixels.",
+      "Lighting/shadows/reflections: medium evidence-integrity impact because renderer shadow/reflection-probe state and representation identity must match the reflection epoch; no awarded points without an actual synchronized probe/render packet.",
+      "Temporal/LOD/aliasing stability: small-to-medium evidence-integrity impact because LODGroup configuration and renderer membership cannot drift after baseline; actual pop/shimmer remains unscored until temporal render evidence.",
+      "Critical-defect evidence: reduces provenance risk for visible_primitive_placeholder, obvious_repetition, hero_geometry_intersection, major_light_leak and missing_construction_material_metadata but clears none of them without native 4K review."
+    ]
+  },
+  "nextBlocker": "Unity 6000.3.0f1 Runner/runtime. At first availability stop speculative expansion: compile schema-1.2, arm a clean authored epoch with a persisted PF_Danchi_A replacement, force assembly reload, inject root/transform/mesh/material/LOD/fallback-visibility mutations and confirm fail-closed behavior, then clean-restart and capture a fresh synchronized ReflectionProbe plus 3840x2160 hero/facade_center, oblique/construction_depth and grazing/sash_rail_response with 100% crops and temporal LOD evidence before any Visual Fidelity score is awarded.",
+  "constraints": {
+    "godotPreserved": true,
+    "baseMerged": false,
+    "forbiddenThemesExcluded": [
+      "earthquake",
+      "disaster",
+      "reconstruction"
+    ]
+  }
+}

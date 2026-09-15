@@ -1,0 +1,103 @@
+{
+  "schemaVersion": "1.0.0",
+  "runId": "2026-09-14_2336_park_exposure_weathering",
+  "branch": "gpt/unity-migration",
+  "startHead": "cf1ae21f1bbe2d00e13b68049ef39789d7d31f6c",
+  "substantiveHeadBeforeRunRecord": "2a109ce44d156df495890611d35682dbc7c44e7e",
+  "constraints": {
+    "godotPreserved": true,
+    "baseMerged": false,
+    "excludedThemesAdded": false,
+    "visualTarget": "plausible high-quality 4K live-action still frames while remaining real-time Unity",
+    "visualFidelityPassThreshold": 92,
+    "visualFidelityPointsAwardedThisRun": 0
+  },
+  "commits": [
+    {"sha": "5214a51848c3a72b518c4ebaa2be73e97b362624", "purpose": "machine-readable causal park/street-furniture exposure-weathering contract"},
+    {"sha": "a791462f6e52a47332be646473cfe5b707e59d8f", "purpose": "lookdev illustration for exposure/contact/shelter classes"},
+    {"sha": "e70c8ca112992d47f22cbe7040070eb808c0420b", "purpose": "material-only causal weathering implementation and formal/reflection camera QA"},
+    {"sha": "3e76106b7d3bd73ec6a5fde9380e5f97c23526ef", "purpose": "park/street-furniture save-gate integration"},
+    {"sha": "19ec6acd8d3e32efc2424687d5d0f7bbc35494ea", "purpose": "resolve notice acrylic specific-vs-aggregate roughness contract overlap"},
+    {"sha": "0a745973c536790a359a876cbf8815be53858663", "purpose": "normalize acrylic before aggregate prepared-scene validation"},
+    {"sha": "b89ffd036b82bbd96a2b2abec26aa3954b17713d", "purpose": "bind new weathering contract into scene metadata/capture evidence source set"},
+    {"sha": "2a109ce44d156df495890611d35682dbc7c44e7e", "purpose": "fail closed on notice acrylic physical drift during formal/reflection rendering"}
+  ],
+  "workCompleted": [
+    "Added component-scale causal exposure classes for slide UV/rain paint, slide hand-contact paint, bench sun-exposed timber, notice-board top UV/rain exposure and sheltered notice-board content.",
+    "Preserved existing stainless chute directional-abrasion ownership and park-lamp causal weathering ownership rather than layering duplicate systems.",
+    "Weathering variants reuse the authoritative base albedo, normal and metallic-smoothness maps, physical UV scale/offset and normal scale; only restrained color multiplier and smoothness scaling change.",
+    "Formal QA is read-only/fail-closed for QA4K, temporal/prepared-temporal and reflection cameras.",
+    "Added a lookdev plate documenting exposure/contact/shelter intent and required render evidence.",
+    "Found and resolved an existing validator conflict: notice acrylic smoothness 0.89 meant roughness 0.11, legal for the acrylic-specific 0.08-0.15 contract but below the aggregate furniture roughness floor 0.12. Canonical target is now smoothness 0.875 / roughness 0.125 / metallic 0.",
+    "Added formal/reflection read-only acrylic physical-range validation so drift cannot be repaired during capture.",
+    "Added the exposure-weathering contract to both park and street-furniture metadata coverage domains, so construction/material evidence binding hashes it with the capture source set."
+  ],
+  "machineReadableRules": {
+    "contract": "Assets/QA/park_furniture_exposure_weathering_contract.json",
+    "lookdev": "Assets/QA/park_furniture_exposure_weathering_lookdev.svg",
+    "implementationQA": "Assets/Editor/QualityBlockParkFurnitureExposureWeatheringQA.cs",
+    "acrylicCompatibilityQA": "Assets/Editor/QualityBlockNoticeAcrylicCompatibilityQA.cs",
+    "saveGate": "Assets/Editor/QualityBlockParkFurnitureSaveGate.cs",
+    "metadataCoverage": "Assets/QA/scene_metadata_coverage_contract.json"
+  },
+  "verification": {
+    "repositoryComparison": {
+      "status": "ahead",
+      "aheadByBeforeRunRecord": 8,
+      "behindBy": 0,
+      "mergeBaseEqualsStartHead": true,
+      "changedPathsBeforeRunRecord": [
+        "UnityProject/Assets/Editor/QualityBlockNoticeAcrylicCompatibilityQA.cs",
+        "UnityProject/Assets/Editor/QualityBlockParkFurnitureExposureWeatheringQA.cs",
+        "UnityProject/Assets/Editor/QualityBlockParkFurnitureSaveGate.cs",
+        "UnityProject/Assets/QA/park_furniture_exposure_weathering_contract.json",
+        "UnityProject/Assets/QA/park_furniture_exposure_weathering_lookdev.svg",
+        "UnityProject/Assets/QA/scene_metadata_coverage_contract.json"
+      ],
+      "godotPathsChanged": 0
+    },
+    "githubStatusContexts": 0,
+    "githubWorkflowRuns": 0,
+    "unityVersionExpected": "6000.3.0f1",
+    "unityCompileVerified": false,
+    "unityRuntimeVerified": false,
+    "native3840x2160RenderAvailable": false,
+    "renderVerification": "PENDING_UNITY_RUNTIME"
+  },
+  "scores": {
+    "implementationReadiness": 93,
+    "implementationReadinessMax": 100,
+    "visualFidelity": "UNSCORED_UNTIL_REAL_4K_RENDER",
+    "visualFidelityPassClaimed": false,
+    "visualFidelityPointsAwardedThisRun": 0
+  },
+  "expectedVisualScoreImpactNotAwarded": {
+    "weatheringContextCausality": "medium-high: component-scale UV/rain/contact/shelter differences should reduce uniform procedural appearance if visible in real pixels",
+    "materialPbrPhysicalPlausibility": "medium: variants preserve base physical maps/metallic class and keep highlights lighting-driven",
+    "textureMicrodetailTexelFidelity": "low-medium: no new texture resolution is claimed; existing microdetail is reused without scale drift",
+    "temporalLodAliasingStability": "low-medium: causal material class is explicitly persistent across LOD0/1/2/3, but actual pop/shimmer remains unverified",
+    "periodAccuracySceneAuthenticity": "low-medium: ordinary maintenance/exposure variation supports circa-2000 public-space authenticity without introducing narrative damage"
+  },
+  "failureInjectionForUnityRunner": [
+    "remove UV-exposed material from one slide tread",
+    "assign UV-exposed instead of hand-contact material to one access handrail",
+    "replace PhysicalChute PBR_SlideStainless with a weathering variant",
+    "make one weathering variant metallic",
+    "change one variant base normal or metallic-smoothness texture binding",
+    "change one variant physical texture scale or offset",
+    "enable emission on a weathering variant",
+    "assign exterior weathering to sheltered notice paper/backing",
+    "remove LOD3 causal-class substitution to induce material-class pop",
+    "set notice acrylic back to smoothness 0.89 and verify formal/reflection pre-cull rejects the render"
+  ],
+  "requiredNextRenderEvidence": [
+    "native 3840x2160 frontal/hero benchmark frame",
+    "native 3840x2160 oblique benchmark frame",
+    "native 3840x2160 grazing-light benchmark frame",
+    "100% crop of slide access paint/contact rails",
+    "100% crop of bench timber and support contact zone",
+    "100% crop of notice-board top frame/hood/acrylic",
+    "temporal oblique/grazing sequence spanning relevant LOD transitions"
+  ],
+  "nextBlocker": "No Unity 6000.3.0f1 runner, compile result, native 3840x2160 render or temporal sequence is available on the branch. When one appears, stop speculative expansion, execute the failure injections, then score/fix actual rendered evidence only."
+}

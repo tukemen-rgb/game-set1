@@ -1,0 +1,111 @@
+{
+  "schemaVersion": "1.0.0",
+  "runId": "2026-09-14_park_furniture_microtexture_import_precision",
+  "branch": "gpt/unity-migration",
+  "startHead": "00006baa41213ae445f3be20f89a0b4e169a34a1",
+  "objective": "Increase implementation readiness for the 100-point Visual Fidelity Gate by preventing block-compression degradation of benchmark-visible park-furniture normal and metallic/smoothness data, then binding that state to reflection and formal render boundaries.",
+  "observedGap": {
+    "source": "QualityBlockParkFurnitureMicrodetailUpgrade authors eight 1024 material sets with manufacture-scale normal and roughness/metallic signals, but its WriteTexture path imports the generated maps with TextureImporterCompression.CompressedHQ.",
+    "risk": "The 0.028-0.055 mm stainless/coating/exposed-steel normal signals and narrow smoothness bands can be quantized before the required 4K grazing review. More pronounced timber/concrete relief can also pick up block artifacts or temporal sparkle. Existing park-furniture QA checked texture type, dimensions and anisotropy but did not require uncompressed physical-data imports or forbid platform overrides/Crunch.",
+    "whyPrioritized": "Park furniture is benchmark-visible and contributes directly to Material/PBR, Texture/Microdetail and Temporal stability. The change protects existing physically reasoned assets rather than adding speculative content, and it can be enforced safely without a Unity runner."
+  },
+  "changes": [
+    {
+      "commit": "2d8401df625f574a62c4ba0689aadc416d82490b",
+      "file": "UnityProject/Assets/QA/park_furniture_microtexture_import_precision_contract.json",
+      "summary": "Added a machine-readable import-precision contract for eight park-furniture profiles and sixteen normal/mask physical-data textures, preserving existing manufacture, roughness, metallic, wetness and angular-response reasoning."
+    },
+    {
+      "commit": "ba3dd7646f00bb1ded166f66c825452b9c6b65b7",
+      "file": "UnityProject/Assets/Editor/QualityBlockParkFurnitureMicrotextureImportPrecisionQA.cs",
+      "summary": "Added preparation, automatic reimport repair and read-only formal-camera validation requiring Uncompressed, Crunch off, no Standalone override, 1024 runtime dimensions, mipmaps, Repeat, Trilinear, anisotropy >=8, linear physical data, NormalMap typing and source-alpha preservation."
+    },
+    {
+      "commit": "49739ecffa6f652c98c56439c99f0a1019f5bfb0",
+      "file": "UnityProject/Assets/QA/physical_data_import_precision_bundle_contract.json",
+      "summary": "Added park furniture as the sixth protected physical-data precision domain and extended failure-injection requirements."
+    },
+    {
+      "commit": "5eb5e1aa93c559d47cace5d172f1238ac4ea4aa3",
+      "file": "UnityProject/Assets/Editor/QualityBlockPhysicalDataImportPrecisionBundleQA.cs",
+      "summary": "Bound park-furniture preparation/read-only validation into the aggregate reflection-probe and formal still/temporal render-boundary gate."
+    }
+  ],
+  "protectedParkFurnitureData": {
+    "profiles": 8,
+    "physicalDataTextures": 16,
+    "mapsPerProfile": ["Normal", "MetallicSmoothness"],
+    "runtimeDimensions": "1024x1024",
+    "importPolicy": "Uncompressed, Crunch OFF, Standalone override OFF, mipmaps ON, Repeat, Trilinear, anisotropy >=8, sRGB OFF; normal=NormalMap; mask=Default with source alpha",
+    "albedoPolicy": "Not forced uncompressed by this gate; the protected scope is physical normal/metallic/smoothness data where compression most directly alters grazing response and temporal stability."
+  },
+  "renderBoundaryBehavior": {
+    "formalTargets": ["QA4K_*", "QATemporal_*", "QAPreparedTemporal_*"],
+    "reflectionCameraType": "Reflection",
+    "domainFormalPreCull": "READ_ONLY_FAIL_CLOSED",
+    "aggregateReflectionPreCull": "READ_ONLY_FAIL_CLOSED",
+    "aggregateFormalPreCull": "READ_ONLY_FAIL_CLOSED",
+    "repairDuringRenderCallback": false,
+    "manualPreparationEntryPoint": "QualityBlockPhysicalDataImportPrecisionBundleQA.ApplyAllAndValidate"
+  },
+  "verification": {
+    "githubCompareAfterSubstantiveChanges": {
+      "base": "00006baa41213ae445f3be20f89a0b4e169a34a1",
+      "head": "5eb5e1aa93c559d47cace5d172f1238ac4ea4aa3",
+      "status": "ahead",
+      "aheadBy": 4,
+      "behindBy": 0,
+      "mergeBase": "00006baa41213ae445f3be20f89a0b4e169a34a1",
+      "mergeBaseUnchanged": true,
+      "changedPaths": [
+        "UnityProject/Assets/Editor/QualityBlockParkFurnitureMicrotextureImportPrecisionQA.cs",
+        "UnityProject/Assets/Editor/QualityBlockPhysicalDataImportPrecisionBundleQA.cs",
+        "UnityProject/Assets/QA/park_furniture_microtexture_import_precision_contract.json",
+        "UnityProject/Assets/QA/physical_data_import_precision_bundle_contract.json"
+      ]
+    },
+    "commitStatusContextsAtSubstantiveHead": 0,
+    "workflowRunsAtSubstantiveHead": 0,
+    "unity6000_3_0f1Compile": "NOT_VERIFIED_NO_RUNNER",
+    "unityRuntime": "NOT_VERIFIED_NO_RUNNER",
+    "native4KRenderedEvidence": "NOT_AVAILABLE",
+    "godotModified": false,
+    "baseMerged": false,
+    "excludedThemesIntroduced": false
+  },
+  "failureInjectionForNextRunner": [
+    "Set Park_SlideStainless_Normal or any protected normal/mask to CompressedHQ and require domain plus aggregate render-boundary failure.",
+    "Enable Crunch compression and require failure.",
+    "Enable a Standalone platform override and require failure.",
+    "Reduce maxTextureSize below 1024 or confirm a runtime dimension below 1024x1024 and require failure.",
+    "Disable mipmaps, switch to Bilinear/Point, or reduce anisotropy below 8 and require failure.",
+    "Enable sRGB on physical-data maps and require failure.",
+    "Change a normal away from NormalMap and require failure.",
+    "Remove source alpha from a metallic/smoothness map and require failure.",
+    "Capture synchronized reflection probes from a clean state, mutate one park-furniture protected importer, then require final formal pre-cull failure rather than accepting stale cubemap/material coherence."
+  ],
+  "scores": {
+    "implementationReadiness": 93,
+    "implementationReadinessMax": 100,
+    "visualFidelity": "UNSCORED_UNTIL_REAL_4K_RENDER",
+    "visualFidelityPointsAwardedThisRun": 0,
+    "visualPassClaimed": false,
+    "expectedImpactNotAwarded": {
+      "Geometry & construction fidelity": "none",
+      "Material/PBR physical plausibility": "medium",
+      "Lighting/shadows/reflections": "small-medium",
+      "Texture/microdetail/texel fidelity": "medium-large",
+      "Weathering/context causality": "small",
+      "Vegetation/natural complexity": "none",
+      "Period accuracy/scene authenticity": "none",
+      "Cinematic image quality/composition/color/exposure": "small",
+      "Temporal/LOD/aliasing stability": "medium"
+    }
+  },
+  "nextBlocker": "A real Unity 6000.3.0f1 runner or fresh screenshots. When one appears, stop speculative expansion, run the listed import failure injections, rebuild/prepare park-furniture assets, synchronize reflection probes, and capture fresh 3840x2160 oblique/grazing frames plus 100% stainless/timber/concrete crops and temporal grazing evidence. Score only actual rendered pixels.",
+  "constraints": {
+    "preserveGodot": true,
+    "neverMergeBaseWithoutExplicitApproval": true,
+    "excludedThemes": ["earthquake", "disaster", "reconstruction"]
+  }
+}

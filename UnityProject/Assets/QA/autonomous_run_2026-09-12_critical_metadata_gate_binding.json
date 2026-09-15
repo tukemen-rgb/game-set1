@@ -1,0 +1,76 @@
+{
+  "runDate": "2026-09-12",
+  "branch": "gpt/unity-migration",
+  "startingHead": "11787510a1fc75ce118307de4c9cabed369d0995",
+  "implementationCommit": "764e643f2c763a4df4fb105b7dc6cbd078ac232a",
+  "scope": "Bind the named missing_construction_material_metadata automatic FAIL to machine-validated construction/material metadata at both formal-render preparation and final Visual Fidelity scoring.",
+  "finding": {
+    "problem": "The formal scene metadata validator proved active-renderer domain coverage, while the detailed material/construction registry had a separate validator. The Visual Fidelity scoring path required a human critical-defect review but did not itself machine-revalidate the metadata state. A reviewer could therefore mark missing_construction_material_metadata absent without the final scoring path proving the registry and current scene coverage together.",
+    "risk": "A nominal >=92 score could become eligible while a named automatic-fail condition was not independently bound to the exact scoring path.",
+    "priorityReason": "This closes a hard-gate correctness hole before speculative visual expansion. It does not claim or award render quality."
+  },
+  "changes": [
+    {
+      "path": "Assets/Editor/QualityBlockSceneMetadataCoverageQA.cs",
+      "summary": "Scene metadata validation now also requires the detailed construction/material registry, validates an explicit critical-defect binding contract, and source-audits that formal render and scoring entry points retain fail-closed metadata checks."
+    },
+    {
+      "path": "Assets/Editor/QualityBlockReviewedVisualEvidenceIntegrityQA.cs",
+      "summary": "Reviewed evidence validation now machine-revalidates the current benchmark scene metadata and material/construction registry before repetition/light-leak/temporal diagnostics and before the numeric Visual Fidelity gate can proceed."
+    },
+    {
+      "path": "Assets/QA/scene_metadata_coverage_contract.json",
+      "summary": "Schema 1.1.0 adds criticalDefectBinding for missing_construction_material_metadata, requiring registry validation, active-renderer coverage, fail-closed formal-render/scoring integration, zero source-awarded visual points, and no source-side clearance of rendered defects."
+    }
+  ],
+  "criticalDefectBinding": {
+    "id": "missing_construction_material_metadata",
+    "formalRenderEntryPoint": "Assets/Editor/QualityBlockNative4KReviewPacket.cs",
+    "formalRenderRequiredCall": "QualityBlockSceneMetadataCoverageQA.ValidateOpenScene();",
+    "minimumFormalRenderOccurrences": 3,
+    "scoringEntryPoint": "Assets/Editor/QualityBlockReviewedVisualEvidenceIntegrityQA.cs",
+    "scoringRequiredCall": "QualityBlockSceneMetadataCoverageQA.ValidateOpenScene();",
+    "minimumScoringOccurrences": 1,
+    "materialRegistry": "Assets/QA/material_construction_lookdev.json",
+    "visualPointsAwardedBySourceQA": 0,
+    "renderedCriticalDefectsClearedBySourceQA": false
+  },
+  "verification": {
+    "repositoryCompare": {
+      "base": "11787510a1fc75ce118307de4c9cabed369d0995",
+      "head": "764e643f2c763a4df4fb105b7dc6cbd078ac232a",
+      "status": "ahead",
+      "aheadBy": 1,
+      "behindBy": 0,
+      "mergeBase": "11787510a1fc75ce118307de4c9cabed369d0995",
+      "changedFiles": 3
+    },
+    "godotChanged": false,
+    "baseMerged": false,
+    "forbiddenThemeAdded": false,
+    "unityCompileVerified": false,
+    "unityRuntimeVerified": false,
+    "native4KRenderVerified": false,
+    "reasonRuntimePending": "No Unity runner/workflow/status context is available on this branch yet."
+  },
+  "scores": {
+    "implementationReadiness": 93,
+    "implementationReadinessMaximum": 100,
+    "visualFidelityStatus": "UNSCORED_UNTIL_REAL_4K_RENDER",
+    "visualFidelityPointsAwardedThisRun": 0,
+    "visualPassClaimed": false
+  },
+  "expectedVisualScoreImpact": {
+    "directPoints": 0,
+    "gateImpact": "Prevents the metadata automatic-fail from being bypassed by a human absent-mark alone.",
+    "categoriesProtected": [
+      "geometry_construction",
+      "material_pbr",
+      "texture_microdetail",
+      "weathering_causality",
+      "vegetation_natural_complexity",
+      "period_authenticity"
+    ]
+  },
+  "nextBlocker": "Unity 6000.3.0f1 runtime/runner is still required to compile the updated editor QA, execute the formal metadata bindings against the generated benchmark scene, produce native 3840x2160 hero/oblique/grazing evidence plus 100% crops and sealed temporal probes, and score only the resulting pixels."
+}

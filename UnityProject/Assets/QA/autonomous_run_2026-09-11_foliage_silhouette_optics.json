@@ -1,0 +1,85 @@
+{
+  "runDate": "2026-09-11",
+  "branch": "gpt/unity-migration",
+  "startHead": "5fcdf30697e70befc3258abc4317f6b829c2e2b3",
+  "substantiveCommits": [
+    {
+      "sha": "a9596f653a2ae7837e68df28473f361d7cf3e072",
+      "message": "feat: refine foliage silhouette coverage and shadows"
+    },
+    {
+      "sha": "71db1576cb57a3bad016585818e567ef89d45e63",
+      "message": "qa: define foliage silhouette optics contract"
+    },
+    {
+      "sha": "cd97521cf2b5b5d9b86d8248a1eb1fb6bcf7a07f",
+      "message": "docs: add foliage silhouette lookdev illustration"
+    },
+    {
+      "sha": "2dc4bd241505e8740e68c742f5ced8e10edd16c5",
+      "message": "qa: enforce foliage silhouette optics in formal evidence"
+    }
+  ],
+  "objective": "Reduce generated-tree card-like leaf silhouettes and keep visible foliage edges coherent with cast dapple shadows without awarding unobserved visual points.",
+  "reasoning": {
+    "observedSourceRisk": "The foliage shader rendered the full explicit diamond lamina footprint; the PBR leaf albedo alpha is generated as 1.0 everywhere, so no texture alpha could remove ruler-straight card edges.",
+    "selectedFix": "Use canonical raw leaf UV for a deterministic healthy-margin coverage function, separate from tiled PBR UV, with derivative antialiasing and alpha-to-coverage in the forward pass and the same coverage function in the shadow caster.",
+    "geometryVsMaterialBoundary": "Existing folded lamina geometry remains responsible for size, attachment, orientation and macro curvature. The shader only removes/insets a sub-centimetre-scale healthy biological margin inside the existing leaf footprint.",
+    "whyPriority": "This directly targets Vegetation natural complexity and a visible primitive/card failure mode while also improving dapple-shadow silhouette coherence. It is higher expected visual value than adding another evidence-only contract."
+  },
+  "implementation": {
+    "shader": "Assets/Shaders/NewTownFoliageTransmission.shader",
+    "contract": "Assets/QA/foliage_silhouette_optics_contract.json",
+    "formalQa": "Assets/Editor/QualityBlockFoliageSilhouetteOpticsQA.cs",
+    "lookdev": "Assets/QA/lookdev/foliage_silhouette_optics_lookdev.svg",
+    "canonicalParameters": {
+      "leafEdgeInset": 0.055,
+      "leafSerration": 0.020,
+      "leafEdgeAAScale": 1.35,
+      "forwardClipThreshold": 0.01,
+      "shadowClipThreshold": 0.50
+    },
+    "formalTargets": ["QA4K_", "QAPreparedTemporal_"],
+    "formalResolution": [3840, 2160]
+  },
+  "verification": {
+    "githubBranchHeadBeforeRun": "5fcdf30697e70befc3258abc4317f6b829c2e2b3",
+    "shaderSourceReviewed": true,
+    "canonicalLeafUvConfirmedFromGenerator": true,
+    "leafAlbedoAlphaConfirmedOpaqueInGenerator": true,
+    "criticalDefectIdsCheckedAgainstVisualGate": [
+      "visible_primitive_placeholder",
+      "obvious_repetition",
+      "severe_aliasing_or_shimmer"
+    ],
+    "workflowRunsOnLatestSubstantiveHead": 0,
+    "commitStatusContextsOnLatestSubstantiveHead": 0,
+    "unity6000_3_0f1CompileVerified": false,
+    "runtimeRenderVerified": false,
+    "native4KPixelsObserved": false
+  },
+  "scores": {
+    "implementationReadiness": 93,
+    "visualFidelityStatus": "UNSCORED_UNTIL_REAL_4K_RENDER",
+    "visualFidelityPointsAwardedThisRun": 0,
+    "passClaimed": false,
+    "expectedVisualScoreImpact": [
+      "Vegetation/natural complexity 8: direct positive candidate if actual silhouettes stop reading as repeated cards.",
+      "Lighting/shadows/reflections 15: secondary positive candidate if leaf and dapple-shadow margins remain coherent.",
+      "Temporal/LOD/aliasing 5: uncertain until native temporal evidence confirms alpha-to-coverage does not shimmer."
+    ]
+  },
+  "constraintsPreserved": {
+    "godotModified": false,
+    "baseMerged": false,
+    "forbiddenDisasterThemesAdded": false,
+    "visualPointsSelfAwardedWithoutRender": false
+  },
+  "knownLimitations": [
+    "The underlying generated leaf topology remains coarse and bounds the maximum possible silhouette quality.",
+    "Margin phase varies by leaf cluster rather than by individual leaf inside a cluster.",
+    "Actual alpha-to-coverage behavior depends on the Unity formal target MSAA/runtime state.",
+    "Shadow-map filtering and grazing subpixel coverage can still shimmer despite source-side derivative AA."
+  ],
+  "nextBlocker": "Unity 6000.3.0f1 Runner/runtime. When available, stop speculative expansion, compile the shader and QA, produce the sealed native 3840x2160 hero/oblique/grazing packet plus 100% vegetation/tree-shadow crops and temporal/subpixel_grazing, then score/fix actual pixels before any Visual Fidelity award."
+}

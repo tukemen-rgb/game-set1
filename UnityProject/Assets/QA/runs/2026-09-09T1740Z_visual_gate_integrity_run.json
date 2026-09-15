@@ -1,0 +1,55 @@
+{
+  "schemaVersion": "1.0",
+  "runUtc": "2026-09-09T17:40:00Z",
+  "branch": "gpt/unity-migration",
+  "startHead": "edb81a06723d5073a9f00611ec9c28e7f2d0d3bc",
+  "substantiveWorkHead": "5d1151daf2d01b4ab4cb59c8b49c8d43272be6d6",
+  "substantiveCommits": [
+    "1da633f0be19b15aec0c6baf391d43473055d370",
+    "21eb3fea25229c18f51c157201b9b1a755cbe397",
+    "182c5e9cb4bd6f0bebb18eb86ad5e162aee87f3a",
+    "5d1151daf2d01b4ab4cb59c8b49c8d43272be6d6"
+  ],
+  "scope": "Visual Fidelity Gate integrity and first-real-render review-path hardening",
+  "guardrails": {
+    "godotChanged": false,
+    "baseMerged": false,
+    "forbiddenDisasterThemeAdded": false,
+    "visualPointsClaimedWithoutRender": false
+  },
+  "verification": {
+    "mode": "GitHub source/static inspection only",
+    "branchCompare": "startHead..substantiveWorkHead is 4 commits ahead and 0 behind",
+    "workflowRunsObserved": 0,
+    "commitStatusContextsObserved": 0,
+    "unityEditorCompileVerified": false,
+    "native3840x2160EvidenceReviewed": false,
+    "captures4kPresent": false,
+    "notes": [
+      "The previous gate validated threshold=92, 3840x2160, nine category IDs and total weight=100, but it did not freeze each category's exact weight/hard minimum or the exact critical-defect set. A balanced but weakened gate could therefore have remained syntactically valid.",
+      "Added visual_gate_integrity_contract.json with the exact owner-approved 20/18, 20/18, 15/13, 10/9, 10/9, 8/7, 7/6, 5/4, 5/4 category geometry, threshold 92, native hero/oblique/grazing requirements and the exact twelve critical-defect IDs.",
+      "Added QualityBlockVisualGateIntegrityQA.cs. It independently hard-codes the canonical specification, validates both the operative gate JSON and the machine-readable integrity contract, rejects duplicates/missing IDs/weight drift/minimum drift/view drift/critical-defect substitution, and awards zero visual points.",
+      "Bound Prepare Complete Native 4K Review Packet to this integrity preflight before any scene rebuild, reflection synchronization or capture work begins.",
+      "During static audit, detected that QualityBlockRenderEvidenceProvenanceQA already owns the legacy Evaluate 4K Visual Fidelity Gate MenuItem validator. Removed the initially-added duplicate validator and instead guard the evidence-bound evaluator, avoiding a likely Unity menu-registration conflict while preserving the provenance class's intentional disabling of the legacy unbound menu path."
+    ]
+  },
+  "implementationReadiness": {
+    "score": 93,
+    "possible": 100,
+    "status": "UNCHANGED",
+    "blocker": "unity_compile_verification"
+  },
+  "visualFidelity": {
+    "status": "UNSCORED_UNTIL_REAL_4K_RENDER",
+    "pointsAwardedThisRun": 0,
+    "passClaimed": false
+  },
+  "expectedVisualScoreImpact": [
+    "Score validity: prevents future source/config drift from reallocating points or lowering a hard minimum while still summing to 100.",
+    "Critical-fail validity: prevents removal, substitution, duplication or renaming of any of the twelve automatic-fail conditions before scoring.",
+    "Evidence discipline: keeps native 3840x2160 hero/oblique/grazing plus 100% crops immutable as the still-evidence baseline.",
+    "No direct visual points are expected from this run; the change protects the meaning of a future >=92/100 result rather than self-awarding appearance improvements without pixels."
+  ],
+  "nextBlocker": "Unity 6000.3.0f1 editor/runner compile and first native 3840x2160 execution. At first runner availability, stop speculative expansion, run Prepare Complete Native 4K Review Packet, confirm the new gate-integrity preflight and asynchronous reflection-probe path compile/run, then score only the sealed hero/oblique/grazing, 100% crops and temporal evidence. Fix any critical defect or largest observed category deduction before further source-side expansion.",
+  "recordingNote": "This run-record commit is intentionally excluded from substantiveCommits to avoid a self-referential hash."
+}

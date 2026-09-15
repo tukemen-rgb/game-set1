@@ -1,0 +1,61 @@
+{
+  "runDate": "2026-09-12",
+  "objective": "Harden the formal facade reflection/still evidence epoch so Unity script/assembly reload cannot reset a process-local instance-ID guard and silently accept replacement facade optics/aperture/occupancy roots as a fresh baseline.",
+  "startHead": "a13eebd8bce632669542e5d1b50b28e354e4b8d3",
+  "substantiveWorkHead": "1ba5dd68b4e059fa66a812abef3c64f62bfb1f2e",
+  "substantiveCommits": [
+    "cc56e21708d3bfae870d47f7fdb53c7de2d8fea2",
+    "1ba5dd68b4e059fa66a812abef3c64f62bfb1f2e"
+  ],
+  "changes": [
+    "Replaced the facade formal-build binding's static baselineArmed + Unity instance-ID state with UnityEditor.SessionState keys that survive script/domain reload for the active Editor session.",
+    "Bound fallback evidence to the persisted benchmark scene GUID and stable GlobalObjectIds for DanchiFacadeOptics, DanchiFacadeApertureShell and FacadeOccupancyVariation.",
+    "Added a stable epoch token and explicit authored/fallback mode binding. Switching modes after arm now fails closed instead of being interpreted as a new preparation epoch.",
+    "Rejected unsaved replacement roots that cannot provide a stable persisted GlobalObjectId before formal reflection evidence.",
+    "Kept the first pre-probe epoch as the only mutation-permitted phase; all post-arm reflection polls remain report-free and read-only.",
+    "Updated facade_formal_build_binding_contract.json to schema 1.1 with assembly-reload persistence, stable-object identity, scene-GUID validation and conservative clean-Editor reset semantics."
+  ],
+  "verification": {
+    "performed": [
+      "GitHub source review of the previous process-local facade formal-build binding and the newer SessionState/GlobalObjectId sill reflection binding pattern.",
+      "Post-change source review confirmed the facade binding now validates scene GUID, authored/fallback mode and exact stable root identities before delegated report-free validators run.",
+      "Compared startHead to substantiveWorkHead: 2 commits ahead, 0 behind; only UnityProject/Assets/Editor/QualityBlockFacadeFormalBuildBinding.cs and UnityProject/Assets/QA/facade_formal_build_binding_contract.json changed.",
+      "Checked substantiveWorkHead GitHub Actions: 0 workflow runs.",
+      "Checked substantiveWorkHead commit statuses: 0 status contexts."
+    ],
+    "pending": [
+      "Unity 6000.3.0f1 compilation of the updated UnityEditor.SessionState and GlobalObjectId code path.",
+      "Runtime failure-injection: arm fallback epoch, force assembly reload, verify epoch remains armed, replace each of optics/aperture/occupancy roots and confirm hard failure without regeneration.",
+      "Runtime failure-injection: switch authored/fallback mode after arm and confirm hard failure.",
+      "Runtime failure-injection: introduce an unsaved replacement root and confirm stable-identity rejection.",
+      "Fresh reflection request/poll/completion/pre-still cycle and native 3840x2160 hero/oblique/grazing evidence."
+    ],
+    "runtimeRenderVerified": false
+  },
+  "implementationReadiness": {
+    "score": 93,
+    "possible": 100,
+    "reason": "Source-side evidence integrity improved, but the existing 7-point Unity compile/runtime verification blocker remains unresolved."
+  },
+  "visualFidelity": {
+    "status": "UNSCORED_UNTIL_REAL_4K_RENDER",
+    "pointsAwardedThisRun": 0,
+    "passClaimed": false,
+    "expectedVisualScoreImpact": [
+      "Geometry & construction fidelity: improves evidence provenance by preventing a replacement rough-opening/occupancy facade state from inheriting a pre-reload reflection baseline; no points without rendered pixels.",
+      "Lighting/shadows/reflections: strengthens cubemap-to-still identity continuity across assembly reload; no points without an actual reflection/render packet.",
+      "Period accuracy/scene authenticity and repetition: preserves the exact prepared occupancy/facade construction epoch instead of permitting silent fallback/replacement after reload; no points without visual review.",
+      "Critical-defect evidence: reduces provenance risk for visible_primitive_placeholder, obvious_repetition, hero_geometry_intersection, major_light_leak and missing_construction_material_metadata, but clears none of those defects without actual native render evidence."
+    ]
+  },
+  "nextBlocker": "Unity 6000.3.0f1 Runner/runtime. At first availability stop speculative source expansion, compile the schema-1.1 binding, arm a clean fallback epoch, force script/assembly reload, perform replacement/mode-switch failure injection, then capture a fresh synchronized ReflectionProbe plus 3840x2160 hero/facade_center, oblique/construction_depth and grazing/sash_rail_response with 100% crops before any Visual Fidelity score is awarded.",
+  "constraints": {
+    "godotPreserved": true,
+    "baseMerged": false,
+    "forbiddenThemesExcluded": [
+      "earthquake",
+      "disaster",
+      "reconstruction"
+    ]
+  }
+}

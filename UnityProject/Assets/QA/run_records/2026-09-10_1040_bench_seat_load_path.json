@@ -1,0 +1,114 @@
+{
+  "schemaVersion": "1.0",
+  "runId": "2026-09-10_1040_bench_seat_load_path",
+  "branch": "gpt/unity-migration",
+  "startHead": "3137e197f28d618407183d6f081a231ef2015d5b",
+  "substantiveWorkHead": "7caf83ec3520c929a64075e81600335468eb00cc",
+  "commits": [
+    {"sha": "36ab750f07b1fc76eeab8ee70edabb4819fa7dae", "purpose": "machine-readable bench seat manufacture/install contract"},
+    {"sha": "d4d87a0bd93b2028aad822e4eaa5e391d68a00c3", "purpose": "source-side bench load-path correction and fail-closed scene QA"},
+    {"sha": "3eb4e979a151137a67a2eb4215e2ca1e172be42f", "purpose": "dimensional bench seat/load-path lookdev illustration"},
+    {"sha": "9bb1ec2a85b7c6ae9fa3c4fe4578110e0305a4d0", "purpose": "enforce bench interface correction/QA on benchmark scene save"},
+    {"sha": "7caf83ec3520c929a64075e81600335468eb00cc", "purpose": "bind bench interface QA into native 4K review preflight and render checkpoints"}
+  ],
+  "problemFound": {
+    "assembly": "HD_Bench",
+    "sourceEvidence": [
+      "LOD0/1 timber slat bottom Y=0.539 m while the previous steel bearer top was Y=0.5275 m, leaving an 11.5 mm positive air gap.",
+      "The previous 560 mm-high precast supports topped at Y=0.560 m, penetrating the old bearer by 77.5 mm and the timber slat envelope by 21 mm at the support locations.",
+      "LOD0 bolt head bottom was Y=0.584 m while timber top was Y=0.581 m, leaving the head 3 mm visibly unsupported in source geometry.",
+      "LOD0 bolt centers were Z=+/-0.180 m while the outer slat begins at |Z|=0.184 m; the bolt center therefore sat in the inter-slat air gap rather than over timber.",
+      "LOD2/3 seat proxy bottom was Y=0.5075 m while support top was Y=0.560 m, causing 52.5 mm proxy/support penetration."
+    ],
+    "criticalDefectRisk": "floating/interpenetrating hero geometry",
+    "affectedCategories": [
+      "Geometry & construction fidelity",
+      "Lighting/shadows/reflections",
+      "Temporal/LOD/aliasing stability"
+    ]
+  },
+  "implementation": {
+    "lod0_1": {
+      "slatBottomY": 0.539,
+      "steelBearerTopY": 0.539,
+      "steelBearerBottomY": 0.494,
+      "precastSupportTopY": 0.494,
+      "precastSupportBottomY": -0.066,
+      "targetContactErrorMetres": 0.0
+    },
+    "lod2_3": {
+      "seatProxyBottomY": 0.5075,
+      "precastSupportTopY": 0.5075,
+      "precastSupportBottomY": -0.0525,
+      "targetContactErrorMetres": 0.0
+    },
+    "lod0Bolts": {
+      "headHeight": 0.008,
+      "centerY": 0.583,
+      "bottomY": 0.579,
+      "timberTopY": 0.581,
+      "targetEmbed": 0.002,
+      "centerZ": [-0.235, 0.235],
+      "centerX": [-1.02, 1.02],
+      "hardEmbedRange": [0.001, 0.004]
+    },
+    "groundInterface": "Precast supports remain shallowly hidden below grade by at least 50 mm while the darker moisture/splash sleeve starts at grade and is confined to the lowest 120 mm visible zone.",
+    "materials": "Existing final furniture microdetail remains authoritative: timber and concrete are dielectric, final exposed bare steel is fully metallic, and no contact shadow/highlight is baked into albedo.",
+    "lookdev": "Assets/QA/bench_seat_construction_lookdev.svg"
+  },
+  "referenceResearch": [
+    {
+      "authority": "Takao Co., Ltd.",
+      "url": "https://www.takao-world.co.jp/product_list/715",
+      "use": "Current Japanese natural-wood landscape-bench product/drawing class only; no current product dimension is copied into or claimed as historical evidence for the circa-2000 fictional scene."
+    }
+  ],
+  "qaEnforcement": [
+    "Machine-readable contract locks load-path dimensions, material response metadata, hard contact/embed limits, lookdev requirement and zero automatic Visual Fidelity credit.",
+    "Benchmark scene save rebuilds park furniture, applies physical profiles/LOD/microdetail, corrects the bench load path, then validates it fail-closed.",
+    "Complete Native 4K Review Packet validates the bench before reflection capture, after reflection synchronization immediately before Camera.Render, and after still sealing before temporal capture.",
+    "Positive slat-to-bearer or bearer-to-support gaps, bolt heads outside the 1-4 mm embed range, bolt centers outside the intended outer slats, or insufficient hidden support embedment fail source/runtime QA."
+  ],
+  "verification": {
+    "sourceDimensionalAudit": "PASS_BY_CODE_MATH_ONLY",
+    "contractJson": "CREATED_MACHINE_READABLE",
+    "lookdevIllustration": "CREATED_SVG",
+    "runStartToSubstantiveHead": {
+      "aheadBy": 5,
+      "behindBy": 0,
+      "changedPathsOnlyUnder": ["UnityProject/Assets/Editor", "UnityProject/Assets/QA"]
+    },
+    "godotTouched": false,
+    "baseMergePerformed": false,
+    "githubCommitStatusContextsAtSubstantiveHead": 0,
+    "githubWorkflowRunsAtSubstantiveHead": 0,
+    "unity6000_3_0f1Compile": "PENDING_NO_RUNNER",
+    "native3840x2160Render": "PENDING_NO_RUNNER",
+    "hundredPercentCropReview": "PENDING_NO_RUNNER",
+    "temporalRenderEvidence": "PENDING_NO_RUNNER"
+  },
+  "implementationReadiness": {
+    "score": 93,
+    "possible": 100,
+    "status": "UNCHANGED",
+    "reason": "The remaining seven readiness points are reserved for actual Unity compile/runtime evidence. Source-side construction correction cannot satisfy them."
+  },
+  "visualFidelity": {
+    "status": "UNSCORED",
+    "pointsAwardedThisRun": 0,
+    "passClaimed": false
+  },
+  "expectedVisualScoreImpact": {
+    "geometryConstruction": "Potentially avoids a critical floating/interpenetration failure and may recover roughly 1-2 Geometry points only if native 4K evidence confirms clean contacts and believable proportions.",
+    "lightingReflections": "Potential small improvement from physically located contact shadows and removal of positive light gaps; no points are assumed.",
+    "temporalLod": "Potential stability improvement because LOD2/3 supports now meet the proxy-seat underside rather than penetrating it; this must be judged in temporal evidence.",
+    "automaticCredit": 0
+  },
+  "nextBlocker": "No Unity 6000.3.0f1 runner/workflow is present. When one appears, stop speculative expansion, run the formal native-4K packet, inspect the bench at 100% for light leaks, z-fighting, bolt seating, timber/steel/concrete response separation and LOD continuity, and fix the rendered defect rather than weakening the gate.",
+  "constraints": {
+    "preserveGodot": true,
+    "mergeBaseWithoutApproval": false,
+    "excludedThemes": ["earthquake", "disaster", "reconstruction"],
+    "stopNewCommitsAfter": "2026-09-18"
+  }
+}

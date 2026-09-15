@@ -1,0 +1,83 @@
+{
+  "schemaVersion": "1.0",
+  "runId": "2026-09-12_facade_formal_build_binding",
+  "branch": "gpt/unity-migration",
+  "startHead": "29b141eb9930e0cde5071bb82f5365e4af0106c7",
+  "substantiveWorkHeadBeforeRecord": "92c28e322e9c1925e3d14f07fb48c07e89bcf459",
+  "substantiveCommits": [
+    "9a3c3741b88af0c0a2b3a0129cd7ef8d3e66906a",
+    "031266ab702576da215f433a42f021d0e3eaa4c5",
+    "2588ab7199e92e8b5fcb8fc56b720c3839ed1f48",
+    "92c28e322e9c1925e3d14f07fb48c07e89bcf459"
+  ],
+  "goal": "Ensure that the authoritative formal reflection/native-4K evidence path actually contains the already-developed high-value facade rough-opening construction, metric physical UVs, deterministic apartment occupancy variation and 4 mm glass-edge construction before any reflection baseline can be sealed.",
+  "sourceFinding": {
+    "problem": "The canonical native-4K preparation path explicitly rebuilt DanchiFacadeOptics and environment lighting, but the physical aperture shell and occupancy-variation passes were separate editor operations with no observed direct invocation from that path. Source-quality improvements can therefore exist in the repository yet be absent from scoreable prepared pixels.",
+    "risk": "A facade-optics-only formal scene can retain the opaque MainBlock fallback/opening-depth mismatch and thirty-window clone read, weakening Geometry & construction, Period authenticity, Material/PBR and repetition performance without violating the previous reflection material/UV guards.",
+    "priorityDecision": "Fix authoritative evidence-path integration before adding another speculative asset. Additional visual detail has low value if the formal packet can omit previously completed geometry/material work."
+  },
+  "implementation": [
+    "Added QualityBlockFacadeFormalBuildBinding and linked it into QualityBlockReflectionMaterialPhysicalityBindingQA, an existing fingerprint path evaluated before ReflectionProbe.RenderProbe and re-evaluated through the formal reflection lifecycle.",
+    "For a new DanchiFacadeOptics preparation epoch, the binding requires the optics baseline first, then creates a missing DanchiFacadeApertureShell, bakes its world-aligned physical UVs, creates missing deterministic apartment curtain/track occupancy variation, and validates the sceneSaving-bound 4 mm glass-edge construction before the reflection baseline is armed.",
+    "Existing aperture/UV/occupancy state is validated rather than silently rewritten. Authored danchi replacement remains authoritative and bypasses generated-fallback enforcement.",
+    "Added facade_formal_build_binding_contract.json with machine-readable dependency order, canonical critical-defect risk IDs, required native-4K/crop evidence, zero automatic Visual Fidelity points and an explicit ban on earthquake/disaster/reconstruction themes.",
+    "The contract now requires report-free reflection polling and hard failure on in-flight root replacement under the same optics epoch.",
+    "After first pre-probe preparation, the binding freezes Unity instance IDs for optics/aperture/occupancy. Subsequent reflection polls under the same optics instance do not rebuild scene state; they validate a report-free aperture fingerprint plus full physical-UV, occupancy and glass-thickness QA."
+  ],
+  "selfAudit": [
+    {
+      "finding": "The first implementation reused QualityBlockFacadeApertureConstructionQA.ValidateOpenScene on every reflection fingerprint poll.",
+      "whyItWasWrong": "That validator writes facade_aperture_installation_runtime_report.json and refreshes the AssetDatabase. Repeating it while a ReflectionProbe may be in flight violates the existing report-free evidence-fingerprint design and could mutate evidence state during capture.",
+      "correction": "Introduced a facade-optics preparation epoch. Full aperture validation/reporting is allowed only before the probe baseline is armed. Later polls use a report-free structural fingerprint (MainBlock disabled, 120 facade cell parts, 120 seals, 60 apartment panes) plus non-reporting UV/occupancy/glass validators. Missing/replaced roots under the same optics instance now abort instead of auto-repairing."
+    },
+    {
+      "finding": "Merely documenting report-free behavior in prose would allow later contract drift.",
+      "correction": "Added reflectionPollValidationMustBeReportFree=true and inFlightRootReplacementMustAbort=true to the machine-readable contract and enforced both booleans in QualityBlockFacadeFormalBuildBinding.ValidateContractConfigOnly."
+    }
+  ],
+  "verification": {
+    "level": "GitHub/source review only",
+    "unityVersionTarget": "6000.3.0f1",
+    "unityCompileExecuted": false,
+    "unityRuntimeExecuted": false,
+    "native3840x2160RenderProduced": false,
+    "visualFidelityScored": false,
+    "githubActionsRunsObservedAtSubstantiveHead": 0,
+    "commitStatusContextsObservedAtSubstantiveHead": 0,
+    "sourceDiff": "4 substantive commits ahead / 0 behind startHead; merge-base remained startHead; three changed paths, all under UnityProject/.",
+    "notes": "No Unity Runner or authoritative screenshot appeared. Public method accessibility and existing pass behavior were source-audited, including the aperture validator's mutable runtime report, occupancy's 30-assembly/LOD validation, physical-UV validation, and glass sceneSaving construction. Unity compile, actual editor callback order and reflection execution remain pending."
+  },
+  "implementationReadiness": {
+    "score": 93,
+    "possible": 100,
+    "changeThisRun": 0,
+    "reason": "This closes a material formal-path integration gap but cannot recover the seven points reserved for real Unity 6000.3.0f1 compile/runtime/render verification. Keeping readiness flat is more defensible than rewarding unexecuted integration code."
+  },
+  "visualFidelity": {
+    "status": "UNSCORED_UNTIL_REAL_4K_RENDER",
+    "pointsAwardedThisRun": 0,
+    "passClaimed": false,
+    "expectedScoreImpactOnly": [
+      "Geometry & construction fidelity (20): positive candidate impact because formal evidence can no longer omit the 0.22 m RC aperture shell/perimeter seals and fall back to the opaque MainBlock construction state; no points without actual pixels.",
+      "Material/PBR physical plausibility (20): positive candidate impact because world-aligned facade UVs, physical curtain cloth/track materials and 4 mm glass edges are now formal-path dependencies; actual BRDF/transmission remains unobserved.",
+      "Texture/microdetail/texel fidelity (10): positive candidate impact from guaranteeing metric physical aperture UVs before reflection/stills; rendered texel density/repetition remains unscored.",
+      "Period accuracy/scene authenticity (7): positive candidate impact from deterministic lived-in curtain variation replacing thirty identical dark-window interiors in the scoreable generated fallback; period plausibility still requires pixel review.",
+      "Lighting/shadows/reflections (15): positive candidate impact because probes should now see the same aperture depth, curtains and glass-edge construction used by stills; actual reflection balance/light leaks remain unverified.",
+      "Temporal/LOD/aliasing stability (5): neutral/risk pending because curtain LOD and 4 mm glass edges require temporal pixels to rule out pop/shimmer."
+    ]
+  },
+  "mandatoryPixelReviewWhenRunnerAppears": [
+    "hero/facade_center 3840x2160 + 100%: verify no opaque fallback intrusion and no immediately obvious repeated occupancy module.",
+    "oblique/construction_depth 3840x2160 + 100%: verify actual rough-opening depth, seals, glazing-curtain-backplane ordering and no light leaks/intersections.",
+    "grazing/sash_rail_response 3840x2160 + 100%: verify metric facade response and physical sash/seal/glass interfaces without painted cues.",
+    "grazing/material_grazing 3840x2160 + 100%: verify RC repetition, glass dielectric response and probe/still state coherence.",
+    "Temporal 100% sequence: curtain LOD, thin glass-edge shimmer and any facade state discontinuity."
+  ],
+  "constraintsPreserved": {
+    "godotModified": false,
+    "baseMerged": false,
+    "forbiddenDisasterThemeIntroduced": false,
+    "changesScopedToUnityProject": true
+  },
+  "nextBlocker": "Unity 6000.3.0f1 Runner/Editor compile and execution. At first Runner availability stop speculative expansion, execute the full prepared-scene/reflection path, verify the first pre-probe epoch builds/validates the missing facade passes and later polls remain report-free/fail-closed, then produce native 3840x2160 hero/oblique/grazing captures plus 100% crops and temporal evidence before assigning any Visual Fidelity points."
+}

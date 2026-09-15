@@ -1,0 +1,58 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="1050" viewBox="0 0 1600 1050">
+  <rect width="1600" height="1050" fill="#f2efe7"/>
+  <style>
+    .h{font:700 34px Arial,sans-serif;fill:#222}.t{font:24px Arial,sans-serif;fill:#222}.s{font:20px Arial,sans-serif;fill:#333}.d{font:18px Arial,sans-serif;fill:#555}.line{stroke:#222;stroke-width:4;fill:none}.dim{stroke:#444;stroke-width:2;fill:none}.old{stroke:#9a3d32;stroke-width:4;stroke-dasharray:14 10;fill:none}.guide{stroke:#777;stroke-width:2;stroke-dasharray:8 8;fill:none}
+  </style>
+  <text x="70" y="58" class="h">WornPathA → DanchiPlaza: physical termination lookdev</text>
+  <text x="70" y="94" class="s">Plan + longitudinal section. Generated fallback reasoning only; exact historic product/site dimensions are not asserted.</text>
+
+  <text x="80" y="150" class="t">PLAN — replace the overlapping source box; stop modular edging before paving</text>
+  <rect x="100" y="185" width="1400" height="275" rx="4" fill="#bbb8ad" stroke="#333" stroke-width="3"/>
+  <text x="1250" y="225" class="s">DanchiPlaza paving</text>
+  <line x1="100" y1="460" x2="1500" y2="460" class="line"/>
+  <text x="1160" y="492" class="d">plaza south edge z = −5.500 m</text>
+
+  <!-- Legacy source path would have continued behind/alongside the plaza. -->
+  <path d="M545 460 L545 250 L1110 250 L1110 900 L545 900 Z" class="old"/>
+  <text x="1118" y="305" class="d" fill="#9a3d32">legacy WornPathA Cube footprint</text>
+  <text x="1118" y="333" class="d" fill="#9a3d32">renderer OFF; collider retained</text>
+  <line x1="1035" y1="250" x2="1110" y2="250" class="dim"/>
+  <text x="1118" y="365" class="d" fill="#9a3d32">old east soil strip ≈ 0.70 m</text>
+
+  <!-- Authored visible surface; open mouth narrows to the plaza envelope. -->
+  <path d="M548 900 L1107 900 L1107 560 L1012 460 L550 460 L548 560 Z" fill="#856644" opacity="0.92" stroke="#40352b" stroke-width="3"/>
+  <text x="710" y="842" class="s" fill="#fff">authored compacted-soil surface</text>
+  <text x="705" y="871" class="d" fill="#fff">world-metre UV · subtle center compaction</text>
+  <text x="650" y="445" class="d">mouth terminates at z = −5.500 m; top y = 0.049 m</text>
+
+  <!-- Representative retained curb modules. -->
+  <g fill="#d2cec3" stroke="#343434" stroke-width="2">
+    <rect x="522" y="610" width="22" height="58"/><rect x="522" y="678" width="22" height="58"/><rect x="522" y="746" width="22" height="58"/><rect x="522" y="814" width="22" height="58"/>
+    <rect x="1111" y="610" width="22" height="58"/><rect x="1111" y="678" width="22" height="58"/><rect x="1111" y="746" width="22" height="58"/><rect x="1111" y="814" width="22" height="58"/>
+  </g>
+  <text x="185" y="795" class="d">retained 588 mm precast modules</text>
+  <line x1="522" y1="560" x2="1133" y2="560" class="guide"/>
+  <text x="190" y="550" class="d">last full curb module max z = −5.856 m</text>
+  <line x1="522" y1="460" x2="522" y2="560" class="dim"/>
+  <text x="185" y="510" class="d">open transition ≈ 0.356 m</text>
+
+  <!-- Suppressed continuation modules. -->
+  <g opacity="0.30" fill="#b04b3b" stroke="#8a2f25" stroke-width="2">
+    <rect x="522" y="490" width="22" height="58"/><rect x="1111" y="490" width="22" height="58"/>
+    <rect x="522" y="420" width="22" height="58"/><rect x="1111" y="420" width="22" height="58"/>
+    <rect x="522" y="350" width="22" height="58"/><rect x="1111" y="350" width="22" height="58"/>
+  </g>
+  <path d="M500 475 L1150 338" class="old"/>
+  <text x="735" y="350" class="s" fill="#8a2f25">legacy curb continuation: renderer suppressed</text>
+
+  <text x="80" y="960" class="t">LONGITUDINAL SECTION — visible path approaches the plaza without z-fighting</text>
+  <rect x="940" y="720" width="540" height="68" fill="#bbb8ad" stroke="#333" stroke-width="3"/>
+  <text x="1220" y="746" class="d">paving top y = 0.050 m</text>
+  <path d="M180 855 L660 855 L940 789 L940 860 L180 860 Z" fill="#856644" stroke="#40352b" stroke-width="3"/>
+  <text x="185" y="885" class="d">soil top y = 0.045 m before mouth</text>
+  <text x="660" y="825" class="d">gentle rise through final 0.356 m</text>
+  <text x="985" y="814" class="d">terminal soil top = 0.049 m (1 mm below paving)</text>
+  <rect x="370" y="775" width="75" height="80" rx="3" fill="#d2cec3" stroke="#222" stroke-width="3"/>
+  <text x="190" y="745" class="d">curb: bottom y=.035 · top y=.115 · ~10 mm embed at nominal soil level</text>
+  <text x="180" y="1010" class="d">Materials: dry rough dielectric compacted soil + precast concrete · metallic 0 · F0≈0.04 · geometry supplies edge/contact cues, not painted highlights.</text>
+</svg>

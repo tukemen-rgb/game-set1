@@ -1,0 +1,56 @@
+{
+  "schemaVersion": "1.0",
+  "runDate": "2026-09-11",
+  "branch": "gpt/unity-migration",
+  "startHead": "77a540a1e54b3c74eb4a9d7e237187910ebc140b",
+  "substantiveWorkHead": "63c75e8aa8f9030776775f8e340d52f5f730fe4f",
+  "substantiveCommits": [
+    "122194d15e438a5d981cd2810eaf2598bd7e6c1a",
+    "10470dcf3057e7ba4b693ab49135d859564448d3",
+    "009116f218ffe7166daff0692f0484ddec145204",
+    "63c75e8aa8f9030776775f8e340d52f5f730fe4f"
+  ],
+  "implementationReadinessScore": 93,
+  "implementationReadinessPossible": 100,
+  "visualFidelityStatus": "UNSCORED_UNTIL_REAL_4K_RENDER",
+  "visualFidelityPointsAwarded": 0,
+  "runtimeRenderVerified": false,
+  "actual4kRenderProduced": false,
+  "actualPixelReviewPerformed": false,
+  "scope": {
+    "summary": "Closed the source-side gap between authored four-level animated-crossfade LOD structure and the global/runtime LOD state that actually selects and blends those levels during formal temporal evidence.",
+    "newAssets": [
+      "Assets/QA/temporal_lod_runtime_state_contract.json",
+      "Assets/Editor/QualityBlockTemporalLodRuntimeStateQA.cs"
+    ],
+    "preservedGodot": true,
+    "mergedBase": false,
+    "forbiddenThemeAdded": false
+  },
+  "verification": [
+    "Fresh branch check at run start confirmed gpt/unity-migration HEAD 77a540a1e54b3c74eb4a9d7e237187910ebc140b.",
+    "No GitHub Actions workflow run or commit-status context existed for the start HEAD, so no Unity Runner/runtime evidence was available and no visual score was assigned.",
+    "Source audit found that DanchiHighDetail already authored LOD0/1/2/3 with CrossFade + animateCrossFading and the previous run bound mesh/material/physical-UV continuity, but formal temporal provenance did not pin QualitySettings.enableLODCrossFade, QualitySettings.lodBias, QualitySettings.maximumLODLevel, LODGroup.crossFadeAnimationDuration, quality-level identity, or the live LOD renderer assignments across the sequence.",
+    "Unity 6 API verification confirmed that QualitySettings.enableLODCrossFade globally enables/disables LOD cross-fade, lodBias and maximumLODLevel globally alter LOD selection, and LODGroup.crossFadeAnimationDuration is the global duration used by animated cross-fading.",
+    "Added a machine-readable temporal-lod-runtime-state-v1 contract requiring global cross-fade enabled, maximumLODLevel=0, finite lodBias>=1, positive finite cross-fade animation duration, four animated CrossFade levels at the authored 0.18/0.08/0.03/0.008 transitions, strictly reducing renderer counts, exact canonical critical-defect IDs, manual pixel review, and zero automatic Visual Fidelity points.",
+    "Added an InitializeOnLoad formal temporal pre-cull guard. While QualityBlockTemporalRuntimeEvidenceGuard is armed, the guard establishes a SHA-256 baseline from quality-level identity, global LOD controls, DanchiHighDetail world transform, LODGroup size/reference point/fade policy, per-level transitions/fade widths, renderer counts and sorted renderer assignments, then requires that exact state before every MainCamera cull.",
+    "The guard invokes existing Detail LOD Physical UV QA at sequence entry so runtime LOD state and previously enforced shared mesh/material/metric-UV continuity are both prerequisites for formal temporal evidence.",
+    "Self-audit removed a redundant double SHA-256 rebuild on every post-first pre-cull and replaced the initial C# using-declaration with the classic using block to reduce language-version compatibility risk.",
+    "Fail-closed hardening disables the required QualityBlockFilmicTonemap if LOD-state validation throws. Therefore even if an engine callback exception does not abort Camera.Render immediately, the existing temporal runtime telemetry cannot later satisfy its one-tonemap-invocation-per-frame evidence requirement.",
+    "No Unity 6000.3.0f1 compile/runtime claim is made. The new class/API references and the actual default/current project LOD quality state remain runtime verification pending."
+  ],
+  "expectedVisualScoreImpact": [
+    "Temporal/LOD/aliasing stability (5): increases provenance confidence that formal temporal evidence is not captured with global LOD cross-fade disabled, LOD0 skipped, lodBias changed, cross-fade duration changed, or a different Danchi LOD assignment. No points without rendered motion evidence.",
+    "Texture/microdetail/texel fidelity (10): protects the previously implemented metric physical-UV/phase continuity from being evaluated under a different live LOD selector during the temporal sequence. No points without actual 100% crops.",
+    "Material/PBR physical plausibility (20): keeps shared material/microstructure continuity tied to the same selected LOD topology while temporal evidence is rendered. No points without actual pixels.",
+    "Critical defects: specifically reduces provenance risk for visible_lod_pop and severe_aliasing_or_shimmer, but does not auto-clear either defect.",
+    "Automatic Visual Fidelity impact: 0 points."
+  ],
+  "knownLimitations": [
+    "This run does not prove that any positive cross-fade duration is perceptually sufficient; only actual temporal render evidence can do that.",
+    "The new guard is source-side and Editor-callback based. Actual Unity 6000.3.0f1 compilation and callback/telemetry interaction are unverified until a Runner exists.",
+    "No native 3840x2160 temporal frames, 100% crops, shimmer measurements, or visible-LOD-pop review were produced in this run.",
+    "Implementation Readiness remains 93/100; the missing 7 points remain reserved for real Unity compile/runtime verification."
+  ],
+  "nextBlocker": "Unity 6000.3.0f1 Runner/runtime. At first Runner availability, stop speculative expansion; compile the new guard, validate enableLODCrossFade/maximumLODLevel/lodBias/crossFadeAnimationDuration and DanchiHighDetail runtime fingerprint on the prepared scene, run the authoritative native-4K packet, then review grazing/sash_rail_response, oblique/balcony_services and both temporal sequences at 100% for phase snap, visible LOD pop, shimmer and aliasing before assigning any Visual Fidelity points."
+}

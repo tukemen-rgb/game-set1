@@ -1,0 +1,95 @@
+{
+  "schemaVersion": "1.0.0",
+  "runDate": "2026-09-14",
+  "branch": "gpt/unity-migration",
+  "startHead": "4f01f702af64d2c8530f9947c6c7a178d1a15ea1",
+  "substantiveHeadBeforeRunRecord": "4236929b0426756fce8d5078ab609c2fba6321fc",
+  "substantiveCommits": [
+    {
+      "sha": "b2f301afcabf01eee4b63624af5a509b7ae39db2",
+      "message": "Enforce construction metadata binding in visual gate",
+      "purpose": "Call the construction/material binding contract validator from visual-gate configuration validation and require the current capture binding at the core Visual Fidelity scoring entry point."
+    },
+    {
+      "sha": "4236929b0426756fce8d5078ab609c2fba6321fc",
+      "message": "Document binding enforcement at visual scoring entrypoint",
+      "purpose": "Make the direct scoring-entrypoint requirement, fail-closed ordering and failure injections machine-readable in the existing construction/material evidence binding contract."
+    }
+  ],
+  "issueFound": {
+    "criticalDefectId": "missing_construction_material_metadata",
+    "description": "The scene/material capture-binding system existed and could invalidate stale receipts, but QualityBlockVisualFidelityGate.EvaluateVisualGate did not itself call ValidateLatestBinding. A direct CLI/reflection/core invocation therefore relied on editor monitoring or workflow discipline instead of a guaranteed fail-closed check at the final numeric scoring boundary.",
+    "whyPrioritized": "This defect could undermine the admissibility of Geometry & construction, Material/PBR, Weathering causality and Period authenticity evidence even when their reviewed category scores looked complete. Closing an automatic-fail bypass has higher score-gate value than adding another speculative source-side visual feature before real pixels exist."
+  },
+  "changes": [
+    {
+      "path": "Assets/Editor/QualityBlockVisualFidelityGate.cs",
+      "changes": [
+        "ValidateGateConfig now validates the construction/material evidence-binding contract.",
+        "EvaluateVisualGate validates the binding contract even for direct CLI/reflection invocation.",
+        "After exact render provenance is verified, EvaluateVisualGate requires QualityBlockConstructionMaterialEvidenceBindingQA.ValidateLatestBinding before category scoring or PASS can occur."
+      ]
+    },
+    {
+      "path": "Assets/QA/construction_material_evidence_binding_contract.json",
+      "changes": [
+        "Added scoringEntrypointEnforcement describing the core evaluator, required validators and fail-closed-before-category-scoring rule.",
+        "Added direct-core-evaluator failure injections for missing/stale construction_material_capture_binding.json.",
+        "Updated expected failure so stale/missing metadata binding cannot reach category scoring or PASS."
+      ]
+    }
+  ],
+  "failureInjection": [
+    {
+      "case": "render receipt exists but construction_material_capture_binding.json is deleted",
+      "expected": "QualityBlockVisualFidelityGate.EvaluateVisualGate throws from ValidateLatestBinding before category scoring."
+    },
+    {
+      "case": "a bound scene or construction/material metadata source changes after capture",
+      "expected": "The binding guard invalidates the authoritative receipt or ValidateLatestBinding rejects the live SHA-256 mismatch; the core evaluator cannot PASS."
+    },
+    {
+      "case": "caller invokes QualityBlockVisualFidelityGate.EvaluateVisualGate directly instead of the evidence-bound wrapper",
+      "expected": "The same exact construction/material binding validation still runs at the core scoring entry point."
+    },
+    {
+      "case": "binding is current and exact",
+      "expected": "The evaluator proceeds to the existing render/temporal/category/critical-defect checks; the binding itself awards zero Visual Fidelity points."
+    }
+  ],
+  "verification": {
+    "staticSourceReview": "PASS for intended call placement and contract documentation. The core evaluator now contains ValidateLatestBinding after render evidence provenance validation and before visual_fidelity_evidence category scoring.",
+    "gitCompare": "Start head to substantive head is 2 commits ahead / 0 behind with merge-base equal to start head; only UnityProject/Assets/Editor/QualityBlockVisualFidelityGate.cs and UnityProject/Assets/QA/construction_material_evidence_binding_contract.json changed before this run record.",
+    "godotTouched": false,
+    "baseMerged": false,
+    "forbiddenThemeAdded": false,
+    "githubActionsWorkflowRuns": 0,
+    "headStatusContexts": 0,
+    "unityCompileRuntimeVerified": false,
+    "actual3840x2160RenderAvailable": false,
+    "renderVerificationPending": true,
+    "limitations": "No Unity 6000.3.0f1 runner/editor session is available on this branch, so compile/runtime behavior and failure injection remain pending. No render quality claim is made."
+  },
+  "scores": {
+    "implementationReadiness": 93,
+    "implementationReadinessPossible": 100,
+    "readinessBlocker": "unity_compile_verification",
+    "visualFidelityStatus": "UNSCORED_UNTIL_REAL_4K_RENDER",
+    "visualFidelityPointsAwardedThisRun": 0,
+    "visualFidelityPassClaimed": false
+  },
+  "expectedVisualScoreImpact": [
+    "Geometry & construction fidelity: evidence-integrity improvement only; current capture must be bound to exact scene/construction metadata before its reviewed score is admissible.",
+    "Material/PBR physical plausibility: evidence-integrity improvement only; exact material registry and linked contracts must belong to the same captured scene state.",
+    "Weathering/context causality: evidence-integrity improvement only; post-capture metadata edits cannot retroactively justify old pixels.",
+    "Period accuracy/scene authenticity: evidence-integrity improvement only; reviewed pixels and period/construction contracts remain from one sealed evidence generation.",
+    "Automatic Visual Fidelity impact: 0 points until native 3840x2160 Unity stills, pixel-exact 100% crops and sealed temporal evidence are actually rendered and reviewed."
+  ],
+  "nextBlocker": "Unity 6000.3.0f1 compile/runtime. At first Runner availability, stop speculative expansion; compile this gate, inject missing/stale binding failures through the direct core evaluator and evidence-bound wrapper, then produce fresh synchronized 3840x2160 hero/frontal-equivalent, oblique and grazing evidence plus 100% crops and temporal probes. Score/fix real pixels only after provenance and metadata binding both pass.",
+  "policy": {
+    "preserveGodot": true,
+    "neverMergeBaseWithoutExplicitApproval": true,
+    "excludeEarthquakeDisasterReconstructionThemes": true,
+    "stopNewCommitsAfter2026-09-18": true
+  }
+}

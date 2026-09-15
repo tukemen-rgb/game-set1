@@ -1,0 +1,148 @@
+{
+  "schemaVersion": "1.0",
+  "runId": "2026-09-12-balcony-surface-microstructure",
+  "branch": "gpt/unity-migration",
+  "startHead": "4475521a53e10d3973f476b2d1a218c0f2bfe5f3",
+  "implementationHeadBeforeRunRecord": "6a768171c22d68bd5296c598daf6b394bd55d187",
+  "scope": "Replace the broad perfectly uniform balcony waterproof material response with a deterministic physically bounded coating microsurface, while keeping the 1:50 drainage fall geometric and binding the new material state to MainCamera and ReflectionProbe formal evidence.",
+  "constraints": {
+    "godotPreserved": true,
+    "baseMerged": false,
+    "earthquakeDisasterReconstructionThemesExcluded": true,
+    "visualFidelityPassClaimed": false,
+    "automaticVisualPointsAwarded": 0
+  },
+  "commits": [
+    {
+      "sha": "066c315aaf9795b65d1187784431180018114d98",
+      "message": "feat: add balcony waterproof microstructure",
+      "purpose": "Adds deterministic 1024 px normal and metallic/smoothness texture generation plus conservative Standard-shader binding for the dry waterproof topcoat."
+    },
+    {
+      "sha": "bf1e4ed656961be68a890d4ce97aba5c28bc88bb",
+      "message": "docs: define balcony waterproof microstructure contract",
+      "purpose": "Records construction basis, geometry-vs-material responsibility, dielectric PBR values, sampling policy, temporal/repetition risks and exact formal review crops."
+    },
+    {
+      "sha": "29c0e39cf0f10130e9a952a731b5efa4c34a568d",
+      "message": "qa: enforce balcony waterproof microstructure",
+      "purpose": "Fail-closed QA validates texture import state, material map/keyword/scalar bindings, 30+30 renderer use, no MaterialPropertyBlock override and zero automatic visual credit."
+    },
+    {
+      "sha": "410f8fe753f5e766cc727c96e34effbea2843210",
+      "message": "feat: bind balcony microstructure after scene save",
+      "purpose": "Runs the material pass from sceneSaved after the existing drainage sceneSaving callback, avoiding callback-order races that could otherwise reset bump scale to zero before formal reflection synchronization."
+    },
+    {
+      "sha": "0b1ec0ba3452ebac39f3f7475a61be6292f6eb3b",
+      "message": "qa: bind balcony microstructure to reflection evidence",
+      "purpose": "Adds read-only microsurface validation to the central reflection material fingerprint lifecycle so cubemap and MainCamera evidence cannot silently use different balcony material states."
+    },
+    {
+      "sha": "f7007f96058465d61e0e3d4c7304b314e1784062",
+      "message": "docs: align balcony material metadata with microstructure",
+      "purpose": "Updates the parent drainage contract from normalScale 0 to the implemented dry topcoat micro-normal response and records the urethane/topcoat construction basis without claiming an exact historic product."
+    },
+    {
+      "sha": "6a768171c22d68bd5296c598daf6b394bd55d187",
+      "message": "refine: keep waterproof noise at coating scale",
+      "purpose": "Self-audit removed lower-frequency 5-10 cm procedural lobes; the final 0.5 m seamless tile uses 31-181 cycles, approximately 16.1-2.8 mm feature wavelengths, keeping generic material detail below construction/weathering scale."
+    }
+  ],
+  "researchBasis": [
+    {
+      "source": "Tajima Roofing Oltac Ace balcony/veranda liquid-applied urethane waterproof systems: https://bousui.tajima.jp/category/coating/oltac_ace/",
+      "use": "Confirms a conventional balcony/veranda multi-coat urethane waterproof layer with protective topcoat. Used only as material-system basis; exact historic product, colour and microsurface are not claimed."
+    },
+    {
+      "source": "Existing balcony drainage/waterproofing contract and 1:50 floor-fall reconstruction",
+      "use": "Keeps macro drainage construction geometric and separates it from microsurface material response."
+    }
+  ],
+  "manufactureAndMaterialReasoning": {
+    "components": "concrete balcony slab/substrate -> formed 1:50 fall -> bonded liquid-applied waterproof layer -> dry protective topcoat; terminal channel and drain remain separate geometry",
+    "mounting": "continuous bonded coating; no air gap or floating surface",
+    "interfaces": "same waterproof finish follows the floor fall, threshold turn, upstands and channel liner represented by the parent construction contract",
+    "orientation": "sloped/horizontal balcony walking field with no generic directional runoff encoded in the material",
+    "exposure": "dry midsummer exterior UV/rain/foot-traffic state",
+    "aging": "minor dulling/chalking only at generic material level; source-attributed runoff/residue remains separate weathering",
+    "geometryVsMaterial": "16.8 mm drainage drop, lips, returns and channel are geometry; 2.8-16.1 mm stochastic surface frequencies and roughness breakup are material response",
+    "material": {
+      "id": "MAT_BalconyWaterproofingDry",
+      "albedoSrgb": [0.245, 0.255, 0.245],
+      "albedoTexture": "none",
+      "metallic": 0.0,
+      "dielectricF0Approx": 0.04,
+      "baseRoughness": 0.72,
+      "baseSmoothness": 0.28,
+      "declaredSmoothnessBounds": [0.22, 0.34],
+      "runtimeNormalScale": 0.18,
+      "microstructureWorldTilePeriodM": 0.50,
+      "encodedFeatureBandApproxMm": [2.8, 16.1],
+      "wetness": 0.0,
+      "uvAging": "subtle desaturation/chalking only",
+      "angularFresnel": "ordinary dielectric Fresnel; no painted/baked rim"
+    }
+  },
+  "sourceVerification": {
+    "textureGeneration": "IMPLEMENTED_NOT_EXECUTED: deterministic seamless integer-frequency field writes 1024x1024 normal and metallic/smoothness PNGs during Unity formal scene preparation; no generated binary is claimed at source-only head.",
+    "sampling": "IMPLEMENTED_NOT_EXECUTED: importer requires linear data, Repeat, Trilinear, mipmaps, anisotropy>=8 and NormalMap typing for the normal texture.",
+    "materialBinding": "IMPLEMENTED_NOT_EXECUTED: Standard material keeps uniform albedo, metallic=0, base smoothness=0.28, _BumpScale=0.18, normal + metallic/smoothness keywords/maps and no emission.",
+    "formalPreparationOrdering": "SOURCE_AUDITED: existing drainage/waterproofing is a sceneSaving pass; new microstructure runs on sceneSaved only after canonical root/material existence, so the prior GetMaterial(_BumpScale=0) write cannot win solely because callback registration order changed.",
+    "mainCameraFormalQA": "IMPLEMENTED_NOT_EXECUTED: InitializeOnLoad pre-cull validation blocks benchmark MainCamera if the texture/material/importer/renderer state is missing or drifted.",
+    "reflectionFormalQA": "IMPLEMENTED_NOT_EXECUTED: central reflection-material physicality binding now calls the microstructure contract and open-scene validator on the same pre-request/poll/completion/pre-still fingerprint lifecycle.",
+    "sharedPhaseRisk": "KNOWN_AND_NOT_CLEARED: the material deliberately uses one canonical texture phase rather than hidden per-renderer MaterialPropertyBlocks. The texture contains no macro features, but visible periodicity must be rejected from actual 4K crops if perceptible.",
+    "githubActionsRunsAtStartOfRun": 0,
+    "commitStatusContextsAtImplementationHead": 0,
+    "unityCompile": "PENDING_UNITY_6000_3_0F1_RUNNER",
+    "unityTextureGenerationAndImport": "PENDING_UNITY_6000_3_0F1_RUNNER",
+    "native3840x2160Render": "NOT_AVAILABLE",
+    "pixelReview": "NOT_AVAILABLE"
+  },
+  "selfAudit": {
+    "fixedFindings": [
+      "Initial source design contained 7-cycle content inside the 0.5 m tile, which would have introduced roughly 71 mm generic material lobes and blurred the boundary between microstructure and contextual weathering. Frequencies were raised to 31-181 cycles (about 16.1-2.8 mm) before finalizing the implementation.",
+      "The existing drainage sceneSaving callback writes _BumpScale=0. Relying on another sceneSaving callback would have been order-dependent, so the new material pass is bound to sceneSaved instead.",
+      "ReflectionProbe.RenderProbe bypasses MainCamera pre-cull. The new material state is therefore explicitly validated in the central reflection fingerprint rather than assumed from the still-camera guard.",
+      "The parent balcony contract previously declared normalScale=0.0; it was updated to 0.18 so required construction/material metadata does not contradict the implementation."
+    ],
+    "knownLimitations": [
+      "No Unity compiler/importer has executed the new scripts, generated PNGs or Standard shader bindings at this head.",
+      "The 0.5 m seamless tile repeats spatially and uses one canonical phase. It is intentionally free of macro features, but obvious repetition remains an automatic Visual Fidelity FAIL if real 4K pixels reveal it.",
+      "High-frequency normal content can still shimmer after compression/mip filtering; severe_aliasing_or_shimmer remains uncleared until temporal pixels are reviewed.",
+      "The microsurface is a conservative benchmark topcoat model, not a forensic identification of the original circa-2000 balcony waterproof product.",
+      "No albedo texture is added; source-attributed chalking/runoff/soil must remain separate cause-based weathering rather than being baked into this generic material."
+    ]
+  },
+  "implementationReadiness": {
+    "score": 93,
+    "scale": 100,
+    "status": "IMPLEMENTATION_ONLY_RENDER_VERIFICATION_PENDING",
+    "reason": "Material/source/evidence coverage improved, but the only weighted readiness blocker remains the missing Unity 6000.3.0f1 compile/runtime verification artifact. Source-only work does not inflate the score."
+  },
+  "visualFidelityGate": {
+    "status": "UNSCORED_UNTIL_REAL_4K_RENDER",
+    "passThreshold": 92,
+    "categoryHardMinimums": {
+      "geometry_and_construction_fidelity": "18/20",
+      "material_pbr_physical_plausibility": "18/20",
+      "lighting_shadows_reflections": "13/15",
+      "texture_microdetail_texel_fidelity": "9/10",
+      "weathering_context_causality": "9/10",
+      "vegetation_natural_complexity": "7/8",
+      "period_accuracy_scene_authenticity": "6/7",
+      "cinematic_image_quality": "4/5",
+      "temporal_lod_aliasing_stability": "4/5"
+    },
+    "criticalDefectsMustAllBeFalse": true,
+    "visualPointsAddedThisRun": 0
+  },
+  "expectedVisualScoreImpact": {
+    "material_pbr_physical_plausibility": "DIRECT_POSITIVE_CANDIDATE: broad waterproof surfaces can now respond through bounded dielectric micro-normal and smoothness rather than one perfectly uniform lobe; no points until actual pixels.",
+    "texture_microdetail_texel_fidelity": "DIRECT_POSITIVE_CANDIDATE: 1024 px tileable microsurface, mipmaps, trilinear filtering and anisotropy are specified and QA-bound; periodicity remains a real-render risk.",
+    "lighting_shadows_reflections": "SUPPORTING_CANDIDATE: grazing sun/sky/probe response gains real BRDF breakup, and cubemap/still state is bound together.",
+    "weathering_context_causality": "SUPPORTING: generic material detail is explicitly isotropic and millimetric so drainage streaks/residue remain source-driven rather than baked into the base texture.",
+    "temporal_lod_aliasing_stability": "RISK_ONLY_UNTIL_RENDER: high-frequency normal detail can shimmer; mip/filter policy is source-side mitigation, not evidence."
+  },
+  "nextBlocker": "Unity 6000.3.0f1 Runner or screenshots. On first availability stop speculative expansion and verify compile -> benchmark scene save -> post-save texture generation/import -> material binding -> reflection fingerprint -> native 3840x2160 hero/oblique/grazing and 100 percent oblique/balcony_services, oblique/construction_depth and grazing/material_grazing crops -> temporal/subpixel_grazing. Reject visible 0.5 m tiling, procedural macro blobs, excessive sparkle, compression artifacts, shimmer, wet-looking response, stale probe state or any painted-highlight appearance."
+}

@@ -1,0 +1,146 @@
+{
+  "schemaVersion": "1.0",
+  "runId": "2026-09-09_park_street_furniture",
+  "startHead": "8a76a61805f2134fd032531f6e995a9e001904ae",
+  "endHeadBeforeRunRecord": "365e4e96e14e7f48fc4334bc1ba72db5716d0f07",
+  "branch": "gpt/unity-migration",
+  "baseMergePerformed": false,
+  "godotModified": false,
+  "excludedThemesObserved": false,
+  "task": "Replace benchmark-visible playground and street-furniture primitive renderers with manufacture-aware assemblies, correct slide/diffuser physical profiles, enforce four-level LOD binding and persist machine-readable construction/material evidence without inventing render quality.",
+  "commits": [
+    {"sha": "021be004372a3d03ba3c282355dad4e5441e77b6", "message": "Add manufactured park and street furniture detail pass", "substantive": true},
+    {"sha": "e3095521bf05326527d44f8cd052e5aa0b37a4ba", "message": "Add park and street furniture construction contract", "substantive": true},
+    {"sha": "744802f11eeb988ada625e4f30106f1cf1abcc95", "message": "Gate benchmark saves on park furniture construction QA", "substantive": true},
+    {"sha": "d008943305c53317fffe207873ab6158f92bd437", "message": "Fix furniture contract QA token validation", "substantive": true},
+    {"sha": "b84bc838f9b24dd9b3ab4cc9c9484980d8171977", "message": "Refine slide sheet and lamp diffuser physical profiles", "substantive": true},
+    {"sha": "58c61dc878e4dee9b54e43edb8abcd8b484158f3", "message": "Require physical furniture refinement before benchmark save", "substantive": true},
+    {"sha": "a065e33360987d3202191be6a616604a4bb760ab", "message": "Correct furniture dimensions and reference physical construction", "substantive": true},
+    {"sha": "da94484d701f5a71a4c0776ef004728fb279d212", "message": "Rebind refined furniture meshes into four-level LOD groups", "substantive": true},
+    {"sha": "365e4e96e14e7f48fc4334bc1ba72db5716d0f07", "message": "Bind refined furniture renderers into benchmark save gate", "substantive": true}
+  ],
+  "implementation": {
+    "legacyBenchmarkRenderersDisabled": [
+      "SlideLegL", "SlideLegR", "SlidePlatform", "SlideChute", "BenchSeat", "BenchLegL", "BenchLegR",
+      "LampPole", "LampGlobe", "NoticeBoardPosts", "NoticeBoardPanel"
+    ],
+    "manufacturedAssemblies": ["HD_Slide", "HD_Bench", "HD_Lamp", "HD_NoticeBoard"],
+    "generatedVisualColliders": 0,
+    "slide": {
+      "supportPipeModeledDiameterMm": 48.6,
+      "chuteMaterial": "SUS304-class stainless",
+      "chuteModeledThicknessMm": 2.0,
+      "municipalReferenceMinimumThicknessMm": 1.5,
+      "chuteWidthMm": 920,
+      "sideSheetThicknessMm": 2.0,
+      "sideSheetHeightMm": 140,
+      "centerline": "continuous cubic Hermite vertical profile; approximately 26.6 degree start slope flattening to approximately 1.7 degree runout",
+      "longitudinalSegmentsByLod": [96, 48, 24, 12],
+      "lod0SmallGeometry": "deck fasteners retained",
+      "correctionDuringRun": "The first-pass 35 mm visual chute thickness was rejected during static review as physically dishonest. It is now disabled before benchmark save and replaced by the reference-bounded continuous 2 mm shell."
+    },
+    "bench": {
+      "lod0Lod1Slats": 5,
+      "slatGapsAreGeometry": true,
+      "precastSupportCount": 2,
+      "causeBasedGroundContact": "lower support zones use darker/rougher non-metallic contact concrete for capillary moisture and splash rather than painted AO"
+    },
+    "lamp": {
+      "daytimeEmission": false,
+      "pole": "segmented/tapered concrete with separate metal neck/cap",
+      "diffuser": "five-point lathed retained-ring globe profile, replacing the first-pass primitive-like diffuser",
+      "radialSegmentsByLod": [32, 24, 16, 10]
+    },
+    "noticeBoard": {
+      "postCount": 2,
+      "separateFrameRails": 4,
+      "lod0Fasteners": true,
+      "modernElectronicSignageExcluded": true
+    },
+    "lod": {
+      "levels": 4,
+      "transitionHeights": [0.36, 0.18, 0.075, 0.025],
+      "animatedCrossFade": true,
+      "refinedRendererRebinding": "Explicit LOD Renderer arrays are rebuilt after physical refinement so PhysicalChute and PhysicalDiffuser do not remain unmanaged all-distance renderers; oversized first-pass chute/diffuser renderers are excluded."
+    },
+    "materials": {
+      "paintedSteel": {"roughness": 0.68, "metallic": 0.0},
+      "stainlessChute": {"roughness": 0.22, "metallic": 0.86},
+      "exposedSteel": {"roughness": 0.31, "metallic": 0.78},
+      "benchTimber": {"roughness": 0.72, "metallic": 0.0},
+      "precastConcrete": {"roughness": 0.86, "metallic": 0.0},
+      "contactConcrete": {"roughness": 0.91, "metallic": 0.0},
+      "microtextureStatus": "scalar PBR is implemented; dedicated stainless abrasion, timber grain and paint/concrete micro-normal/roughness textures are specified in the contract but must not receive visual credit until produced/tuned against real grazing-light captures"
+    },
+    "lookdev": {
+      "mode": "precise machine-readable generation/physical-response brief",
+      "contract": "Assets/QA/park_street_furniture_contract.json",
+      "referenceBasis": [
+        "Yokohama City park guideline: slide surface SUS304 >=1.5 mm; stainless side >=1.5 mm or painted steel >=2.3 mm",
+        "Tsukumura Seisakusho stainless slide example: approximately four-metre slide length and stainless sliding surface"
+      ]
+    },
+    "persistence": "Benchmark scene save gate runs after GroundHighDetail exists: validate metadata -> rebuild manufactured furniture -> apply physical profiles -> rebind explicit LOD renderer arrays -> run construction/material/profile/LOD QA."
+  },
+  "verification": {
+    "sourceStaticReview": "PASS_WITH_RENDER_PENDING",
+    "branchDiffAtSubstantiveHead": "9 commits ahead, 0 behind startHead; five changed files, all under UnityProject; no Godot path touched",
+    "criticalStaticCorrectionsMade": [
+      "rejected 35 mm readability-thickness chute and replaced it with 2 mm reference-bounded SUS shell",
+      "replaced primitive-like lamp diffuser with lathed profile",
+      "caught refined-mesh LOD binding hazard and explicitly rebuilt LOD Renderer arrays"
+    ],
+    "commitStatusContexts": 0,
+    "workflowRuns": 0,
+    "captures4KDirectory": "NOT_PRESENT",
+    "unityCompile": "NOT_RUN_NO_UNITY_RUNTIME",
+    "actual3840x2160Render": "NOT_AVAILABLE",
+    "actual100PercentCrops": "NOT_AVAILABLE",
+    "visualFidelityScore": null,
+    "visualFidelityStatus": "UNSCORED_NO_RENDER_EVIDENCE"
+  },
+  "implementationReadiness": {
+    "score": 93,
+    "possible": 100,
+    "changeThisRun": 0,
+    "reasonNotIncreased": "The existing readiness policy reserves the remaining seven points for actual Unity 6000.3.0f1 compile/runtime verification. More source code, geometry or metadata cannot substitute for editor execution."
+  },
+  "expectedVisualScoreImpact": [
+    {
+      "category": "Geometry & construction fidelity",
+      "direction": "positive expected",
+      "evidenceNeeded": "benchmark crop must show real slat gaps, two-support bench construction, two-post notice board, separate rail/deck/fastener interfaces and the continuous thin slide skin without placeholder silhouettes"
+    },
+    {
+      "category": "Material/PBR physical plausibility",
+      "direction": "positive expected",
+      "evidenceNeeded": "grazing capture must show stainless reflections coming from the actual sky/probes while paint, timber, concrete and diffuser remain dielectric; no baked highlight or impossible metallic response"
+    },
+    {
+      "category": "Weathering/context causality",
+      "direction": "positive expected",
+      "evidenceNeeded": "bench/lamp/post ground-contact darkening must stay localized to plausible splash/capillary zones; stainless abrasion and paint aging must follow use/exposure rather than uniform grime"
+    },
+    {
+      "category": "Period accuracy/scene authenticity",
+      "direction": "positive expected",
+      "evidenceNeeded": "furniture must read as ordinary late-20th-century Japanese residential-estate park equipment, with globe-era lamp and non-digital notice board rather than modern LED/electronic forms"
+    },
+    {
+      "category": "Temporal/LOD/aliasing stability",
+      "direction": "positive expected",
+      "evidenceNeeded": "camera movement through all four LOD transitions must show no all-distance refined renderer, silhouette double-render, visible pop or thin-sheet shimmer"
+    }
+  ],
+  "criticalDefectRiskAddressed": [
+    "visible Unity primitive placeholder geometry in park/street-furniture framing",
+    "oversized physically false slide sheet thickness",
+    "primitive-like lamp globe silhouette",
+    "metallic paint/timber/concrete",
+    "missing manufactured interfaces and fasteners",
+    "refined renderer outside the LODGroup",
+    "visible LOD pop from stale renderer arrays"
+  ],
+  "nextBlocker": "Unity 6000.3.0f1 editor/runner. On first available native render, stop speculative expansion and capture a park/street-furniture-visible 3840x2160 view plus 100 percent crops. Inspect the 2 mm chute edge and runout under grazing light, deck/frame interfaces, bench slat/bolt/contact construction, lamp diffuser silhouette/material response, notice-board post/frame grounding and all four LOD transitions. Fix observed defects before adding more detail.",
+  "note": "Visual Fidelity points awarded this run: 0. The repository gate remains 92/100 with category hard minimums and critical automatic fails, but this run is implementation/readiness evidence only and must never be interpreted as a Visual Fidelity PASS."
+}

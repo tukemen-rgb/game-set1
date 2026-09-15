@@ -49,7 +49,8 @@
         "Assets/QA/ground_construction_lookdev.json",
         "Assets/QA/ground_base_surface_contract.json",
         "Assets/QA/ground_contact_interface_contract.json",
-        "Assets/QA/ground_microdetail_contract.json"
+        "Assets/QA/ground_microdetail_contract.json",
+        "Assets/QA/grass_blade_field_contract.json"
       ]
     },
     {

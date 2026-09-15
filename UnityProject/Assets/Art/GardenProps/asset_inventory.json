@@ -14,10 +14,16 @@
     {"id":"WoodenClothespin70","kind":"tested_generator_plus_external_obj_glb","masterTriangles":8080,"lodTriangles":[4960,2616,1448,872],"componentCount":3,"physicalMaterialGroups":2,"actualExportsGeneratedOutsideUnity":true,"unityVerified":false,"metadata":"Assets/Art/BalconyLife/BalconyLife.metadata.json","previewVerifiedOutsideUnity":true},
     {"id":"BalconySlipperPair","kind":"tested_generator_plus_external_obj_glb","masterTriangles":1048,"lodTriangles":[944,800,664,616],"physicalMaterialGroups":1,"actualExportsGeneratedOutsideUnity":true,"unityVerified":false,"metadata":"Assets/Art/SummerBalconyProps/SummerBalconyProps.metadata.json","previewVerifiedOutsideUnity":true},
     {"id":"EnamelWashBasin280","kind":"tested_generator_plus_external_obj_glb","masterTriangles":5924,"lodTriangles":[4452,2980,1508,772],"physicalMaterialGroups":2,"actualExportsGeneratedOutsideUnity":true,"unityVerified":false,"metadata":"Assets/Art/SummerBalconyProps/SummerBalconyProps.metadata.json","previewVerifiedOutsideUnity":true},
-    {"id":"MosquitoCoilTray140","kind":"tested_generator_plus_external_obj_glb","masterTriangles":9544,"lodTriangles":[6024,3272,1984,1600],"physicalMaterialGroups":2,"actualExportsGeneratedOutsideUnity":true,"unityVerified":false,"metadata":"Assets/Art/SummerBalconyProps/SummerBalconyProps.metadata.json","previewVerifiedOutsideUnity":true}
+    {"id":"MosquitoCoilTray140","kind":"tested_generator_plus_external_obj_glb","masterTriangles":9544,"lodTriangles":[6024,3272,1984,1600],"physicalMaterialGroups":2,"actualExportsGeneratedOutsideUnity":true,"unityVerified":false,"metadata":"Assets/Art/SummerBalconyProps/SummerBalconyProps.metadata.json","previewVerifiedOutsideUnity":true},
+    {"id":"OutdoorBroom900","kind":"tested_generator_plus_external_obj_glb","masterTriangles":71808,"lodTriangles":[37728,15936,4128,1440],"physicalMaterialGroups":3,"actualExportsGeneratedOutsideUnity":true,"unityVerified":false,"metadata":"Assets/Art/BalconyCleaningSet/BalconyCleaningSet.metadata.json","previewVerifiedOutsideUnity":true},
+    {"id":"PlasticDustpan265","kind":"tested_generator_plus_external_obj_glb","masterTriangles":1216,"lodTriangles":[928,656,400,336],"physicalMaterialGroups":1,"actualExportsGeneratedOutsideUnity":true,"unityVerified":false,"metadata":"Assets/Art/BalconyCleaningSet/BalconyCleaningSet.metadata.json","previewVerifiedOutsideUnity":true},
+    {"id":"HandScrubBrush185","kind":"tested_generator_plus_external_obj_glb","masterTriangles":56530,"lodTriangles":[29856,12032,2712,840],"physicalMaterialGroups":2,"actualExportsGeneratedOutsideUnity":true,"unityVerified":false,"metadata":"Assets/Art/BalconyCleaningSet/BalconyCleaningSet.metadata.json","previewVerifiedOutsideUnity":true}
   ],
-  "productionTotals": {"authoredAssetSets":12,"highDetailMasters":12,"runtimeLodSets":12},
+  "reviewIntegrations": [
+    {"id":"BalconyCornerReview_LOD0","kind":"external_actual_mesh_diagnostic_assembly","trianglesIncludingDiagnosticContext":159460,"unexpectedIndependentAabbOverlaps":0,"formalBenchmarkSceneChanged":false,"unityVerified":false,"manifest":"Assets/Art/BalconyCleaningSet/BalconyCornerReview.manifest.json"}
+  ],
+  "productionTotals": {"authoredAssetSets":15,"highDetailMasters":15,"runtimeLodSets":15},
   "visualFidelity": {"status":"UNSCORED_UNTIL_REAL_4K_RENDER","score":null,"pass":false},
   "readiness": {"lastRecordedScore":93,"recomputed":false},
-  "nextProductionTarget": "Build a reversible measured balcony review arrangement using existing repaired plant/pot, laundry hardware and all household props; if real Unity Runner/screenshots appear, stop expansion and score/fix them."
+  "nextProductionTarget": "If no real Unity runner/screenshots appear, add textile/laundry soft-goods geometry and micro-bevel/UV refinement to the most camera-visible household assets. If a runner appears, stop expansion and score/fix actual 4K evidence."
 }

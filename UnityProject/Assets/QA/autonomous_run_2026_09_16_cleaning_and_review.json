@@ -1,0 +1,15 @@
+{
+  "runId":"2026_09_16_cleaning_and_balcony_review",
+  "repository":"tukemen-rgb/game-set1",
+  "branch":"gpt/unity-migration",
+  "startHead":"906b1ba214777ad9f094fbaf820f59b770cba484",
+  "runnerObservation":{"branchWorkflowRuns":0,"realUnityRenderAvailable":false},
+  "work":{"newAuthoredAssetSets":3,"actualMasters":3,"actualRuntimeLodMeshes":12,"actualExternalGLB":15,"actualExternalOBJ":15,"actualReviewAssemblies":1,"productionFocus":"models and scene-visible integration, not QA-only expansion"},
+  "triangles":{"OutdoorBroom900":{"MASTER":71808,"LOD0":37728,"LOD1":15936,"LOD2":4128,"LOD3":1440},"PlasticDustpan265":{"MASTER":1216,"LOD0":928,"LOD1":656,"LOD2":400,"LOD3":336},"HandScrubBrush185":{"MASTER":56530,"LOD0":29856,"LOD1":12032,"LOD2":2712,"LOD3":840},"BalconyCornerReview_LOD0_includingDiagnosticContext":159460},
+  "verification":{"externalGeometryGeneration":true,"finiteVerticesNormals":true,"nondegenerateFaces":true,"weldedWatertightComponents":true,"positiveVolumeConsistentWinding":true,"manifoldEdges":true,"glbRoundtrip":true,"objRoundtrip":true,"strictLodReduction":true,"actualMeshPreviewInspected":true,"reviewAssemblyUnexpectedIndependentAabbOverlaps":0,"unityCompile":false,"unityImport":false,"unityRender":false,"temporalLod":false,"targetHardwarePerformance":false},
+  "implementationReadiness":{"lastRecorded":93,"outOf":100,"recomputed":false,"newPointsAwarded":0},
+  "visualFidelity":{"status":"UNSCORED_UNTIL_REAL_4K_RENDER","score":null,"pass":false,"pointsAwarded":0,"expectedImpact":"Adds physically constructed lived-in balcony cleaning assets and measured placement context; no Unity pixels available to award points."},
+  "safety":{"godotChanged":false,"baseMerged":false,"formalBenchmarkSceneChanged":false,"excludedThemesAdded":false},
+  "nextProductionTarget":"If no Unity runner/screenshots appear, add textile/laundry soft-goods geometry and improve micro-bevel/UV detail on the most camera-visible household assets; if runner appears, stop expansion and score/fix actual 4K evidence.",
+  "blocker":"Unity 6000.3.0f1 execution and native 3840x2160/temporal evidence remain unavailable."
+}

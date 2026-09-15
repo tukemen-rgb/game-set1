@@ -40,6 +40,7 @@ public static class QualityBlockNative4KReviewPacket
         QualityBlockBalconyConstructionInterfaceQA.ValidateContractConfigOnly();
         QualityBlockBalconyGuardrailInstallationQA.ValidateContractConfigOnly();
         QualityBlockBalconySeparationPanelFormalIntegrationQA.ValidateContractConfigOnly();
+        QualityBlockBalconyDrainageWaterproofingFormalIntegrationQA.ValidateContractConfigOnly();
         QualityBlockAcOutdoorUnitInstallationQA.ValidateContractConfigOnly();
         QualityBlockAcFanPhysicalRefinement.ValidateContractConfigOnly();
         QualityBlockAcFanGuardRoundWireRefinement.ValidateContractConfigOnly();
@@ -99,6 +100,8 @@ public static class QualityBlockNative4KReviewPacket
         QualityBlockBalconyGuardrailInstallationQA.ValidateOpenScene();
         QualityBlockBalconySeparationPanelFormalIntegrationQA.ApplyAndPersist();
         QualityBlockBalconySeparationPanelFormalIntegrationQA.ValidateOpenScene();
+        QualityBlockBalconyDrainageWaterproofingFormalIntegrationQA.ApplyAndPersist();
+        QualityBlockBalconyDrainageWaterproofingFormalIntegrationQA.ValidateOpenScene();
 
         QualityBlockAcOutdoorUnitInstallationQA.ValidateOpenScene();
         QualityBlockAcFanPhysicalRefinement.ValidateOpenScene();
@@ -147,6 +150,7 @@ public static class QualityBlockNative4KReviewPacket
         QualityBlockAcFanGuardRoundWireRefinement.ValidateOpenScene();
         QualityBlockAcFanGuardMountInterfaceRefinement.ValidateOpenScene();
         QualityBlockBalconySeparationPanelFormalIntegrationQA.ValidateOpenScene();
+        QualityBlockBalconyDrainageWaterproofingFormalIntegrationQA.ValidateOpenScene();
         QualityBlockGrassBladeFieldUpgrade.ValidateOpenScene(false);
         QualityBlockGrassBladeFormalPersistenceQA.ValidatePersistedEvidenceBinding();
         QualityBlockSolarShadowCaptureCoherenceQA.ValidateOpenScene();
@@ -154,8 +158,8 @@ public static class QualityBlockNative4KReviewPacket
         QualityBlockReflectionProbeAwaiter.Begin(FinishAfterReflectionSynchronization);
 
         Debug.Log(
-            "Native-4K review packet entered reflection synchronization after final material/construction binding, including persisted balcony separation panels and a persisted physical grass-blade field with four LODs. " +
-            "Balcony panels, grass, geometry, materials and lighting are read-only from this point; Visual Fidelity remains UNSCORED until actual rendered evidence is reviewed.");
+            "Native-4K review packet entered reflection synchronization after final material/construction binding, including persisted balcony separation panels, physical balcony drainage/waterproofing and a persisted physical grass-blade field with four LODs. " +
+            "Balcony construction, grass, geometry, materials and lighting are read-only from this point; Visual Fidelity remains UNSCORED until actual rendered evidence is reviewed.");
     }
 
     private static void FinishAfterReflectionSynchronization()
@@ -174,6 +178,7 @@ public static class QualityBlockNative4KReviewPacket
         QualityBlockStairTowerShellJointQA.ValidateOpenScene();
         QualityBlockBalconyGuardrailInstallationQA.ValidateOpenScene();
         QualityBlockBalconySeparationPanelFormalIntegrationQA.ValidateOpenScene();
+        QualityBlockBalconyDrainageWaterproofingFormalIntegrationQA.ValidateOpenScene();
         QualityBlockAcOutdoorUnitInstallationQA.ValidateOpenScene();
         QualityBlockAcFanPhysicalRefinement.ValidateOpenScene();
         QualityBlockAcFanGuardRoundWireRefinement.ValidateOpenScene();
@@ -216,6 +221,7 @@ public static class QualityBlockNative4KReviewPacket
         QualityBlockStairTowerShellJointQA.ValidateOpenScene();
         QualityBlockBalconyGuardrailInstallationQA.ValidateOpenScene();
         QualityBlockBalconySeparationPanelFormalIntegrationQA.ValidateOpenScene();
+        QualityBlockBalconyDrainageWaterproofingFormalIntegrationQA.ValidateOpenScene();
         QualityBlockAcOutdoorUnitInstallationQA.ValidateOpenScene();
         QualityBlockAcFanPhysicalRefinement.ValidateOpenScene();
         QualityBlockAcFanGuardRoundWireRefinement.ValidateOpenScene();
@@ -264,6 +270,6 @@ public static class QualityBlockNative4KReviewPacket
 
         Debug.Log(
             "Complete native-4K review packet prepared: sealed hero/oblique/grazing 3840x2160 stills and 100% crops plus bound temporal evidence. " +
-            "Persisted balcony separation panels and the physical grass-blade field are explicitly validated before probe request, still capture and temporal capture; pixel diagnostics remain warning-only and Visual Fidelity remains UNSCORED until manual review against the 100-point gate.");
+            "Persisted balcony separation panels, physical balcony drainage/waterproofing and the physical grass-blade field are explicitly validated before probe request, still capture and temporal capture; pixel diagnostics remain warning-only and Visual Fidelity remains UNSCORED until manual review against the 100-point gate.");
     }
 }

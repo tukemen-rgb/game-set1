@@ -18,10 +18,6 @@ public static class QualityBlockNative4KReviewPacket
 
         QualityBlockVisualGateIntegrityQA.ValidateContract();
         QualityBlockVisualFidelityGate.ValidateGateConfig();
-        // A clean runner has not yet established the deterministic benchmark QualitySettings. Judge
-        // only the contract at this stage; the rebuilt/reopened scene is validated immediately after
-        // PrepareSceneForSynchronizedCapture below. This prevents machine defaults from blocking the
-        // very rebuild that establishes the authoritative shadow/MSAA/LOD state.
         QualityBlockNative4KCleanSessionPreflightQA.ValidateContractConfigOnly();
         QualityBlockSolarShadowCaptureCoherenceQA.ValidateContractConfigOnly();
         QualityBlockLightEvidencePurityQA.ValidateContractConfigOnly();
@@ -63,14 +59,12 @@ public static class QualityBlockNative4KReviewPacket
         QualityBlockFoliagePhysicalityQA.ValidateContractConfigOnly();
         QualityBlockVegetationEcologyContractQA.Validate();
         QualityBlockVegetationRootZoneInterfaceQA.ValidateContractConfigOnly();
+        QualityBlockGrassBladeNativePacketQA.ValidateContractConfigOnly();
+        QualityBlockGrassBladeFormalPersistenceQA.ValidateContractConfigOnly();
         QualityBlockHdrTonemapRuntimeQA.ValidateContractConfigOnly();
         QualityBlockReflectionProbeCaptureSyncQA.ValidateContractConfigOnly();
         QualityBlock4KCapture.ValidateCaptureContract();
 
-        // Build/save/reopen the highest-quality generated scene first. The period marker is then
-        // explicitly installed here rather than relying on an indirect quality-chain side effect:
-        // the two locked rooftop 100% crops must never point at an empty roof while still appearing
-        // valid in the capture manifest. Both worn-path corrections run immediately after this step.
         QualityBlock4KCapture.PrepareSceneForSynchronizedCapture();
         QualityBlockNative4KCleanSessionPreflightQA.ValidatePreparedBaseline();
         QualityBlockPeriodAuthenticityUpgrade.ApplyToOpenScene();
@@ -81,10 +75,6 @@ public static class QualityBlockNative4KReviewPacket
         QualityBlockGroundWornPathBTransitionQA.ValidateOpenScene();
         QualityBlockSceneMaterialPhysicalityUpgrade.ApplyAndValidate();
 
-        // Generated fallback trees: correct segmented radius jumps and normalized bark-UV restarts only
-        // after the benchmark/PBR rebuild. Then rebuild/refine the root-zone interface against that exact
-        // mature root geometry so the reflection probes, stills and temporal evidence never see the old
-        // decorative-scale pit, hovering plaza/lawn curb modules or high understory root datum.
         QualityBlockTreeWoodyContinuityQA.ApplyAndPersist();
         QualityBlockTreeDetailUpgrade.ValidateOpenScene();
         QualityBlockTreeWoodyContinuityQA.ValidateOpenScene();
@@ -92,29 +82,21 @@ public static class QualityBlockNative4KReviewPacket
         QualityBlockVegetationRootZoneInterfaceQA.ApplyAndPersist();
         QualityBlockVegetationRootZoneInterfaceQA.ValidateOpenScene();
 
-        // Main apartment facade: true openings + physical metric UV field.
         QualityBlockFacadeApertureConstructionQA.ApplyAndPersist();
         QualityBlockFacadeAperturePhysicalUvQA.ApplyAndPersist();
         QualityBlockFacadeApertureConstructionQA.ValidateOpenScene();
         QualityBlockFacadeAperturePhysicalUvQA.ValidateOpenScene();
 
-        // Projecting stair tower: true rough openings and non-coplanar shell butt joints.
         QualityBlockStairTowerApertureInstallationQA.ApplyAndPersist();
         QualityBlockStairTowerShellJointQA.ApplyAndPersist();
         QualityBlockStairTowerApertureInstallationQA.ValidateOpenScene();
         QualityBlockStairTowerShellJointQA.ValidateOpenScene();
 
-        // Establish slab/base-plate/anchor relationships, then replace the source rail placeholders.
         QualityBlockBalconyConstructionInterfaceQA.ApplyAndPersist();
         QualityBlockBalconyConstructionInterfaceQA.ValidateOpenScene();
         QualityBlockBalconyGuardrailInstallationQA.ApplyAndPersist();
         QualityBlockBalconyGuardrailInstallationQA.ValidateOpenScene();
 
-        // The Danchi formal build has already corrected the mechanically installed AC stack before
-        // replacing the legacy fan disc/lattice with physical rotor/shroud/round-wire guard/mounts.
-        // Re-running the legacy installation mutator here would require components deliberately removed
-        // by that refinement and could destroy the exact assembly we intend to render. From this point
-        // forward AC state is read-only: validate installation plus the complete refined fan assembly.
         QualityBlockAcOutdoorUnitInstallationQA.ValidateOpenScene();
         QualityBlockAcFanPhysicalRefinement.ValidateOpenScene();
         QualityBlockAcFanGuardRoundWireRefinement.ValidateOpenScene();
@@ -126,13 +108,6 @@ public static class QualityBlockNative4KReviewPacket
         QualityBlockFacadeWeatheringOpticalRefinementQA.ApplyAndPersist();
         QualityBlockFacadeWeatheringOpticalRefinementQA.ValidateOpenScene();
 
-        // Park/street furniture and scene-wide source preflight. The park-lamp validator is deliberately
-        // explicit here: existence of its source file is insufficient unless the prepared scene actually
-        // contains the continuous pole/service cover/head assembly rebound into all four LODs. The chute
-        // fabrication validator likewise runs after microdetail and LOD rebind because that is the exact
-        // mesh/material state sent to probes. Worn paths, rooftop reception, root-zone construction and
-        // facade weathering optical state are re-proved here as seals against later passes deleting or
-        // reverting benchmark-facing geometry/material state.
         QualityBlockGroundPathPlazaTerminationQA.ValidateOpenScene();
         QualityBlockGroundWornPathBTransitionQA.ValidateOpenScene();
         QualityBlockPeriodAuthenticityUpgrade.ValidateOpenScene();
@@ -153,35 +128,34 @@ public static class QualityBlockNative4KReviewPacket
         QualityBlockSceneMetadataCoverageQA.ValidateOpenScene();
         QualityBlockBenchmarkPrimitiveExposureQA.ValidateOpenScene();
 
-        // The reflection request is made only after the final persisted scene, the optically refined
-        // source-anchored facade residue, and its one physical SummerSun/sky/shadow state are valid.
-        // Root-zone/weathering construction is explicitly validated before RenderProbe too, because
-        // reflection-probe rendering does not rely on MainCamera pre-cull guards. Light purity is also
-        // checked here so a hidden Light command buffer/cookie/flare cannot enter the cubemap baseline.
+        // Grass is deliberately rebuilt once at the end of all mutating construction passes. Persisting
+        // here makes the exact blade geometry/material/LOD state part of the same scene that reflection
+        // probes will see. From the reflection request onward the grass path is validation-only.
+        QualityBlockGrassBladeFieldUpgrade.ApplyToOpenScene(true);
+        QualityBlockGrassBladeFieldUpgrade.ValidateOpenScene(false);
+        QualityBlockGrassBladeFormalPersistenceQA.ValidatePersistedEvidenceBinding();
+        QualityBlockSceneMetadataCoverageQA.ValidateOpenScene();
+        QualityBlockBenchmarkPrimitiveExposureQA.ValidateOpenScene();
+
         QualityBlockVegetationRootZoneInterfaceQA.ValidateOpenScene();
         QualityBlockFacadeWeatheringOpticalRefinementQA.ValidateOpenScene();
         QualityBlockAcOutdoorUnitInstallationQA.ValidateOpenScene();
         QualityBlockAcFanPhysicalRefinement.ValidateOpenScene();
         QualityBlockAcFanGuardRoundWireRefinement.ValidateOpenScene();
         QualityBlockAcFanGuardMountInterfaceRefinement.ValidateOpenScene();
+        QualityBlockGrassBladeFieldUpgrade.ValidateOpenScene(false);
+        QualityBlockGrassBladeFormalPersistenceQA.ValidatePersistedEvidenceBinding();
         QualityBlockSolarShadowCaptureCoherenceQA.ValidateOpenScene();
         QualityBlockLightEvidencePurityQA.ValidateOpenScene();
         QualityBlockReflectionProbeAwaiter.Begin(FinishAfterReflectionSynchronization);
 
         Debug.Log(
-            "Native-4K review packet entered reflection synchronization after final material binding, an explicitly installed four-way-stayed year-2000 rooftop reception assembly, " +
-            "corrected WornPathA/plaza termination, a corrected curved/tapered WornPathB branch through a two-module ParkPathEast opening, continuous tree taper/metric bark UVs, " +
-            "a 2.32 m mature-root-zone interface with local support-grade curb modules and grounded understory, true facade/stair apertures, corrected balcony slab/base interfaces, " +
-            "four-LOD guardrails, a mechanically installed AC assembly with physical rotor/shroud/round-wire guard/mounts, rainwater/futon interfaces, source-anchored facade residue with optically feathered dry-dielectric edges, a verified continuous-taper park-lamp installation, " +
-            "a watertight 2 mm fabricated stainless slide chute, and a SHA-256-bound physical sun/sky/ambient/shadow state with light-side command-buffer/cookie/flare injection forbidden. Visual Fidelity remains UNSCORED.");
+            "Native-4K review packet entered reflection synchronization after final material/construction binding, including a persisted physical grass-blade field with four LODs. " +
+            "Grass, geometry, materials and lighting are read-only from this point; Visual Fidelity remains UNSCORED until actual rendered evidence is reviewed.");
     }
 
     private static void FinishAfterReflectionSynchronization()
     {
-        // Immediately before Camera.Render, re-prove synchronized probes, the exact lighting state
-        // used by those probes, final construction/material state, and the formal light-purity policy.
-        // ValidateLatestWaitProof recomputes the full physical-lighting fingerprint and aborts if it
-        // differs from probe completion; the light-purity guard then watches every canonical frame.
         QualityBlockSolarShadowCaptureCoherenceQA.ValidateOpenScene();
         QualityBlockLightEvidencePurityQA.ValidateOpenScene();
         QualityBlockReflectionProbeCaptureSyncQA.ValidateRuntimeReceipt();
@@ -213,6 +187,8 @@ public static class QualityBlockNative4KReviewPacket
         QualityBlockVegetationRootZoneInterfaceQA.ValidateOpenScene();
         QualityBlockSceneMetadataCoverageQA.ValidateOpenScene();
         QualityBlockBenchmarkPrimitiveExposureQA.ValidateOpenScene();
+        QualityBlockGrassBladeFieldUpgrade.ValidateOpenScene(false);
+        QualityBlockGrassBladeFormalPersistenceQA.ValidatePersistedEvidenceBinding();
 
         QualityBlock4KCapture.CapturePreparedSceneAfterProbeSync();
         QualityBlockBenchmarkObservabilityQA.ExtractPeriodAuthenticityCropsFromExistingFrames();
@@ -220,8 +196,6 @@ public static class QualityBlockNative4KReviewPacket
         QualityBlockRenderEvidenceProvenanceQA.WriteBoundEvidenceTemplate();
         AssetDatabase.Refresh();
 
-        // Seal-to-temporal invariants. No rebuilding/reopening is allowed here: temporal evidence must
-        // share the exact already-proven still geometry/material/reflection and solar/shadow state.
         QualityBlockSolarShadowCaptureCoherenceQA.ValidateOpenScene();
         QualityBlockLightEvidencePurityQA.ValidateOpenScene();
         QualityBlockReflectionProbeCaptureSyncQA.ValidateRuntimeReceipt();
@@ -260,13 +234,9 @@ public static class QualityBlockNative4KReviewPacket
         QualityBlockAlbedoLightingNeutralityQA.ValidateGeneratedBaseAlbedos();
         QualityBlockFoliagePhysicalityQA.ValidateOpenScene();
         QualityBlockSceneRepetitionQA.ValidateOpenScene();
+        QualityBlockGrassBladeFieldUpgrade.ValidateOpenScene(false);
+        QualityBlockGrassBladeFormalPersistenceQA.ValidatePersistedEvidenceBinding();
 
-        // Temporal evidence is now guarded at runtime, not just source-bound. The guard resets the
-        // filmic telemetry after the three stills, verifies the invariant physical-lighting fingerprint
-        // in MainCamera.onPreCull for every temporal Camera.Render, and seals exact HDR->LDR/fallback
-        // counts to the generated temporal manifest/receipt and the already-accepted reflection proofs.
-        // Light-side purity independently hashes the sun/global-shadow state and rejects Light-attached
-        // CommandBuffers, cookies, flares, selective culling or a ForceVertex sun on every formal frame.
         QualityBlockTemporalRuntimeEvidenceGuard.Begin();
         try
         {
@@ -287,13 +257,7 @@ public static class QualityBlockNative4KReviewPacket
         AssetDatabase.Refresh();
 
         Debug.Log(
-            "Complete native-4K review packet prepared: sealed hero/oblique/grazing 3840x2160 stills and 100% crops plus bound temporal evidence and SHA-256-bound pixel-domain repetition/light-leak triage. " +
-            "The year-2000 rooftop reception assembly is explicitly present and retains four-way mast restraint through every LOD before reflection, still and temporal evidence; " +
-            "WornPathA terminates its modular curb runs before the paved plaza, while WornPathB uses a two-module curb opening, curved compacted core and feathered turf shoulders; " +
-            "generated fallback trees retain continuous woody taper/metric bark plus a 2.32 m root-zone opening whose curb modules follow local plaza/lawn support and whose understory is grounded; " +
-            "legacy balcony rails are excluded from evidence; the two futon drapes resolve the final rail datum; source-anchored facade weathering keeps optically feathered dry-dielectric residue through the formal evidence phases; " +
-            "the park lamp retains its continuous installed assembly through every evidence phase; every slide LOD retains the watertight fabricated stainless chute; reflection cubemaps/stills share one hash-identical physical lighting state; " +
-            "formal frames additionally reject light-side command-buffer/cookie/flare injection, a ForceVertex sun or selective sun layer masking; and every temporal MainCamera frame must prove that same physical-lighting fingerprint plus the filmic HDR->LDR path with zero fallback. " +
-            "Pixel diagnostics remain warning-only and cannot clear/assert their associated critical defects. Visual Fidelity remains UNSCORED until the actual pixels are manually reviewed against the locked 100-point gate.");
+            "Complete native-4K review packet prepared: sealed hero/oblique/grazing 3840x2160 stills and 100% crops plus bound temporal evidence. " +
+            "The persisted physical grass-blade field is explicitly validated before probe request, still capture and temporal capture; pixel diagnostics remain warning-only and Visual Fidelity remains UNSCORED until manual review against the 100-point gate.");
     }
 }

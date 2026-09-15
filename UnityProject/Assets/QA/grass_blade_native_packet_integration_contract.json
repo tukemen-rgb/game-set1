@@ -1,12 +1,22 @@
 {
-  "schemaVersion": "1.1.0",
+  "schemaVersion": "1.2.0",
   "status": "PENDING_REAL_UNITY_4K_RENDER",
   "scenePath": "Assets/Scenes/QualityBlock1990s.unity",
   "nativePacketPath": "Assets/Editor/QualityBlockNative4KReviewPacket.cs",
   "sourceGrassContractPath": "Assets/QA/grass_blade_field_contract.json",
   "persistenceContractPath": "Assets/QA/grass_blade_formal_persistence_contract.json",
   "visualGatePath": "Assets/QA/visual_fidelity_gate.json",
-  "policy": "The physical GrassBladeFieldDetail must be rebuilt and persisted only before realtime reflection probes are requested, then remain read-only and explicitly revalidated before synchronized probe request, native-4K still capture, and sealed temporal capture. Native packet integration cannot rely only on InitializeOnLoad callbacks. Critical-failure mappings must use the exact canonical IDs defined by visual_fidelity_gate.json; descriptive aliases are forbidden because they do not bind to the numeric automatic-fail gate.",
+  "sceneMetadataCoverageContractPath": "Assets/QA/scene_metadata_coverage_contract.json",
+  "constructionMaterialEvidenceBindingSourcePath": "Assets/Editor/QualityBlockConstructionMaterialEvidenceBindingQA.cs",
+  "metadataCoverageBinding": {
+    "requiredDomainId": "ground_domain",
+    "requiredRootName": "Ground",
+    "requiredContractPath": "Assets/QA/grass_blade_field_contract.json",
+    "requireExactlyOneDomainMatch": true,
+    "requireExactlyOneContractPathMatch": true,
+    "requireConstructionMaterialBundleEnumeration": true
+  },
+  "policy": "The physical GrassBladeFieldDetail must be rebuilt and persisted only before realtime reflection probes are requested, then remain read-only and explicitly revalidated before synchronized probe request, native-4K still capture, and sealed temporal capture. Its manufacture/material contract must also be linked exactly once from the Ground scene metadata domain so the construction/material evidence binder SHA-256 seals that physical specification to the same rendered pixels. Native packet integration cannot rely only on InitializeOnLoad callbacks. Critical-failure mappings must use the exact canonical IDs defined by visual_fidelity_gate.json; descriptive aliases are forbidden because they do not bind to the numeric automatic-fail gate.",
   "requiredTokens": {
     "selfValidation": "QualityBlockGrassBladeNativePacketQA.ValidateContractConfigOnly();",
     "persistenceContractPreflight": "QualityBlockGrassBladeFormalPersistenceQA.ValidateContractConfigOnly();",
@@ -47,6 +57,10 @@
     "claiming_render_quality_without_actual_render"
   ],
   "failureInjection": [
+    "remove_grass_blade_field_contract_from_ground_domain_contract_paths",
+    "duplicate_grass_blade_field_contract_in_ground_domain_contract_paths",
+    "move_grass_blade_field_contract_to_wrong_metadata_domain",
+    "remove_construction_material_contract_path_enumeration_from_evidence_binder",
     "remove_final_grass_persisted_build_from_native_packet",
     "move_grass_build_after_reflection_request",
     "remove_pre_reflection_grass_validation",

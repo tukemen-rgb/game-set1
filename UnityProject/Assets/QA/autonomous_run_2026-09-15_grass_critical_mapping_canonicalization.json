@@ -1,0 +1,82 @@
+{
+  "schemaVersion": "1.0.0",
+  "runId": "2026-09-15_grass_critical_mapping_canonicalization",
+  "branch": "gpt/unity-migration",
+  "startHead": "367df86674bf0442b398d8847fd7d0681c6bcdd4",
+  "implementationHeadBeforeRunRecord": "845218d3c55c9985225a766f47c0fae550963bba",
+  "status": "IMPLEMENTATION_ONLY_RENDER_VERIFICATION_PENDING",
+  "issueFound": {
+    "summary": "The grass native-packet contract used descriptive/legacy strings for two automatic-fail mappings instead of the canonical IDs consumed by visual_fidelity_gate.json.",
+    "staleMappings": [
+      "severe_aliasing_or_shimmering",
+      "claiming_render_quality_without_actual_render"
+    ],
+    "canonicalMappings": [
+      "severe_aliasing_or_shimmer",
+      "unverified_render_claim"
+    ],
+    "risk": "A local grass integration QA could report its failure mapping as complete while the strings did not identify the actual canonical automatic-FAIL entries. That semantic disconnect is unacceptable for fail-closed evidence gating even though it did not itself award Visual Fidelity points."
+  },
+  "commits": [
+    {
+      "sha": "5b9c8599497a1d43b01e97e01d03c2411fbd0977",
+      "message": "Canonicalize grass critical-failure mappings",
+      "effect": "Updates the machine-readable grass native-packet contract to schema 1.1.0, uses exact canonical automatic-FAIL IDs, records visual_fidelity_gate.json as the authority, and declares forbidden legacy aliases."
+    },
+    {
+      "sha": "845218d3c55c9985225a766f47c0fae550963bba",
+      "message": "Bind grass failure IDs to visual gate",
+      "effect": "Cross-parses visual_fidelity_gate.json, rejects blank/duplicate/unknown mappings, requires the exact grass-relevant canonical set, and rejects the two legacy aliases."
+    }
+  ],
+  "verification": {
+    "visualGateCanonicalIdsInspected": true,
+    "expectedGrassCriticalMappings": [
+      "missing_construction_material_metadata",
+      "visible_lod_pop",
+      "severe_aliasing_or_shimmer",
+      "unverified_render_claim"
+    ],
+    "mappingMustExistInVisualGate": true,
+    "duplicatesRejected": true,
+    "unknownIdsRejected": true,
+    "legacyAliasesRejected": true,
+    "nativePacketOrderingRulesPreserved": true,
+    "branchComparisonBeforeRunRecord": {
+      "aheadBy": 2,
+      "behindBy": 0,
+      "mergeBase": "367df86674bf0442b398d8847fd7d0681c6bcdd4"
+    },
+    "githubWorkflowRunsForStartHead": 0,
+    "githubStatusContextsForImplementationHead": 0,
+    "unityCompileVerified": false,
+    "unityRuntimeVerified": false,
+    "actual3840x2160RenderVerified": false
+  },
+  "failureInjectionForNextUnityRunner": [
+    "replace severe_aliasing_or_shimmer with severe_aliasing_or_shimmering and require preflight FAIL",
+    "replace unverified_render_claim with claiming_render_quality_without_actual_render and require preflight FAIL",
+    "insert an unknown criticalFailureMappings ID and require preflight FAIL",
+    "duplicate a canonical criticalFailureMappings ID and require preflight FAIL",
+    "remove one required canonical mapping and require preflight FAIL"
+  ],
+  "scores": {
+    "implementationReadiness": 93,
+    "implementationReadinessMaximum": 100,
+    "visualFidelityStatus": "UNSCORED_UNTIL_REAL_4K_RENDER",
+    "visualFidelityPointsAwardedThisRun": 0
+  },
+  "expectedVisualScoreImpact": {
+    "directPixelChange": "none",
+    "temporalLodAliasingStability": "evidence-integrity protection only; no points awarded",
+    "vegetationNaturalComplexity": "evidence-integrity protection only; no points awarded",
+    "criticalFailIntegrity": "medium-high reliability improvement because grass-related shimmer/LOD/unverified-render failures now bind to the exact central gate vocabulary"
+  },
+  "guardrails": {
+    "godotPreserved": true,
+    "baseMerged": false,
+    "forbiddenThemeAdded": false,
+    "earthquakeDisasterReconstructionExcluded": true
+  },
+  "nextBlocker": "No Unity 6000.3.0f1 runner, compile result, fresh 3840x2160 frontal/oblique/grazing packet, 100% crops, or sealed temporal render evidence is available yet. When a runner appears, stop speculative expansion, execute the mapping failure injections first, then capture and score actual rendered pixels only."
+}

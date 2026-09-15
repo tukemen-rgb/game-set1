@@ -10,9 +10,10 @@ using UnityEngine;
 /// authoritative native-4K review packet rather than merely an InitializeOnLoad convenience side effect.
 /// The only mutating grass build must happen before realtime reflection probes are requested. From the
 /// reflection request onward, grass geometry/material/LOD state is read-only and explicitly revalidated
-/// before still and temporal evidence. Critical-failure mappings are cross-checked against the canonical
-/// Visual Fidelity Gate IDs so a descriptive alias cannot silently bypass an automatic FAIL. This is
-/// implementation/evidence integrity only and awards no Visual Fidelity points without actual pixels.
+/// before still and temporal evidence. The physical grass manufacture/material contract must also be
+/// linked exactly once from the Ground metadata domain so it is included in the SHA-256 construction/
+/// material source bundle sealed to the rendered capture. Critical-failure mappings are cross-checked
+/// against canonical Visual Fidelity Gate IDs. This QA awards no Visual Fidelity points without pixels.
 /// </summary>
 public static class QualityBlockGrassBladeNativePacketQA
 {
@@ -21,6 +22,8 @@ public static class QualityBlockGrassBladeNativePacketQA
     private const string SourceGrassContractPath = "Assets/QA/grass_blade_field_contract.json";
     private const string PersistenceContractPath = "Assets/QA/grass_blade_formal_persistence_contract.json";
     private const string VisualGatePath = "Assets/QA/visual_fidelity_gate.json";
+    private const string SceneMetadataCoverageContractPath = "Assets/QA/scene_metadata_coverage_contract.json";
+    private const string ConstructionMaterialEvidenceBindingSourcePath = "Assets/Editor/QualityBlockConstructionMaterialEvidenceBindingQA.cs";
 
     private const string SelfValidationToken = "QualityBlockGrassBladeNativePacketQA.ValidateContractConfigOnly();";
     private const string PersistencePreflightToken = "QualityBlockGrassBladeFormalPersistenceQA.ValidateContractConfigOnly();";
@@ -31,6 +34,10 @@ public static class QualityBlockGrassBladeNativePacketQA
     private const string FinishMethodToken = "private static void FinishAfterReflectionSynchronization()";
     private const string StillCaptureToken = "QualityBlock4KCapture.CapturePreparedSceneAfterProbeSync();";
     private const string TemporalBeginToken = "QualityBlockTemporalRuntimeEvidenceGuard.Begin();";
+
+    private const string EvidenceBundleMethodToken = "BuildRequiredSourcePaths(CoverageContract coverage)";
+    private const string EvidenceBundleEnumerationToken = "foreach (string path in domain.contractPaths)";
+    private const string EvidenceBundleAddToken = "paths.Add(path);";
 
     private static readonly string[] RequiredCriticalFailureMappings =
     {
@@ -57,22 +64,29 @@ public static class QualityBlockGrassBladeNativePacketQA
             throw new FileNotFoundException("Grass source/persistence contracts must both exist before native-packet integration can be accepted.");
         if (!File.Exists(VisualGatePath))
             throw new FileNotFoundException("Canonical Visual Fidelity Gate contract missing: " + VisualGatePath);
+        if (!File.Exists(SceneMetadataCoverageContractPath))
+            throw new FileNotFoundException("Scene metadata coverage contract missing: " + SceneMetadataCoverageContractPath);
+        if (!File.Exists(ConstructionMaterialEvidenceBindingSourcePath))
+            throw new FileNotFoundException("Construction/material evidence binder source missing: " + ConstructionMaterialEvidenceBindingSourcePath);
 
         Contract contract = JsonUtility.FromJson<Contract>(File.ReadAllText(ContractPath));
-        if (contract == null || !string.Equals(contract.schemaVersion, "1.1.0", StringComparison.Ordinal))
-            throw new InvalidOperationException("Grass native-packet integration contract is null/unparseable or not schema 1.1.0.");
+        if (contract == null || !string.Equals(contract.schemaVersion, "1.2.0", StringComparison.Ordinal))
+            throw new InvalidOperationException("Grass native-packet integration contract is null/unparseable or not schema 1.2.0.");
         if (!string.Equals(contract.status, "PENDING_REAL_UNITY_4K_RENDER", StringComparison.Ordinal) ||
             !string.Equals(contract.scenePath, "Assets/Scenes/QualityBlock1990s.unity", StringComparison.Ordinal) ||
             !string.Equals(contract.nativePacketPath, NativePacketPath, StringComparison.Ordinal) ||
             !string.Equals(contract.sourceGrassContractPath, SourceGrassContractPath, StringComparison.Ordinal) ||
             !string.Equals(contract.persistenceContractPath, PersistenceContractPath, StringComparison.Ordinal) ||
-            !string.Equals(contract.visualGatePath, VisualGatePath, StringComparison.Ordinal))
+            !string.Equals(contract.visualGatePath, VisualGatePath, StringComparison.Ordinal) ||
+            !string.Equals(contract.sceneMetadataCoverageContractPath, SceneMetadataCoverageContractPath, StringComparison.Ordinal) ||
+            !string.Equals(contract.constructionMaterialEvidenceBindingSourcePath, ConstructionMaterialEvidenceBindingSourcePath, StringComparison.Ordinal))
             throw new InvalidOperationException("Grass native-packet integration identity/status paths drifted.");
 
         RequiredTokens tokens = contract.requiredTokens;
         MinimumOccurrences minimums = contract.minimumOccurrences;
         Ordering ordering = contract.ordering;
-        if (tokens == null || minimums == null || ordering == null || contract.renderVerification == null)
+        if (tokens == null || minimums == null || ordering == null || contract.renderVerification == null ||
+            contract.metadataCoverageBinding == null)
             throw new InvalidOperationException("Grass native-packet integration contract is missing structured requirements.");
         if (!TokenEquals(tokens) ||
             minimums.selfValidation != 1 || minimums.persistenceContractPreflight != 1 ||
@@ -85,6 +99,7 @@ public static class QualityBlockGrassBladeNativePacketQA
             !ordering.sourceAndPersistenceValidationRequiredBetweenStillSealAndTemporalBegin)
             throw new InvalidOperationException("Grass native-packet integration ordering requirements were weakened.");
 
+        ValidateMetadataCoverageBinding(contract.metadataCoverageBinding);
         ValidateCriticalFailureMappings(contract);
 
         if (contract.renderVerification.runtimeRenderVerified ||
@@ -118,7 +133,47 @@ public static class QualityBlockGrassBladeNativePacketQA
         RequireBothInWindow(source, SourceValidationToken, PersistenceValidationToken, still, temporal,
             "after still capture/seal and before temporal capture begins");
 
-        Debug.Log("Grass native-packet integration valid: one persisted pre-reflection build, explicit read-only validation before probe/still/temporal evidence, and canonical automatic-FAIL mappings bound to visual_fidelity_gate.json. Visual Fidelity remains UNSCORED.");
+        Debug.Log("Grass native-packet integration valid: one persisted pre-reflection build, explicit read-only validation before probe/still/temporal evidence, exact Ground-domain construction/material metadata binding, and canonical automatic-FAIL mappings. Visual Fidelity remains UNSCORED.");
+    }
+
+    private static void ValidateMetadataCoverageBinding(MetadataCoverageBinding requirement)
+    {
+        if (!string.Equals(requirement.requiredDomainId, "ground_domain", StringComparison.Ordinal) ||
+            !string.Equals(requirement.requiredRootName, "Ground", StringComparison.Ordinal) ||
+            !string.Equals(requirement.requiredContractPath, SourceGrassContractPath, StringComparison.Ordinal) ||
+            !requirement.requireExactlyOneDomainMatch ||
+            !requirement.requireExactlyOneContractPathMatch ||
+            !requirement.requireConstructionMaterialBundleEnumeration)
+            throw new InvalidOperationException("Grass metadata coverage binding policy was weakened or drifted.");
+
+        CoverageDocument coverage = JsonUtility.FromJson<CoverageDocument>(File.ReadAllText(SceneMetadataCoverageContractPath));
+        if (coverage == null || coverage.domains == null)
+            throw new InvalidOperationException("Scene metadata coverage domains are unavailable for grass binding validation.");
+
+        CoverageDomain[] domainMatches = coverage.domains
+            .Where(x => x != null &&
+                        string.Equals(x.id, requirement.requiredDomainId, StringComparison.Ordinal) &&
+                        string.Equals(x.rootName, requirement.requiredRootName, StringComparison.Ordinal))
+            .ToArray();
+        if (domainMatches.Length != 1)
+            throw new InvalidOperationException(
+                $"Grass metadata must resolve to exactly one {requirement.requiredDomainId}/{requirement.requiredRootName} domain; found {domainMatches.Length}.");
+
+        int totalPathMatches = coverage.domains
+            .Where(x => x != null && x.contractPaths != null)
+            .Sum(x => x.contractPaths.Count(path => string.Equals(path, SourceGrassContractPath, StringComparison.Ordinal)));
+        int groundPathMatches = (domainMatches[0].contractPaths ?? Array.Empty<string>())
+            .Count(path => string.Equals(path, SourceGrassContractPath, StringComparison.Ordinal));
+        if (groundPathMatches != 1 || totalPathMatches != 1)
+            throw new InvalidOperationException(
+                $"{SourceGrassContractPath} must appear exactly once and only under Ground metadata; ground={groundPathMatches}, total={totalPathMatches}.");
+
+        string binderSource = File.ReadAllText(ConstructionMaterialEvidenceBindingSourcePath);
+        if (!binderSource.Contains(EvidenceBundleMethodToken, StringComparison.Ordinal) ||
+            !binderSource.Contains(EvidenceBundleEnumerationToken, StringComparison.Ordinal) ||
+            !binderSource.Contains(EvidenceBundleAddToken, StringComparison.Ordinal))
+            throw new InvalidOperationException(
+                "Construction/material evidence binder no longer proves that scene-domain contractPaths are enumerated into the SHA-256 source bundle.");
     }
 
     private static void ValidateCriticalFailureMappings(Contract contract)
@@ -227,6 +282,9 @@ public static class QualityBlockGrassBladeNativePacketQA
         public string sourceGrassContractPath;
         public string persistenceContractPath;
         public string visualGatePath;
+        public string sceneMetadataCoverageContractPath;
+        public string constructionMaterialEvidenceBindingSourcePath;
+        public MetadataCoverageBinding metadataCoverageBinding;
         public RequiredTokens requiredTokens;
         public MinimumOccurrences minimumOccurrences;
         public Ordering ordering;
@@ -234,6 +292,31 @@ public static class QualityBlockGrassBladeNativePacketQA
         public string[] criticalFailureMappings;
         public string[] forbiddenLegacyAliases;
         public RenderVerification renderVerification;
+    }
+
+    [Serializable]
+    private sealed class MetadataCoverageBinding
+    {
+        public string requiredDomainId;
+        public string requiredRootName;
+        public string requiredContractPath;
+        public bool requireExactlyOneDomainMatch;
+        public bool requireExactlyOneContractPathMatch;
+        public bool requireConstructionMaterialBundleEnumeration;
+    }
+
+    [Serializable]
+    private sealed class CoverageDocument
+    {
+        public CoverageDomain[] domains;
+    }
+
+    [Serializable]
+    private sealed class CoverageDomain
+    {
+        public string id;
+        public string rootName;
+        public string[] contractPaths;
     }
 
     [Serializable]

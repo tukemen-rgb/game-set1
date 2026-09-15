@@ -1,11 +1,12 @@
 {
-  "schemaVersion": "1.0",
+  "schemaVersion": "1.1",
   "status": "PENDING_REAL_UNITY_4K_RENDER",
-  "purpose": "Lock the deterministic midsummer Japanese solar sample and all shadow-map settings through generated-scene rebuilds and immediately before MainCamera rendering. This contract prevents a previously validated shadow state from being silently reset by a later solar/environment pass. It awards no Visual Fidelity points without actual rendered evidence.",
+  "purpose": "Lock the deterministic midsummer Japanese solar sample and all shadow-map settings through generated-scene rebuilds and immediately before MainCamera rendering. This contract prevents a previously validated shadow state from being silently reset by a later solar/environment pass. Automatic-FAIL mappings and category impacts use only canonical IDs from visual_fidelity_gate.json. It awards no Visual Fidelity points without actual rendered evidence.",
+  "visualGatePath": "Assets/QA/visual_fidelity_gate.json",
   "visualFidelityCategoryImpact": [
     "lighting_shadows_reflections",
-    "cinematic_image_quality_composition_color_exposure",
-    "temporal_lod_aliasing_stability"
+    "cinematic_image",
+    "temporal_lod_aliasing"
   ],
   "solarDatum": {
     "latitudeDegrees": 35.6,
@@ -76,6 +77,16 @@
       "awarding_visual_points_from_source_math_or_configuration_only"
     ]
   },
+  "criticalFailureMappingPolicy": {
+    "requireExactCanonicalIds": true,
+    "requireMembershipInVisualFidelityGate": true,
+    "rejectLegacyAliases": true
+  },
+  "forbiddenLegacyAliases": [
+    "inconsistent_sun_shadow_direction",
+    "severe_aliasing_or_shimmering",
+    "claiming_render_quality_without_actual_render"
+  ],
   "renderEvidencePlan": {
     "hero": "Inspect building and ground shadows together. Shadow bearing must be consistent with a southwest sun and must not reverse between unrelated objects.",
     "oblique": "Inspect contact separation at balcony, park furniture and path/curb interfaces. Reject peter-panning or acne large enough to read at native 4K.",
@@ -85,11 +96,11 @@
     "requiredInspection": "full frames plus 100% crops"
   },
   "criticalFailMappings": [
-    "inconsistent_sun_shadow_direction",
-    "severe_aliasing_or_shimmering",
+    "sun_shadow_inconsistency",
+    "severe_aliasing_or_shimmer",
     "visible_lod_pop",
     "major_light_leak",
-    "claiming_render_quality_without_actual_render"
+    "unverified_render_claim"
   ],
   "verification": {
     "compileVerified": false,

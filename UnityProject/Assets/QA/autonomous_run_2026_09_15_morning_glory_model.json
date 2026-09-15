@@ -1,0 +1,18 @@
+{
+  "date":"2026-09-15",
+  "repository":"tukemen-rgb/game-set1",
+  "branch":"gpt/unity-migration",
+  "startHead":"2e538f21daa8db43d5c5ebc57b7a38f29f55c3f8",
+  "runnerCheck":{"githubActionsRuns":0,"realUnityRunnerAvailable":false,"renderScreenshotsFound":false},
+  "ownershipSearch":{"terms":["MorningGlory","Ipomoea","Asagao","朝顔"],"matches":0,"branchGardenPropsBeforeRun":["GalvanizedGardenBucket10L.ntprop","TerracottaPot240.ntprop","TerracottaSaucer214.ntprop","README.md"]},
+  "production":{"asset":"MorningGloryTrellisPlant","unityAuthoringSource":"Assets/Editor/MorningGloryTrellisAuthoring.cs","externalActualMeshLevels":5,"materials":8,"masterTrianglesExternal":36264,"lodTrianglesExternal":[23888,15028,5134,2644],"sourceReuse":"pairs with existing TerracottaPot240; pot geometry not duplicated"},
+  "externalGeometryVerification":{"executed":true,"finiteVerticesNormals":true,"unitNormals":true,"degenerateTriangles":0,"faceNormalOrientationMismatches":0,"objReloadTriangleParity":true,"strictRuntimeLodTriangleReduction":true,"materialGroupsMax":8},
+  "unityVerification":{"compile":false,"authoringExecution":false,"render":false,"temporal":false,"realTimePerformance":false},
+  "readiness":{"lastRecorded":93,"recomputed":false,"pointsAdded":0},
+  "visualFidelity":{"score":null,"pass":false,"status":"UNSCORED_UNTIL_REAL_4K_RENDER","pointsAdded":0,"expectedImpactOnly":["vegetation/natural complexity","period/scene authenticity","geometry/construction","material differentiation"]},
+  "criticalDefects":{"claimedCleared":[],"note":"No critical defect cleared from source or external OBJ inspection alone."},
+  "preservation":{"godotChanges":0,"baseMerge":false,"excludedThemeAdded":false,"formalBenchmarkSceneChanged":false},
+  "toolLimitations":["Local-file-to-GitHub bulk upload is not exposed by the connector; actual OBJ/MTL files are retained as the downloadable run artifact while deterministic Unity authoring source and mesh hashes are committed."],
+  "nextTarget":"After branch ownership search: balcony clothesline sockets/pole, watering can and clothespin basket.",
+  "blocker":"No Unity Actions runner or real Unity evidence. Need Unity 6000.3.0f1 compile/authoring/render/temporal review before scoring."
+}

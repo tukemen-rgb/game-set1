@@ -1,0 +1,38 @@
+{
+  "schema": 1,
+  "assetId": "MorningGloryTrellisPlant",
+  "units": "metres",
+  "coordinateSystem": "Y-up; root matches existing TerracottaPot240 origin",
+  "manufactureInstallation": {
+    "components": ["three tapered bamboo stakes with physical node collars", "2.3 mm jute triangular support tiers and top lashings", "twining primary stems and petioles/peduncles", "three-lobed cordate leaf solids with hero raised veins", "blue-purple funnel corollas with pale throats", "buds on high LODs", "closed dry-soil insert"],
+    "dimensions": {"supportTopY":1.16,"stakeDiameterBaseMm":9.2,"stakeDiameterTopMm":6.2,"twineDiameterMm":2.3,"primaryStemDiameterMm":[2.3,4.2],"leafLengthMm":[70,104],"flowerCorollaLengthMm":[59.5,65.1],"soilRadiusMm":101,"soilTopY":0.203,"stakeEmbeddedBottomY":0.125},
+    "mounting": "Pair with existing TerracottaPot240; do not duplicate/fuse the pot. Soil remains inside its inner wall. Stakes intentionally penetrate soil about 78 mm below the soil top.",
+    "interfaces": "Twine contacts stakes as tied support; vines physically wrap stakes; leaves and flowers attach through modeled petioles/peduncles. No sealants.",
+    "orientationExposure": "Upright summer container plant; upper canopy sun/sky exposed, lower canopy self-shaded; dry reference state.",
+    "agingCausality": "Ordinary maintained living plant. No arbitrary scorch, damage, disaster cue, moisture streak or random dirt. Future wilt/chlorosis/dust/wetness must follow placement and maintenance history.",
+    "geometryVsMaterial": "Stake taper/nodes, twine sag, stem winding, leaf thickness/hero veins, petioles, flower funnel/lip and soil volume are geometry. Fine fibres, epidermis, venation grain and soil grains are material microstructure; no painted highlight.",
+    "periodAccuracy": "Generic unbranded bamboo/twine garden construction; no claim of reproducing an exact 1990s commercial trellis SKU."
+  },
+  "botanicalReference": {"taxon":"Ipomoea nil","source":"Kew Science Plants of the World Online","url":"https://powo.science.kew.org/taxon/urn:lsid:ipni.org:names:1071575-2/general-information","usedFor":"twining habit; cordate/three-lobed leaves around 8 cm; funnel corolla with pale throat and blue-purple limb; not period-product evidence"},
+  "materials": [
+    {"id":"Bamboo","albedoSRGB":[0.36,0.32,0.16],"roughness":0.60,"metallic":0,"normalScaleTarget":0.18,"wetness":0,"microstructure":"longitudinal fibre and node texture","uvAging":"none baked","fresnel":"dielectric F0 about 0.04"},
+    {"id":"JuteTwine","albedoSRGB":[0.43,0.33,0.20],"roughness":0.86,"metallic":0,"normalScaleTarget":0.28,"wetness":0,"microstructure":"twisted bast fibre","uvAging":"none baked","fresnel":"dielectric F0 about 0.04"},
+    {"id":"LivingStem","albedoSRGB":[0.16,0.34,0.09],"roughness":0.56,"metallic":0,"normalScaleTarget":0.14,"wetness":0,"microstructure":"fine epidermis","uvAging":"none baked","fresnel":"dielectric F0 about 0.04"},
+    {"id":"LivingLeaf","albedoSRGB":[0.10,0.28,0.07],"roughness":0.50,"metallic":0,"normalScaleTarget":0.22,"wetness":0,"microstructure":"matte cuticle and fine venation","uvAging":"none baked","fresnel":"dielectric F0 about 0.04"},
+    {"id":"LeafVein","albedoSRGB":[0.13,0.31,0.08],"roughness":0.56,"metallic":0,"normalScaleTarget":0.12,"wetness":0,"microstructure":"raised midrib/secondary veins","uvAging":"none baked","fresnel":"dielectric F0 about 0.04"},
+    {"id":"FlowerBlue","albedoSRGB":[0.19,0.19,0.56],"roughness":0.43,"metallic":0,"normalScaleTarget":0.10,"wetness":0,"microstructure":"thin velvety petal","uvAging":"none baked","fresnel":"dielectric F0 about 0.04"},
+    {"id":"FlowerThroat","albedoSRGB":[0.82,0.78,0.88],"roughness":0.46,"metallic":0,"normalScaleTarget":0.08,"wetness":0,"microstructure":"pale throat; no baked hotspot","uvAging":"none baked","fresnel":"dielectric F0 about 0.04"},
+    {"id":"DrySoil","albedoSRGB":[0.12,0.075,0.04],"roughness":0.93,"metallic":0,"normalScaleTarget":0.38,"wetness":0,"microstructure":"fine dry granules","uvAging":"not applicable","fresnel":"dielectric F0 about 0.04"}
+  ],
+  "externalActualMeshEvidence": {
+    "format":"OBJ/MTL generated and reloaded outside Unity; downloadable run artifact, not a Unity render",
+    "MASTER":{"triangles":36264,"sha256":"e5c6375125abb49e94c83211ea50acc4e12f99342210bed81c6af316316353aa"},
+    "LOD0":{"triangles":23888,"sha256":"654a2007a46a90bf991cdba5136fd3dc700139116aab5122d2c6766226b09560"},
+    "LOD1":{"triangles":15028,"sha256":"084880568554d655ffa1a3719ba89b093d0e80f063a4c21d9df1636ecf43decc"},
+    "LOD2":{"triangles":5134,"sha256":"165f75032b9d791582a10dae1125986d1fc30989cc93cdfcbbd563864227f266"},
+    "LOD3":{"triangles":2644,"sha256":"d05a871801fcb08bef7261288dd2d20f6a452ec502f953ed6375f48d567828b0"},
+    "checks":{"finiteVerticesNormals":true,"unitNormals":true,"degenerateTriangles":0,"faceNormalOrientationMismatches":0,"objReloadTriangleParity":true,"strictRuntimeLodTriangleReduction":true}
+  },
+  "unityVerification":{"compile":false,"assetAuthoringExecuted":false,"render":false,"temporalLod":false,"realTimePerformance":false},
+  "visualFidelity":{"status":"UNSCORED_UNTIL_REAL_4K_RENDER","score":null,"pass":false,"pointsAwarded":0}
+}

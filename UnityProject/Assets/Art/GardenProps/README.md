@@ -1,25 +1,27 @@
-# Garden prop production batch — 2026-09-15
+# Garden prop production — 2026-09-15
 
-Three authored parametric 3D model sources: TerracottaPot240, TerracottaSaucer214, GalvanizedGardenBucket10L. Units metres, Y up. Each has a high-detail master and LOD0/1/2/3, all physical components retained. The bucket has 11 manufactured components, not a closed primitive cylinder.
+Four authored asset sets now exist. The first batch contains parametric `TerracottaPot240`, `TerracottaSaucer214` and `GalvanizedGardenBucket10L`. The second batch adds `MorningGloryTrellisPlant`, with deterministic Unity Editor authoring source plus an actually generated and reloaded OBJ/MTL mesh package outside Unity. `asset_inventory.json` is the persistent machine-readable inventory.
 
-## Current deliverables
-The .ntprop sources and NewTownGardenPropImporter.cs are committed here. The importer is designed to create prefab assets with Mesh subassets, Standard PBR materials and an LODGroup during import. It has NOT yet been compiled or executed in Unity. There is one combined mesh renderer per LOD with material submeshes; the master is an unrendered subasset. No scene-open, runtime, pre-cull or reflection mutation callbacks. No canonical scene changes.
+## Triangle counts: MASTER / LOD0 / LOD1 / LOD2 / LOD3
+- GalvanizedGardenBucket10L: 48,804 / 22,372 / 10,692 / 5,308 / 2,684
+- TerracottaPot240: 13,312 / 6,656 / 3,328 / 1,664 / 832
+- TerracottaSaucer214: 6,656 / 3,328 / 1,664 / 832 / 416
+- MorningGloryTrellisPlant external actual OBJ proof: 36,264 / 23,888 / 15,028 / 5,134 / 2,644
 
-Actual 15 GLB and 15 OBJ exports were generated and numerically checked outside Unity. The downloadable conversation package garden_props_models_2026-09-15.zip includes those exports, the tested Python exporter, per-part geometry report, hashes and a clearly labelled non-Unity solid mesh preview. These binary exports are not claimed to be committed here. The separate GitHub upload of the Python exporter was blocked by the tool and was not retried via another route.
+## MorningGloryTrellisPlant
+The plant does not duplicate the terracotta pot. It is authored to sit inside the existing pot: 101 mm radius soil insert, three tapered bamboo stakes, bamboo-node collars, sagging jute support tiers, primary twining stems, petioles/peduncles, closed thin leaf solids, raised leaf veins at hero LODs, funnel flowers with pale throats and buds. MASTER is authoring-only; runtime intent is LOD0–3.
 
-## Triangle counts: master / LOD0 / LOD1 / LOD2 / LOD3
-- Bucket: 48804 / 22372 / 10692 / 5308 / 2684
-- Pot: 13312 / 6656 / 3328 / 1664 / 832
-- Saucer: 6656 / 3328 / 1664 / 832 / 416
+Botanical proportions are informed by Kew Plants of the World Online for *Ipomoea nil*: twining habit, cordate/three-lobed leaves around 8 cm scale and funnel-shaped corollas. This is morphology evidence only, not evidence for a specific historical consumer product. The support is generic, unbranded bamboo/twine construction.
 
-## Placement and material reasoning
-The pot has a real 18 mm drainage hole, a foot ring and a rounded thick rim. The saucer has a continuous 10 mm floor and real bowl. Place pot y=0.010 m relative to saucer; do not fuse or overlap their solids. The bucket has a 0.5 mm sheet wall, separate crimped floor, returned lip, reinforcement plates, pivot eyes/pins and a bored wood grip. Dimensional/manufacturing assumptions, clearances, material finish, exposure and geometry-vs-material division are embedded in each source.
+All plant materials are dielectric. Per-material albedo, roughness, intended normal scale, microstructure, wetness, UV-aging policy and Fresnel response are recorded in `MorningGloryTrellis/MorningGloryTrellis.metadata.json`. No directional highlights or shadows are baked. Current dry-reference state has no arbitrary damage or disaster cue.
 
-Clay and wood are dielectric; exposed zinc is a conductor. Deterministic base-color and roughness microvariation only; normalScale=0 is explicit. Dry maintained state, no arbitrary damage or invented moisture streaks. No directional highlights or shadows painted into textures. Modern manufacturer references are scale/construction references, not proof of an exact 1990s SKU.
+`MorningGloryTrellisAuthoring.cs` is an explicit Editor authoring command: it creates a high-detail MASTER mesh asset, LOD0–3 mesh assets, Standard-shader materials and a cross-fade LODGroup prefab. It has no scene-open/runtime/pre-cull callback and does not modify the formal benchmark scene automatically. This source has not yet compiled or executed in Unity.
 
-## Verification and next production
-Executed Python checks cover 65 closed component-material surfaces across 15 meshes: finite vertices/normals, nondegenerate faces, positive volume/consistent winding, welded watertightness, strictly decreasing triangle counts, bounds within 1 mm of master, GLB reload triangle/bounds parity. Nine lathe profiles were checked for simple non-self-intersecting cross sections. These checks do not establish assembly interference clearance, temporal stability, real-time performance, shader fidelity or Unity import parity.
+## Executed vs pending verification
+The external OBJ files were actually generated and reloaded outside Unity. Executed checks: finite vertices/normals, unit-length normals, no degenerate triangles, face winding consistent with authored normals, exact OBJ-reload triangle counts and strictly decreasing runtime LOD triangle counts. The mesh package is a run artifact; it is not Unity evidence.
 
-Visual Fidelity remains UNSCORED_UNTIL_REAL_4K_RENDER. Readiness 93/100 is the last recorded project score, not recomputed here. Add these sources to existing scene evidence coverage only when formally placed; retain the existing central 100-point gate. No new scoring authority.
+Pending: Unity 6000.3.0f1 compile, Editor authoring execution, material illumination, assembly intersection review, real-time performance, LOD pop/shimmer review, 3840x2160 captures and 100% crops. LOD2/3 intentionally reduce foliage density, so silhouette stability must be judged in real temporal capture.
 
-Next model: reuse this pot for a summer morning-glory plant, support stakes, twine, stems and leaves, after checking existing asset ownership and any new Unity runner evidence. Do actual model work rather than successive speculative QA-only expansions. Stop new commits after 2026-09-18 Asia/Tokyo.
+Visual Fidelity remains `UNSCORED_UNTIL_REAL_4K_RENDER`; zero visual points were added. Readiness 93/100 is the last recorded project score and was not recomputed. The existing central 100-point Visual Fidelity Gate remains the only scoring authority.
+
+Next production target after ownership search: balcony household-service microassembly (clothesline sockets/pole, small watering can, clothespin basket). Preserve Godot; never merge base; stop new commits after 2026-09-18 Asia/Tokyo.

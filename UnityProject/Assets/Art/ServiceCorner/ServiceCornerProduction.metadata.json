@@ -1,0 +1,257 @@
+{
+  "schema": 1,
+  "batchId": "BalconyServiceCorner_2026_09_16",
+  "units": "metres",
+  "coordinateSystem": "right-handed Y-up external exports; Unity import/coordinate parity pending",
+  "historicalScope": "Original unbranded service-area interpretations for circa-2000 Japanese residential context. No exact historical SKU claim. Current/source dimensions from prior assets remain dimensional/interface references only.",
+  "ownership": {
+    "faucetOwner": "UnityProject/Tools/generate_faucet_hose.py",
+    "faucetHeroRefinement": "UnityProject/Tools/refine_faucet_hero.py",
+    "hoseOwner": "UnityProject/Tools/generate_faucet_hose.py",
+    "hoseRestingRefinement": "UnityProject/Tools/refine_hose_nozzle_resting.py",
+    "wateringCanOwner": "UnityProject/Tools/generate_balcony_life.py",
+    "scrubBrushOwner": "UnityProject/Tools/generate_balcony_cleaning_set.py",
+    "floorDrainOwner": "UnityProject/Tools/generate_balcony_floor_drain.py",
+    "reviewAssembler": "UnityProject/Tools/build_service_corner_review.py"
+  },
+  "assets": [
+    {
+      "id": "BalconyFaucetG13",
+      "change": "hero refinement of existing asset; no duplicate base owner",
+      "manufactureInstallation": "Existing chrome/brass wall faucet construction retained. Added separate wall gasket, packing reveal, spindle packing, spout fillet collar and hose-barb shoulder. Corrected the blue index-cap cylinder so its face follows the Y-axis valve spindle rather than the old Z-axis primitive orientation.",
+      "componentsAdded": [
+        "EscutcheonEPDMGasket",
+        "BonnetPackingReveal",
+        "SpindleEPDMPacking",
+        "SpoutOutletFillet",
+        "HoseBarbShoulder"
+      ],
+      "interfaces": "EPDM wall gasket sits behind escutcheon; spindle packing rings the stem; outlet collar bridges the spout/stem junction; barb shoulder supports hose-end transition. Full installed seal compression and thread engagement remain unverified.",
+      "orientationExposure": "Wall mounted; handle/spout exposed to summer sun and touch, outlet underside sheltered.",
+      "aging": "No scale, fingerprints, scratches or drip trails baked. Those must be placement/use driven.",
+      "geometryVsMaterial": "Seals, packing reveals, collars and corrected cap orientation are geometry. Fine polishing/machining and molded stipple are UV-mapped PBR microtexture.",
+      "materials": [
+        {
+          "id": "ChromeBrass",
+          "albedoSRGB": [
+            0.6,
+            0.62,
+            0.64
+          ],
+          "roughnessTarget": 0.2,
+          "metallic": 1,
+          "normalScaleImplementation": 0.12,
+          "microstructure": "fine machining/wipe scratches",
+          "wetness": 0,
+          "uvAging": "none baked",
+          "angularResponse": "glTF conductor; Unity verification pending"
+        },
+        {
+          "id": "WarmBrass",
+          "albedoSRGB": [
+            0.6,
+            0.41,
+            0.15
+          ],
+          "roughnessTarget": 0.29,
+          "metallic": 1,
+          "normalScaleImplementation": 0.1,
+          "microstructure": "fine turned brass machining",
+          "wetness": 0,
+          "uvAging": "none baked",
+          "angularResponse": "glTF conductor; Unity verification pending"
+        },
+        {
+          "id": "BlueIndexCap",
+          "albedoSRGB": [
+            0.035,
+            0.15,
+            0.4
+          ],
+          "roughnessTarget": 0.46,
+          "metallic": 0,
+          "normalScaleImplementation": 0.08,
+          "microstructure": "molded stipple",
+          "wetness": 0,
+          "uvAging": "none baked",
+          "angularResponse": "dielectric F0 ~0.04"
+        },
+        {
+          "id": "BlackEPDM",
+          "albedoSRGB": [
+            0.018,
+            0.02,
+            0.022
+          ],
+          "roughnessTarget": 0.78,
+          "metallic": 0,
+          "normalScaleImplementation": 0.1,
+          "microstructure": "rubber microtexture",
+          "wetness": 0,
+          "uvAging": "none baked",
+          "angularResponse": "dielectric F0 ~0.04"
+        }
+      ],
+      "uvPolicy": "Deterministic cylindrical/PCA-axis projection with 3 circumferential x 4 longitudinal repeats for microdetail only; macro weathering intentionally absent. Inspect seams in Unity closeups.",
+      "lod": {
+        "MASTER": 10448,
+        "LOD0": 7520,
+        "LOD1": 4104,
+        "LOD2": 2584,
+        "LOD3": 1664
+      },
+      "actualExternalExportsGenerated": true,
+      "glbMaterialRoundtripChecked": true,
+      "unityVerified": false
+    },
+    {
+      "id": "GardenHoseCoilNozzle",
+      "change": "resting-pose refinement of existing asset; no duplicate base owner",
+      "demonstratedBlocker": "Original authored standalone bounds placed the pistol grip below y=0 when the coil was treated as floor contact. The refinement rotates only the grip/overmold/trigger group 90 degrees around the barrel axis and then normalizes the lowest real mesh point to y=0.",
+      "manufactureInstallation": "Original hose/nozzle components and dimensions are retained. This is an assembly pose correction, not a scale or topology reduction.",
+      "interfaces": "Connector/barrel and selector/shower-face interfaces stay as previously corrected. Handheld grip remains attached at its modeled root after axial rotation.",
+      "aging": "No new aging masks.",
+      "geometryVsMaterial": "No geometry removed. Existing 33 real shower holes remain geometry.",
+      "lod": {
+        "MASTER": 30380,
+        "LOD0": 17012,
+        "LOD1": 8692,
+        "LOD2": 4772,
+        "LOD3": 3084
+      },
+      "groundedBoundsY": {
+        "LOD0Min": 0.0,
+        "LOD0Max": 0.06498142047264907
+      },
+      "unityVerified": false
+    },
+    {
+      "id": "BalconyFloorDrain100",
+      "change": "new asset",
+      "manufactureInstallation": "Generic 100 mm-class balcony floor drain: removable pressed stainless grate, EPDM bedding ring, molded PVC flange, recessed tapered well and outlet sleeve, retained by a central screw head. Dimensions are authored modeling assumptions, not a historical product replica.",
+      "dimensionsMm": {
+        "outerFlangeDiameter": 104,
+        "grateDiameter": 96,
+        "grateThickness": 1.2,
+        "radialSlotCount": 18,
+        "slotWidth": 4,
+        "slotRadialSpan": [
+          13,
+          37
+        ],
+        "centralScrewApertureDiameter": 4.4,
+        "outletInsideApproxDiameter": 54,
+        "totalDepthApprox": 90
+      },
+      "materials": [
+        {
+          "id": "StainlessGrate",
+          "albedoSRGB": [
+            0.5,
+            0.53,
+            0.55
+          ],
+          "roughness": 0.31,
+          "metallic": 1,
+          "normalScaleTarget": 0.1,
+          "microstructure": "fine pressed/brushed sheet, pending normal map",
+          "wetness": 0,
+          "uvAging": "none baked",
+          "angularResponse": "conductor"
+        },
+        {
+          "id": "GrayPVC",
+          "albedoSRGB": [
+            0.25,
+            0.27,
+            0.27
+          ],
+          "roughness": 0.62,
+          "metallic": 0,
+          "normalScaleTarget": 0.14,
+          "microstructure": "molded PVC grain pending",
+          "wetness": 0,
+          "uvAging": "none baked",
+          "angularResponse": "dielectric F0 ~0.04"
+        },
+        {
+          "id": "BlackEPDM",
+          "albedoSRGB": [
+            0.018,
+            0.02,
+            0.02
+          ],
+          "roughness": 0.8,
+          "metallic": 0,
+          "normalScaleTarget": 0.1,
+          "microstructure": "matte rubber",
+          "wetness": 0,
+          "uvAging": "none baked",
+          "angularResponse": "dielectric F0 ~0.04"
+        }
+      ],
+      "mounting": "Flange/grate top at finished floor; well and sleeve recess below slab. Actual benchmark slab cutout, waterproofing membrane and plumbing connection are not asserted.",
+      "interfaces": "Grate sits on EPDM ring over PVC flange. Eighteen radial apertures and the screw aperture are true holes, not alpha or black paint.",
+      "orientationExposure": "Horizontal exterior floor fitting; grate sun/rain exposed, well sheltered.",
+      "aging": "Dry maintained reference. Future mineral/dirt rings must follow water-flow and low-point causality; none baked.",
+      "geometryVsMaterial": "Grate holes, flange, gasket, well, outlet and screw are geometry; fine brushing/molding are material detail.",
+      "lod": {
+        "MASTER": 7936,
+        "LOD0": 6008,
+        "LOD1": 4076,
+        "LOD2": 2476,
+        "LOD3": 1896
+      },
+      "actualExternalExportsGenerated": true,
+      "unityVerified": false
+    }
+  ],
+  "reviewIntegration": {
+    "id": "BalconyServiceCornerReview_LOD0",
+    "triangles": 49460,
+    "components": 132,
+    "groupTriangles": {
+      "HeroFaucet": 7520,
+      "Hose": 17012,
+      "WateringCan": 14876,
+      "ScrubBrush": 4008,
+      "FloorDrain": 6008
+    },
+    "unexpectedIndependentAabbOverlaps": [],
+    "formalBenchmarkSceneChanged": false,
+    "bucketStatus": "Existing GalvanizedGardenBucket10L formal asset is not duplicated here; this run had its ntprop metadata through GitHub but no matching external GLB binary in the working container. Add it when the owner/importer can be executed or a verified export is available.",
+    "note": "The review uses actual generated LOD0 geometry for refined faucet, refined hose, watering can, scrub brush and floor drain plus reversible diagnostic floor/wall/curb."
+  },
+  "verification": {
+    "executed": [
+      "actual MASTER/LOD0/LOD1/LOD2/LOD3 mesh generation for new drain and both refinements",
+      "finite vertices/normals",
+      "nondegenerate faces",
+      "closed welded component surfaces",
+      "consistent winding and positive volume",
+      "GLB reload triangle parity",
+      "OBJ exports for hero faucet and floor drain",
+      "strict LOD triangle reduction",
+      "faucet UV/normal-map presence and GLB material roundtrip",
+      "service-corner independent AABB overlap check"
+    ],
+    "unity": {
+      "compile": false,
+      "import": false,
+      "render": false,
+      "temporal": false,
+      "performance": false
+    }
+  },
+  "visualFidelity": {
+    "status": "UNSCORED_UNTIL_REAL_4K_RENDER",
+    "score": null,
+    "pass": false,
+    "pointsAwarded": 0
+  },
+  "implementationReadiness": {
+    "lastRecorded": 93,
+    "recomputedThisRun": false
+  },
+  "nextProductionTarget": "If no Unity runner/screenshots appear: add the existing galvanized bucket only when its owner/importer can produce a verified export, then refine either the watering-can rose/nozzle microdetail or galvanized bucket zinc/wood UV-normal implementation. If Unity pixels appear, stop speculative expansion and score/fix them."
+}

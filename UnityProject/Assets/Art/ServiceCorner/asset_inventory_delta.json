@@ -1,0 +1,49 @@
+{
+  "schema": 1,
+  "baseInventoryRef": "Assets/Art/GardenProps/asset_inventory.json",
+  "baseHead": "caf6286ea9c21b8dbace9a7debc0f183e50af0bb",
+  "effectiveChanges": [
+    {
+      "id": "BalconyFaucetG13",
+      "operation": "refine",
+      "masterTriangles": 10448,
+      "lodTriangles": [7520,4104,2584,1664],
+      "componentCount": 25,
+      "uvMicrodetailImplemented": true,
+      "normalMapsImplementedExternalGLTF": true,
+      "unityVerified": false
+    },
+    {
+      "id": "GardenHoseCoilNozzle",
+      "operation": "refine_pose",
+      "masterTriangles": 30380,
+      "lodTriangles": [17012,8692,4772,3084],
+      "floorPenetrationInReviewCorrected": true,
+      "unityVerified": false
+    },
+    {
+      "id": "BalconyFloorDrain100",
+      "operation": "add",
+      "masterTriangles": 7936,
+      "lodTriangles": [6008,4076,2476,1896],
+      "componentCount": 6,
+      "realRadialSlots": 18,
+      "actualExportsGeneratedOutsideUnity": true,
+      "unityVerified": false
+    }
+  ],
+  "reviewIntegration": {
+    "id": "BalconyServiceCornerReview_LOD0",
+    "triangles": 49460,
+    "independentAabbOverlaps": 0,
+    "formalBenchmarkSceneChanged": false
+  },
+  "productionTotalsEffective": {
+    "authoredAssetSets": 24,
+    "highDetailMasters": 24,
+    "runtimeLodSets": 24
+  },
+  "visualFidelity": {"status":"UNSCORED_UNTIL_REAL_4K_RENDER","score":null,"pass":false},
+  "readiness": {"lastRecordedScore":93,"recomputed":false},
+  "nextProductionTarget": "If no Unity runner/screenshots appear: add the existing galvanized bucket only when its owner/importer can produce a verified export, then refine either the watering-can rose/nozzle microdetail or galvanized bucket zinc/wood UV-normal implementation. If Unity pixels appear, stop speculative expansion and score/fix them."
+}

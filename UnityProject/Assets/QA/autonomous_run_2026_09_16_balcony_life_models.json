@@ -1,0 +1,33 @@
+{
+  "runId":"2026_09_16_balcony_life_models",
+  "repository":"tukemen-rgb/game-set1",
+  "branch":"gpt/unity-migration",
+  "initialObservedHead":"3c822238c9ed82e3911e9e95b82b340b6ab99e0d",
+  "preservedConcurrentParent":"694195e5038c5aea1bc8b5d37c12234eca5bcac8",
+  "concurrentCommitsNotAttributedToThisRun":1,
+  "commitResolution":"The containing commit is this batch's substantive production commit; final commit receipt is attached to the downloadable ZIP after branch update.",
+  "sourceBlobSHA":"d32ffb13ed43072d1fee7685f731b78837777348",
+  "sourceSHA256":"f5e655eed33f3ea7d28254a9c805240f0a66c7da0af0cc1e05cb216bb2ddf4c8",
+  "externalGeometryReportSHA256":"83c8213d051ef498651b5fa90f1991d423ba70389d21ef39407b84f8a9ec721f",
+  "newAssets":3,
+  "masters":3,
+  "runtimeLODMeshes":12,
+  "actualGLBFiles":15,
+  "actualOBJFiles":15,
+  "closedComponentSurfacesChecked":80,
+  "triangles":{
+    "WateringCanCompact":{"MASTER":20300,"LOD0":14876,"LOD1":9708,"LOD2":5932,"LOD3":4540},
+    "ClothespinBasket224":{"MASTER":12160,"LOD0":8832,"LOD1":5760,"LOD2":3520,"LOD3":2896},
+    "WoodenClothespin70":{"MASTER":8080,"LOD0":4960,"LOD1":2616,"LOD2":1448,"LOD3":872}
+  },
+  "executed":["external mesh generation","finite vertices/normals","nondegenerate faces","welded edge incidence exactly 2","positive component volumes and consistent winding","GLB triangle/bounds roundtrip","OBJ triangle roundtrip","strict LOD triangle reduction","11 non-Unity GLB diagnostic renders with backface culling","manual preview inspection and handle-root gap correction"],
+  "observedFixes":["split shading normals at 48-degree creases to avoid false dents","cut actual coil seats and reposition spring shoulder contacts","add basket pivot eyes and lower handle roots into eye join volumes","align wood texture grain to jaw length","normalize all export bases to y=0"],
+  "pending":["all mechanical contacts and intersections","fine wood bevel/endgrain","Unity compile/import/material/coordinate parity","target-hardware performance","native Unity 3840x2160 images and 100-percent crops","temporal/LOD/aliasing stability"],
+  "runnerObservation":{"branchWorkflowRunCountAtStart":0,"unityExecutableAvailableInWorkingContainer":false},
+  "readiness":{"lastRecordedScore":93,"recomputedThisRun":false,"pointsAwarded":0},
+  "visualFidelity":{"score":null,"pass":false,"pointsAwarded":0,"expectedImpact":"Geometry/construction, material distinction and lived-in scene context after integration. No Unity pixels available for scoring."},
+  "safety":{"godotFilesChanged":0,"baseMerged":false,"formalSceneChanged":false,"excludedThemesAdded":false},
+  "nextProductionTarget":"Use the existing concurrent MorningGlorySurfaceRepairAuthoring, verify Unity execution, and arrange a reversible balcony-life review scene using existing assets. Do not duplicate assembly owners.",
+  "delivery":"Actual OBJ/GLB, textures, full topology report and previews are in balcony_life_models_2026-09-16.zip. GitHub stores matching generator, metadata, pending scorecard, inventory and run record; binary exports are not claimed committed.",
+  "toolLimitations":"Optional geometry-helper pip installation was unavailable due DNS. Final executed generator does not need those packages and uses installed Shapely constrained triangulation."
+}

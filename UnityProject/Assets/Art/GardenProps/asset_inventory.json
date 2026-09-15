@@ -1,17 +1,20 @@
 {
-  "schema": 1,
-  "updated": "2026-09-16",
-  "branch": "gpt/unity-migration",
-  "assets": [
+  "schema":1,
+  "updated":"2026-09-16",
+  "branch":"gpt/unity-migration",
+  "assets":[
     {"id":"TerracottaPot240","kind":"parametric_source","masterTriangles":13312,"lodTriangles":[6656,3328,1664,832],"actualExportsGeneratedOutsideUnity":true,"unityVerified":false},
     {"id":"TerracottaSaucer214","kind":"parametric_source","masterTriangles":6656,"lodTriangles":[3328,1664,832,416],"actualExportsGeneratedOutsideUnity":true,"unityVerified":false},
     {"id":"GalvanizedGardenBucket10L","kind":"parametric_source","masterTriangles":48804,"lodTriangles":[22372,10692,5308,2684],"actualExportsGeneratedOutsideUnity":true,"unityVerified":false},
     {"id":"MorningGloryTrellisPlant","kind":"deterministic_editor_authoring_plus_external_actual_obj","masterTrianglesExternalOriginal":36264,"lodTrianglesExternalOriginal":[23888,15028,5134,2644],"masterTrianglesExternalSurfaceRepaired":47064,"lodTrianglesExternalSurfaceRepaired":[29776,17764,6094,2956],"physicalMaterialGroups":8,"unityAuthoringSourceCommitted":true,"surfaceRepairAuthoringSourceCommitted":true,"externalSurfaceRepairVerified":true,"externalSurfaceRepairDefects":["leaf skin/side positional cracks","one-sided flower funnel interior under back-face culling"],"unityVerified":false,"placementDependency":"pair with existing TerracottaPot240; do not duplicate/fuse pot mesh"},
     {"id":"BalconyLaundryArm450","kind":"reproducible_generator_plus_actual_external_obj_glb","masterTriangles":4556,"lodTriangles":[3084,1964,1356,972],"physicalMaterialGroups":2,"actualExportsGeneratedOutsideUnity":true,"unityVerified":false},
-    {"id":"LaundryPole2560","kind":"reproducible_generator_plus_actual_external_obj_glb","masterTriangles":20928,"lodTriangles":[9856,4240,1776,800],"physicalMaterialGroups":2,"actualExportsGeneratedOutsideUnity":true,"unityVerified":false,"placementDependency":"reference assembly uses two BalconyLaundryArm450 instances at 1.8m support spacing"}
+    {"id":"LaundryPole2560","kind":"reproducible_generator_plus_actual_external_obj_glb","masterTriangles":20928,"lodTriangles":[9856,4240,1776,800],"physicalMaterialGroups":2,"actualExportsGeneratedOutsideUnity":true,"unityVerified":false,"placementDependency":"reference assembly uses two BalconyLaundryArm450 instances at 1.8m support spacing"},
+    {"id":"WateringCanCompact","kind":"tested_generator_plus_external_obj_glb","masterTriangles":20300,"lodTriangles":[14876,9708,5932,4540],"componentCount":7,"physicalMaterialGroups":3,"actualExportsGeneratedOutsideUnity":true,"unityVerified":false,"metadata":"Assets/Art/BalconyLife/BalconyLife.metadata.json","previewVerifiedOutsideUnity":true},
+    {"id":"ClothespinBasket224","kind":"tested_generator_plus_external_obj_glb","masterTriangles":12160,"lodTriangles":[8832,5760,3520,2896],"componentCount":6,"physicalMaterialGroups":2,"actualExportsGeneratedOutsideUnity":true,"unityVerified":false,"metadata":"Assets/Art/BalconyLife/BalconyLife.metadata.json","previewVerifiedOutsideUnity":true},
+    {"id":"WoodenClothespin70","kind":"tested_generator_plus_external_obj_glb","masterTriangles":8080,"lodTriangles":[4960,2616,1448,872],"componentCount":3,"physicalMaterialGroups":2,"actualExportsGeneratedOutsideUnity":true,"unityVerified":false,"metadata":"Assets/Art/BalconyLife/BalconyLife.metadata.json","previewVerifiedOutsideUnity":true}
   ],
-  "productionTotals": {"authoredAssetSets":6,"highDetailMasters":6,"runtimeLodSets":6},
-  "visualFidelity": {"status":"UNSCORED_UNTIL_REAL_4K_RENDER","score":null,"pass":false},
-  "readiness": {"lastRecordedScore":93,"recomputed":false},
-  "nextProductionTarget": "Small balcony watering can with molded body/spout/rose/handle and a separate clothespin basket; only after no runner/screenshots have appeared."
+  "productionTotals":{"authoredAssetSets":9,"highDetailMasters":9,"runtimeLodSets":9},
+  "visualFidelity":{"status":"UNSCORED_UNTIL_REAL_4K_RENDER","score":null,"pass":false},
+  "readiness":{"lastRecordedScore":93,"recomputed":false},
+  "nextProductionTarget":"Use existing morning-glory surface-repair authoring, verify Unity execution and arrange a reversible balcony-life review scene with the existing pot/plant/laundry hardware and three new props; no duplicate builders."
 }

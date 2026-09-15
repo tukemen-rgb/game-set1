@@ -1,0 +1,84 @@
+{
+  "runDateLocal": "2026-09-15T12:38:29+07:00",
+  "branch": "gpt/unity-migration",
+  "startHead": "c8611dd83285f2c873f6e3110ef6a95839767125",
+  "headBeforeRunRecord": "7fc2185ec78c4760eddbd949e188b85f46516174",
+  "scope": "balcony separation-panel formal Native 4K lifecycle integration",
+  "constraints": {
+    "preserveGodot": true,
+    "baseMergeAllowed": false,
+    "baseMergePerformed": false,
+    "forbiddenThemes": ["earthquake", "disaster", "reconstruction"],
+    "visualPassThreshold": 92,
+    "renderRequiredForVisualScore": true
+  },
+  "finding": {
+    "severity": "high",
+    "summary": "The physical DanchiBalconySeparationPanels system existed with construction/PBR/LOD QA and was included in Danchi metadata coverage, but QualityBlockNative4KReviewPacket did not call its builder or validator. Because the benchmark scene is generated on demand and the panel root is outside the core DanchiHighDetail chain, the formal runner could produce otherwise valid evidence without the intended 30 physical separation panels.",
+    "visualGateRisk": [
+      "geometry_construction",
+      "material_pbr",
+      "period_authenticity",
+      "temporal_lod_aliasing",
+      "visible_primitive_placeholder",
+      "missing_construction_material_metadata",
+      "unverified_render_claim"
+    ]
+  },
+  "changes": [
+    {
+      "commit": "a7209055b7f78e89136e60f27ea468a975da1570",
+      "message": "Add balcony panel formal capture integration QA",
+      "details": "Added a fail-closed wrapper that explicitly builds and persists the existing physical panel hierarchy, validates packet call ordering, validates canonical Visual Fidelity critical-defect IDs, and checks metadata evidence-bundle membership."
+    },
+    {
+      "commit": "7c8d839b4f2b2561868f85431d915a63baf430a7",
+      "message": "Bind balcony panels to formal render lifecycle",
+      "details": "Extended the existing panel contract with formal runner lifecycle boundaries and normalized critical-defect mappings to the canonical visual_fidelity_gate.json IDs. The same contract was already registered in the Danchi metadata coverage bundle, so the new lifecycle policy remains construction/material evidence-bound."
+    },
+    {
+      "commit": "7fc2185ec78c4760eddbd949e188b85f46516174",
+      "message": "Integrate balcony panels into Native 4K packet",
+      "details": "Native packet now validates the integration contract, performs exactly one panel ApplyAndPersist before reflection synchronization, and performs validation-only checks before reflection, after reflection/before still capture, and after still capture/before temporal evidence."
+    }
+  ],
+  "sourceVerification": {
+    "runnerAvailable": false,
+    "workflowRunsAtStartHead": 0,
+    "commitStatusContextsAtStartHead": 0,
+    "unityCompileExecuted": false,
+    "unityRuntimeExecuted": false,
+    "native4KRendered": false,
+    "staticChecks": [
+      "Start-head packet source contained no QualityBlockBalconySeparationPanelFormalIntegrationQA call and no explicit balcony separation-panel build path.",
+      "Updated packet contains one integration-contract preflight call and one ApplyAndPersist call before reflection synchronization.",
+      "Updated packet contains validation boundaries before reflection, after reflection/before native still capture, and after still capture/before temporal capture.",
+      "Panel critical-defect IDs now match canonical IDs present in visual_fidelity_gate.json; legacy semantic aliases are explicitly forbidden.",
+      "balcony_separation_panel_contract.json remains present exactly once in the Danchi metadata coverage contract.",
+      "Start-to-head compare is ahead-only with no base merge and changes only under UnityProject/Assets/Editor and UnityProject/Assets/QA."
+    ]
+  },
+  "failureInjectionRequiredWhenUnityRunnerExists": [
+    "Remove the single ApplyAndPersist call from QualityBlockNative4KReviewPacket and require integration preflight failure.",
+    "Duplicate ApplyAndPersist and require integration preflight failure.",
+    "Move ApplyAndPersist after QualityBlockReflectionProbeAwaiter.Begin and require integration preflight failure.",
+    "Remove the post-reflection/pre-still validation and require integration preflight failure.",
+    "Remove the post-still/pre-temporal validation and require integration preflight failure.",
+    "Replace a canonical panel critical-defect ID with a legacy alias or unknown ID and require preflight failure.",
+    "Delete one panel core, alter slab clearance, metallicize the board, remove a rear bracket, substitute a Unity primitive mesh, collapse UV phase diversity, or break LOD structure and require formal validation/pre-cull failure."
+  ],
+  "scores": {
+    "implementationReadiness": 93,
+    "visualFidelity": "UNSCORED_UNTIL_REAL_4K_RENDER",
+    "visualFidelityPointsAwardedThisRun": 0,
+    "passClaimed": false
+  },
+  "expectedVisualScoreImpactAfterActualRender": {
+    "geometry_construction": "medium-high: the intended framed mineral-board dividers can now actually reach the formal rendered scene instead of being an orphaned source implementation",
+    "material_pbr": "small-medium: panel board/aluminum/galvanized response becomes observable in the same reflection/still state",
+    "period_authenticity": "medium: repeated apartment balconies regain a construction element typical of the authored scene intent",
+    "temporal_lod_aliasing": "small-medium: per-panel LOD0/1/2/3 can now be evaluated in sealed temporal evidence",
+    "note": "These are expected impacts only; no category points are awarded until actual rendered pixels exist."
+  },
+  "nextBlocker": "A Unity 6000.3.0f1-capable runner or local Unity execution with generated 3840x2160 hero/oblique/grazing frames, 100% crops and temporal sequence is still required. When it appears, stop speculative expansion, execute the failure injections, render the packet, and score only visible evidence."
+}

@@ -1,11 +1,12 @@
 {
-  "schemaVersion": "1.0.0",
+  "schemaVersion": "1.1.0",
   "status": "PENDING_REAL_UNITY_4K_RENDER",
   "scenePath": "Assets/Scenes/QualityBlock1990s.unity",
   "nativePacketPath": "Assets/Editor/QualityBlockNative4KReviewPacket.cs",
   "sourceGrassContractPath": "Assets/QA/grass_blade_field_contract.json",
   "persistenceContractPath": "Assets/QA/grass_blade_formal_persistence_contract.json",
-  "policy": "The physical GrassBladeFieldDetail must be rebuilt and persisted only before realtime reflection probes are requested, then remain read-only and explicitly revalidated before synchronized probe request, native-4K still capture, and sealed temporal capture. Native packet integration cannot rely only on InitializeOnLoad callbacks.",
+  "visualGatePath": "Assets/QA/visual_fidelity_gate.json",
+  "policy": "The physical GrassBladeFieldDetail must be rebuilt and persisted only before realtime reflection probes are requested, then remain read-only and explicitly revalidated before synchronized probe request, native-4K still capture, and sealed temporal capture. Native packet integration cannot rely only on InitializeOnLoad callbacks. Critical-failure mappings must use the exact canonical IDs defined by visual_fidelity_gate.json; descriptive aliases are forbidden because they do not bind to the numeric automatic-fail gate.",
   "requiredTokens": {
     "selfValidation": "QualityBlockGrassBladeNativePacketQA.ValidateContractConfigOnly();",
     "persistenceContractPreflight": "QualityBlockGrassBladeFormalPersistenceQA.ValidateContractConfigOnly();",
@@ -30,9 +31,18 @@
     "sourceAndPersistenceValidationRequiredBetweenReflectionCompletionAndStillCapture": true,
     "sourceAndPersistenceValidationRequiredBetweenStillSealAndTemporalBegin": true
   },
+  "criticalFailureMappingPolicy": {
+    "requireExactCanonicalIds": true,
+    "requireMembershipInVisualFidelityGate": true,
+    "rejectLegacyAliases": true
+  },
   "criticalFailureMappings": [
     "missing_construction_material_metadata",
     "visible_lod_pop",
+    "severe_aliasing_or_shimmer",
+    "unverified_render_claim"
+  ],
+  "forbiddenLegacyAliases": [
     "severe_aliasing_or_shimmering",
     "claiming_render_quality_without_actual_render"
   ],
@@ -42,7 +52,10 @@
     "remove_pre_reflection_grass_validation",
     "remove_pre_still_grass_validation",
     "remove_pre_temporal_grass_validation",
-    "remove_persisted_evidence_validation"
+    "remove_persisted_evidence_validation",
+    "replace_severe_aliasing_or_shimmer_with_legacy_alias_severe_aliasing_or_shimmering",
+    "replace_unverified_render_claim_with_descriptive_alias_claiming_render_quality_without_actual_render",
+    "map_grass_failure_to_unknown_visual_gate_id"
   ],
   "renderVerification": {
     "runtimeRenderVerified": false,

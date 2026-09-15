@@ -1,1 +1,395 @@
-{"schema":1,"updated":"2026-09-16","branch":"gpt/unity-migration","assets":[{"id":"TerracottaPot240","kind":"parametric_source","masterTriangles":13312,"lodTriangles":[6656,3328,1664,832],"actualExportsGeneratedOutsideUnity":true,"unityVerified":false},{"id":"TerracottaSaucer214","kind":"parametric_source","masterTriangles":6656,"lodTriangles":[3328,1664,832,416],"actualExportsGeneratedOutsideUnity":true,"unityVerified":false},{"id":"GalvanizedGardenBucket10L","kind":"parametric_source","masterTriangles":48804,"lodTriangles":[22372,10692,5308,2684],"actualExportsGeneratedOutsideUnity":true,"unityVerified":false},{"id":"MorningGloryTrellisPlant","kind":"deterministic_editor_authoring_plus_external_actual_obj","masterTrianglesExternalOriginal":36264,"lodTrianglesExternalOriginal":[23888,15028,5134,2644],"masterTrianglesExternalSurfaceRepaired":47064,"lodTrianglesExternalSurfaceRepaired":[29776,17764,6094,2956],"physicalMaterialGroups":8,"unityAuthoringSourceCommitted":true,"surfaceRepairAuthoringSourceCommitted":true,"externalSurfaceRepairVerified":true,"externalSurfaceRepairDefects":["leaf skin/side positional cracks","one-sided flower funnel interior under back-face culling"],"unityVerified":false,"placementDependency":"pair with existing TerracottaPot240; do not duplicate/fuse pot mesh"},{"id":"BalconyLaundryArm450","kind":"reproducible_generator_plus_actual_external_obj_glb","masterTriangles":4556,"lodTriangles":[3084,1964,1356,972],"physicalMaterialGroups":2,"actualExportsGeneratedOutsideUnity":true,"unityVerified":false},{"id":"LaundryPole2560","kind":"reproducible_generator_plus_actual_external_obj_glb","masterTriangles":20928,"lodTriangles":[9856,4240,1776,800],"physicalMaterialGroups":2,"actualExportsGeneratedOutsideUnity":true,"unityVerified":false,"placementDependency":"reference assembly uses two BalconyLaundryArm450 instances at 1.8m support spacing"},{"id":"WateringCanCompact","kind":"tested_generator_plus_external_obj_glb","masterTriangles":20300,"lodTriangles":[14876,9708,5932,4540],"componentCount":7,"physicalMaterialGroups":3,"actualExportsGeneratedOutsideUnity":true,"unityVerified":false,"metadata":"Assets/Art/BalconyLife/BalconyLife.metadata.json","previewVerifiedOutsideUnity":true},{"id":"ClothespinBasket224","kind":"tested_generator_plus_external_obj_glb","masterTriangles":12160,"lodTriangles":[8832,5760,3520,2896],"componentCount":6,"physicalMaterialGroups":2,"actualExportsGeneratedOutsideUnity":true,"unityVerified":false,"metadata":"Assets/Art/BalconyLife/BalconyLife.metadata.json","previewVerifiedOutsideUnity":true},{"id":"WoodenClothespin70","kind":"tested_generator_plus_external_obj_glb","masterTriangles":8080,"lodTriangles":[4960,2616,1448,872],"componentCount":3,"physicalMaterialGroups":2,"actualExportsGeneratedOutsideUnity":true,"unityVerified":false,"metadata":"Assets/Art/BalconyLife/BalconyLife.metadata.json","previewVerifiedOutsideUnity":true},{"id":"BalconySlipperPair","kind":"tested_generator_plus_external_obj_glb","masterTriangles":1048,"lodTriangles":[944,800,664,616],"physicalMaterialGroups":1,"actualExportsGeneratedOutsideUnity":true,"unityVerified":false,"metadata":"Assets/Art/SummerBalconyProps/SummerBalconyProps.metadata.json","previewVerifiedOutsideUnity":true},{"id":"EnamelWashBasin280","kind":"tested_generator_plus_external_obj_glb","masterTriangles":5924,"lodTriangles":[4452,2980,1508,772],"physicalMaterialGroups":2,"actualExportsGeneratedOutsideUnity":true,"unityVerified":false,"metadata":"Assets/Art/SummerBalconyProps/SummerBalconyProps.metadata.json","previewVerifiedOutsideUnity":true},{"id":"MosquitoCoilTray140","kind":"tested_generator_plus_external_obj_glb","masterTriangles":9544,"lodTriangles":[6024,3272,1984,1600],"physicalMaterialGroups":2,"actualExportsGeneratedOutsideUnity":true,"unityVerified":false,"metadata":"Assets/Art/SummerBalconyProps/SummerBalconyProps.metadata.json","previewVerifiedOutsideUnity":true},{"id":"OutdoorBroom900","kind":"tested_generator_plus_external_obj_glb","masterTriangles":71808,"lodTriangles":[37728,15936,4128,1440],"physicalMaterialGroups":3,"actualExportsGeneratedOutsideUnity":true,"unityVerified":false,"metadata":"Assets/Art/BalconyCleaningSet/BalconyCleaningSet.metadata.json","previewVerifiedOutsideUnity":true},{"id":"PlasticDustpan265","kind":"tested_generator_plus_external_obj_glb","masterTriangles":1216,"lodTriangles":[928,656,400,336],"physicalMaterialGroups":1,"actualExportsGeneratedOutsideUnity":true,"unityVerified":false,"metadata":"Assets/Art/BalconyCleaningSet/BalconyCleaningSet.metadata.json","previewVerifiedOutsideUnity":true},{"id":"HandScrubBrush185","kind":"tested_generator_plus_external_obj_glb","masterTriangles":56530,"lodTriangles":[29856,12032,2712,840],"physicalMaterialGroups":2,"actualExportsGeneratedOutsideUnity":true,"unityVerified":false,"metadata":"Assets/Art/BalconyCleaningSet/BalconyCleaningSet.metadata.json","previewVerifiedOutsideUnity":true},{"id":"BathTowel700x1200PoleDrape","kind":"tested_generator_plus_external_obj_glb","masterTriangles":55996,"lodTriangles":[29948,13052,4476,1532],"physicalMaterialGroups":1,"actualExportsGeneratedOutsideUnity":true,"unityVerified":false,"metadata":"Assets/Art/LaundrySoftgoods/LaundrySoftgoods.metadata.json","previewVerifiedOutsideUnity":true,"placementDependency":"drape over existing LaundryPole2560; do not duplicate pole geometry"},{"id":"CottonTShirtM_Hanger","kind":"tested_generator_plus_external_obj_glb","masterTriangles":29856,"lodTriangles":[6456,4724,1104,372],"componentCount":3,"physicalMaterialGroups":2,"actualExportsGeneratedOutsideUnity":true,"unityVerified":false,"metadata":"Assets/Art/LaundrySoftgoods/LaundrySoftgoods.metadata.json","previewVerifiedOutsideUnity":true,"knownSimplification":"closed thin garment solid; sleeve cuffs/waist not yet modeled as hollow openings"},{"id":"SummerSheet1400x1900RailDrape","kind":"tested_generator_plus_external_obj_glb","masterTriangles":64508,"lodTriangles":[33276,14972,5036,1868],"physicalMaterialGroups":1,"actualExportsGeneratedOutsideUnity":true,"unityVerified":false,"metadata":"Assets/Art/LaundrySoftgoods/LaundrySoftgoods.metadata.json","previewVerifiedOutsideUnity":true,"placementDependency":"assumes 130 mm parapet top width; verify actual benchmark parapet before formal placement"}],"reviewIntegrations":[{"id":"BalconyCornerReview_LOD0","kind":"external_actual_mesh_diagnostic_assembly","trianglesIncludingDiagnosticContext":159460,"unexpectedIndependentAabbOverlaps":0,"formalBenchmarkSceneChanged":false,"unityVerified":false,"manifest":"Assets/Art/BalconyCleaningSet/BalconyCornerReview.manifest.json"},{"id":"LaundrySoftgoodsPoleReview_LOD0","kind":"external_actual_mesh_diagnostic_assembly","triangles":52428,"formalBenchmarkSceneChanged":false,"unityVerified":false,"existingLaundryHardwareModified":false,"manifest":"Assets/Art/LaundrySoftgoods/LaundrySoftgoodsPoleReview.manifest.json"}],"productionTotals":{"authoredAssetSets":18,"highDetailMasters":18,"runtimeLodSets":18},"visualFidelity":{"status":"UNSCORED_UNTIL_REAL_4K_RENDER","score":null,"pass":false},"readiness":{"lastRecordedScore":93,"recomputed":false},"nextProductionTarget":"If no real Unity runner/screenshots appear, produce a circular multi-peg laundry hanger with physical clips plus a small hanging sock/handkerchief set, then refine camera-visible cloth hems and garment openings. If a runner appears, stop expansion and score/fix actual 4K evidence."}
+{
+  "schema": 1,
+  "updated": "2026-09-16",
+  "branch": "gpt/unity-migration",
+  "assets": [
+    {
+      "id": "TerracottaPot240",
+      "kind": "parametric_source",
+      "masterTriangles": 13312,
+      "lodTriangles": [
+        6656,
+        3328,
+        1664,
+        832
+      ],
+      "actualExportsGeneratedOutsideUnity": true,
+      "unityVerified": false
+    },
+    {
+      "id": "TerracottaSaucer214",
+      "kind": "parametric_source",
+      "masterTriangles": 6656,
+      "lodTriangles": [
+        3328,
+        1664,
+        832,
+        416
+      ],
+      "actualExportsGeneratedOutsideUnity": true,
+      "unityVerified": false
+    },
+    {
+      "id": "GalvanizedGardenBucket10L",
+      "kind": "parametric_source",
+      "masterTriangles": 48804,
+      "lodTriangles": [
+        22372,
+        10692,
+        5308,
+        2684
+      ],
+      "actualExportsGeneratedOutsideUnity": true,
+      "unityVerified": false
+    },
+    {
+      "id": "MorningGloryTrellisPlant",
+      "kind": "deterministic_editor_authoring_plus_external_actual_obj",
+      "masterTrianglesExternalOriginal": 36264,
+      "lodTrianglesExternalOriginal": [
+        23888,
+        15028,
+        5134,
+        2644
+      ],
+      "masterTrianglesExternalSurfaceRepaired": 47064,
+      "lodTrianglesExternalSurfaceRepaired": [
+        29776,
+        17764,
+        6094,
+        2956
+      ],
+      "physicalMaterialGroups": 8,
+      "unityAuthoringSourceCommitted": true,
+      "surfaceRepairAuthoringSourceCommitted": true,
+      "externalSurfaceRepairVerified": true,
+      "externalSurfaceRepairDefects": [
+        "leaf skin/side positional cracks",
+        "one-sided flower funnel interior under back-face culling"
+      ],
+      "unityVerified": false,
+      "placementDependency": "pair with existing TerracottaPot240; do not duplicate/fuse pot mesh"
+    },
+    {
+      "id": "BalconyLaundryArm450",
+      "kind": "reproducible_generator_plus_actual_external_obj_glb",
+      "masterTriangles": 4556,
+      "lodTriangles": [
+        3084,
+        1964,
+        1356,
+        972
+      ],
+      "physicalMaterialGroups": 2,
+      "actualExportsGeneratedOutsideUnity": true,
+      "unityVerified": false
+    },
+    {
+      "id": "LaundryPole2560",
+      "kind": "reproducible_generator_plus_actual_external_obj_glb",
+      "masterTriangles": 20928,
+      "lodTriangles": [
+        9856,
+        4240,
+        1776,
+        800
+      ],
+      "physicalMaterialGroups": 2,
+      "actualExportsGeneratedOutsideUnity": true,
+      "unityVerified": false,
+      "placementDependency": "reference assembly uses two BalconyLaundryArm450 instances at 1.8m support spacing"
+    },
+    {
+      "id": "WateringCanCompact",
+      "kind": "tested_generator_plus_external_obj_glb",
+      "masterTriangles": 20300,
+      "lodTriangles": [
+        14876,
+        9708,
+        5932,
+        4540
+      ],
+      "componentCount": 7,
+      "physicalMaterialGroups": 3,
+      "actualExportsGeneratedOutsideUnity": true,
+      "unityVerified": false,
+      "metadata": "Assets/Art/BalconyLife/BalconyLife.metadata.json",
+      "previewVerifiedOutsideUnity": true
+    },
+    {
+      "id": "ClothespinBasket224",
+      "kind": "tested_generator_plus_external_obj_glb",
+      "masterTriangles": 12160,
+      "lodTriangles": [
+        8832,
+        5760,
+        3520,
+        2896
+      ],
+      "componentCount": 6,
+      "physicalMaterialGroups": 2,
+      "actualExportsGeneratedOutsideUnity": true,
+      "unityVerified": false,
+      "metadata": "Assets/Art/BalconyLife/BalconyLife.metadata.json",
+      "previewVerifiedOutsideUnity": true
+    },
+    {
+      "id": "WoodenClothespin70",
+      "kind": "tested_generator_plus_external_obj_glb",
+      "masterTriangles": 8080,
+      "lodTriangles": [
+        4960,
+        2616,
+        1448,
+        872
+      ],
+      "componentCount": 3,
+      "physicalMaterialGroups": 2,
+      "actualExportsGeneratedOutsideUnity": true,
+      "unityVerified": false,
+      "metadata": "Assets/Art/BalconyLife/BalconyLife.metadata.json",
+      "previewVerifiedOutsideUnity": true
+    },
+    {
+      "id": "BalconySlipperPair",
+      "kind": "tested_generator_plus_external_obj_glb",
+      "masterTriangles": 1048,
+      "lodTriangles": [
+        944,
+        800,
+        664,
+        616
+      ],
+      "physicalMaterialGroups": 1,
+      "actualExportsGeneratedOutsideUnity": true,
+      "unityVerified": false,
+      "metadata": "Assets/Art/SummerBalconyProps/SummerBalconyProps.metadata.json",
+      "previewVerifiedOutsideUnity": true
+    },
+    {
+      "id": "EnamelWashBasin280",
+      "kind": "tested_generator_plus_external_obj_glb",
+      "masterTriangles": 5924,
+      "lodTriangles": [
+        4452,
+        2980,
+        1508,
+        772
+      ],
+      "physicalMaterialGroups": 2,
+      "actualExportsGeneratedOutsideUnity": true,
+      "unityVerified": false,
+      "metadata": "Assets/Art/SummerBalconyProps/SummerBalconyProps.metadata.json",
+      "previewVerifiedOutsideUnity": true
+    },
+    {
+      "id": "MosquitoCoilTray140",
+      "kind": "tested_generator_plus_external_obj_glb",
+      "masterTriangles": 9544,
+      "lodTriangles": [
+        6024,
+        3272,
+        1984,
+        1600
+      ],
+      "physicalMaterialGroups": 2,
+      "actualExportsGeneratedOutsideUnity": true,
+      "unityVerified": false,
+      "metadata": "Assets/Art/SummerBalconyProps/SummerBalconyProps.metadata.json",
+      "previewVerifiedOutsideUnity": true
+    },
+    {
+      "id": "OutdoorBroom900",
+      "kind": "tested_generator_plus_external_obj_glb",
+      "masterTriangles": 71808,
+      "lodTriangles": [
+        37728,
+        15936,
+        4128,
+        1440
+      ],
+      "physicalMaterialGroups": 3,
+      "actualExportsGeneratedOutsideUnity": true,
+      "unityVerified": false,
+      "metadata": "Assets/Art/BalconyCleaningSet/BalconyCleaningSet.metadata.json",
+      "previewVerifiedOutsideUnity": true
+    },
+    {
+      "id": "PlasticDustpan265",
+      "kind": "tested_generator_plus_external_obj_glb",
+      "masterTriangles": 1216,
+      "lodTriangles": [
+        928,
+        656,
+        400,
+        336
+      ],
+      "physicalMaterialGroups": 1,
+      "actualExportsGeneratedOutsideUnity": true,
+      "unityVerified": false,
+      "metadata": "Assets/Art/BalconyCleaningSet/BalconyCleaningSet.metadata.json",
+      "previewVerifiedOutsideUnity": true
+    },
+    {
+      "id": "HandScrubBrush185",
+      "kind": "tested_generator_plus_external_obj_glb",
+      "masterTriangles": 56530,
+      "lodTriangles": [
+        29856,
+        12032,
+        2712,
+        840
+      ],
+      "physicalMaterialGroups": 2,
+      "actualExportsGeneratedOutsideUnity": true,
+      "unityVerified": false,
+      "metadata": "Assets/Art/BalconyCleaningSet/BalconyCleaningSet.metadata.json",
+      "previewVerifiedOutsideUnity": true
+    },
+    {
+      "id": "BathTowel700x1200PoleDrape",
+      "kind": "tested_generator_plus_external_obj_glb",
+      "masterTriangles": 55996,
+      "lodTriangles": [
+        29948,
+        13052,
+        4476,
+        1532
+      ],
+      "physicalMaterialGroups": 1,
+      "actualExportsGeneratedOutsideUnity": true,
+      "unityVerified": false,
+      "metadata": "Assets/Art/LaundrySoftgoods/LaundrySoftgoods.metadata.json",
+      "previewVerifiedOutsideUnity": true,
+      "placementDependency": "drape over existing LaundryPole2560; do not duplicate pole geometry"
+    },
+    {
+      "id": "CottonTShirtM_Hanger",
+      "kind": "tested_generator_plus_external_obj_glb",
+      "masterTriangles": 29856,
+      "lodTriangles": [
+        6456,
+        4724,
+        1104,
+        372
+      ],
+      "componentCount": 3,
+      "physicalMaterialGroups": 2,
+      "actualExportsGeneratedOutsideUnity": true,
+      "unityVerified": false,
+      "metadata": "Assets/Art/LaundrySoftgoods/LaundrySoftgoods.metadata.json",
+      "previewVerifiedOutsideUnity": true,
+      "knownSimplification": "closed thin garment solid; sleeve cuffs/waist not yet modeled as hollow openings"
+    },
+    {
+      "id": "SummerSheet1400x1900RailDrape",
+      "kind": "tested_generator_plus_external_obj_glb",
+      "masterTriangles": 64508,
+      "lodTriangles": [
+        33276,
+        14972,
+        5036,
+        1868
+      ],
+      "physicalMaterialGroups": 1,
+      "actualExportsGeneratedOutsideUnity": true,
+      "unityVerified": false,
+      "metadata": "Assets/Art/LaundrySoftgoods/LaundrySoftgoods.metadata.json",
+      "previewVerifiedOutsideUnity": true,
+      "placementDependency": "assumes 130 mm parapet top width; verify actual benchmark parapet before formal placement"
+    },
+    {
+      "id": "RoundPinchHanger360_24Clips",
+      "kind": "tested_generator_plus_external_obj_glb",
+      "masterTriangles": 46104,
+      "lodTriangles": [
+        32852,
+        22912,
+        15492,
+        10542
+      ],
+      "clipCount": 24,
+      "physicalMaterialGroups": 3,
+      "actualExportsGeneratedOutsideUnity": true,
+      "unityVerified": false,
+      "metadata": "Assets/Art/PinchHangerSmallLaundry/PinchHangerSmallLaundry.metadata.json",
+      "previewVerifiedOutsideUnity": true
+    },
+    {
+      "id": "AnkleSockPair240",
+      "kind": "tested_generator_plus_external_obj_glb",
+      "masterTriangles": 10240,
+      "lodTriangles": [
+        5760,
+        3168,
+        1536,
+        768
+      ],
+      "physicalMaterialGroups": 1,
+      "actualExportsGeneratedOutsideUnity": true,
+      "unityVerified": false,
+      "metadata": "Assets/Art/PinchHangerSmallLaundry/PinchHangerSmallLaundry.metadata.json",
+      "previewVerifiedOutsideUnity": true,
+      "realOpenCuffCavity": true
+    },
+    {
+      "id": "Handkerchief380Pinned",
+      "kind": "tested_generator_plus_external_obj_glb",
+      "masterTriangles": 25596,
+      "lodTriangles": [
+        12540,
+        5772,
+        2300,
+        780
+      ],
+      "physicalMaterialGroups": 1,
+      "actualExportsGeneratedOutsideUnity": true,
+      "unityVerified": false,
+      "metadata": "Assets/Art/PinchHangerSmallLaundry/PinchHangerSmallLaundry.metadata.json",
+      "previewVerifiedOutsideUnity": true
+    }
+  ],
+  "reviewIntegrations": [
+    {
+      "id": "BalconyCornerReview_LOD0",
+      "kind": "external_actual_mesh_diagnostic_assembly",
+      "trianglesIncludingDiagnosticContext": 159460,
+      "unexpectedIndependentAabbOverlaps": 0,
+      "formalBenchmarkSceneChanged": false,
+      "unityVerified": false,
+      "manifest": "Assets/Art/BalconyCleaningSet/BalconyCornerReview.manifest.json"
+    },
+    {
+      "id": "LaundrySoftgoodsPoleReview_LOD0",
+      "kind": "external_actual_mesh_diagnostic_assembly",
+      "triangles": 52428,
+      "formalBenchmarkSceneChanged": false,
+      "unityVerified": false,
+      "existingLaundryHardwareModified": false,
+      "manifest": "Assets/Art/LaundrySoftgoods/LaundrySoftgoodsPoleReview.manifest.json"
+    },
+    {
+      "id": "PinchHangerSmallLaundryReview_LOD0",
+      "kind": "external_actual_mesh_diagnostic_assembly",
+      "triangles": 51152,
+      "formalBenchmarkSceneChanged": false,
+      "unityVerified": false,
+      "manifest": "Assets/Art/PinchHangerSmallLaundry/PinchHangerSmallLaundryReview.manifest.json"
+    }
+  ],
+  "productionTotals": {
+    "authoredAssetSets": 21,
+    "highDetailMasters": 21,
+    "runtimeLodSets": 21
+  },
+  "visualFidelity": {
+    "status": "UNSCORED_UNTIL_REAL_4K_RENDER",
+    "score": null,
+    "pass": false
+  },
+  "readiness": {
+    "lastRecordedScore": 93,
+    "recomputed": false
+  },
+  "nextProductionTarget": "If no real Unity runner/screenshots appear, refine existing CottonTShirtM_Hanger sleeve cuffs and waist into true openings plus camera-visible hem construction. If a runner appears, stop expansion and score/fix actual 4K evidence."
+}

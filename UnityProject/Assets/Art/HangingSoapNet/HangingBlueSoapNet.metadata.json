@@ -1,0 +1,35 @@
+{
+  "schema":1,
+  "assetId":"HangingBlueSoapNet",
+  "date":"2026-09-16",
+  "units":"metres",
+  "root":"Host inlet-neck axis; review translation [0,0.55,0.024]. Not the bottom of the bag.",
+  "reference":{"source":"User-supplied photo of faucet with blue soap net","usedFor":"Blue open net containing soap, hanging from wall-side faucet neck","photoPixelsReused":false,"referenceImageRedistributed":false,"assumptions":"Fibre, hanger alloy, knot construction, product age and dimensions cannot be determined from the photograph. Nylon/stainless and dimensions below are original modeling assumptions, not a historical SKU replica."},
+  "manufactureInstallation":{
+    "components":["32 crossed yarns","reinforced oval open mouth","gathered bottom binding","rounded ivory soap","bent steel hook","welded suspension eye","two tensioned cords","two mouth ties"],
+    "dimensionsMm":{"bagHeight":139,"mouthWidth":86,"mouthDepth":52,"netYarnDiameter":0.6,"mouthCordDiameter":2,"suspensionCordDiameter":1.5,"hookWireDiameter":1.6,"hostNeckDiameter":33,"soapXYZ":[52,76,28]},
+    "loadPath":"Existing inlet-neck crown -> bent hook -> lower eye -> cords -> bound net -> lower gathering -> soap. This shape is authored, not a cloth/contact simulation.",
+    "interfaces":"Soap envelope expanded before surrounding yarn generation. Vertex and face-centre samples are outside the analytic soap volume; not an exhaustive triangle-intersection proof. Hook crown sampled at the inlet surface. Bottom gathering and welded hook-eye join use intentional overlap; knot contact remains pending.",
+    "orientationExposure":"Upward open mouth; soap low in bag; gravity-down hanging orientation; dry maintained reference. Final sunlight and sheltered-side aging depend on scene placement.",
+    "agingCausality":"Used soap has rounded corners in geometry. No arbitrary rust, algae, chalking, dirt or baked wet highlights. Dampness/residue masks not yet authored.",
+    "geometryVsMaterial":"Yarns, apertures, hook, eye, bindings and soap are real geometry. Fine fibre/soap texture is a low-amplitude material proxy, not source-photo texture.",
+    "lod":"All 32 yarns and functional parts retained at every level. 41 logical parts compacted to four material meshes; path and radial tessellation decrease. Unity draw calls, transition fidelity and performance are not measured."
+  },
+  "materials":[
+    {"id":"BlueNylon","albedoSRGB":[0.025,0.42,0.62],"roughness":0.54,"metallic":0,"dielectricF0":0.04,"normalScale":0,"normalMapPresent":false,"wetness":0,"microstructure":"128px low-amplitude albedo/roughness proxy; geometric yarn diameter; true spun-fibre response pending","uvAging":"none baked","fresnel":"dielectric microfacet"},
+    {"id":"BlueBoundCord","albedoSRGB":[0.025,0.34,0.50],"roughness":0.62,"metallic":0,"dielectricF0":0.04,"normalScale":0,"normalMapPresent":false,"wetness":0,"microstructure":"bound cord geometry and 128px subtle material proxy","uvAging":"none baked","fresnel":"dielectric microfacet"},
+    {"id":"UsedIvorySoap","albedoSRGB":[0.83,0.81,0.72],"roughness":0.68,"metallic":0,"dielectricF0":0.04,"normalScale":0,"normalMapPresent":false,"wetness":0,"microstructure":"rounded soap with subtle albedo/roughness proxy; no logo or bubbles","uvAging":"usage rounding is geometry; residue not yet authored","fresnel":"dielectric microfacet; no wet-glint claim"},
+    {"id":"DarkStainlessWire","albedoSRGB":[0.36,0.38,0.39],"roughness":0.39,"metallic":1,"dielectricF0":null,"normalScale":0,"normalMapPresent":false,"wetness":0,"microstructure":"smooth bent wire and low-amplitude roughness","uvAging":"none baked","fresnel":"conductor from base reflectance"}
+  ],
+  "triangles":{"MASTER":103904,"LOD0":61968,"LOD1":32136,"LOD2":17200,"LOD3":9840},
+  "authoringSource":"UnityProject/Tools/generate_hanging_soap_net.py",
+  "sourceSHA256":"86ef510fd37a1d5dbbf909b9793acf1dc203d016d05429776646d7ab63a21381",
+  "sourceGitBlobSHA":"d3c110865b0aa2e4851a507e0df038dc3f4fc99e",
+  "hostOwner":"UnityProject/Tools/refine_faucet_hero.py",
+  "baseHostOwner":"UnityProject/Tools/generate_faucet_hose.py",
+  "hostModified":false,
+  "lookdev":{"method":"Four actual-geometry CPU depth-buffered/backface-culled views, not Unity or full PBR. No AI photo substitute.","views":["full oblique","full reverse","soap/net closeup","hook closeup"],"brief":"Preserve open holes, soap bulge and neck attachment. Next refine soft knitted-loop topology, a less regular mouth and fibre response. Use coherent midsummer sun/sky for future Unity grazing-light review. Existing faucet silhouette/wear is not claimed to match the photo exactly."},
+  "visualFidelity":{"authority":"Assets/QA/visual_fidelity_gate.json","status":"UNSCORED_UNTIL_REAL_4K_RENDER","score":null,"pass":false,"pointsAwarded":0},
+  "unityCompile":false,"unityImport":false,"unityRender":false,"formalBenchmarkSceneChanged":false,
+  "pending":["all yarn/knot intersections","contact and deformation simulation","actual knitted-loop topology","photo-like faucet body/handle within existing owner","Unity 4K and temporal verification","target-hardware runtime performance"]
+}

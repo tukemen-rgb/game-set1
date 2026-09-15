@@ -1,0 +1,87 @@
+{
+  "schemaVersion": "1.0.0",
+  "contractId": "balcony_drainage_waterproofing_native_packet_integration",
+  "status": "PENDING_REAL_UNITY_4K_RENDER",
+  "scenePath": "Assets/Scenes/QualityBlock1990s.unity",
+  "nativePacketPath": "Assets/Editor/QualityBlockNative4KReviewPacket.cs",
+  "sourceContractPath": "Assets/QA/balcony_drainage_waterproofing_contract.json",
+  "visualGatePath": "Assets/QA/visual_fidelity_gate.json",
+  "sceneMetadataCoverageContractPath": "Assets/QA/scene_metadata_coverage_contract.json",
+  "constructionMaterialEvidenceBindingSourcePath": "Assets/Editor/QualityBlockConstructionMaterialEvidenceBindingQA.cs",
+  "metadataCoverageBinding": {
+    "requiredDomainId": "danchi_domain",
+    "requiredRootName": "Danchi",
+    "requiredContractPath": "Assets/QA/balcony_drainage_waterproofing_contract.json",
+    "requireExactlyOneDomainMatch": true,
+    "requireExactlyOneContractPathMatch": true,
+    "requireConstructionMaterialBundleEnumeration": true
+  },
+  "formalLifecycle": {
+    "buildMethod": "QualityBlockBalconyDrainageWaterproofingFormalIntegrationQA.ApplyAndPersist",
+    "validateMethod": "QualityBlockBalconyDrainageWaterproofingFormalIntegrationQA.ValidateOpenScene",
+    "persistBeforeReflection": true,
+    "validationOnlyAfterReflectionRequest": true,
+    "requiredPacketValidationBoundaries": 3,
+    "requiredBoundaries": [
+      "pre_reflection",
+      "post_reflection_pre_still",
+      "post_still_pre_temporal"
+    ]
+  },
+  "requiredTokens": {
+    "selfValidation": "QualityBlockBalconyDrainageWaterproofingFormalIntegrationQA.ValidateContractConfigOnly();",
+    "persistedBuild": "QualityBlockBalconyDrainageWaterproofingFormalIntegrationQA.ApplyAndPersist();",
+    "readOnlyValidation": "QualityBlockBalconyDrainageWaterproofingFormalIntegrationQA.ValidateOpenScene();",
+    "reflectionRequest": "QualityBlockReflectionProbeAwaiter.Begin(FinishAfterReflectionSynchronization);",
+    "stillCapture": "QualityBlock4KCapture.CapturePreparedSceneAfterProbeSync();",
+    "temporalBegin": "QualityBlockTemporalRuntimeEvidenceGuard.Begin();"
+  },
+  "minimumOccurrences": {
+    "selfValidation": 1,
+    "persistedBuild": 1,
+    "readOnlyValidation": 3
+  },
+  "canonicalCriticalFailureMappings": [
+    "visible_primitive_placeholder",
+    "baked_or_painted_highlights",
+    "impossible_material_physics",
+    "obvious_repetition",
+    "hero_geometry_intersection",
+    "sun_shadow_inconsistency",
+    "forbidden_disaster_theme",
+    "severe_aliasing_or_shimmer",
+    "visible_lod_pop",
+    "major_light_leak",
+    "missing_construction_material_metadata",
+    "unverified_render_claim"
+  ],
+  "criticalFailureMappingPolicy": {
+    "requireExactCanonicalIds": true,
+    "requireMembershipInVisualFidelityGate": true,
+    "sourceValidationCannotClearRenderedDefects": true
+  },
+  "renderVerification": {
+    "runtimeRenderVerified": false,
+    "visualFidelityStatus": "UNSCORED_UNTIL_REAL_4K_RENDER",
+    "visualFidelityPointsAwarded": 0,
+    "requiredResolution": [3840, 2160],
+    "requiredStillViews": ["hero", "oblique", "grazing"],
+    "required100PercentCrops": ["oblique/balcony_services", "oblique/construction_depth", "grazing/material_grazing"],
+    "requiredTemporalCases": ["temporal/subpixel_grazing", "temporal/lod_transition"]
+  },
+  "expectedVisualScoreImpactAfterRealRenderOnly": {
+    "geometry_construction": "medium_to_high: makes the actual 1:50 floor fall, waterproof returns, terminal channel and drain grates deterministic members of the formal rendered scene",
+    "material_pbr": "small_to_medium: dry dielectric waterproof and coated drain response are carried into the same reflection/still lifecycle",
+    "weathering_causality": "medium: runoff/residue reasoning gains a real gravity path and drainage termination instead of a flat slab assumption",
+    "temporal_lod_aliasing": "risk_only_until_observed: millimetric grate/sloped edges require sealed temporal evidence"
+  },
+  "failureInjection": [
+    "remove the single persisted build from the native packet",
+    "move the persisted build to or after reflection synchronization",
+    "remove any one of the three formal read-only validation boundaries",
+    "remove or duplicate the balcony drainage source contract in the Danchi metadata domain",
+    "disable construction/material contractPaths enumeration in the SHA-256 evidence binder",
+    "replace any canonical critical-failure ID with a descriptive alias",
+    "mutate balcony drainage geometry/material state after reflection synchronization"
+  ]
+}

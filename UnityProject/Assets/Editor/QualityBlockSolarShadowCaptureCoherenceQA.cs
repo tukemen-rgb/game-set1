@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using UnityEditor;
@@ -6,16 +7,40 @@ using UnityEditor.SceneManagement;
 using UnityEngine;
 
 /// <summary>
-/// Fail-closed QA for the benchmark's midsummer key-light state. It exists because validating shadow
-/// settings before a generated-scene rebuild is insufficient: the physical-environment pass reapplies
-/// SummerSun later. This validator binds the solar sample, the one-and-only directional key, shadow-map
-/// settings and the runtime pre-cull guard into one auditable contract. It never awards visual points.
+/// Fail-closed QA for the benchmark's midsummer key-light state. It binds the deterministic solar
+/// datum, the one-and-only directional key, stable shadow-map settings and the runtime pre-cull guard.
+/// Category and automatic-FAIL IDs are cross-checked against visual_fidelity_gate.json so descriptive
+/// aliases cannot silently bypass the canonical 100-point gate. It never awards visual points.
 /// </summary>
 public static class QualityBlockSolarShadowCaptureCoherenceQA
 {
     private const string ScenePath = "Assets/Scenes/QualityBlock1990s.unity";
     private const string ContractPath = "Assets/QA/solar_shadow_capture_coherence_contract.json";
+    private const string VisualGatePath = "Assets/QA/visual_fidelity_gate.json";
     private const string LookdevPath = "Assets/QA/Lookdev/solar_shadow_capture_coherence.svg";
+
+    private static readonly string[] RequiredCategoryIds =
+    {
+        "lighting_shadows_reflections",
+        "cinematic_image",
+        "temporal_lod_aliasing"
+    };
+
+    private static readonly string[] RequiredCriticalIds =
+    {
+        "sun_shadow_inconsistency",
+        "severe_aliasing_or_shimmer",
+        "visible_lod_pop",
+        "major_light_leak",
+        "unverified_render_claim"
+    };
+
+    private static readonly string[] ForbiddenLegacyAliases =
+    {
+        "inconsistent_sun_shadow_direction",
+        "severe_aliasing_or_shimmering",
+        "claiming_render_quality_without_actual_render"
+    };
 
     [MenuItem("NewTown/Lighting/Apply + Validate Solar Shadow Capture Coherence")]
     public static void ApplyAndPersist()
@@ -36,11 +61,16 @@ public static class QualityBlockSolarShadowCaptureCoherenceQA
     public static void ValidateContractConfigOnly()
     {
         SolarShadowCoherenceContract contract = LoadContract();
-        RequireText(contract.schemaVersion, "schemaVersion");
+        if (!string.Equals(contract.schemaVersion, "1.1", StringComparison.Ordinal))
+            throw new InvalidOperationException("Solar/shadow contract must use schema 1.1 canonical Visual Fidelity Gate bindings.");
         if (contract.status != "PENDING_REAL_UNITY_4K_RENDER")
             throw new InvalidOperationException("Solar/shadow contract must remain render-pending until actual Unity evidence exists.");
+        if (!string.Equals(contract.visualGatePath, VisualGatePath, StringComparison.Ordinal))
+            throw new InvalidOperationException("Solar/shadow contract visualGatePath drifted from the canonical gate.");
         if (contract.solarDatum == null || contract.shadowState == null || contract.failClosed == null || contract.verification == null)
             throw new InvalidOperationException("Solar/shadow contract is missing required structured sections.");
+
+        ValidateCanonicalGateBindings(contract);
 
         if (Mathf.Abs(contract.solarDatum.latitudeDegrees - QualityBlockSolarShadowRuntimeContract.BenchmarkLatitudeDegrees) > 0.0001f ||
             contract.solarDatum.dayOfYear != QualityBlockSolarShadowRuntimeContract.BenchmarkDayOfYear ||
@@ -77,18 +107,6 @@ public static class QualityBlockSolarShadowCaptureCoherenceQA
             !contract.failClosed.actualRenderRequiredForVisualPoints)
             throw new InvalidOperationException("Solar/shadow fail-closed policy has been weakened.");
 
-        string[] requiredCritical =
-        {
-            "inconsistent_sun_shadow_direction",
-            "severe_aliasing_or_shimmering",
-            "visible_lod_pop",
-            "major_light_leak",
-            "claiming_render_quality_without_actual_render"
-        };
-        foreach (string id in requiredCritical)
-            if (contract.criticalFailMappings == null || !contract.criticalFailMappings.Contains(id))
-                throw new InvalidOperationException($"Solar/shadow contract missing critical-fail mapping: {id}");
-
         if (contract.verification.visualFidelityPointsAwarded != 0 || contract.verification.native4kRenderVerified)
             throw new InvalidOperationException("Solar/shadow implementation contract must not self-award visual fidelity before real 4K review.");
 
@@ -99,7 +117,7 @@ public static class QualityBlockSolarShadowCaptureCoherenceQA
             if (svg.IndexOf(token, StringComparison.OrdinalIgnoreCase) < 0)
                 throw new InvalidOperationException($"Solar/shadow lookdev diagram missing token: {token}");
 
-        Debug.Log("Solar/shadow machine contract valid: deterministic midsummer sample, exact stable shadow state, sole directional key and render-time guard; visual points remain zero.");
+        Debug.Log("Solar/shadow machine contract valid: deterministic midsummer sample, exact stable shadow state, sole directional key, render-time guard and canonical Visual Fidelity Gate bindings; visual points remain zero.");
     }
 
     [MenuItem("NewTown/QA/Validate Solar Shadow Capture Coherence Scene")]
@@ -128,8 +146,6 @@ public static class QualityBlockSolarShadowCaptureCoherenceQA
         if (!guard.enabled || guard.Context != context || guard.Sun != sun || guard.gameObject != context.gameObject)
             throw new InvalidOperationException("Solar/shadow pre-render guard is disabled or bound to the wrong context/light.");
 
-        // A contradictory second directional light is a critical visual defect, even if it is dimmer
-        // than SummerSun. Do not select the strongest light and silently ignore the contradiction.
         Light[] directionals = Resources.FindObjectsOfTypeAll<Light>()
             .Where(x => x.gameObject.scene.IsValid() && x.enabled && x.gameObject.activeInHierarchy && x.type == LightType.Directional)
             .ToArray();
@@ -139,6 +155,50 @@ public static class QualityBlockSolarShadowCaptureCoherenceQA
         Debug.Log(
             $"Solar/shadow scene coherence valid: elevation={sample.ElevationDegrees:F3} deg, azimuth={sample.AzimuthDegrees:F3} deg, " +
             $"horizontal shadow={sample.HorizontalShadowPerMetre:F3} m per vertical metre. Pre-cull guard is armed; rendered evidence is still required before scoring.");
+    }
+
+    private static void ValidateCanonicalGateBindings(SolarShadowCoherenceContract contract)
+    {
+        if (!File.Exists(VisualGatePath))
+            throw new InvalidOperationException("Canonical Visual Fidelity Gate missing: " + VisualGatePath);
+        if (contract.criticalFailureMappingPolicy == null ||
+            !contract.criticalFailureMappingPolicy.requireExactCanonicalIds ||
+            !contract.criticalFailureMappingPolicy.requireMembershipInVisualFidelityGate ||
+            !contract.criticalFailureMappingPolicy.rejectLegacyAliases)
+            throw new InvalidOperationException("Solar/shadow canonical critical-failure mapping policy was weakened.");
+
+        VisualGateDocument gate = JsonUtility.FromJson<VisualGateDocument>(File.ReadAllText(VisualGatePath));
+        if (gate == null || gate.categories == null || gate.criticalDefects == null)
+            throw new InvalidOperationException("Canonical Visual Fidelity Gate cannot be parsed for solar/shadow binding.");
+
+        string[] gateCategories = gate.categories.Where(x => x != null && !string.IsNullOrWhiteSpace(x.id)).Select(x => x.id).ToArray();
+        string[] gateCritical = gate.criticalDefects.Where(x => x != null && !string.IsNullOrWhiteSpace(x.id)).Select(x => x.id).ToArray();
+        if (gateCategories.Length != gate.categories.Length || gateCategories.Distinct(StringComparer.Ordinal).Count() != gateCategories.Length ||
+            gateCritical.Length != gate.criticalDefects.Length || gateCritical.Distinct(StringComparer.Ordinal).Count() != gateCritical.Length)
+            throw new InvalidOperationException("Canonical Visual Fidelity Gate contains blank or duplicate IDs.");
+
+        RequireExactSet(contract.visualFidelityCategoryImpact, RequiredCategoryIds, "visualFidelityCategoryImpact");
+        RequireExactSet(contract.criticalFailMappings, RequiredCriticalIds, "criticalFailMappings");
+        RequireExactSet(contract.forbiddenLegacyAliases, ForbiddenLegacyAliases, "forbiddenLegacyAliases");
+
+        foreach (string id in RequiredCategoryIds)
+            if (!gateCategories.Contains(id, StringComparer.Ordinal))
+                throw new InvalidOperationException($"Solar/shadow category '{id}' is not canonical in visual_fidelity_gate.json.");
+        foreach (string id in RequiredCriticalIds)
+            if (!gateCritical.Contains(id, StringComparer.Ordinal))
+                throw new InvalidOperationException($"Solar/shadow automatic-FAIL ID '{id}' is not canonical in visual_fidelity_gate.json.");
+        foreach (string alias in ForbiddenLegacyAliases)
+            if (contract.criticalFailMappings.Contains(alias, StringComparer.Ordinal) || gateCritical.Contains(alias, StringComparer.Ordinal))
+                throw new InvalidOperationException($"Forbidden solar/shadow legacy alias '{alias}' must not be used as a canonical automatic-FAIL ID.");
+    }
+
+    private static void RequireExactSet(string[] actual, string[] expected, string label)
+    {
+        string[] values = actual ?? Array.Empty<string>();
+        if (values.Length != expected.Length || values.Any(string.IsNullOrWhiteSpace) ||
+            values.Distinct(StringComparer.Ordinal).Count() != values.Length ||
+            !new HashSet<string>(values, StringComparer.Ordinal).SetEquals(expected))
+            throw new InvalidOperationException($"Solar/shadow {label} must be the exact canonical set: {string.Join(", ", expected)}.");
     }
 
     private static SolarShadowCoherenceContract LoadContract()
@@ -182,23 +242,37 @@ public static class QualityBlockSolarShadowCaptureCoherenceQA
         return Mathf.Abs(Mathf.DeltaAngle(a, b));
     }
 
-    private static void RequireText(string value, string label)
-    {
-        if (string.IsNullOrWhiteSpace(value))
-            throw new InvalidOperationException($"Solar/shadow contract missing {label}.");
-    }
-
     [Serializable]
     private sealed class SolarShadowCoherenceContract
     {
         public string schemaVersion;
         public string status;
+        public string visualGatePath;
+        public string[] visualFidelityCategoryImpact;
         public SolarDatum solarDatum;
         public ShadowState shadowState;
         public FailClosed failClosed;
+        public CriticalFailureMappingPolicy criticalFailureMappingPolicy;
+        public string[] forbiddenLegacyAliases;
         public string[] criticalFailMappings;
         public Verification verification;
     }
+
+    [Serializable] private sealed class CriticalFailureMappingPolicy
+    {
+        public bool requireExactCanonicalIds;
+        public bool requireMembershipInVisualFidelityGate;
+        public bool rejectLegacyAliases;
+    }
+
+    [Serializable] private sealed class VisualGateDocument
+    {
+        public GateCategory[] categories;
+        public CriticalDefectDefinition[] criticalDefects;
+    }
+
+    [Serializable] private sealed class GateCategory { public string id; }
+    [Serializable] private sealed class CriticalDefectDefinition { public string id; }
 
     [Serializable]
     private sealed class SolarDatum

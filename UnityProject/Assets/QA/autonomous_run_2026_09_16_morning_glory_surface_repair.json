@@ -1,0 +1,61 @@
+{
+  "schema": 1,
+  "date": "2026-09-16",
+  "assetId": "MorningGloryTrellisPlant",
+  "branch": "gpt/unity-migration",
+  "startingHead": "3c822238c9ed82e3911e9e95b82b340b6ab99e0d",
+  "priority": "Repair observed shape/face/orientation defects before adding more props.",
+  "diagnosis": {
+    "leaf": "Current C# AddLeaf arches the top skin but builds side-wall top vertices at flat +thickness/2 positions; this creates a position mismatch at the perimeter. External actual OBJ candidate showed 2,688 positional-weld boundary edges across 48 LOD0 leaves before repair and zero after repair.",
+    "flower": "Current C# AddFlower creates a single outward funnel skin plus basal cap but no interior petal skin; looking into the funnel with back-face culling can remove the visible petal interior.",
+    "framing": "Alternative CPU diagnostic framing of the unchanged OBJ using Y-up bounds-centred camera removed the gross lower-right crop/spoke presentation, so the old preview image is not reliable evidence of model orientation."
+  },
+  "externalActualObjRepairEvidence": {
+    "MASTER": {"trianglesBefore":36264,"trianglesAfter":47064,"leafBoundaryEdgesBefore":3136,"leafBoundaryEdgesAfter":0,"leafsWatertightAfter":56,"flowersWatertightAfter":10,"sha256After":"cada3f149d49628a65b3ea04768ccc9a72c6a21e6e1a8c19d2fd6499611d4ba3"},
+    "LOD0": {"trianglesBefore":23888,"trianglesAfter":29776,"leafBoundaryEdgesBefore":2688,"leafBoundaryEdgesAfter":0,"leafsWatertightAfter":48,"flowersWatertightAfter":8,"sha256After":"99117b517ef58c8959ac85f2b35578f48f1ac4c26dd5e05260b7320ca14e5f10"},
+    "LOD1": {"trianglesBefore":15028,"trianglesAfter":17764,"leafBoundaryEdgesBefore":2016,"leafBoundaryEdgesAfter":0,"leafsWatertightAfter":36,"flowersWatertightAfter":6,"sha256After":"592af8b7da0018e43c80ad6d518c38ca6fa41bdbcf61009f52b55fdbb26a115a"},
+    "LOD2": {"trianglesBefore":5134,"trianglesAfter":6094,"leafBoundaryEdgesBefore":1344,"leafBoundaryEdgesAfter":0,"leafsWatertightAfter":24,"flowersWatertightAfter":4,"sha256After":"c2a4e8366d6ca9aedb82b4f1fe320eedddcb01d1507f1cd68e311158e614e4"},
+    "LOD3": {"trianglesBefore":2644,"trianglesAfter":2956,"leafBoundaryEdgesBefore":784,"leafBoundaryEdgesAfter":0,"leafsWatertightAfter":14,"flowersWatertightAfter":2,"sha256After":"1a59d515664fa74cb86bec10c7878cf1c5eae1338dfb8797f4fcb8f7efe9d70a"}
+  },
+  "algorithmStructuralSimulation": {
+    "executedOutsideUnity": true,
+    "purpose": "Translate the currently committed C# leaf/flower topology into a minimal geometry test before committing the Unity repair source.",
+    "leafSourceTrianglesPerLeaf": 64,
+    "leafSourceBoundaryEdgesAfterPositionWeld": 28,
+    "leafSourceWatertight": false,
+    "leafRepairTrianglesPerLeaf": 64,
+    "leafRepairBoundaryEdgesAfterPositionWeld": 0,
+    "leafRepairWatertight": true,
+    "leafRepairWindingConsistent": true,
+    "flowerSampleRings": 10,
+    "flowerSampleSides": 32,
+    "flowerSourceTriangles": 672,
+    "flowerSourceWatertight": false,
+    "flowerRepairTriangles": 1408,
+    "flowerRepairBoundaryEdges": 0,
+    "flowerRepairWatertight": true,
+    "flowerRepairWindingConsistent": true
+  },
+  "unityRepairDesign": {
+    "entryPoint": "Tools/New Town/Author/Morning Glory Trellis Assets - Surface Repaired",
+    "leaf": "Runs existing authoring, keeps top/bottom leaf skins, discards legacy flat side triangles and bridges the actual arched top/bottom edge positions with hard side normals. Refuses unexpected topology.",
+    "flower": "Finds complete flower components across blue/throat material submeshes, duplicates the entire exterior inward by an explicit 0.15 mm modeling assumption, reverses inner winding, and bridges only true union boundary edges. Material seams are not treated as holes.",
+    "sceneMutation": false
+  },
+  "verification": {
+    "githubActionsRunsObserved": 0,
+    "unity6000_3_0f1Compile": false,
+    "unityRepairCommandExecuted": false,
+    "unityRender": false,
+    "native4KCaptures": false,
+    "temporalLod": false
+  },
+  "visualFidelity": {"status":"UNSCORED_UNTIL_REAL_4K_RENDER","score":null,"pass":false,"pointsAwarded":0},
+  "readiness": {"lastRecordedScore":93,"recomputedThisRun":false,"pointsAdded":0},
+  "expectedVisualScoreImpactWithoutAwardingPoints": [
+    "Geometry/construction: remove visible leaf perimeter cracks in close framing",
+    "Vegetation/natural complexity: make flower interiors visible from camera-facing funnel openings",
+    "Temporal/LOD: repaired geometry is applied at MASTER and all runtime LODs, but pop/shimmer remains unverified"
+  ],
+  "nextBlocker": "Real Unity 6000.3.0f1 compile and execution of the repaired authoring command, followed by frontal/oblique/grazing 3840x2160 and close crops. If real screenshots appear, stop speculative model expansion and fix observed pixels."
+}

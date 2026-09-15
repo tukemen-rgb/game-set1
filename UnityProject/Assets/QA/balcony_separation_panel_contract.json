@@ -141,6 +141,23 @@
       "relevance": "Current material-scale reference showing common painted calcium-silicate board at 910 x 1820 x 6 mm; used only to anchor plausible board thickness, not to claim the benchmark uses this specific modern product."
     }
   ],
+  "nativePacketIntegration": {
+    "formalRunnerPath": "Assets/Editor/QualityBlockNative4KReviewPacket.cs",
+    "buildMethod": "QualityBlockBalconySeparationPanelFormalIntegrationQA.ApplyAndPersist",
+    "validateMethod": "QualityBlockBalconySeparationPanelFormalIntegrationQA.ValidateOpenScene",
+    "persistBeforeReflection": true,
+    "validationOnlyAfterReflectionRequest": true,
+    "requiredPacketValidationBoundaries": 3,
+    "requiredBoundaries": [
+      "pre_reflection",
+      "post_reflection_pre_still",
+      "post_still_pre_temporal"
+    ],
+    "visualGateAuthorityPath": "Assets/QA/visual_fidelity_gate.json",
+    "evidenceBindingContractPath": "Assets/QA/scene_metadata_coverage_contract.json",
+    "evidenceBindingDomainId": "danchi_domain",
+    "reasoning": "The generated benchmark scene is rebuilt on demand and the panel root is not part of the core DanchiHighDetail build chain. Formal evidence therefore must explicitly build and save the panel hierarchy before reflection synchronization. After the reflection request, the panel path is validation-only so reflection, still and temporal evidence cannot observe different panel geometry/material/LOD states."
+  },
   "formalEvidencePolicy": {
     "preCullBehavior": "READ_ONLY_FAIL_CLOSED",
     "formalTargetPrefixes": ["QA4K_", "QATemporal_", "QAPreparedTemporal_"],
@@ -151,10 +168,17 @@
   },
   "criticalDefectRisks": [
     "visible_primitive_placeholder",
+    "impossible_material_physics",
+    "obvious_repetition",
+    "hero_geometry_intersection",
+    "visible_lod_pop",
+    "missing_construction_material_metadata",
+    "unverified_render_claim"
+  ],
+  "forbiddenLegacyCriticalAliases": [
     "materially_impossible_metallic_or_specular",
     "floating_or_interpenetrating_hero_geometry",
     "obvious_repeated_module_pattern",
-    "visible_lod_pop",
     "missing_required_construction_or_material_metadata"
   ],
   "failureInjection": [
@@ -166,7 +190,10 @@
     "Delete one rear wall bracket or its fasteners and require failure.",
     "Replace any source mesh with Unity Cube/Cylinder or a non-authored asset and require failure.",
     "Collapse deterministic UV phase diversity so every repeated panel shares one phase and require failure.",
-    "Remove expected LOD0/1/2/3 renderers, change transition heights or disable animated cross-fade and require failure."
+    "Remove expected LOD0/1/2/3 renderers, change transition heights or disable animated cross-fade and require failure.",
+    "Remove the explicit Native 4K ApplyAndPersist call, duplicate it, or move it after reflection synchronization and require integration preflight failure.",
+    "Remove the pre-reflection, post-reflection/pre-still or post-still/pre-temporal validation boundary and require integration preflight failure.",
+    "Replace any canonical critical-defect ID with a legacy alias or unknown ID and require integration preflight failure."
   ],
   "prohibitedThemes": ["earthquake", "disaster", "reconstruction"]
 }

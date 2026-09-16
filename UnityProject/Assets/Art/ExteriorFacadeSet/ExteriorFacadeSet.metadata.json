@@ -4,28 +4,30 @@
   "units": "metres",
   "owner": "ExteriorFacadeSet",
   "manufactureInstallation": {
-    "facade": "Physical 16 mm painted fiber-cement panel pieces with 10 mm joints; vent-bearing field is split around a real aperture.",
-    "vent": "150 mm clear-bore sleeve, trim, EPDM gasket, painted hood, real louver geometry, coarse geometric insect screen and fasteners.",
+    "facade": "Physical 16 mm painted fiber-cement panel pieces. Original vent-only field remains an authored source asset; the new service-bay variant has real window, vent and AC penetrations rather than overlaying equipment on a closed wall.",
+    "vent": "150 mm-class clear-bore sleeve, trim, EPDM gasket, painted hood, real louver geometry, coarse geometric insect screen and fasteners.",
     "flashing": "Formed painted starter flashing with wall flange, shelf, kick, drop, hem and end dams.",
-    "interfaces": "Vent sleeve passes through actual panel aperture; gasket seats between trim and facade; base flashing sits below panels.",
-    "orientationExposure": "Y up, exterior +Z; no lighting baked.",
-    "agingCausality": "No arbitrary rust, algae, rain streaks, baked highlights or wetness. Future wear follows joint runoff, hood drip and lower splash.",
-    "geometryVsMaterial": "Panels, aperture/reveal, joint beads/backers, vent bore, hood, louvers, screen, folds and fasteners are geometry; microstructure is material proxy."
+    "interfaces": "New service facade accepts the existing BalconyWindowSet and perimeter-seal owner in a 1940 x 1960 rough opening, the existing ExteriorVentHood150 in a 220 mm service opening, and the existing AC wall-sleeve/putty owner in a 140 mm penetration.",
+    "orientationExposure": "Y up, exterior +Z; integrated soffit projects +Z and the guardrail is placed at the exterior balcony edge. No lighting or highlight is baked.",
+    "agingCausality": "No arbitrary rust, algae, rain streaks, baked highlights or wetness. Future wear follows window-head/vent runoff, facade-base splash and sheltered-joint dust.",
+    "geometryVsMaterial": "Panels, apertures/reveals, sealant/backers, vent bore, hood/louvers/screen, folds and near-LOD fixings are geometry; microstructure remains PBR material proxy."
   },
   "materials": {
-    "PaintedFiberCement": {"albedo":[0.58,0.59,0.56],"metallic":0,"roughness":0.68,"normalScale":0.3,"wetness":0},
-    "JointSealant": {"albedo":[0.23,0.23,0.22],"metallic":0,"roughness":0.73,"normalScale":0.16,"wetness":0},
-    "BackerRod": {"albedo":[0.08,0.08,0.075],"metallic":0,"roughness":0.86,"normalScale":0.22,"wetness":0},
-    "PaintedMetal": {"albedo":[0.37,0.39,0.38],"metallic":0,"roughness":0.44,"normalScale":0.15,"wetness":0},
-    "GalvanizedSteel": {"albedo":[0.53,0.55,0.56],"metallic":1,"roughness":0.47,"normalScale":0.18,"wetness":0},
-    "BlackEPDM": {"albedo":[0.026,0.027,0.026],"metallic":0,"roughness":0.79,"normalScale":0.27,"wetness":0},
-    "BlackPolyesterMesh": {"albedo":[0.035,0.038,0.036],"metallic":0,"roughness":0.84,"normalScale":0.18,"wetness":0},
-    "DarkCavity": {"albedo":[0.012,0.012,0.012],"metallic":0,"roughness":0.93,"normalScale":0,"wetness":0}
+    "PaintedFiberCement": {"albedo":[0.58,0.59,0.56],"metallic":0,"roughness":0.68,"normalScale":0.3,"wetness":0,"fresnel":"dielectric"},
+    "JointSealant": {"albedo":[0.23,0.23,0.22],"metallic":0,"roughness":0.73,"normalScale":0.16,"wetness":0,"fresnel":"dielectric"},
+    "BackerRod": {"albedo":[0.08,0.08,0.075],"metallic":0,"roughness":0.86,"normalScale":0.22,"wetness":0,"fresnel":"dielectric"},
+    "PaintedMetal": {"albedo":[0.37,0.39,0.38],"metallic":0,"roughness":0.44,"normalScale":0.15,"wetness":0,"fresnel":"dielectric coating"},
+    "GalvanizedSteel": {"albedo":[0.53,0.55,0.56],"metallic":1,"roughness":0.47,"normalScale":0.18,"wetness":0,"fresnel":"conductor"},
+    "BlackEPDM": {"albedo":[0.026,0.027,0.026],"metallic":0,"roughness":0.79,"normalScale":0.27,"wetness":0,"fresnel":"dielectric"},
+    "BlackPolyesterMesh": {"albedo":[0.035,0.038,0.036],"metallic":0,"roughness":0.84,"normalScale":0.18,"wetness":0,"fresnel":"dielectric"},
+    "DarkCavity": {"albedo":[0.012,0.012,0.012],"metallic":0,"roughness":0.93,"normalScale":0,"wetness":0,"fresnel":"dielectric"}
   },
   "triangles": {
     "PaintedFiberCementFacade3600x2700": {"MASTER":3744,"LOD0":1824,"LOD1":868,"LOD2":456,"LOD3":232},
     "ExteriorVentHood150": {"MASTER":3252,"LOD0":2248,"LOD1":1444,"LOD2":900,"LOD3":348},
-    "FacadeBaseStarterFlashing3600": {"MASTER":1620,"LOD0":724,"LOD1":324,"LOD2":180,"LOD3":84}
+    "FacadeBaseStarterFlashing3600": {"MASTER":1620,"LOD0":724,"LOD1":324,"LOD2":180,"LOD3":84},
+    "PaintedFiberCementFacadeWindowService3600x2700": {"MASTER":2896,"LOD0":2128,"LOD1":652,"LOD2":264,"LOD3":120},
+    "BalconyExteriorHeroBay3600": {"MASTER":168152,"LOD0":93604,"LOD1":43532,"LOD2":22236,"LOD3":13384}
   },
   "visualFidelity": {"authority":"Assets/QA/visual_fidelity_gate.json","status":"UNSCORED_UNTIL_REAL_4K_RENDER","score":null,"passed":false,"pointsAwarded":0},
   "implementationReadiness": {"lastRecorded":93,"recomputedThisRun":false},
@@ -33,5 +35,5 @@
   "unityImport": false,
   "unityRender": false,
   "formalBenchmarkSceneChanged": false,
-  "nextProductionTarget": "If no Unity render appears, integrate facade with existing window/AC/rainwater modules or add facade-mounted service hardware after owner inspection."
+  "nextProductionTarget": "If no Unity render appears, improve visible hero-bay interfaces first: curb-to-wall/floor edge, AC feet/support contact and rainwater outlet termination."
 }

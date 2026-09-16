@@ -2,13 +2,20 @@
   "schema":1,
   "updated":"2026-09-16",
   "isInventoryDelta":true,
-  "ownerInspection":{"keywords":["facade","exteriorwall","siding","vent"],"dedicatedFacadeVentOwnerDetected":false,"note":"Current gpt/unity-migration tree was scanned before authoring; existing window, AC, rainwater, soffit and service-corner owners remain separate."},
+  "ownerInspection":{
+    "existingOwnersReused":["ExteriorFacadeSet","BalconyWindowSet","WindowInstallDetails","BalconyACSet","BalconyRainwaterSet","BalconyGuardrailSet","BalconySoffitSet"],
+    "decision":"Materially improve ExteriorFacadeSet and build one cross-owner hero-bay integration; create no duplicate window, AC, rainwater, guardrail or soffit systems."
+  },
   "newAssets":[
     {"id":"PaintedFiberCementFacade3600x2700","masterTriangles":3744,"lodTriangles":[1824,868,456,232],"actualOBJGLBExports":true,"unityVerified":false},
     {"id":"ExteriorVentHood150","masterTriangles":3252,"lodTriangles":[2248,1444,900,348],"actualOBJGLBExports":true,"unityVerified":false},
-    {"id":"FacadeBaseStarterFlashing3600","masterTriangles":1620,"lodTriangles":[724,324,180,84],"actualOBJGLBExports":true,"unityVerified":false}
+    {"id":"FacadeBaseStarterFlashing3600","masterTriangles":1620,"lodTriangles":[724,324,180,84],"actualOBJGLBExports":true,"unityVerified":false},
+    {"id":"PaintedFiberCementFacadeWindowService3600x2700","masterTriangles":2896,"lodTriangles":[2128,652,264,120],"actualOBJGLBExports":true,"unityVerified":false}
   ],
-  "reviewIntegrations":[{"path":"ExteriorFacadeInstalledReview_LOD0.glb","triangles":4796,"geometryCount":11,"formalBenchmarkSceneChanged":false,"unityVerified":false}],
-  "productionDeltaThisRun":{"authoredAssetSets":3,"highDetailMasters":3,"runtimeLodSets":3,"standaloneGlbCount":15,"standaloneObjCount":15,"reviewGlbCount":1},
-  "nextProductionTarget":"Integrate facade with existing window/AC/rainwater modules if Unity render remains unavailable."
+  "reviewIntegrations":[
+    {"id":"ExteriorFacadeInstalledReview_LOD0","triangles":4796,"formalBenchmarkSceneChanged":false,"unityVerified":false},
+    {"id":"BalconyExteriorHeroBay3600","triangles":{"MASTER":168152,"LOD0":93604,"LOD1":43532,"LOD2":22236,"LOD3":13384},"actualGlbCount":5,"formalBenchmarkSceneChanged":false,"unityVerified":false}
+  ],
+  "productionDeltaThisRun":{"authoredAssetSets":1,"highDetailMasters":1,"runtimeLodSets":1,"crossOwnerIntegrationSets":1,"actualNewFacadeGlbCount":5,"actualNewFacadeObjCount":5,"actualHeroBayGlbCount":5},
+  "nextProductionTarget":"Improve visible hero-bay interfaces before adding unrelated props: curb/floor-to-wall termination, AC feet/support contact and rainwater outlet termination."
 }

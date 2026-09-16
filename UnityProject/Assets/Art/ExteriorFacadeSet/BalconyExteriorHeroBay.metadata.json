@@ -1,0 +1,24 @@
+{
+  "schema":1,
+  "date":"2026-09-16",
+  "units":"metres",
+  "owner":"ExteriorFacadeSet",
+  "asset":"PaintedFiberCementFacadeWindowService3600x2700",
+  "manufactureInstallation":{
+    "components":"16 mm painted fiber-cement field pieces, actual window opening, actual 150-class vent opening, actual AC line-set penetration, recessed opening returns, near-LOD sealant/backer joints and mechanical fixing heads.",
+    "mounting":"Existing window, vent and AC service components occupy real apertures rather than a closed-wall overlay. Existing guardrail/curb, rainwater and soffit owners remain independent reversible modules.",
+    "interfaces":"Window perimeter seal seats in the rough opening; vent gasket/trim covers its service aperture; AC sleeve/putty occupies a separate 140 mm opening; starter flashing terminates the facade base.",
+    "orientationExposure":"Y up, exterior +Z. Soffit projects outward and guardrail is at the balcony edge. No lighting or reflection is baked.",
+    "agingCausality":"No new random dirt. Future runoff follows head-cap/vent drip paths; splash belongs at facade base/curb; sheltered joint dust belongs inside recesses.",
+    "geometryVsMaterial":"Wall fields, three apertures, returns, joints/backers and near fixings are geometry. Cement/paint, metal, rubber and sealant microstructure are PBR proxies.",
+    "assumptions":"Generic authored apartment-balcony dimensions; not a claim about a specific historical product or building."
+  },
+  "facadeTriangles":{"MASTER":2896,"LOD0":2128,"LOD1":652,"LOD2":264,"LOD3":120},
+  "assemblyTriangles":{"MASTER":168152,"LOD0":93604,"LOD1":43532,"LOD2":22236,"LOD3":13384},
+  "actualGeneratedOutputs":{"newFacadeGlb":5,"newFacadeObj":5,"integratedHeroBayGlb":5},
+  "visualFidelity":{"authority":"Assets/QA/visual_fidelity_gate.json","status":"UNSCORED_UNTIL_REAL_4K_RENDER","score":null,"pass":false,"pointsAwarded":0},
+  "implementationReadiness":{"lastRecorded":93,"recomputedThisRun":false},
+  "unityCompile":false,"unityImport":false,"unityRender":false,"lodTemporalVerified":false,
+  "formalBenchmarkSceneChanged":false,
+  "nextProductionTarget":"Improve curb/floor-to-wall termination, AC feet/support contact and rainwater outlet termination in this integrated bay before unrelated asset growth."
+}

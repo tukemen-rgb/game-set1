@@ -11,6 +11,7 @@ import numpy as np
 import trimesh
 from PIL import Image, ImageDraw, ImageFont
 from numba import njit
+from numba.typed import List as TextureList
 
 DEFAULT_PALETTE = {
  'PaintedFiberCement': [0.79,0.76,0.68],
@@ -69,7 +70,7 @@ def colorize(scene):
  assert geometry_digest(out)==geometry_digest(scene),'Color change mutated geometry'
  return out,changes
 
-def flatten(scene):
+def flatten(scene,texture_size=2048):
  V=[];F=[];N=[];UV=[];MI=[];TEX=[];NM=[];props=[];mats=[];offset=0;cache={}
  for node in scene.graph.nodes_geometry:
   transform,name=scene.graph[node];g=scene.geometry[name];m=getattr(g.visual,'material',None)
@@ -78,26 +79,29 @@ def flatten(scene):
   factor=getattr(m,'baseColorFactor',None)
   factor=np.ones(4) if factor is None else np.asarray(factor,float)/255.
   bc=m.baseColorTexture
-  if bc is None:
-   arr=np.ones((128,128,4),dtype=np.float32)*factor
-  else:
-   arr=np.asarray(bc.convert('RGBA').resize((128,128),Image.Resampling.BILINEAR),dtype=np.float32)/255.*factor
   rm=m.metallicRoughnessTexture
+  norm=m.normalTexture
+  sizes=[im.size for im in (bc,rm,norm) if im is not None]
+  tw,th=max(sizes,key=lambda s:s[0]*s[1]) if sizes else (8,8)
+  scale=min(1.,texture_size/max(tw,th));tw=max(1,int(tw*scale));th=max(1,int(th*scale))
+  if bc is None:
+   arr=np.ones((th,tw,4),dtype=np.float32)*factor
+  else:
+   arr=np.asarray(bc.convert('RGBA').resize((tw,th),Image.Resampling.BILINEAR),dtype=np.float32)/255.*factor
   metallic=1. if m.metallicFactor is None else m.metallicFactor
   rough=1. if m.roughnessFactor is None else m.roughnessFactor
-  if rm is None:mr=np.zeros((128,128,3),dtype=np.float32);mr[:,:,1]=rough;mr[:,:,2]=metallic
+  if rm is None:mr=np.zeros((th,tw,3),dtype=np.float32);mr[:,:,1]=rough;mr[:,:,2]=metallic
   else:
-   mr=np.asarray(rm.convert('RGB').resize((128,128),Image.Resampling.BILINEAR),dtype=np.float32)/255.
+   mr=np.asarray(rm.convert('RGB').resize((tw,th),Image.Resampling.BILINEAR),dtype=np.float32)/255.
    mr[:,:,1]*=rough;mr[:,:,2]*=metallic
-  norm=m.normalTexture
-  if norm is None:nr=np.zeros((128,128,3),dtype=np.float32);nr[:]=[.5,.5,1.]
-  else:nr=np.asarray(norm.convert('RGB').resize((128,128),Image.Resampling.BILINEAR),dtype=np.float32)/255.
+  if norm is None:nr=np.zeros((th,tw,3),dtype=np.float32);nr[:]=[.5,.5,1.]
+  else:nr=np.asarray(norm.convert('RGB').resize((tw,th),Image.Resampling.BILINEAR),dtype=np.float32)/255.
   tex=np.concatenate([arr[:,:,:3],mr[:,:,1:3]],axis=2).astype(np.float32)
-  key=hashlib.sha256(tex.tobytes()+nr.tobytes()).hexdigest()
+  key=hashlib.sha256(str((tw,th)).encode()+tex.tobytes()+nr.tobytes()).hexdigest()
   if key not in cache:
    cache[key]=len(TEX);TEX.append(tex);NM.append(nr)
    props.append([1. if m.doubleSided else 0.,float(norm is not None),1. if m.name=='ClearGlass' else 0.])
-   mats.append({'name':m.name,'meanBaseColorSRGB':arr[:,:,:3].mean((0,1)).tolist(),'metallicMean':float(mr[:,:,2].mean()),'roughnessMean':float(mr[:,:,1].mean()),'normalMap':norm is not None})
+   mats.append({'name':m.name,'meanBaseColorSRGB':arr[:,:,:3].mean((0,1)).tolist(),'metallicMean':float(mr[:,:,2].mean()),'roughnessMean':float(mr[:,:,1].mean()),'normalMap':norm is not None,'sampledTextureSize':[tw,th]})
   idx=cache[key]
   pts=trimesh.transform_points(g.vertices,transform)
   normals=g.vertex_normals@np.linalg.inv(transform[:3,:3]);normals/=np.maximum(np.linalg.norm(normals,axis=1)[:,None],1e-12)
@@ -106,7 +110,8 @@ def flatten(scene):
   uv=getattr(g.visual,'uv',None)
   if uv is None:uv=np.zeros((len(pts),2))
   V.append(pts);F.append(faces+offset);N.append(normals);UV.append(uv);MI.append(np.full(len(faces),idx,np.int32));offset+=len(pts)
- return (np.vstack(V),np.vstack(F).astype(np.int32),np.vstack(N),np.vstack(UV),np.concatenate(MI),np.stack(TEX),np.stack(NM),np.asarray(props),mats)
+ # Preserve native map detail without expanding every 128 px material to 2048 px.
+ return (np.vstack(V),np.vstack(F).astype(np.int32),np.vstack(N),np.vstack(UV),np.concatenate(MI),TextureList(TEX),TextureList(NM),np.asarray(props),mats)
 
 @njit(cache=True)
 def fill_depth(v,faces,h,w,cull,material_ids,props):
@@ -183,13 +188,22 @@ def shade(vertices,faces,normals,uv,mi,tex,nmap,props,fb,bu,bv,view,light,sp,sd,
      N=T*nm[0]+B*nm[1]+N*nm[2];N/=max(1e-10,np.linalg.norm(N))
    ndl=max(0.,np.dot(N,light));ndv=max(.02,np.dot(N,view));ndh=max(0.,np.dot(N,H));vdh=max(0.,np.dot(view,H))
    shpos=sp[ids[0]]*u+sp[ids[1]]*v+sp[ids[2]]*z
+   se1=sp[ids[1]]-sp[ids[0]];se2=sp[ids[2]]-sp[ids[0]]
+   sdet=se1[0]*se2[1]-se1[1]*se2[0]
+   dzdx=0.;dzdy=0.
+   if abs(sdet)>1e-10:
+    dzdx=(se1[2]*se2[1]-se2[2]*se1[1])/sdet
+    dzdy=(se1[0]*se2[2]-se2[0]*se1[2])/sdet
    sx=int(shpos[0]);sy=int(shpos[1]);vis=0.;cnt=0
    for iy in range(-1,2):
     for ix in range(-1,2):
      xx=sx+ix;yy=sy+iy
      if xx>=0 and xx<sd.shape[1] and yy>=0 and yy<sd.shape[0]:
       cnt+=1
-      if shpos[2]+shadow_bias*(1+3*(1-ndl))>=sd[yy,xx]:vis+=1
+      # Each PCF sample lies at a different point on the receiver plane. Comparing
+      # every neighbour to the center depth creates striped false self-shadows.
+      receiver=shpos[2]+dzdx*(xx+.5-shpos[0])+dzdy*(yy+.5-shpos[1])
+      if receiver+shadow_bias>=sd[yy,xx]:vis+=1
    visibility=vis/cnt if cnt>0 else 1.
    alpha=rough*rough;a2=alpha*alpha;den=ndh*ndh*(a2-1)+1
    D=a2/(math.pi*den*den+.0000001);K=(rough+1)**2/8
@@ -221,17 +235,17 @@ def projected(v,cam,width,height,bounds=None,fill=.84):
  a[:,0]=(a[:,0]-c[0])*scale+width/2;a[:,1]=-(a[:,1]-c[1])*scale+height/2
  return a
 
-def render(scene,path,azimuth=22.,elevation=10.,width=1600,height=1100,ss=2,title='Material color preview',crop_bounds=None,exposure=1.18):
- vertices,faces,normals,uv,mi,tex,nmap,props,mats=flatten(scene)
+def render(scene,path,azimuth=22.,elevation=10.,width=1600,height=1100,ss=2,title='Material color preview',crop_bounds=None,exposure=1.18,texture_size=2048,light_direction=None):
+ vertices,faces,normals,uv,mi,tex,nmap,props,mats=flatten(scene,texture_size)
  assert np.isfinite(vertices).all() and np.isfinite(uv).all()
  W,H=width*ss,height*ss;cam=basis(azimuth,elevation)
  vp=projected(vertices,cam,W,H,crop_bounds)
- light=unit(np.array([-.7,1.6,1.8]));lr=unit(np.cross([0,1,0],light));lup=unit(np.cross(light,lr));lc=np.stack([lr,lup,light],axis=1)
+ light=unit(np.array([-.7,1.6,1.8] if light_direction is None else light_direction));lr=unit(np.cross([0,1,0],light));lup=unit(np.cross(light,lr));lc=np.stack([lr,lup,light],axis=1)
  shadowres=2048;sp=projected(vertices,lc,shadowres,shadowres,fill=.95)
  # Source face selection is identical for camera and shadow maps; all triangles.
  sd,*_=fill_depth(sp,faces,shadowres,shadowres,False,mi,props)
  depth,fb,bu,bv,visible=fill_depth(vp,faces,H,W,True,mi,props)
- image=shade(vertices,faces,normals,uv,mi,tex,nmap,props,fb,bu,bv,cam[:,2],light,sp,sd,max(np.ptp(vertices,axis=0))*.00045,exposure)
+ image=shade(vertices,faces,normals,uv,mi,tex,nmap,props,fb,bu,bv,cam[:,2],light,sp,sd,max(np.ptp(vertices,axis=0))*1e-5,exposure)
  im=Image.fromarray(np.uint8(np.clip(image,0,1)*255),'RGB').resize((width,height),Image.Resampling.LANCZOS)
  d=ImageDraw.Draw(im);f='/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf';font=ImageFont.truetype(f,max(16,int(width/65)));small=ImageFont.truetype(f,max(12,int(width/100)))
  d.rectangle((0,0,width,int(height*.062)),fill=(246,245,241));d.text((24,14),title,fill=(37,40,42),font=font)
@@ -239,6 +253,7 @@ def render(scene,path,azimuth=22.,elevation=10.,width=1600,height=1100,ss=2,titl
  path=Path(path);path.parent.mkdir(parents=True,exist_ok=True);im.save(path)
  mask=fb>=0;visible_m=np.unique(mi[fb[mask]])
  report={'image':path.name,'trianglesSubmitted':len(faces),'trianglesCulledOrDegenerate':len(faces)-visible,'sourceMeshes':len(scene.geometry),'visibleMaterials':len(visible_m),'materials':mats,'allSourceFacesSubmitted':True,'arbitraryFaceLimit':None,'backfaceCulling':True,'depthBuffer':True,'baseColorTextureSampling':True,'normalMapSamplingOnValidUV':True,'metallicRoughnessMapSampling':True,'shadowMap':True,'geometrySHA256':geometry_digest(scene),'size':[width,height],'supersampling':ss,'azimuth':azimuth,'elevation':elevation,'unityRender':False,'visualScore':None,'limitations':['analytic sky, no scene reflection/refraction or GI','not Unity','glass remains source opaque tint','normal display for coarse planar faces is diagnostic; saved normals unchanged','model defects are not repaired by coloring']}
+ report.update(textureResolutionCap=texture_size,receiverPlaneShadowDepth=True,lightDirection=light.tolist())
  path.with_suffix('.json').write_text(json.dumps(report,indent=2)+'\n')
  print(json.dumps({k:report[k] for k in ['image','trianglesSubmitted','visibleMaterials','size']}),flush=True)
  return report

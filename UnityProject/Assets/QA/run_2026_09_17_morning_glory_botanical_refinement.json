@@ -1,0 +1,45 @@
+{
+  "schema": 1,
+  "date": "2026-09-17",
+  "status": "ACTUAL_EXTERNAL_MESH_REFINEMENT_VERIFIED_NO_UNITY_RUNTIME",
+  "authoredAssets": [
+    "MorningGloryTrellisPlant botanical geometry refinement",
+    "BalconyMorningGloryBotanicalPlanter",
+    "BalconyExteriorHeroSummerMorningGloryBotanical3600 integration"
+  ],
+  "sourceRefinementTriangles": {"MASTER":65208,"LOD0":39184,"LOD1":22516,"LOD2":8110,"LOD3":3460},
+  "planterTriangles": {"MASTER":85176,"LOD0":49168,"LOD1":27508,"LOD2":10606,"LOD3":4708},
+  "integratedHeroTriangles": {"MASTER":266636,"LOD0":151100,"LOD1":76452,"LOD2":36062,"LOD3":20340},
+  "clearances": {
+    "assemblyTiltDegrees": 0.8593722436446808,
+    "rearCanopyToFacadePlaneMm": 390.9357368503897,
+    "frontCanopyToMainRailInnerMm": 245.23315655582834,
+    "leftCanopyToReturnRailInnerMm": 157.3773181438447
+  },
+  "previewEvidence": {
+    "overall":{"trianglesSubmitted":151100,"sourceMeshes":285,"size":[1400,980],"unityRender":false},
+    "closeup":{"trianglesSubmitted":151100,"sourceMeshes":285,"size":[1200,1100],"unityRender":false},
+    "standalone":{"trianglesSubmitted":49168,"sourceMeshes":10,"size":[950,1150],"unityRender":false}
+  },
+  "verification": {
+    "sourceGLBRoundtrip": true,
+    "sourceOBJTriangleRoundtrip": true,
+    "strictLODReduction": true,
+    "unchangedBotanicalGroupsCountsBoundsPreserved": true,
+    "flowerTriangleCountRetained": true,
+    "veinTriangleCountRetained": true,
+    "oldPlanterRemovedBeforeReplacement": true,
+    "allPreviewFacesSubmitted": true,
+    "pythonSourcesCompile": true
+  },
+  "visualFidelity": {
+    "score": null,
+    "pass": false,
+    "pointsAwarded": 0,
+    "expectedImpactOnly": ["geometry_construction","vegetation_natural_complexity","cinematic_image"],
+    "reason": "No real Unity 3840x2160 frontal/oblique/grazing render, 100% crops or temporal evidence."
+  },
+  "implementationReadiness":{"lastRecorded":93,"recomputed":false},
+  "unityCompile":false,"unityImport":false,"unityRender":false,
+  "nextProductionTarget":"Use real Unity pixels first if available. Otherwise continue high-coverage summer vegetation/context production after visual review, not validator expansion."
+}

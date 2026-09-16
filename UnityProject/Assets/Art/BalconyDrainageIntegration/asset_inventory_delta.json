@@ -1,0 +1,31 @@
+{
+  "schema": 1,
+  "updated": "2026-09-16",
+  "isInventoryDelta": true,
+  "ownerInspection": {
+    "ServiceCornerFloorDrain": "BalconyFloorDrain100 already owned by generate_balcony_floor_drain.py; reused/re-executed, not duplicated.",
+    "BalconyACHose": "CondensateDrainHose16_1200 already owned by generate_balcony_ac_set.py; base retained, route refined only in integration.",
+    "GroundedHero": "BalconyExteriorHeroGrounded3600 external artifact reused as integration base."
+  },
+  "newOrMateriallyImprovedAssets": [
+    {"id":"BalconyWaterproofFloorDrainIntegrated3600x970","masterTriangles":320,"lodTriangles":[256,192,116,56],"actualGLBOBJ":true,"unityVerified":false},
+    {"id":"CondensateDrainHose16_FloorDrainRoute","masterTriangles":24020,"lodTriangles":[12064,4872,2420,1296],"actualGLBOBJ":true,"unityVerified":false}
+  ],
+  "reexecutedExistingOwner": {
+    "id":"BalconyFloorDrain100","triangleParityWithRepositoryMetadata":true,
+    "triangles":{"MASTER":7936,"LOD0":6008,"LOD1":4076,"LOD2":2476,"LOD3":1896},
+    "actualGLBOBJ":true,"unityVerified":false
+  },
+  "integratedHero": {
+    "id":"BalconyExteriorHeroDrained3600",
+    "levels":[
+      {"level":"MASTER","triangles":181180,"geometryCount":308,"glbRoundtrip":true,"sha256":"e7b619db9941898d3c2603b22820db60d6c699c93413afdda3d9bfa36fd025cd"},
+      {"level":"LOD0","triangles":101684,"geometryCount":272,"glbRoundtrip":true,"sha256":"bac5538a6b70db7f295d4f6a7d6ffcb1280e25e2990742020ca8262ef98eccd4"},
+      {"level":"LOD1","triangles":48720,"geometryCount":212,"glbRoundtrip":true,"sha256":"fc311bc1aa650706c94990bdcb2a681fe25208ab5a60b1bfab0e2c85498add0f"},
+      {"level":"LOD2","triangles":25284,"geometryCount":165,"glbRoundtrip":true,"sha256":"2f674945422a3d67593dc6fbb09055664ae7b48acf7a3734ebbdd250e9af1be9"},
+      {"level":"LOD3","triangles":15584,"geometryCount":134,"glbRoundtrip":true,"sha256":"645f762cc968e27e06adade9f2518bb5ac3c5e19cdc43528df9cf4da1f238c0c"}
+    ],
+    "formalBenchmarkSceneChanged": false
+  },
+  "nextProductionTarget": "If Unity pixels still do not appear, prioritize high-coverage facade/floor microvariation and contextual vegetation; add underside drain plumbing only if it can appear in a real camera framing."
+}

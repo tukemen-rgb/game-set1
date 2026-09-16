@@ -1,0 +1,56 @@
+{
+  "schema": 1,
+  "units": "metres",
+  "coordinateSystem": "right-handed Y-up external exports",
+  "baseOwners": {
+    "floorDrain": "UnityProject/Tools/generate_balcony_floor_drain.py",
+    "condensateHose": "UnityProject/Tools/generate_balcony_ac_set.py",
+    "integrationBase": "BalconyExteriorHeroGrounded3600 external artifact"
+  },
+  "floor": {
+    "boundsXZ": [-1.8, 0.0, 1.8, 0.97],
+    "bottomY": -1.335,
+    "baseTopAtZ0Y": -1.247,
+    "slopeYPerZ": -0.015,
+    "waterproofThickness": 0.004,
+    "rainwaterNotch": [1.6, 0.0, 1.78, 0.18],
+    "floorDrainCenterXZ": [0.45, 0.82],
+    "floorDrainCutoutRadius": 0.0434,
+    "floorDrainFlangeRadius": 0.052,
+    "lowSideResidueArcDegrees": [32, 148],
+    "lowSideResidueRadius": [0.055, 0.071]
+  },
+  "condensateRoute": {
+    "startWorld": [1.08009202, -0.94782974, 0.262],
+    "controlPointsWorld": [
+      [1.08009202, -0.94782974, 0.262],
+      [1.05, -1.015, 0.282],
+      [0.97, -1.085, 0.325],
+      [0.85, -1.155, 0.42],
+      [0.745, -1.205, 0.525],
+      [0.62, -1.225, 0.645],
+      [0.505, -1.232, 0.755],
+      [0.465, -1.236, 0.805],
+      [0.45, -1.2405, 0.82]
+    ],
+    "smoothing": "Chaikin 3 iterations then arc-length resample",
+    "baseOuterRadius": 0.0102,
+    "corrugationAmplitude": 0.00125,
+    "wallThickness": 0.0013,
+    "gravityFallRequired": true,
+    "outletCenterAboveFinishedFloor": 0.018
+  },
+  "lod": {
+    "MASTER": {"samples":360,"sides":16,"corrugations":96,"floorDrainCircleQuadSegments":24,"residueArcSamples":32,"clipSides":10},
+    "LOD0": {"samples":240,"sides":12,"corrugations":64,"floorDrainCircleQuadSegments":18,"residueArcSamples":24,"clipSides":8},
+    "LOD1": {"samples":144,"sides":8,"corrugations":40,"floorDrainCircleQuadSegments":12,"residueArcSamples":16,"clipSides":6},
+    "LOD2": {"samples":80,"sides":7,"corrugations":22,"floorDrainCircleQuadSegments":8,"residueArcSamples":8,"clipSides":5},
+    "LOD3": {"samples":48,"sides":6,"corrugations":12,"floorDrainCircleQuadSegments":5,"residueArcSamples":0,"clipSides":4}
+  },
+  "integrationRules": [
+    "Remove prior BalconyWaterproofFloor3600x970 geometry only in reversible integration scene.",
+    "Remove prior ExistingHero_DRAIN_* geometry only in reversible integration scene.",
+    "Re-execute existing BalconyFloorDrain100 owner and require exact repository triangle parity.",
+    "Do not change formal benchmark state until Unity render capture is available."
+  ]
+}

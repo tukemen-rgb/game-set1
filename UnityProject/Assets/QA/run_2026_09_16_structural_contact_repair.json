@@ -1,0 +1,55 @@
+{
+  "schema": 1,
+  "date": "2026-09-16",
+  "branch": "gpt/unity-migration",
+  "startHead": "40d3a91761cde578bf0b0e11c3e853ca5000eaee",
+  "runnerEvidence": {"githubActionsRunsObserved": 0, "unityScreenshotsObservedThisRun": false},
+  "productionWork": [
+    "Re-authored BalconySoffitAccessHatch450 directly in Y-up horizontal XZ ceiling plane; old vertical integration failure removed.",
+    "Extended all main and corner-return guardrail pickets from bottom-rail top to top-rail underside, removing the measured 56.5 mm top air gap.",
+    "Added ConcreteBalconyKerbReturn1200x180x120 so all three return-rail posts have physical side-return substrate instead of floating beyond the front kerb.",
+    "Rebuilt MASTER plus LOD0/1/2/3 GLB and OBJ exports with PBR texture proxies and numerical validation.",
+    "Integrated the repaired assets into the latest external BalconyExteriorHeroDrained3600 lineage as BalconyExteriorHeroDrainedStructuralRepair3600 for all five levels.",
+    "Rendered material-colored full and two closeup views from actual LOD0 geometry using every one of 101852 source triangles; no blue-only view and no face truncation."
+  ],
+  "assetTriangles": {
+    "PowderCoatedBalconyGuardrail3600x1100": [9072,7152,2992,552,384],
+    "BalconyGuardrailCornerReturn1200x1100": [4792,3640,1408,228,180],
+    "ConcreteBalconyKerbReturn1200x180x120": [200,168,144,92,48],
+    "BalconySoffitAccessHatch450": [1080,760,280,120,60]
+  },
+  "integratedHeroTriangles": [181380,101852,48864,25376,15632],
+  "actualVerification": {
+    "finiteVerticesNormals": true,
+    "noDegenerateTriangles": true,
+    "componentWatertight": true,
+    "windingConsistent": true,
+    "positiveVolume": true,
+    "edgeIncidence2": true,
+    "glbRoundtrip": true,
+    "objTriangleRoundtrip": true,
+    "strictLodReduction": true,
+    "picketRailContactNumeric": true,
+    "horizontalAccessHatchNumeric": true,
+    "returnPostsWithinSideKerbLength": true,
+    "materialPreviewAllFacesSubmitted": true
+  },
+  "sourceSHA256": {
+    "guardrailExecutedExporter": "24c01efda6726a3b537c0e3108db18342166c477262f16850c260294ba600c4f",
+    "soffitExecutedExporter": "205011efb40da8545aaf383d578bc5119c4cad1d26c3e998af6d2c4f75904e4d",
+    "integrationScript": "9316314f549faf165ed1401b976abc177f62a1921287c0f070b13d726ec2c6c5",
+    "materialPreviewRenderer": "507ddd2f1993d4ad699a35002fcc2ae1ea2e1a86b710360552b0c77772ecf229"
+  },
+  "artifactSHA256": {
+    "BalconyExteriorHeroDrainedStructuralRepair3600_LOD0.glb": "37a3c1a81a6c3b1d70d7da7fe1ebd5456f3f4b26cae339a25a22a70d7679af00",
+    "structural_repair_color_overall.png": "becf7d33216d07473bc9c7d6c1bb042fbced8cb225d14f894e21d5abfbe3096b",
+    "structural_repair_color_hatch_closeup.png": "44d02765cfc436166b8ddf3e2e1e3770534b49108b10bd270d0bf85db241a8cb",
+    "structural_repair_color_guardrail_closeup.png": "9a134e3fdec2382949bea72422d73fd22da92ad92cf7cfd8c325568fbc2a44c0",
+    "conversationDeliveryZip": "49447b72b8fd3bfba1f9a31a3fa0972204a66cda62073820ced94eeb95b58090"
+  },
+  "visualFidelity": {"authority":"Assets/QA/visual_fidelity_gate.json","score":null,"pass":false,"pointsAwarded":0,"reason":"CPU material previews are not Unity 3840x2160 benchmark evidence."},
+  "implementationReadiness": {"lastRecorded":93,"recomputedThisRun":false},
+  "notVerified": ["Unity compile/import/render", "formal QualityBlock consumption of these external Art assets", "3840x2160 hero/oblique/grazing captures and 100% crops", "temporal LOD/shimmer", "runtime performance"],
+  "safety": {"godotFilesChanged":0,"baseMerged":false,"forceRefUpdate":false,"formalBenchmarkSceneChanged":false,"forbiddenThemeAdded":false},
+  "nextTarget": "If real Unity pixels remain unavailable, repair the access-hatch finger-cup opening and high-coverage facade/floor microvariation or contextual summer vegetation; if Unity becomes available, stop speculative production and run the formal 4K/crop/temporal gate."
+}

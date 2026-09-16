@@ -1,0 +1,63 @@
+{
+  "schema": 1,
+  "date": "2026-09-16",
+  "owner": "BalconyStructuralContactRepair",
+  "scope": "External Art/Tools repair integrated into latest Drained3600 artifact; formal QualityBlock scene unchanged.",
+  "manufactureInstallation": {
+    "pickets": "18 mm square coated-steel pickets now span exactly from the top face of the 35 mm bottom rail to the underside of the 52 mm top rail. The previous 56.5 mm visible air gap at the top is removed in main and return modules.",
+    "returnSupport": "A 1.2 m side-return concrete kerb follows the perpendicular guardrail run so all three return posts at z=80/600/1120 mm have mineral substrate. Base plate and EPDM isolation remain separate geometry.",
+    "accessHatch": "450 mm hatch is authored directly in the horizontal XZ soffit plane, with Y as assembly depth. Frame, leaf, EPDM gasket, fasteners, hinge/pin and finger-cup components remain separate.",
+    "interfaces": "Repaired rail translations preserve previous Drained hero placement. Side kerb uses the front-kerb vertical datum. Hatch is placed by translation only beneath the soffit rather than by an XY-to-XZ axis remap.",
+    "aging": "No new random rust, mildew or streaking. This batch is construction/contact correction only.",
+    "geometryVsMaterial": "Contact/support/orientation corrections are geometry. Existing powder coat, concrete, EPDM and fiber-cement PBR texture proxies remain material detail."
+  },
+  "assetTriangles": {
+    "PowderCoatedBalconyGuardrail3600x1100": {"MASTER":9072,"LOD0":7152,"LOD1":2992,"LOD2":552,"LOD3":384},
+    "BalconyGuardrailCornerReturn1200x1100": {"MASTER":4792,"LOD0":3640,"LOD1":1408,"LOD2":228,"LOD3":180},
+    "ConcreteBalconyKerb3600x180x120": {"MASTER":464,"LOD0":368,"LOD1":296,"LOD2":228,"LOD3":204},
+    "ConcreteBalconyKerbReturn1200x180x120": {"MASTER":200,"LOD0":168,"LOD1":144,"LOD2":92,"LOD3":48},
+    "PaintedFiberCementSoffit3600x1200": {"MASTER":5040,"LOD0":2384,"LOD1":712,"LOD2":328,"LOD3":72},
+    "BalconySoffitAccessHatch450": {"MASTER":1080,"LOD0":760,"LOD1":280,"LOD2":120,"LOD3":60},
+    "SoffitDripEdgeFlashing3600": {"MASTER":3528,"LOD0":1608,"LOD1":528,"LOD2":48,"LOD3":36}
+  },
+  "integratedHeroTriangles": {"MASTER":181380,"LOD0":101852,"LOD1":48864,"LOD2":25376,"LOD3":15632},
+  "materialsPolicy": "Generated source PBR materials remain on source GLBs. User-facing review uses render_material_preview.py and an optional separate neutral-palette GLB; source geometry is not overwritten by screenshot coloring.",
+  "actualVerification": {
+    "componentFinite": true,
+    "componentNoDegenerateFaces": true,
+    "componentWatertight": true,
+    "componentWindingConsistent": true,
+    "componentPositiveVolume": true,
+    "edgeIncidence2": true,
+    "newAssetGLBRoundtrip": true,
+    "newAssetOBJTriangleRoundtrip": true,
+    "strictLodReductionAllNewAssets": true,
+    "strictLodReductionIntegratedHero": true,
+    "picketBottomGapMm": 0.0,
+    "picketTopGapMm": 0.0,
+    "accessHatchLOD0YThicknessMm": 36.5,
+    "accessHatchLOD0XZSpanMm": [450.0,456.0],
+    "lod0MaterialPreviewFacesSubmitted": 101852,
+    "arbitraryPreviewFaceLimit": null
+  },
+  "visualFidelity": {
+    "authority": "Assets/QA/visual_fidelity_gate.json",
+    "status": "UNSCORED_UNTIL_REAL_UNITY_3840x2160_RENDER",
+    "score": null,
+    "pass": false,
+    "pointsAwarded": 0,
+    "expectedImpactOnly": ["geometry_construction","material_pbr","texture_microdetail","weathering_causality"]
+  },
+  "implementationReadiness": {"lastRecorded":93,"recomputedThisRun":false},
+  "unityCompile": false,
+  "unityImport": false,
+  "unityRender": false,
+  "temporalLodVerified": false,
+  "formalBenchmarkSceneChanged": false,
+  "remainingKnownIssues": [
+    "The access-hatch finger-cup still warrants a real opening/recess review at 4K; it is not scored here.",
+    "LOD3 guardrail still alternates pickets and requires Unity LOD-pop/shimmer evidence.",
+    "The repaired external hero does not prove that the formal QualityBlock scene consumes these external Art assets."
+  ],
+  "nextProductionTarget": "If real Unity pixels remain unavailable, repair the access-hatch finger-cup opening and high-coverage facade/floor microvariation or contextual summer vegetation; otherwise stop speculative expansion and run formal Unity 4K/crop/temporal evidence."
+}

@@ -1,0 +1,59 @@
+{
+  "schema": 1,
+  "date": "2026-09-17",
+  "branch": "gpt/unity-migration",
+  "startHead": "eaaf775fbd76e0e7dae24e6a1e9f8c454aa3d94a",
+  "work": "Execute morning-glory canopy distribution refinement, correct demonstrated LOD0 leaf-vein ownership ambiguity with capacity-constrained assignment, integrate into latest botanical hero, and render material-colored full/closeup diagnostics.",
+  "demonstratedSourceBlocker": {
+    "path": "UnityProject/Tools/refine_morning_glory_canopy_distribution.py",
+    "problem": "Nearest-centroid-only vein ownership can assign 6 veins to one LOD0 leaf and 4 to another although the owner invariant is 5 geometric veins per leaf.",
+    "observedLevel": "LOD0",
+    "observedBadCounts": [6, 4],
+    "fix": "Capacity-constrained minimum-cost leaf/vein assignment using scipy.optimize.linear_sum_assignment with five slots per leaf."
+  },
+  "executedSourceSHA256": "3a902766642bcdbd480a15d07d1af121dfb4624f75edeca8d196730f73bd6ff6",
+  "generatedCanopyTriangles": {"MASTER": 65208, "LOD0": 39184, "LOD1": 22516, "LOD2": 8110, "LOD3": 3460},
+  "leafCounts": {"MASTER": 56, "LOD0": 48, "LOD1": 36, "LOD2": 24, "LOD3": 14},
+  "geometricVeinsPerLeaf": {"MASTER": 5, "LOD0": 5, "LOD1": 5, "LOD2": 0, "LOD3": 0},
+  "generatedIntegratedHeroTriangles": {"MASTER": 266636, "LOD0": 151100, "LOD1": 76452, "LOD2": 36062, "LOD3": 20340},
+  "LOD0ClearancesMm": {"rearCanopyToFacadePlaneMm": 386.6097729672401, "frontCanopyToMainRailInnerMm": 237.96393035842823, "leftCanopyToReturnRailInnerMm": 162.26290225982675},
+  "verification": {
+    "canopyGLBRoundtripAllLevels": true,
+    "canopyOBJRoundtripAllLevels": true,
+    "topologyTriangleCountsPreserved": true,
+    "leafShellsWatertight": true,
+    "leafShellsPositiveVolume": true,
+    "finiteVerticesNormals": true,
+    "noDegenerateLeafFaces": true,
+    "strictLODReduction": true,
+    "integratedHeroGLBRoundtripAllLevels": true,
+    "formalBenchmarkSceneChanged": false,
+    "previewTrianglesSubmittedLOD0": 151100,
+    "previewArbitraryFaceLimit": null,
+    "previewUsesActualMaterialMaps": true,
+    "unityCompile": false,
+    "unityImport": false,
+    "unityRender": false,
+    "temporal": false
+  },
+  "previewFiles": {
+    "overall": "morning_glory_canopy_color_overall.png",
+    "closeup": "morning_glory_canopy_color_closeup.png",
+    "overallSHA256": "35f7d45395cc44e7008b787be698054eab4c74a0b8b3af49066b35b0d30a9ca9",
+    "closeupSHA256": "0a44d4a99ce2f19d3b485938c0140ff94191dff9655274a17bf51875154fee31"
+  },
+  "visualFidelity": {
+    "authority": "UnityProject/Assets/QA/visual_fidelity_gate.json",
+    "score": null,
+    "pass": false,
+    "pointsAwarded": 0,
+    "expectedImpactOnly": ["geometry_construction", "vegetation_natural_complexity"],
+    "criticalDefectRiskAddressedOnly": "obvious_repetition",
+    "reason": "No observed Unity 3840x2160 hero/oblique/grazing pixels or 100% crops; 4k_capture_manifest observed_pixels remains false at start HEAD."
+  },
+  "implementationReadiness": {"lastRecorded": 93, "reverifiedThisRun": false},
+  "godotChanged": false,
+  "baseMerged": false,
+  "forceRefUpdate": false,
+  "nextProductionTarget": "If Unity pixels remain unavailable, stop iterating validators and add a separate high-coverage summer vegetation/context asset or improve the most obvious remaining plant silhouette defect from colored closeups; do not create another morning-glory owner."
+}

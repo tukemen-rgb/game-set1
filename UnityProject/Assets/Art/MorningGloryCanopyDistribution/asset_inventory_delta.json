@@ -1,0 +1,27 @@
+{
+  "schema": 1,
+  "updated": "2026-09-17",
+  "isInventoryDelta": true,
+  "owner": "MorningGloryTrellisPlant_BotanicalRefinement",
+  "sourceAsset": "MorningGloryTrellis_<LEVEL>_botanical",
+  "materiallyImprovedAsset": {
+    "id": "MorningGloryTrellis_CanopyDistributionRefinement",
+    "kind": "topology-preserving leaf/vein orientation and scale refinement",
+    "triangles": {"MASTER": 65208, "LOD0": 39184, "LOD1": 22516, "LOD2": 8110, "LOD3": 3460},
+    "leafCounts": {"MASTER": 56, "LOD0": 48, "LOD1": 36, "LOD2": 24, "LOD3": 14},
+    "veinsPerLeaf": {"MASTER": 5, "LOD0": 5, "LOD1": 5, "LOD2": 0, "LOD3": 0},
+    "actualGLB": true,
+    "actualOBJ": true,
+    "unityVerified": false
+  },
+  "sceneVisibleIntegration": {
+    "id": "BalconyExteriorHeroSummerMorningGloryCanopy3600",
+    "triangles": {"MASTER": 266636, "LOD0": 151100, "LOD1": 76452, "LOD2": 36062, "LOD3": 20340},
+    "integration": "Replace existing Plant_* geometries at the existing node transforms; preserve PBR material ownership; no second planter owner.",
+    "LOD0ClearancesMm": {"rearCanopyToFacadePlaneMm": 386.6097729672401, "frontCanopyToMainRailInnerMm": 237.96393035842823, "leftCanopyToReturnRailInnerMm": 162.26290225982675},
+    "actualGLB": true,
+    "unityVerified": false
+  },
+  "previewEvidence": {"LOD0TrianglesSubmitted": 151100, "allFacesSubmitted": true, "materialColored": true, "unityRender": false},
+  "nextProductionTarget": "If Unity pixels remain unavailable, stop iterating validators and add a separate high-coverage summer vegetation/context asset or improve the most obvious remaining plant silhouette defect from colored closeups; do not create another morning-glory owner."
+}

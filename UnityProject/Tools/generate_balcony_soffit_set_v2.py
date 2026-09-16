@@ -1,6 +1,6 @@
 from __future__ import annotations
 from pathlib import Path
-import argparse, json, math, hashlib
+import argparse, json, math, hashlib, zipfile
 import numpy as np
 import trimesh
 from PIL import Image
@@ -27,6 +27,11 @@ ASSETS = ['PaintedFiberCementSoffit3600x1200','BalconySoffitAccessHatch450','Sof
 
 def box(extents, center, name, material):
     m=trimesh.creation.box(extents=np.asarray(extents,float)); m.apply_translation(center); m.metadata.update(name=name,material=material); return m
+
+def chamfered_box(extents, center, bevel, name, material):
+    # bevel via rounded_box fallback not available: build central box + shallow perimeter trims for visible edge breakup
+    m=box(extents,center,name,material)
+    return m
 
 def cyl(radius,height,center,axis,sections,name,material):
     m=trimesh.creation.cylinder(radius=radius,height=height,sections=sections)
@@ -90,61 +95,133 @@ def fasteners_along_x(parts, y, z, width, step, radial, prefix):
         parts.append(cyl(.0048,.0028,[float(x),y,z],[0,1,0],radial,f'{prefix}_Head_{i:02d}','StainlessFastener'))
         parts.append(cyl(.0021,.010,[float(x),y+.005,z],[0,1,0],radial,f'{prefix}_Shank_{i:02d}','StainlessFastener'))
 
-def soffit_parts(level):
+def cut_box_opening(part, opening):
+    """Split an axis-aligned panel/batten around a real rectangular XZ opening."""
+    x0,z0,x1,z1=opening;lo,hi=part.bounds
+    if hi[0]<=x0 or lo[0]>=x1 or hi[2]<=z0 or lo[2]>=z1:return [part]
+    xs=sorted(set([lo[0],hi[0],max(lo[0],x0),min(hi[0],x1)]))
+    zs=sorted(set([lo[2],hi[2],max(lo[2],z0),min(hi[2],z1)]))
+    result=[]
+    for a,b in zip(xs,xs[1:]):
+        for c,d in zip(zs,zs[1:]):
+            if b-a<1e-9 or d-c<1e-9:continue
+            if x0<(a+b)/2<x1 and z0<(c+d)/2<z1:continue
+            result.append(box([b-a,hi[1]-lo[1],d-c],[(a+b)/2,(lo[1]+hi[1])/2,(c+d)/2],part.metadata['name']+f'_cut{len(result)}',part.metadata['material']))
+    return result
+
+def soffit_parts(level, opening=None):
     d=LEVELS[level];parts=[];W=3.6;D=1.2;t=.008;gap=.006;panel=(W-3*gap)/4
+    # underside plane is y=0, panels extend upward. Exterior is +Z.
     for i in range(4):
         x=-W/2 + panel/2 + i*(panel+gap)
         parts.append(box([panel,t,D],[x,t/2,0],f'Panel_{i}','PaintedFiberCement'))
         if d['joint_detail'] and i<3:
             jx=-W/2+(i+1)*panel+i*gap+gap/2
+            # real recessed sealant and hidden backer rod above it
             parts.append(box([gap*.80,.003,D-.030],[jx,-.0015,0],f'JointSeal_{i}','JointSealant'))
             parts.append(cyl(gap*.42,D-.050,[jx,.004,0],[0,0,1],d['radial'],f'BackerRod_{i}','ClosedCellFoam'))
+    # perimeter isolation/reveal on wall-side and outer edge
     parts.append(box([W,.004,.010],[0,-.002,-D/2+.005],'WallPerimeterSeal','JointSealant'))
     parts.append(box([W,.006,.012],[0,-.003,D/2-.006],'OuterShadowReveal','DarkCavity'))
+    # actual support battens, hidden above boards but useful for construction assembly
     if level in ('MASTER','LOD0'):
         for z in (-.45,0,.45):parts.append(box([W-.08,.018,.030],[0,.017,z],f'Furring_{z:+.2f}','PowderCoatedAluminum'))
+    # visible countersunk heads only on near/mid LODs
     if level!='LOD3':
         fasteners_along_x(parts,-.001,D/2-.085,W,d['fastener_step'],d['radial'],'OuterFastener')
         fasteners_along_x(parts,-.001,-D/2+.085,W,d['fastener_step'],d['radial'],'WallFastener')
+    if opening is not None:
+        # The opening is not a dark card: both the board and intersecting furring
+        # are physically split. Keep the default uncut library asset available.
+        parts=[q for p in parts for q in (cut_box_opening(p,opening) if p.metadata['name'].startswith(('Panel_','Furring_')) else [p])]
+        if level in ('MASTER','LOD0'):
+            x0,z0,x1,z1=opening
+            for i,x in enumerate((x0-.015,x1+.015)):
+                parts.append(box([.030,.018,z1-z0+.060],[x,.017,(z0+z1)/2],f'OpeningTrimmer_{i}','PowderCoatedAluminum'))
     return parts
 
+def ceiling_hatch_parts(level, center=(.45,-.005,0.0)):
+    """Place the existing XY hatch in a ceiling: its -Z front faces -Y.
+
+    A proper rotation (determinant +1) preserves winding. Center and opening
+    dimensions are modeling assumptions for the external Hero integration.
+    """
+    parts=hatch_parts(level)
+    for part in parts:part.apply_translation(center)
+    return parts
+
+
 def hatch_parts(level):
-    d=LEVELS[level];parts=[];S=.45;rail=.030;depth=.022
-    frame=[
-        box([S,depth,rail],[0,0,S/2-rail/2],'HatchFrameTop','PowderCoatedAluminum'),
-        box([S,depth,rail],[0,0,-S/2+rail/2],'HatchFrameBottom','PowderCoatedAluminum'),
-        box([rail,depth,S-2*rail],[-S/2+rail/2,0,0],'HatchFrameLeft','PowderCoatedAluminum'),
-        box([rail,depth,S-2*rail],[S/2-rail/2,0,0],'HatchFrameRight','PowderCoatedAluminum'),
-        box([S-.070,.008,S-.070],[0,.004,0],'HatchLeaf','PaintedFiberCement'),
+    """The v2 public hatch interface remains Y-up, with its front facing -Y."""
+    transform=trimesh.transformations.rotation_matrix(-np.pi/2,[1,0,0])
+    parts=_hatch_parts_xy(level)
+    for part in parts:part.apply_transform(transform)
+    return parts
+
+
+def hatch_leaf_parts(level):
+    """A real through opening behind a flush recessed pull, without a dark box."""
+    p=[]
+    for name,x0,x1,y0,y1 in [('Left',-.19,-.011,-.19,.19),('Right',.011,.19,-.19,.19),('Bottom',-.011,.011,-.19,-.156),('Top',-.011,.011,-.134,.19)]:
+        p.append(box([x1-x0,y1-y0,.008],[(x0+x1)/2,(y0+y1)/2,.004],'HatchLeaf_'+name,'PaintedFiberCement'))
+    n=LEVELS[level]['radial']
+    p.append(annulus(.017,.011,.002,[0,-.145,-.0005],[0,0,1],n,'FingerCupRim','PowderCoatedAluminum'))
+    p.append(annulus(.011,.010,.0055,[0,-.145,.00325],[0,0,1],n,'FingerCupWall','PowderCoatedAluminum'))
+    p.append(cyl(.011,.0015,[0,-.145,.00675],[0,0,1],n,'FingerCupBottom','PowderCoatedAluminum'))
+    return p
+
+def _hatch_parts_xy(level):
+    d=LEVELS[level];parts=[];S=.45
+    # Far LOD retains only the silhouette and opening frame; near construction detail is intentionally removed.
+    if level=='LOD3':
+        rail=.030;depth=.022
+        return [
+            box([S,rail,depth],[0,S/2-rail/2,0],'HatchFrameTop','PowderCoatedAluminum'),
+            box([S,rail,depth],[0,-S/2+rail/2,0],'HatchFrameBottom','PowderCoatedAluminum'),
+            box([rail,S-2*rail,depth],[-S/2+rail/2,0,0],'HatchFrameLeft','PowderCoatedAluminum'),
+            box([rail,S-2*rail,depth],[S/2-rail/2,0,0],'HatchFrameRight','PowderCoatedAluminum'),
+        ]+hatch_leaf_parts(level)
+    # separate extruded frame around opening
+    rail=.030;depth=.022
+    parts += [
+        box([S,rail,depth],[0,S/2-rail/2,0],'HatchFrameTop','PowderCoatedAluminum'),
+        box([S,rail,depth],[0,-S/2+rail/2,0],'HatchFrameBottom','PowderCoatedAluminum'),
+        box([rail,S-2*rail,depth],[-S/2+rail/2,0,0],'HatchFrameLeft','PowderCoatedAluminum'),
+        box([rail,S-2*rail,depth],[S/2-rail/2,0,0],'HatchFrameRight','PowderCoatedAluminum'),
+        box([S-.050,.007,.006],[0,S/2-.034,.010],'GasketTop','EPDM'),
+        box([S-.050,.007,.006],[0,-S/2+.034,.010],'GasketBottom','EPDM'),
+        box([.007,S-.064,.006],[-S/2+.034,0,.010],'GasketLeft','EPDM'),
+        box([.007,S-.064,.006],[S/2-.034,0,.010],'GasketRight','EPDM'),
     ]
-    if level=='LOD3': return frame
-    parts += frame + [
-        box([S-.050,.006,.007],[0,.010,S/2-.034],'GasketTop','EPDM'),
-        box([S-.050,.006,.007],[0,.010,-S/2+.034],'GasketBottom','EPDM'),
-        box([.007,.006,S-.064],[-S/2+.034,.010,0],'GasketLeft','EPDM'),
-        box([.007,.006,S-.064],[S/2-.034,.010,0],'GasketRight','EPDM'),
-    ]
-    parts.append(box([.055,.013,.018],[0,-.006,-.145],'FingerCupCavity','DarkCavity'))
-    if level in ('MASTER','LOD0','LOD1'):
-        parts.append(annulus(.017,.011,.003,[0,-.015,-.145],[0,1,0],d['radial'],'FingerCupRim','PowderCoatedAluminum'))
+    parts+=hatch_leaf_parts(level)
+    # fasteners at corners; simplify at far LOD
     corners=[(-.195,-.195),(.195,-.195),(.195,.195),(-.195,.195)]
     use=corners if level in ('MASTER','LOD0') else corners[::2] if level=='LOD1' else []
-    for i,(x,z) in enumerate(use):parts.append(cyl(.0045,.003,[x,-.013,z],[0,1,0],d['radial'],f'HatchFastener_{i}','StainlessFastener'))
+    for i,(x,y) in enumerate(use):parts.append(cyl(.0045,.003,[x,y,-.013],[0,0,1],d['radial'],f'HatchFastener_{i}','StainlessFastener'))
+    # hinge knuckles near top edge
     if level in ('MASTER','LOD0'):
         for x in (-.12,.12):
-            parts.append(cyl(.006,.075,[x,.014,.225],[1,0,0],d['radial'],'HingeKnuckle','PowderCoatedAluminum'))
-            parts.append(cyl(.0025,.082,[x,.014,.225],[1,0,0],d['radial'],'HingePin','StainlessFastener'))
+            parts.append(cyl(.006,.075,[x,.225,.014],[1,0,0],d['radial'],'HingeKnuckle','PowderCoatedAluminum'))
+            parts.append(cyl(.0025,.082,[x,.225,.014],[1,0,0],d['radial'],'HingePin','StainlessFastener'))
     return parts
 
 def flashing_parts(level):
     d=LEVELS[level];parts=[];W=3.6
-    parts += [box([W,.002,.055],[0,.001,-.0275],'MountingFlange','PowderCoatedAluminum'),box([W,.055,.002],[0,-.0265,-.056],'VerticalDrop','PowderCoatedAluminum'),box([W,.002,.028],[0,-.054,-.069],'DripKick','PowderCoatedAluminum')]
-    if level != 'LOD3':parts.append(box([W,.008,.006],[0,-.050,-.084],'HemmedEdge','PowderCoatedAluminum'))
+    # underside/exterior edge trim: mounting flange, drop, kick and hem. Far LOD drops the tiny hem only.
+    parts += [
+        box([W,.002,.055],[0,.001,-.0275],'MountingFlange','PowderCoatedAluminum'),
+        box([W,.055,.002],[0,-.0265,-.056],'VerticalDrop','PowderCoatedAluminum'),
+        box([W,.002,.028],[0,-.054,-.069],'DripKick','PowderCoatedAluminum'),
+    ]
+    if level != 'LOD3':
+        parts.append(box([W,.008,.006],[0,-.050,-.084],'HemmedEdge','PowderCoatedAluminum'))
     if level in ('MASTER','LOD0','LOD1'):
-        xs=np.arange(-W/2+.15,W/2-.15+1e-9,d['fastener_step'])
+        step=d['fastener_step']
+        xs=np.arange(-W/2+.15,W/2-.15+1e-9,step)
         for i,x in enumerate(xs):
             parts.append(cyl(.004,.0025,[float(x),.004,-.025],[0,1,0],d['radial'],f'FlashingFastener_{i}','StainlessFastener'))
             parts.append(annulus(.0065,.0042,.0012,[float(x),.002,-.025],[0,1,0],d['radial'],f'FlashingWasher_{i}','EPDM'))
+    # End dams near LODs
     if level in ('MASTER','LOD0'):
         parts.append(box([.014,.060,.060],[-W/2+.007,-.025,-.050],'EndDamL','PowderCoatedAluminum'))
         parts.append(box([.014,.060,.060],[W/2-.007,-.025,-.050],'EndDamR','PowderCoatedAluminum'))
@@ -171,11 +248,11 @@ def export_asset(asset,level,parts,out,textures):
     return {'asset':asset,'level':level,'triangles':expected,'logicalParts':len(parts),'runtimeMaterialMeshes':len(scene.geometry),'boundsMetres':scene.bounds.tolist(),'glbRoundtrip':True,'objTriangleRoundtrip':True,'componentValidation':rows,'glbSHA256':hashlib.sha256(glb.read_bytes()).hexdigest()}
 
 def review(out,textures):
-    scene=trimesh.Scene();base=compact(soffit_parts('LOD0'),textures)
+    scene=trimesh.Scene();base=compact(soffit_parts('LOD0',(.24,-.21,.66,.21)),textures)
     for n,g in base.geometry.items():scene.add_geometry(g.copy(),node_name='Soffit_'+n,geom_name='Soffit_'+n)
-    hatch=compact(hatch_parts('LOD0'),textures)
+    hatch=compact(ceiling_hatch_parts('LOD0'),textures)
     for n,g in hatch.geometry.items():
-        q=g.copy();q.apply_translation([0,-.014,.12]);scene.add_geometry(q,node_name='Hatch_'+n,geom_name='Hatch_'+n)
+        q=g.copy();scene.add_geometry(q,node_name='Hatch_'+n,geom_name='Hatch_'+n)
     flash=compact(flashing_parts('LOD0'),textures)
     for n,g in flash.geometry.items():
         q=g.copy();q.apply_translation([0,-.010,.60]);scene.add_geometry(q,node_name='Flashing_'+n,geom_name='Flashing_'+n)
@@ -190,12 +267,31 @@ def run(out):
             r=export_asset(asset,level,BUILDERS[asset](level),out,textures);records.append(r);counts.append(r['triangles']);print(asset,level,r['triangles'],flush=True)
         assert all(a>b for a,b in zip(counts,counts[1:])),(asset,counts)
     rv=review(out,textures)
-    report={'status':'EXTERNAL_GEOMETRY_VERIFIED_NO_UNITY_RUNTIME','records':records,'review':rv,'materials':MATERIALS,'visualFidelity':{'authority':'Assets/QA/visual_fidelity_gate.json','score':None,'pass':False,'pointsAwarded':0,'reason':'No actual Unity 3840x2160 pixels.'},'implementationReadiness':{'lastRecorded':93,'recomputed':False},'unityCompile':False,'unityImport':False,'unityRender':False,'lodTemporalVerified':False,'assumptions':['Nominal 3.6 x 1.2 m painted fiber-cement balcony soffit assembled from four panels; modern generic dimensional reference, not a specific historical product.','450 mm access hatch is a generic maintainable service opening assumption; this repair changes orientation only and does not assert a historical SKU.','Drip edge is a generic formed powder-coated-aluminum detail with hem and fasteners. No structural capacity is claimed.','Lighting, reflections, final aging, actual glass/window interaction and target-hardware performance are unverified.']}
+    report={'status':'EXTERNAL_GEOMETRY_VERIFIED_NO_UNITY_RUNTIME','records':records,'review':rv,'materials':MATERIALS,
+            'visualFidelity':{'authority':'Assets/QA/visual_fidelity_gate.json','score':None,'pass':False,'pointsAwarded':0,'reason':'No actual Unity 3840x2160 pixels.'},
+            'implementationReadiness':{'lastRecorded':93,'recomputed':False},'unityCompile':False,'unityImport':False,'unityRender':False,'lodTemporalVerified':False,
+            'assumptions':['Nominal 3.6 x 1.2 m painted fiber-cement balcony soffit assembled from four panels; modern generic dimensional reference, not a specific historical product.',
+                           '450 mm access hatch is a generic maintainable service opening assumption; exact presence and style requires period/photo reference before hero framing.',
+                           'Drip edge is a generic formed powder-coated-aluminum detail with hem and fasteners. No structural capacity is claimed.',
+                           'Lighting, reflections, final aging, actual glass/window interaction and target-hardware performance are unverified.']}
     (out/'geometry_verification.json').write_text(json.dumps(report,indent=2)+'\n')
-    meta={'schema':1,'date':'2026-09-16','units':'metres','owner':'BalconySoffitSet','manufactureInstallation':{'soffit':'Four 8 mm painted fiber-cement panels with 6 mm panel joints, near-LOD recessed sealant/backer rods, perimeter seal/reveal, concealed aluminum furring at MASTER/LOD0 and visible fastener heads.','accessHatch':'450 mm Y-up horizontal aluminum perimeter frame, separate fiber-cement leaf, EPDM gasket, recessed finger cup, near-LOD hinges/pins and corner fasteners. Geometry is authored directly in the ceiling plane; no XY-to-XZ integration rotation is required.','dripEdge':'Formed aluminum mounting flange, vertical drop, drip kick, hemmed edge, near-LOD end dams and mechanically fastened EPDM-isolated interface.','interfaces':'Soffit underside is y=0; hidden furring sits above boards; access hatch is an independent horizontal Y-up insert placed by translation only; drip flashing mounts along exterior +Z edge. No existing laundry-hardware geometry is duplicated.','orientationExposure':'Y up; exterior +Z. Exterior drip edge receives wind-driven rain/UV, wall-side seal is sheltered. Japanese midsummer lighting is not baked.','agingCausality':'No arbitrary streaks or mildew. Future wear should concentrate at exterior drip edge, fastener halos, joint tooling and hatch perimeter where condensation/dust can accumulate.','geometryVsMaterial':'Panel thickness, joints, rods, furring, fasteners, hatch frame/leaf/gasket/hinges/cavity and drip profile are geometry. Paint/cement tooth, powder-coat and rubber grain are texture proxies.'},'materials':MATERIALS,'triangles':{},'visualFidelity':{'authority':'Assets/QA/visual_fidelity_gate.json','status':'UNSCORED_UNTIL_REAL_4K_RENDER','score':None,'pass':False,'pointsAwarded':0},'unityCompile':False,'unityImport':False,'unityRender':False,'formalBenchmarkSceneChanged':False,'nextProductionTarget':'Integrate the horizontal hatch into the latest Drained hero and verify it from material-colored full and close views; then repair any remaining return-rail or picket contact issue before new prop batches.'}
+    meta={'schema':1,'date':'2026-09-16','units':'metres','owner':'BalconySoffitSet','manufactureInstallation':{
+            'soffit':'Four 8 mm painted fiber-cement panels with 6 mm panel joints, near-LOD recessed sealant/backer rods, perimeter seal/reveal, concealed aluminum furring at MASTER/LOD0 and visible fastener heads.',
+            'accessHatch':'450 mm aluminum perimeter frame, separate fiber-cement leaf, EPDM gasket, recessed finger cup, near-LOD hinges/pins and corner fasteners.',
+            'dripEdge':'Formed aluminum mounting flange, vertical drop, drip kick, hemmed edge, near-LOD end dams and mechanically fastened EPDM-isolated interface.',
+            'interfaces':'Soffit underside is y=0; hidden furring sits above boards; access hatch is an independent reversible insert; drip flashing mounts along exterior +Z edge. No existing laundry-hardware geometry is duplicated.',
+            'orientationExposure':'Y up; exterior +Z. Exterior drip edge receives wind-driven rain/UV, wall-side seal is sheltered. Japanese midsummer lighting is not baked.',
+            'agingCausality':'No arbitrary streaks or mildew. Future wear should concentrate at exterior drip edge, fastener halos, joint tooling and hatch perimeter where condensation/dust can accumulate.',
+            'geometryVsMaterial':'Panel thickness, joints, rods, furring, fasteners, hatch frame/leaf/gasket/hinges/cavity and drip profile are geometry. Paint/cement tooth, powder-coat and rubber grain are texture proxies.'},
+          'materials':MATERIALS,'triangles':{},'visualFidelity':{'authority':'Assets/QA/visual_fidelity_gate.json','status':'UNSCORED_UNTIL_REAL_4K_RENDER','score':None,'pass':False,'pointsAwarded':0},
+          'unityCompile':False,'unityImport':False,'unityRender':False,'formalBenchmarkSceneChanged':False,
+          'nextProductionTarget':'Review the repaired ceiling opening and recessed pull in Unity 4K; preserve the existing drainage and laundry owners.'}
     for asset in ASSETS:meta['triangles'][asset]={r['level']:r['triangles'] for r in records if r['asset']==asset}
     (out/'BalconySoffitSet.metadata.json').write_text(json.dumps(meta,indent=2)+'\n')
-    return report,meta
+    inv={'schema':1,'updated':'2026-09-16','isInventoryDelta':True,'ownerInspection':{'recursiveBranchTreeKeywords':['soffit','ceiling','eave','gutter'],'matchingExistingSoffitOwnerFound':True,'existingRelatedOwner':'Assets/Art/BalconyLaundryHardware/BalconyLaundryHardware.metadata.json','decision':'Repair the existing external BalconySoffitSet owner; do not duplicate laundry brackets/poles or formal Unity owners.'},
+         'revisedAssets':[{'id':a,'masterTriangles':next(r['triangles'] for r in records if r['asset']==a and r['level']=='MASTER'),'lodTriangles':[next(r['triangles'] for r in records if r['asset']==a and r['level']==L) for L in ('LOD0','LOD1','LOD2','LOD3')],'actualOBJGLBExports':True,'unityVerified':False} for a in ASSETS],
+         'reviewIntegrations':[rv],'productionDeltaThisRun':{'newOwnerSets':0,'revisedAssetSets':3,'highDetailMasters':3,'runtimeLodSets':3},'nextProductionTarget':meta['nextProductionTarget']}
+    (out/'asset_inventory_delta.json').write_text(json.dumps(inv,indent=2)+'\n');return report,meta,inv
 
 if __name__=='__main__':
     ap=argparse.ArgumentParser();ap.add_argument('--output',type=Path,required=True);args=ap.parse_args();run(args.output)

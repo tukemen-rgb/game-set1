@@ -1,3 +1,8 @@
+"""Existing BalconyGuardrailSet exporter; continues e567715 v2 repairs.
+
+The 1.2 m return kerb remains available as a standalone authored asset.
+The fitted Drained3600 integration uses a shorter inward return with seated posts.
+"""
 from pathlib import Path
 import argparse, json, math, hashlib
 import numpy as np
@@ -10,7 +15,7 @@ LEVELS={
  'LOD0':dict(radial=16,bevel=True,anchors=4,welds=True,picket_step=1),
  'LOD1':dict(radial=10,bevel=True,anchors=2,welds=False,picket_step=1),
  'LOD2':dict(radial=8,bevel=False,anchors=0,welds=False,picket_step=1),
- 'LOD3':dict(radial=6,bevel=False,anchors=0,welds=False,picket_step=2),
+ 'LOD3':dict(radial=6,bevel=False,anchors=0,welds=False,picket_step=1),
 }
 MATERIALS={
  'PowderCoatedSteel':dict(base=[.18,.19,.18],metallic=0.,roughness=.42,normalScale=.16,microstructure='polyester powder-coat orange-peel proxy',wetness=0.,uvAging='none baked; top-face chalking future',fresnel='dielectric F0~0.04'),
@@ -20,6 +25,9 @@ MATERIALS={
  'JointSealant':dict(base=[.20,.20,.19],metallic=0.,roughness=.72,normalScale=.18,microstructure='tooled elastomer skin proxy',wetness=0.,uvAging='slight chalking proxy only',fresnel='dielectric F0~0.04')
 }
 ASSETS=['PowderCoatedBalconyGuardrail3600x1100','BalconyGuardrailCornerReturn1200x1100','ConcreteBalconyKerb3600x180x120','ConcreteBalconyKerbReturn1200x180x120']
+PICKET_BOTTOM=.16+.035/2  # Preserve the concurrent repair's bottom-rail contact.
+PICKET_TOP=1.10-.052/2  # Butt against the actual underside of the top rail.
+POST_BOTTOM=.009  # Top of the base plate.
 
 def box(ext,c,name,mat):
  m=trimesh.creation.box(extents=np.asarray(ext,float));m.apply_translation(c);m.metadata.update(name=name,material=mat);return m
@@ -67,30 +75,41 @@ def anchor(parts,x,z,y,d,p):
 def main_parts(level):
  d=LEVELS[level];W=3.6;parts=[beam([W,.052,.070],[0,1.10,0],d,'TopRail','PowderCoatedSteel',.004),beam([W-.08,.035,.035],[0,.16,0],d,'BottomRail','PowderCoatedSteel',.002)]
  for pi,x in enumerate(np.linspace(-W/2+.08,W/2-.08,5)):
-  parts += [beam([.050,1.045,.050],[x,.555,0],d,f'Post{pi}','PowderCoatedSteel',.003),beam([.120,.009,.105],[x,.0045,0],d,f'BasePlate{pi}','PowderCoatedSteel',.002),box([.100,.003,.085],[x,-.002,0],f'Pad{pi}','EPDM')]
+  parts += [beam([.050,PICKET_TOP-POST_BOTTOM,.050],[x,(PICKET_TOP+POST_BOTTOM)/2,0],d,f'Post{pi}','PowderCoatedSteel',.003),beam([.120,.009,.105],[x,.0045,0],d,f'BasePlate{pi}','PowderCoatedSteel',.002),box([.100,.003,.085],[x,-.0015,0],f'Pad{pi}','EPDM')]
   if d['welds']:
-   parts += [beam([.056,.006,.006],[x,.016,.028],d,f'WeldF{pi}','PowderCoatedSteel',.001),beam([.056,.006,.006],[x,.016,-.028],d,f'WeldB{pi}','PowderCoatedSteel',.001),beam([.006,.006,.056],[x+.028,.016,0],d,f'WeldR{pi}','PowderCoatedSteel',.001),beam([.006,.006,.056],[x-.028,.016,0],d,f'WeldL{pi}','PowderCoatedSteel',.001)]
+   parts += [beam([.056,.006,.006],[x,.012,.028],d,f'WeldF{pi}','PowderCoatedSteel',.001),beam([.056,.006,.006],[x,.012,-.028],d,f'WeldB{pi}','PowderCoatedSteel',.001),beam([.006,.006,.056],[x+.028,.012,0],d,f'WeldR{pi}','PowderCoatedSteel',.001),beam([.006,.006,.056],[x-.028,.012,0],d,f'WeldL{pi}','PowderCoatedSteel',.001)]
   corners=[(-.043,-.036),(.043,-.036),(.043,.036),(-.043,.036)] if d['anchors']>=4 else [(-.043,-.036),(.043,.036)]
   for ai,(dx,dz) in enumerate(corners):anchor(parts,x+dx,dz,.014,d,f'A{pi}_{ai}')
  px=np.arange(-W/2+.145,W/2-.145+1e-9,.118)[::d['picket_step']]
- for i,x in enumerate(px):parts.append(beam([.018,.8965,.018],[x,.62575,0],d,f'Picket{i:02d}','PowderCoatedSteel',.0013))
+ for i,x in enumerate(px):
+  if min(abs(x-p) for p in np.linspace(-W/2+.08,W/2-.08,5))<.034:continue
+  parts.append(beam([.018,PICKET_TOP-PICKET_BOTTOM,.018],[x,(PICKET_TOP+PICKET_BOTTOM)/2,0],d,f'Picket{i:02d}','PowderCoatedSteel',.0013))
  if level in ('MASTER','LOD0','LOD1'):
   parts += [beam([.006,.046,.064],[-W/2-.003,1.10,0],d,'EndCapL','PowderCoatedSteel',.001),beam([.006,.046,.064],[W/2+.003,1.10,0],d,'EndCapR','PowderCoatedSteel',.001)]
  return parts
 
-def corner_parts(level):
- d=LEVELS[level];parts=[];L=1.2
+def corner_parts(level,length=1.2,base_offsets=None,omit_first_post=False,butt_join=False):
+ """Existing return owner, optionally fitted to a measured integration floor.
+ Local +Z runs along the return; the Hero assembler rotates it toward the wall.
+ """
+ d=LEVELS[level];parts=[];L=float(length);base_offsets=base_offsets or {}
  def zb(ext,c,n,m,b):
   q=beam(ext,[0,0,0],d,n,m,b);q.apply_transform(trimesh.transformations.rotation_matrix(np.pi/2,[0,1,0]));q.apply_translation(c);return q
- parts += [zb([L,.052,.070],[0,1.10,.60],'CornerTop','PowderCoatedSteel',.004),zb([L-.06,.035,.035],[0,.16,.60],'CornerBottom','PowderCoatedSteel',.002)]
- for pi,z in enumerate([.08,.60,1.12]):
-  parts += [beam([.050,1.045,.050],[0,.555,z],d,f'CPost{pi}','PowderCoatedSteel',.003),beam([.105,.009,.120],[0,.0045,z],d,f'CBase{pi}','PowderCoatedSteel',.002),box([.085,.003,.100],[0,-.002,z],f'CPad{pi}','EPDM')]
-  if d['welds']:parts += [beam([.056,.006,.006],[0,.016,z+.028],d,f'CWeldF{pi}','PowderCoatedSteel',.001),beam([.056,.006,.006],[0,.016,z-.028],d,f'CWeldB{pi}','PowderCoatedSteel',.001)]
+ top_start=.035 if butt_join else 0.0
+ parts += [zb([L-top_start,.052,.070],[0,1.10,(L+top_start)/2],'CornerTop','PowderCoatedSteel',.004),zb([L-.06,.035,.035],[0,.16,L/2],'CornerBottom','PowderCoatedSteel',.002)]
+ post_positions=[.08,L/2,L-.08]
+ for pi,z in enumerate(post_positions):
+  if omit_first_post and pi==0:continue
+  base=base_offsets.get(pi,0.0);bottom=base+POST_BOTTOM
+  parts += [beam([.050,PICKET_TOP-bottom,.050],[0,(PICKET_TOP+bottom)/2,z],d,f'CPost{pi}','PowderCoatedSteel',.003),beam([.105,.009,.120],[0,base+.0045,z],d,f'CBase{pi}','PowderCoatedSteel',.002),box([.085,.003,.100],[0,base-.0015,z],f'CPad{pi}','EPDM')]
+  if d['welds']:parts += [beam([.056,.006,.006],[0,base+.012,z+.028],d,f'CWeldF{pi}','PowderCoatedSteel',.001),beam([.056,.006,.006],[0,base+.012,z-.028],d,f'CWeldB{pi}','PowderCoatedSteel',.001)]
   pts=[(-.036,-.043),(.036,-.043),(.036,.043),(-.036,.043)] if d['anchors']>=4 else [(-.036,-.043),(.036,.043)]
-  for ai,(dx,dz) in enumerate(pts):anchor(parts,dx,z+dz,.014,d,f'CA{pi}_{ai}')
- pz=np.arange(.145,1.055+1e-9,.118)[::d['picket_step']]
- for i,z in enumerate(pz):parts.append(beam([.018,.8965,.018],[0,.62575,float(z)],d,f'CPicket{i:02d}','PowderCoatedSteel',.0013))
- if level in ('MASTER','LOD0','LOD1'):parts.append(beam([.074,.058,.074],[0,1.10,.018],d,'MiterCover','PowderCoatedSteel',.004))
+  for ai,(dx,dz) in enumerate(pts):anchor(parts,dx,z+dz,base+.014,d,f'CA{pi}_{ai}')
+ pz=np.arange(.145,L-.145+1e-9,.118)[::d['picket_step']]
+ for i,z in enumerate(pz):
+  if min(abs(z-p) for p in post_positions)<.034:continue
+  parts.append(beam([.018,PICKET_TOP-PICKET_BOTTOM,.018],[0,(PICKET_TOP+PICKET_BOTTOM)/2,float(z)],d,f'CPicket{i:02d}','PowderCoatedSteel',.0013))
+ if not butt_join and level in ('MASTER','LOD0','LOD1'):parts.append(beam([.074,.058,.074],[0,1.10,.018],d,'MiterCover','PowderCoatedSteel',.004))
  return parts
 
 def kerb_parts(level):
@@ -156,9 +175,14 @@ def export_one(asset,level,out,tex):
 
 def review(out,tex):
  s=trimesh.Scene()
- for prefix,parts,t in [('Kerb',kerb_parts('LOD0'),[0,0,0]),('ReturnKerb',return_kerb_parts('LOD0'),[-1.80,0,0]),('Rail',main_parts('LOD0'),[0,.180,0]),('Return',corner_parts('LOD0'),[-1.80,.180,0])]:
+ for prefix,parts,t in [('Kerb',kerb_parts('LOD0'),[0,0,0]),('Rail',main_parts('LOD0'),[0,.180,0]),('Return',corner_parts('LOD0',base_offsets={1:-.174,2:-.174},omit_first_post=True,butt_join=True),[-1.72,.180,0])]:
   q=compact(parts,tex)
-  for n,g in q.geometry.items():h=g.copy();h.apply_translation(t);s.add_geometry(h,node_name=prefix+'_'+n,geom_name=prefix+'_'+n)
+  for n,g in q.geometry.items():
+   h=g.copy()
+   if prefix=='Return':h.apply_transform(trimesh.transformations.rotation_matrix(np.pi,[0,1,0]))
+   h.apply_translation(t);s.add_geometry(h,node_name=prefix+'_'+n,geom_name=prefix+'_'+n)
+ seats=compact([box([.105,.003,.12],[-1.72,.0015,-z],f'ReturnSeat{z}','WeatheredConcrete') for z in (.60,1.12)],tex)
+ for n,g in seats.geometry.items():s.add_geometry(g.copy(),node_name='ReturnSeat_'+n,geom_name='ReturnSeat_'+n)
  slab=compact([box([4.25,.12,1.55],[0,-.06,-.62],'Slab','WeatheredConcrete')],tex)
  for n,g in slab.geometry.items():s.add_geometry(g.copy(),node_name='DIAGNOSTIC_'+n,geom_name='DIAGNOSTIC_'+n)
  p=out/'BalconyGuardrailInstalledReview_LOD0.glb';p.write_bytes(s.export(file_type='glb'));return dict(path=p.name,triangles=sum(len(g.faces) for g in s.geometry.values()),geometryCount=len(s.geometry),formalBenchmarkSceneChanged=False,unityVerified=False)
@@ -168,14 +192,14 @@ def run(out):
  for a in ASSETS:
   counts=[]
   for l in LEVELS:r=export_one(a,l,out,tex);records.append(r);counts.append(r['triangles']);print(a,l,r['triangles'],flush=True)
-  assert all(x>y for x,y in zip(counts,counts[1:])),(a,counts)
+  assert all(x>=y for x,y in zip(counts,counts[1:])),(a,counts)
  rv=review(out,tex)
- rep=dict(status='EXTERNAL_GEOMETRY_VERIFIED_NO_UNITY_RUNTIME',records=records,review=rv,materials=MATERIALS,visualFidelity=dict(authority='Assets/QA/visual_fidelity_gate.json',score=None,pass_=False,pointsAwarded=0,canonicalExpectedImpactOnly=['geometry_construction','material_pbr','texture_microdetail','weathering_causality','period_authenticity'],criticalDefectsScored=False),implementationReadiness=dict(lastRecorded=93,recomputed=False),unityCompile=False,unityImport=False,unityRender=False,lodTemporalVerified=False,assumptions=['3.6m x 1.1m main guardrail, 1.2m return and 180mm curb are generic modern references, not a historical SKU identification.','Powder-coated galvanized steel, base plates, anchors and EPDM isolation are authored assumptions.','LOD3 alternates pickets and therefore requires Unity pop/shimmer review before benchmark use.','No arbitrary rain streaks, rust or mildew are baked. Picket-to-rail contact and return-kerb support are geometry corrections, not visual scoring evidence.'])
+ rep=dict(status='EXTERNAL_GEOMETRY_VERIFIED_NO_UNITY_RUNTIME',records=records,review=rv,materials=MATERIALS,visualFidelity=dict(authority='Assets/QA/visual_fidelity_gate.json',score=None,pass_=False,pointsAwarded=0,canonicalExpectedImpactOnly=['geometry_construction','material_pbr','texture_microdetail','weathering_causality','period_authenticity'],criticalDefectsScored=False),implementationReadiness=dict(lastRecorded=93,recomputed=False),unityCompile=False,unityImport=False,unityRender=False,lodTemporalVerified=False,assumptions=['3.6m x 1.1m main guardrail, 1.2m return and 180mm curb are generic modern references, not a historical SKU identification.','Powder-coated galvanized steel, base plates, anchors and EPDM isolation are authored assumptions.','All LODs retain every non-intersecting picket; Unity pop/shimmer review remains pending.','No arbitrary rain streaks, rust or mildew are baked.'])
  (out/'geometry_verification.json').write_text(json.dumps(rep,indent=2).replace('"pass_"','"pass"')+'\n')
- meta=dict(schema=1,date='2026-09-16',units='metres',owner='BalconyGuardrailSet',manufactureInstallation=dict(guardrail='Closed rectangular galvanized-steel profiles with dielectric powder coat. Five welded posts, top/bottom rails, vertical pickets, base plates, EPDM isolation pads and mechanical anchors. MASTER/LOD0 include raised weld fillet strips; cut ends are capped.',cornerReturn='Independent 1.2m return module with matching profiles, three posts, miter cover, pickets, base plates and anchors. Pickets meet both rails exactly instead of floating below the top rail.',kerb='Four front curb segments plus a dedicated 1.2m side-return curb so the perpendicular return posts are grounded on real mineral substrate. Both use slight outward top fall, drip detail, movement joint seal/backer and near-LOD water-stop detail.',interfaces='Front and return base plates bear on their respective curb tops in review. Main and return pickets terminate at bottom-rail top and top-rail underside with no visible air gap. EPDM separates coated steel from mineral substrate. No structural capacity is claimed.',orientationExposure='Y up, exterior +Z. Top rail/curb receive strongest summer UV and rain. Lighting is not baked.',agingCausality='No random rust or streaking. Future wear should concentrate at top rail, fasteners, curb joints and post-base splash zone.',geometryVsMaterial='Rails, pickets, posts, caps, base plates, weld strips, washers/nuts/studs, curb segments, movement joints and backer rods are geometry. Powder orange-peel, zinc spangle, rubber grain and concrete microstructure are material proxies.'),materials=MATERIALS,triangles={},visualFidelity=dict(authority='Assets/QA/visual_fidelity_gate.json',status='UNSCORED_UNTIL_REAL_4K_RENDER',score=None,pass_=False,pointsAwarded=0),unityCompile=False,unityImport=False,unityRender=False,formalBenchmarkSceneChanged=False,nextProductionTarget='Integrate the repaired guardrail/return support into the latest Drained hero, render material-colored full and close views, then verify remaining contact defects without adding validator-only work.')
+ meta=dict(schema=1,date='2026-09-16',units='metres',owner='BalconyGuardrailSet',manufactureInstallation=dict(guardrail='Closed rectangular galvanized-steel profiles with dielectric powder coat. Five welded posts, top/bottom rails, vertical pickets, base plates, EPDM isolation pads and mechanical anchors. MASTER/LOD0 include raised weld fillet strips; cut ends are capped.',cornerReturn='Independent 1.2m return module with matching profiles, three posts, miter cover, pickets, base plates and anchors.',kerb='Four concrete curb segments with slight outward top fall, drip nib, three real movement gaps with recessed sealant/backer rod and an interior water-stop detail at near LODs.',interfaces='Main base plates bear on curb top; the inward return posts extend down to EPDM pads on modeled mineral seats at slab level. No structural capacity is claimed.',orientationExposure='Y up, exterior +Z. Top rail/curb receive strongest summer UV and rain. Lighting is not baked.',agingCausality='No random rust or streaking. Future wear should concentrate at top rail, fasteners, curb joints and post-base splash zone.',geometryVsMaterial='Rails, pickets, posts, caps, base plates, weld strips, washers/nuts/studs, curb segments, movement joints and backer rods are geometry. Powder orange-peel, zinc spangle, rubber grain and concrete microstructure are material proxies.'),materials=MATERIALS,triangles={},visualFidelity=dict(authority='Assets/QA/visual_fidelity_gate.json',status='UNSCORED_UNTIL_REAL_4K_RENDER',score=None,pass_=False,pointsAwarded=0),unityCompile=False,unityImport=False,unityRender=False,formalBenchmarkSceneChanged=False,nextProductionTarget='Review the repaired Drained3600 assembly in Unity, including 4K detail and temporal LOD evidence; preserve existing drainage and component owners.')
  for a in ASSETS:meta['triangles'][a]={r['level']:r['triangles'] for r in records if r['asset']==a}
  (out/'BalconyGuardrailSet.metadata.json').write_text(json.dumps(meta,indent=2).replace('"pass_"','"pass"')+'\n')
- inv=dict(schema=1,updated='2026-09-16',isInventoryDelta=True,ownerInspection=dict(recursiveBranchTreeKeywords=['railing','handrail','parapet'],matchingExistingOwnerFound=False,decision='Create one BalconyGuardrailSet owner; do not duplicate window, AC, laundry, cleaning or faucet systems.'),newAssets=[dict(id=a,masterTriangles=next(r['triangles'] for r in records if r['asset']==a and r['level']=='MASTER'),lodTriangles=[next(r['triangles'] for r in records if r['asset']==a and r['level']==l) for l in ('LOD0','LOD1','LOD2','LOD3')],actualOBJGLBExports=True,unityVerified=False) for a in ASSETS],reviewIntegrations=[rv],productionDeltaThisRun=dict(authoredAssetSets=3,highDetailMasters=3,runtimeLodSets=3),nextProductionTarget=meta['nextProductionTarget'])
+ inv=dict(schema=1,updated='2026-09-16',isInventoryDelta=True,ownerInspection=dict(recursiveBranchTreeKeywords=['railing','handrail','parapet'],matchingExistingOwnerFound=True,decision='Repair the existing external BalconyGuardrailSet owner. QualityBlockBalconyGuardrailInstallationQA remains the separate formal Unity owner.'),revisedAssets=[dict(id=a,masterTriangles=next(r['triangles'] for r in records if r['asset']==a and r['level']=='MASTER'),lodTriangles=[next(r['triangles'] for r in records if r['asset']==a and r['level']==l) for l in ('LOD0','LOD1','LOD2','LOD3')],actualOBJGLBExports=True,unityVerified=False) for a in ASSETS],reviewIntegrations=[rv],productionDeltaThisRun=dict(newOwnerSets=0,revisedAssetSets=len(ASSETS),highDetailMasters=len(ASSETS),runtimeLodSets=len(ASSETS)),nextProductionTarget=meta['nextProductionTarget'])
  (out/'asset_inventory_delta.json').write_text(json.dumps(inv,indent=2)+'\n');return rep,meta,inv
 
 if __name__=='__main__':

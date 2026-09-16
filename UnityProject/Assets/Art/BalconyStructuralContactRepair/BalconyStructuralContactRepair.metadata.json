@@ -1,63 +1,327 @@
 {
-  "schema": 1,
+  "schema": 2,
   "date": "2026-09-16",
   "owner": "BalconyStructuralContactRepair",
-  "scope": "External Art/Tools repair integrated into latest Drained3600 artifact; formal QualityBlock scene unchanged.",
+  "continuedCommit": "e567715cc389d8c91c256a9b74e27c2da624bebc",
+  "scope": "Existing external Drained3600 repair; actual floor reconstruction plus fitted inward return and ceiling opening. Formal Unity consumption remains unverified.",
+  "worldSetting": "1990s Osaka, Senri-Chuo; exact year undecided",
+  "authoringSource": "UnityProject/Tools/build_balcony_structural_contact_repair.py",
+  "componentSources": [
+    "UnityProject/Tools/generate_balcony_guardrail_set_v2.py",
+    "UnityProject/Tools/generate_balcony_soffit_set_v2.py",
+    "UnityProject/Tools/build_balcony_drainage_integration.py"
+  ],
   "manufactureInstallation": {
-    "pickets": "18 mm square coated-steel pickets now span exactly from the top face of the 35 mm bottom rail to the underside of the 52 mm top rail. The previous 56.5 mm visible air gap at the top is removed in main and return modules.",
-    "returnSupport": "A 1.2 m side-return concrete kerb follows the perpendicular guardrail run so all three return posts at z=80/600/1120 mm have mineral substrate. Base plate and EPDM isolation remain separate geometry.",
-    "accessHatch": "450 mm hatch is authored directly in the horizontal XZ soffit plane, with Y as assembly depth. Frame, leaf, EPDM gasket, fasteners, hinge/pin and finger-cup components remain separate.",
-    "interfaces": "Repaired rail translations preserve previous Drained hero placement. Side kerb uses the front-kerb vertical datum. Hatch is placed by translation only beneath the soffit rather than by an XY-to-XZ axis remap.",
-    "aging": "No new random rust, mildew or streaking. This batch is construction/contact correction only.",
-    "geometryVsMaterial": "Contact/support/orientation corrections are geometry. Existing powder coat, concrete, EPDM and fiber-cement PBR texture proxies remain material detail."
+    "floor": "Correct XZ rainwater notch ordering; real 43.4 mm radius drain aperture. Retain finished floor height while joining mortar to the underside of the 4 mm membrane.",
+    "pickets": "Retain the previous repair's contact with both rails. Remove intersecting duplicates; keep 27 front and 5 fitted-return pickets at all LODs.",
+    "posts": "Close post/base-plate and EPDM/plate gaps. Fitted return runs toward the wall over the 0.970 m floor; intermediate and end posts have level EPDM bearing on sloped-bottom mortar seats.",
+    "hatch": "Y-up hatch, 8 mm panel with an actual opening behind the recessed finger cup. Soffit boards and interfering furring have a clear 420 mm opening with trimmers.",
+    "assumptions": "Dimensions, connections, materials and installation are modeling assumptions; no historical SKU or structural/water-flow performance is asserted."
   },
-  "assetTriangles": {
-    "PowderCoatedBalconyGuardrail3600x1100": {"MASTER":9072,"LOD0":7152,"LOD1":2992,"LOD2":552,"LOD3":384},
-    "BalconyGuardrailCornerReturn1200x1100": {"MASTER":4792,"LOD0":3640,"LOD1":1408,"LOD2":228,"LOD3":180},
-    "ConcreteBalconyKerb3600x180x120": {"MASTER":464,"LOD0":368,"LOD1":296,"LOD2":228,"LOD3":204},
-    "ConcreteBalconyKerbReturn1200x180x120": {"MASTER":200,"LOD0":168,"LOD1":144,"LOD2":92,"LOD3":48},
-    "PaintedFiberCementSoffit3600x1200": {"MASTER":5040,"LOD0":2384,"LOD1":712,"LOD2":328,"LOD3":72},
-    "BalconySoffitAccessHatch450": {"MASTER":1080,"LOD0":760,"LOD1":280,"LOD2":120,"LOD3":60},
-    "SoffitDripEdgeFlashing3600": {"MASTER":3528,"LOD0":1608,"LOD1":528,"LOD2":48,"LOD3":36}
+  "integratedHeroTriangles": {
+    "MASTER": 180712,
+    "LOD0": 101312,
+    "LOD1": 48792,
+    "LOD2": 25744,
+    "LOD3": 16136
   },
-  "integratedHeroTriangles": {"MASTER":181380,"LOD0":101852,"LOD1":48864,"LOD2":25376,"LOD3":15632},
-  "materialsPolicy": "Generated source PBR materials remain on source GLBs. User-facing review uses render_material_preview.py and an optional separate neutral-palette GLB; source geometry is not overwritten by screenshot coloring.",
+  "artifactGLBSHA256": {
+    "BalconyExteriorHeroDrained3600_InterfacesColored_MASTER.glb": "a5be1a0dd13d3e594be48c4a180274bf1a539bd6c32fc0a31ebb39815ae9f230",
+    "BalconyExteriorHeroDrained3600_InterfacesColored_LOD0.glb": "40df58cbf94bcb66db7bd9a06301d18f5a2cf4c34c75c5d39560fc6ee81dfb37",
+    "BalconyExteriorHeroDrained3600_InterfacesColored_LOD1.glb": "cc5e4db6a88570e1789e84e3db16e25f5df9ec94010595546936958e4cc0c9c5",
+    "BalconyExteriorHeroDrained3600_InterfacesColored_LOD2.glb": "828a52dcc8583e791e190e9a61e7218f8d425290534ea8375d997b7a0c1843ab",
+    "BalconyExteriorHeroDrained3600_InterfacesColored_LOD3.glb": "2856f637d99fe001653cead59d077a8f332ed761e5902772e6859171b410cb11"
+  },
   "actualVerification": {
-    "componentFinite": true,
-    "componentNoDegenerateFaces": true,
-    "componentWatertight": true,
-    "componentWindingConsistent": true,
-    "componentPositiveVolume": true,
-    "edgeIncidence2": true,
-    "newAssetGLBRoundtrip": true,
-    "newAssetOBJTriangleRoundtrip": true,
-    "strictLodReductionAllNewAssets": true,
-    "strictLodReductionIntegratedHero": true,
-    "picketBottomGapMm": 0.0,
-    "picketTopGapMm": 0.0,
-    "accessHatchLOD0YThicknessMm": 36.5,
-    "accessHatchLOD0XZSpanMm": [450.0,456.0],
-    "lod0MaterialPreviewFacesSubmitted": 101852,
-    "arbitraryPreviewFaceLimit": null
+    "MASTER": {
+      "topPicketGapMm": 0.0,
+      "bottomPicketGapMm": 0.0,
+      "frontPicketCount": 27,
+      "returnPicketCount": 5,
+      "hatchLeafWorldYThicknessMm": 8.000000000000025,
+      "hatchOpeningXZLocal": [
+        0.24,
+        -0.21,
+        0.66,
+        0.21
+      ],
+      "returnBearings": [
+        {
+          "post": 1,
+          "floorZ": 0.545,
+          "padPlateGapMm": 0.0,
+          "postPlateGapMm": 1.1102230246251565e-13,
+          "mortarSeat": true
+        },
+        {
+          "post": 2,
+          "floorZ": 0.14,
+          "padPlateGapMm": 0.0,
+          "postPlateGapMm": 1.1102230246251565e-13,
+          "mortarSeat": true
+        }
+      ],
+      "retainedNodeCount": 289,
+      "drainageNodesPreserved": 11,
+      "floorRepair": {
+        "replacedNodes": [
+          "DrainIntegratedFloor_SlopedMortarWithRealDrainCutout",
+          "DrainIntegratedFloor_WaterproofSkinWithRealDrainCutout"
+        ],
+        "originalTopPlanAreaM2": 2.227999957323071,
+        "repairedTopPlanAreaM2": 3.453686845531549,
+        "originalFlangeBearingSamplesSupported": 0,
+        "repairedFlangeBearingSamplesSupported": 16,
+        "actualTopTriangleCoverageVerified": true,
+        "clearApertureRadiusMm": 42.5,
+        "mortarMembraneJoinGapMm": 0.0,
+        "realFloorDrainAperture": true,
+        "rainwaterNotchXZ": [
+          1.6,
+          0.0,
+          1.78,
+          0.18
+        ],
+        "drainAndHoseVerticesFacesTransformsUVUnchanged": true
+      },
+      "componentFiniteWatertightWindingPositiveVolume": true
+    },
+    "LOD0": {
+      "topPicketGapMm": 0.0,
+      "bottomPicketGapMm": 0.0,
+      "frontPicketCount": 27,
+      "returnPicketCount": 5,
+      "hatchLeafWorldYThicknessMm": 8.000000000000025,
+      "hatchOpeningXZLocal": [
+        0.24,
+        -0.21,
+        0.66,
+        0.21
+      ],
+      "returnBearings": [
+        {
+          "post": 1,
+          "floorZ": 0.545,
+          "padPlateGapMm": 0.0,
+          "postPlateGapMm": 1.1102230246251565e-13,
+          "mortarSeat": true
+        },
+        {
+          "post": 2,
+          "floorZ": 0.14,
+          "padPlateGapMm": 0.0,
+          "postPlateGapMm": 1.1102230246251565e-13,
+          "mortarSeat": true
+        }
+      ],
+      "retainedNodeCount": 253,
+      "drainageNodesPreserved": 11,
+      "floorRepair": {
+        "replacedNodes": [
+          "DrainIntegratedFloor_SlopedMortarWithRealDrainCutout",
+          "DrainIntegratedFloor_WaterproofSkinWithRealDrainCutout"
+        ],
+        "originalTopPlanAreaM2": 2.227999957323071,
+        "repairedTopPlanAreaM2": 3.4536901294508477,
+        "originalFlangeBearingSamplesSupported": 0,
+        "repairedFlangeBearingSamplesSupported": 16,
+        "actualTopTriangleCoverageVerified": true,
+        "clearApertureRadiusMm": 42.5,
+        "mortarMembraneJoinGapMm": 0.0,
+        "realFloorDrainAperture": true,
+        "rainwaterNotchXZ": [
+          1.6,
+          0.0,
+          1.78,
+          0.18
+        ],
+        "drainAndHoseVerticesFacesTransformsUVUnchanged": true
+      },
+      "componentFiniteWatertightWindingPositiveVolume": true
+    },
+    "LOD1": {
+      "topPicketGapMm": 0.0,
+      "bottomPicketGapMm": 0.0,
+      "frontPicketCount": 27,
+      "returnPicketCount": 5,
+      "hatchLeafWorldYThicknessMm": 8.000000000000025,
+      "hatchOpeningXZLocal": [
+        0.24,
+        -0.21,
+        0.66,
+        0.21
+      ],
+      "returnBearings": [
+        {
+          "post": 1,
+          "floorZ": 0.545,
+          "padPlateGapMm": 0.0,
+          "postPlateGapMm": 1.1102230246251565e-13,
+          "mortarSeat": true
+        },
+        {
+          "post": 2,
+          "floorZ": 0.14,
+          "padPlateGapMm": 0.0,
+          "postPlateGapMm": 1.1102230246251565e-13,
+          "mortarSeat": true
+        }
+      ],
+      "retainedNodeCount": 195,
+      "drainageNodesPreserved": 11,
+      "floorRepair": {
+        "replacedNodes": [
+          "DrainIntegratedFloor_SlopedMortarWithRealDrainCutout",
+          "DrainIntegratedFloor_WaterproofSkinWithRealDrainCutout"
+        ],
+        "originalTopPlanAreaM2": 2.227999957323071,
+        "repairedTopPlanAreaM2": 3.453699506049168,
+        "originalFlangeBearingSamplesSupported": 0,
+        "repairedFlangeBearingSamplesSupported": 16,
+        "actualTopTriangleCoverageVerified": true,
+        "clearApertureRadiusMm": 42.5,
+        "mortarMembraneJoinGapMm": 0.0,
+        "realFloorDrainAperture": true,
+        "rainwaterNotchXZ": [
+          1.6,
+          0.0,
+          1.78,
+          0.18
+        ],
+        "drainAndHoseVerticesFacesTransformsUVUnchanged": true
+      },
+      "componentFiniteWatertightWindingPositiveVolume": true
+    },
+    "LOD2": {
+      "topPicketGapMm": 0.0,
+      "bottomPicketGapMm": 0.0,
+      "frontPicketCount": 27,
+      "returnPicketCount": 5,
+      "hatchLeafWorldYThicknessMm": 8.000000000000025,
+      "hatchOpeningXZLocal": [
+        0.24,
+        -0.21,
+        0.66,
+        0.21
+      ],
+      "returnBearings": [
+        {
+          "post": 1,
+          "floorZ": 0.545,
+          "padPlateGapMm": 0.0,
+          "postPlateGapMm": 1.1102230246251565e-13,
+          "mortarSeat": true
+        },
+        {
+          "post": 2,
+          "floorZ": 0.14,
+          "padPlateGapMm": 0.0,
+          "postPlateGapMm": 1.1102230246251565e-13,
+          "mortarSeat": true
+        }
+      ],
+      "retainedNodeCount": 151,
+      "drainageNodesPreserved": 9,
+      "floorRepair": {
+        "replacedNodes": [
+          "DrainIntegratedFloor_SlopedMortarWithRealDrainCutout",
+          "DrainIntegratedFloor_WaterproofSkinWithRealDrainCutout"
+        ],
+        "originalTopPlanAreaM2": 2.227999957323071,
+        "repairedTopPlanAreaM2": 3.4537205707690126,
+        "originalFlangeBearingSamplesSupported": 0,
+        "repairedFlangeBearingSamplesSupported": 16,
+        "actualTopTriangleCoverageVerified": true,
+        "clearApertureRadiusMm": 42.5,
+        "mortarMembraneJoinGapMm": 0.0,
+        "realFloorDrainAperture": true,
+        "rainwaterNotchXZ": [
+          1.6,
+          0.0,
+          1.78,
+          0.18
+        ],
+        "drainAndHoseVerticesFacesTransformsUVUnchanged": true
+      },
+      "componentFiniteWatertightWindingPositiveVolume": true
+    },
+    "LOD3": {
+      "topPicketGapMm": 0.0,
+      "bottomPicketGapMm": 0.0,
+      "frontPicketCount": 27,
+      "returnPicketCount": 5,
+      "hatchLeafWorldYThicknessMm": 8.000000000000025,
+      "hatchOpeningXZLocal": [
+        0.24,
+        -0.21,
+        0.66,
+        0.21
+      ],
+      "returnBearings": [
+        {
+          "post": 1,
+          "floorZ": 0.545,
+          "padPlateGapMm": 0.0,
+          "postPlateGapMm": 1.1102230246251565e-13,
+          "mortarSeat": true
+        },
+        {
+          "post": 2,
+          "floorZ": 0.14,
+          "padPlateGapMm": 0.0,
+          "postPlateGapMm": 1.1102230246251565e-13,
+          "mortarSeat": true
+        }
+      ],
+      "retainedNodeCount": 123,
+      "drainageNodesPreserved": 8,
+      "floorRepair": {
+        "replacedNodes": [
+          "DrainIntegratedFloor_SlopedMortarWithRealDrainCutout",
+          "DrainIntegratedFloor_WaterproofSkinWithRealDrainCutout"
+        ],
+        "originalTopPlanAreaM2": 2.227999957323071,
+        "repairedTopPlanAreaM2": 3.453779479500751,
+        "originalFlangeBearingSamplesSupported": 0,
+        "repairedFlangeBearingSamplesSupported": 16,
+        "actualTopTriangleCoverageVerified": true,
+        "clearApertureRadiusMm": 42.5,
+        "mortarMembraneJoinGapMm": 0.0,
+        "realFloorDrainAperture": true,
+        "rainwaterNotchXZ": [
+          1.6,
+          0.0,
+          1.78,
+          0.18
+        ],
+        "drainAndHoseVerticesFacesTransformsUVUnchanged": true
+      },
+      "componentFiniteWatertightWindingPositiveVolume": true
+    }
   },
+  "materialsPolicy": "Apply the established colored preview palette to original Drained materials. MR/normal images and factors survive GLB roundtrip; unchanged geometry, transforms and UV remain identical.",
+  "verificationRecord": "geometry_verification_2026-09-16_floor_and_interfaces.json",
+  "sourceSHA256": {
+    "generate_balcony_guardrail_set_v2.py": "aa7a4cefdc5e1cc7b28fc566530270066174522b2cbdb57c2d38de7f2c3d2595",
+    "generate_balcony_soffit_set_v2.py": "47ccb2d0aa9c29809d7c7ed6dc73a4b4c6d12d8bdfaba142e61848fe2b120150",
+    "build_balcony_drainage_integration.py": "ecd5b83d6c9235142a7539aaab111fb1df7745807d91514519f81753010ec36f",
+    "render_material_preview.py": "507ddd2f1993d4ad699a35002fcc2ae1ea2e1a86b710360552b0c77772ecf229"
+  },
+  "assemblerSHA256": "38c88234eeaa4a359156130072aed6bf93fb2dae0adb34ffb297f307f5c43bb1",
   "visualFidelity": {
-    "authority": "Assets/QA/visual_fidelity_gate.json",
-    "status": "UNSCORED_UNTIL_REAL_UNITY_3840x2160_RENDER",
     "score": null,
     "pass": false,
     "pointsAwarded": 0,
-    "expectedImpactOnly": ["geometry_construction","material_pbr","texture_microdetail","weathering_causality"]
+    "reason": "No real Unity 3840x2160 and temporal evidence."
   },
-  "implementationReadiness": {"lastRecorded":93,"recomputedThisRun":false},
+  "implementationReadiness": {
+    "lastRecorded": 93,
+    "recomputedThisRun": false
+  },
   "unityCompile": false,
   "unityImport": false,
   "unityRender": false,
   "temporalLodVerified": false,
   "formalBenchmarkSceneChanged": false,
-  "remainingKnownIssues": [
-    "The access-hatch finger-cup still warrants a real opening/recess review at 4K; it is not scored here.",
-    "LOD3 guardrail still alternates pickets and requires Unity LOD-pop/shimmer evidence.",
-    "The repaired external hero does not prove that the formal QualityBlock scene consumes these external Art assets."
-  ],
-  "nextProductionTarget": "If real Unity pixels remain unavailable, repair the access-hatch finger-cup opening and high-coverage facade/floor microvariation or contextual summer vegetation; otherwise stop speculative expansion and run formal Unity 4K/crop/temporal evidence."
+  "nextProductionTarget": "Compare this repaired asset with the existing formal Unity owners, then obtain actual Unity 4K/crop/temporal evidence. Do not revert to the original bad floor or create parallel balcony systems."
 }

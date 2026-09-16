@@ -1,0 +1,354 @@
+{
+  "schema": 1,
+  "worldSetting": "1990s Osaka, Senri-Chuo; exact year undecided",
+  "integrationOwner": "BalconyStructuralContactRepair",
+  "continuedCommit": "e567715cc389d8c91c256a9b74e27c2da624bebc",
+  "componentOwners": [
+    "BalconyGuardrailSet",
+    "BalconySoffitSet"
+  ],
+  "inputs": "Original Drained3600 meshes; Grounded3600 was not substituted",
+  "records": [
+    {
+      "level": "MASTER",
+      "input": "BalconyExteriorHeroDrained3600_MASTER.glb",
+      "inputSHA256": "e7b619db9941898d3c2603b22820db60d6c699c93413afdda3d9bfa36fd025cd",
+      "output": "BalconyExteriorHeroDrained3600_InterfacesColored_MASTER.glb",
+      "outputSHA256": "a5be1a0dd13d3e594be48c4a180274bf1a539bd6c32fc0a31ebb39815ae9f230",
+      "triangles": 180712,
+      "checks": {
+        "topPicketGapMm": 0.0,
+        "bottomPicketGapMm": 0.0,
+        "frontPicketCount": 27,
+        "returnPicketCount": 5,
+        "hatchLeafWorldYThicknessMm": 8.000000000000025,
+        "hatchOpeningXZLocal": [
+          0.24,
+          -0.21,
+          0.66,
+          0.21
+        ],
+        "returnBearings": [
+          {
+            "post": 1,
+            "floorZ": 0.545,
+            "padPlateGapMm": 0.0,
+            "postPlateGapMm": 1.1102230246251565e-13,
+            "mortarSeat": true
+          },
+          {
+            "post": 2,
+            "floorZ": 0.14,
+            "padPlateGapMm": 0.0,
+            "postPlateGapMm": 1.1102230246251565e-13,
+            "mortarSeat": true
+          }
+        ],
+        "retainedNodeCount": 289,
+        "drainageNodesPreserved": 11,
+        "floorRepair": {
+          "replacedNodes": [
+            "DrainIntegratedFloor_SlopedMortarWithRealDrainCutout",
+            "DrainIntegratedFloor_WaterproofSkinWithRealDrainCutout"
+          ],
+          "originalTopPlanAreaM2": 2.227999957323071,
+          "repairedTopPlanAreaM2": 3.453686845531549,
+          "originalFlangeBearingSamplesSupported": 0,
+          "repairedFlangeBearingSamplesSupported": 16,
+          "actualTopTriangleCoverageVerified": true,
+          "clearApertureRadiusMm": 42.5,
+          "mortarMembraneJoinGapMm": 0.0,
+          "realFloorDrainAperture": true,
+          "rainwaterNotchXZ": [
+            1.6,
+            0.0,
+            1.78,
+            0.18
+          ],
+          "drainAndHoseVerticesFacesTransformsUVUnchanged": true
+        },
+        "componentFiniteWatertightWindingPositiveVolume": true
+      },
+      "objRoundtrip": true,
+      "paletteChangeCount": 117
+    },
+    {
+      "level": "LOD0",
+      "input": "BalconyExteriorHeroDrained3600_LOD0.glb",
+      "inputSHA256": "bac5538a6b70db7f295d4f6a7d6ffcb1280e25e2990742020ca8262ef98eccd4",
+      "output": "BalconyExteriorHeroDrained3600_InterfacesColored_LOD0.glb",
+      "outputSHA256": "40df58cbf94bcb66db7bd9a06301d18f5a2cf4c34c75c5d39560fc6ee81dfb37",
+      "triangles": 101312,
+      "checks": {
+        "topPicketGapMm": 0.0,
+        "bottomPicketGapMm": 0.0,
+        "frontPicketCount": 27,
+        "returnPicketCount": 5,
+        "hatchLeafWorldYThicknessMm": 8.000000000000025,
+        "hatchOpeningXZLocal": [
+          0.24,
+          -0.21,
+          0.66,
+          0.21
+        ],
+        "returnBearings": [
+          {
+            "post": 1,
+            "floorZ": 0.545,
+            "padPlateGapMm": 0.0,
+            "postPlateGapMm": 1.1102230246251565e-13,
+            "mortarSeat": true
+          },
+          {
+            "post": 2,
+            "floorZ": 0.14,
+            "padPlateGapMm": 0.0,
+            "postPlateGapMm": 1.1102230246251565e-13,
+            "mortarSeat": true
+          }
+        ],
+        "retainedNodeCount": 253,
+        "drainageNodesPreserved": 11,
+        "floorRepair": {
+          "replacedNodes": [
+            "DrainIntegratedFloor_SlopedMortarWithRealDrainCutout",
+            "DrainIntegratedFloor_WaterproofSkinWithRealDrainCutout"
+          ],
+          "originalTopPlanAreaM2": 2.227999957323071,
+          "repairedTopPlanAreaM2": 3.4536901294508477,
+          "originalFlangeBearingSamplesSupported": 0,
+          "repairedFlangeBearingSamplesSupported": 16,
+          "actualTopTriangleCoverageVerified": true,
+          "clearApertureRadiusMm": 42.5,
+          "mortarMembraneJoinGapMm": 0.0,
+          "realFloorDrainAperture": true,
+          "rainwaterNotchXZ": [
+            1.6,
+            0.0,
+            1.78,
+            0.18
+          ],
+          "drainAndHoseVerticesFacesTransformsUVUnchanged": true
+        },
+        "componentFiniteWatertightWindingPositiveVolume": true
+      },
+      "objRoundtrip": true,
+      "paletteChangeCount": 105
+    },
+    {
+      "level": "LOD1",
+      "input": "BalconyExteriorHeroDrained3600_LOD1.glb",
+      "inputSHA256": "fc311bc1aa650706c94990bdcb2a681fe25208ab5a60b1bfab0e2c85498add0f",
+      "output": "BalconyExteriorHeroDrained3600_InterfacesColored_LOD1.glb",
+      "outputSHA256": "cc5e4db6a88570e1789e84e3db16e25f5df9ec94010595546936958e4cc0c9c5",
+      "triangles": 48792,
+      "checks": {
+        "topPicketGapMm": 0.0,
+        "bottomPicketGapMm": 0.0,
+        "frontPicketCount": 27,
+        "returnPicketCount": 5,
+        "hatchLeafWorldYThicknessMm": 8.000000000000025,
+        "hatchOpeningXZLocal": [
+          0.24,
+          -0.21,
+          0.66,
+          0.21
+        ],
+        "returnBearings": [
+          {
+            "post": 1,
+            "floorZ": 0.545,
+            "padPlateGapMm": 0.0,
+            "postPlateGapMm": 1.1102230246251565e-13,
+            "mortarSeat": true
+          },
+          {
+            "post": 2,
+            "floorZ": 0.14,
+            "padPlateGapMm": 0.0,
+            "postPlateGapMm": 1.1102230246251565e-13,
+            "mortarSeat": true
+          }
+        ],
+        "retainedNodeCount": 195,
+        "drainageNodesPreserved": 11,
+        "floorRepair": {
+          "replacedNodes": [
+            "DrainIntegratedFloor_SlopedMortarWithRealDrainCutout",
+            "DrainIntegratedFloor_WaterproofSkinWithRealDrainCutout"
+          ],
+          "originalTopPlanAreaM2": 2.227999957323071,
+          "repairedTopPlanAreaM2": 3.453699506049168,
+          "originalFlangeBearingSamplesSupported": 0,
+          "repairedFlangeBearingSamplesSupported": 16,
+          "actualTopTriangleCoverageVerified": true,
+          "clearApertureRadiusMm": 42.5,
+          "mortarMembraneJoinGapMm": 0.0,
+          "realFloorDrainAperture": true,
+          "rainwaterNotchXZ": [
+            1.6,
+            0.0,
+            1.78,
+            0.18
+          ],
+          "drainAndHoseVerticesFacesTransformsUVUnchanged": true
+        },
+        "componentFiniteWatertightWindingPositiveVolume": true
+      },
+      "objRoundtrip": true,
+      "paletteChangeCount": 92
+    },
+    {
+      "level": "LOD2",
+      "input": "BalconyExteriorHeroDrained3600_LOD2.glb",
+      "inputSHA256": "2f674945422a3d67593dc6fbb09055664ae7b48acf7a3734ebbdd250e9af1be9",
+      "output": "BalconyExteriorHeroDrained3600_InterfacesColored_LOD2.glb",
+      "outputSHA256": "828a52dcc8583e791e190e9a61e7218f8d425290534ea8375d997b7a0c1843ab",
+      "triangles": 25744,
+      "checks": {
+        "topPicketGapMm": 0.0,
+        "bottomPicketGapMm": 0.0,
+        "frontPicketCount": 27,
+        "returnPicketCount": 5,
+        "hatchLeafWorldYThicknessMm": 8.000000000000025,
+        "hatchOpeningXZLocal": [
+          0.24,
+          -0.21,
+          0.66,
+          0.21
+        ],
+        "returnBearings": [
+          {
+            "post": 1,
+            "floorZ": 0.545,
+            "padPlateGapMm": 0.0,
+            "postPlateGapMm": 1.1102230246251565e-13,
+            "mortarSeat": true
+          },
+          {
+            "post": 2,
+            "floorZ": 0.14,
+            "padPlateGapMm": 0.0,
+            "postPlateGapMm": 1.1102230246251565e-13,
+            "mortarSeat": true
+          }
+        ],
+        "retainedNodeCount": 151,
+        "drainageNodesPreserved": 9,
+        "floorRepair": {
+          "replacedNodes": [
+            "DrainIntegratedFloor_SlopedMortarWithRealDrainCutout",
+            "DrainIntegratedFloor_WaterproofSkinWithRealDrainCutout"
+          ],
+          "originalTopPlanAreaM2": 2.227999957323071,
+          "repairedTopPlanAreaM2": 3.4537205707690126,
+          "originalFlangeBearingSamplesSupported": 0,
+          "repairedFlangeBearingSamplesSupported": 16,
+          "actualTopTriangleCoverageVerified": true,
+          "clearApertureRadiusMm": 42.5,
+          "mortarMembraneJoinGapMm": 0.0,
+          "realFloorDrainAperture": true,
+          "rainwaterNotchXZ": [
+            1.6,
+            0.0,
+            1.78,
+            0.18
+          ],
+          "drainAndHoseVerticesFacesTransformsUVUnchanged": true
+        },
+        "componentFiniteWatertightWindingPositiveVolume": true
+      },
+      "objRoundtrip": true,
+      "paletteChangeCount": 82
+    },
+    {
+      "level": "LOD3",
+      "input": "BalconyExteriorHeroDrained3600_LOD3.glb",
+      "inputSHA256": "645f762cc968e27e06adade9f2518bb5ac3c5e19cdc43528df9cf4da1f238c0c",
+      "output": "BalconyExteriorHeroDrained3600_InterfacesColored_LOD3.glb",
+      "outputSHA256": "2856f637d99fe001653cead59d077a8f332ed761e5902772e6859171b410cb11",
+      "triangles": 16136,
+      "checks": {
+        "topPicketGapMm": 0.0,
+        "bottomPicketGapMm": 0.0,
+        "frontPicketCount": 27,
+        "returnPicketCount": 5,
+        "hatchLeafWorldYThicknessMm": 8.000000000000025,
+        "hatchOpeningXZLocal": [
+          0.24,
+          -0.21,
+          0.66,
+          0.21
+        ],
+        "returnBearings": [
+          {
+            "post": 1,
+            "floorZ": 0.545,
+            "padPlateGapMm": 0.0,
+            "postPlateGapMm": 1.1102230246251565e-13,
+            "mortarSeat": true
+          },
+          {
+            "post": 2,
+            "floorZ": 0.14,
+            "padPlateGapMm": 0.0,
+            "postPlateGapMm": 1.1102230246251565e-13,
+            "mortarSeat": true
+          }
+        ],
+        "retainedNodeCount": 123,
+        "drainageNodesPreserved": 8,
+        "floorRepair": {
+          "replacedNodes": [
+            "DrainIntegratedFloor_SlopedMortarWithRealDrainCutout",
+            "DrainIntegratedFloor_WaterproofSkinWithRealDrainCutout"
+          ],
+          "originalTopPlanAreaM2": 2.227999957323071,
+          "repairedTopPlanAreaM2": 3.453779479500751,
+          "originalFlangeBearingSamplesSupported": 0,
+          "repairedFlangeBearingSamplesSupported": 16,
+          "actualTopTriangleCoverageVerified": true,
+          "clearApertureRadiusMm": 42.5,
+          "mortarMembraneJoinGapMm": 0.0,
+          "realFloorDrainAperture": true,
+          "rainwaterNotchXZ": [
+            1.6,
+            0.0,
+            1.78,
+            0.18
+          ],
+          "drainAndHoseVerticesFacesTransformsUVUnchanged": true
+        },
+        "componentFiniteWatertightWindingPositiveVolume": true
+      },
+      "objRoundtrip": true,
+      "paletteChangeCount": 76
+    }
+  ],
+  "python": "3.12.14",
+  "numpy": "2.3.5",
+  "trimesh": "5.1.0",
+  "sourceSHA256": {
+    "generate_balcony_guardrail_set_v2.py": "aa7a4cefdc5e1cc7b28fc566530270066174522b2cbdb57c2d38de7f2c3d2595",
+    "generate_balcony_soffit_set_v2.py": "47ccb2d0aa9c29809d7c7ed6dc73a4b4c6d12d8bdfaba142e61848fe2b120150",
+    "build_balcony_drainage_integration.py": "ecd5b83d6c9235142a7539aaab111fb1df7745807d91514519f81753010ec36f",
+    "render_material_preview.py": "507ddd2f1993d4ad699a35002fcc2ae1ea2e1a86b710360552b0c77772ecf229"
+  },
+  "assemblerSHA256": "38c88234eeaa4a359156130072aed6bf93fb2dae0adb34ffb297f307f5c43bb1",
+  "unityCompile": false,
+  "unityImport": false,
+  "unityRender": false,
+  "temporalVerified": false,
+  "performanceVerified": false,
+  "visualFidelity": {
+    "score": null,
+    "pass": false
+  },
+  "limits": [
+    "External geometry and material preview only; not Unity evidence.",
+    "All dimensions and connection details are modeling assumptions.",
+    "Unchanged source glazing/UV/normal and other construction defects remain.",
+    "Current assets are not proof of historical product authenticity."
+  ],
+  "completePaletteRecord": "The delivered archive verification.json retains each palette change; renderer source is unchanged."
+}

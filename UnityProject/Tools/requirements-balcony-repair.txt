@@ -1,0 +1,9 @@
+# Versions used for the 2026-09-16 external GLB/OBJ repair and CPU previews.
+# Python 3.12; these are authoring dependencies, not Unity package requirements.
+numpy==2.3.5
+trimesh==5.1.0
+Pillow==12.3.0
+scipy==1.17.0
+numba==0.67.0
+networkx==3.6.1
+shapely==2.1.2

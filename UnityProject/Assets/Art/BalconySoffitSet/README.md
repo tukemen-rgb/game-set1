@@ -1,5 +1,8 @@
 # BalconySoffitSet
 
+**2026-09-16 latest revision:** [Drained3600 floor and interface repair](../BalconyStructuralContactRepair/README.md) supersedes the original assembled preview and its counts below. The earlier records remain historical; use the current `build_balcony_structural_contact_repair.py` and component `*_v2.py` sources for the repaired assembly.
+The full executed v2 exporter is now in the repository; the older compact source is historical.
+
 Three reversible balcony-ceiling assets: a 3.6 x 1.2 m four-panel painted fiber-cement soffit, a 450 mm service hatch, and a 3.6 m formed exterior drip-edge flashing. Dimensions and construction are generic modeling assumptions, not a claim about a specific historical SKU.
 
 The soffit uses real panel thickness, recessed near-LOD joints, sealant/backer rods, hidden furring, fasteners, perimeter seal and exterior shadow reveal. The hatch has an independent aluminum frame/leaf, EPDM gasket, recessed finger-cup cavity and near-LOD hinges/fasteners. The flashing has mounting flange, vertical drop, drip kick, hem, near-LOD end dams and EPDM-isolated fasteners.

@@ -1,0 +1,44 @@
+{
+  "schema": 1,
+  "date": "2026-09-16",
+  "units": "metres",
+  "owner": "BalconySoffitSet",
+  "manufactureInstallation": {
+    "soffit": "Four 8 mm painted fiber-cement panels with 6 mm panel joints, near-LOD recessed sealant/backer rods, perimeter seal/reveal, concealed aluminum furring at MASTER/LOD0 and visible fastener heads.",
+    "accessHatch": "450 mm aluminum perimeter frame, separate fiber-cement leaf, EPDM gasket, recessed finger cup, near-LOD hinges/pins and corner fasteners.",
+    "dripEdge": "Formed aluminum mounting flange, vertical drop, drip kick, hemmed edge, near-LOD end dams and mechanically fastened EPDM-isolated interface.",
+    "interfaces": "Soffit underside is y=0; hidden furring sits above boards; access hatch is an independent reversible insert; drip flashing mounts along exterior +Z edge. Existing BalconyLaundryHardware is not duplicated.",
+    "orientationExposure": "Y up; exterior +Z. Exterior drip edge receives wind-driven rain/UV, wall-side seal is sheltered. Japanese midsummer lighting is not baked.",
+    "agingCausality": "No arbitrary streaks or mildew. Future wear should concentrate at exterior drip edge, fastener halos, joint tooling and hatch perimeter where condensation/dust can accumulate.",
+    "geometryVsMaterial": "Panel thickness, joints, rods, furring, fasteners, hatch frame/leaf/gasket/hinges/cavity and drip profile are geometry. Paint/cement tooth, powder-coat and rubber grain are texture proxies."
+  },
+  "materials": {
+    "PaintedFiberCement": {"albedoSRGB":[0.70,0.69,0.64],"roughness":0.78,"metallic":0.0,"normalScale":0.30,"microstructure":"fine painted cement-board tooth","wetness":0.0,"uvAging":"slight generic chalking proxy only","fresnel":"dielectric F0~0.04"},
+    "JointSealant": {"albedoSRGB":[0.20,0.20,0.19],"roughness":0.70,"metallic":0.0,"normalScale":0.12,"microstructure":"tooled elastomer skin","wetness":0.0,"uvAging":"none baked","fresnel":"dielectric F0~0.04"},
+    "ClosedCellFoam": {"albedoSRGB":[0.08,0.08,0.075],"roughness":0.88,"metallic":0.0,"normalScale":0.35,"microstructure":"closed-cell foam proxy","wetness":0.0,"uvAging":"hidden installation layer","fresnel":"dielectric F0~0.04"},
+    "PowderCoatedAluminum": {"albedoSRGB":[0.36,0.37,0.36],"roughness":0.44,"metallic":0.0,"normalScale":0.14,"microstructure":"fine powder-coat orange peel","wetness":0.0,"uvAging":"subtle top-side aging only","fresnel":"dielectric coating over aluminum"},
+    "StainlessFastener": {"albedoSRGB":[0.56,0.58,0.59],"roughness":0.37,"metallic":1.0,"normalScale":0.08,"microstructure":"machined stainless","wetness":0.0,"uvAging":"none baked","fresnel":"conductor"},
+    "EPDM": {"albedoSRGB":[0.025,0.026,0.025],"roughness":0.78,"metallic":0.0,"normalScale":0.24,"microstructure":"fine rubber grain","wetness":0.0,"uvAging":"minor compression represented in geometry","fresnel":"dielectric F0~0.04"}
+  },
+  "triangles": {
+    "PaintedFiberCementSoffit3600x1200": {"MASTER":5040,"LOD0":2384,"LOD1":712,"LOD2":328,"LOD3":72},
+    "BalconySoffitAccessHatch450": {"MASTER":1080,"LOD0":760,"LOD1":280,"LOD2":120,"LOD3":60},
+    "SoffitDripEdgeFlashing3600": {"MASTER":3528,"LOD0":1608,"LOD1":528,"LOD2":48,"LOD3":36}
+  },
+  "assumptions": [
+    "Dimensions are generic modern references, not identification of a specific historical Japanese product.",
+    "The 450 mm access hatch is a maintainability assumption and must be reference-confirmed before hero framing.",
+    "No structural capacity is claimed for furring, panels, anchors or flashing."
+  ],
+  "authoringSource": "UnityProject/Tools/generate_balcony_soffit_set.py",
+  "sourceGitBlobSHA": "4684a278129861ceeace4e0fd3ad9a0bddef9659",
+  "executedExporterSHA256": "e965994bfea0941be4258a0b6533dc2132bdb92704273ba2139b1883c02eead4",
+  "executedExporterLocation": "conversation artifact only; GitHub source is a compact source-only authoring implementation, not claimed byte-identical",
+  "visualFidelity": {"authority":"Assets/QA/visual_fidelity_gate.json","status":"UNSCORED_UNTIL_REAL_4K_RENDER","score":null,"pass":false,"pointsAwarded":0},
+  "implementationReadiness": {"lastRecordedScore":93,"recomputedThisRun":false},
+  "unityCompile": false,
+  "unityImport": false,
+  "unityRender": false,
+  "formalBenchmarkSceneChanged": false,
+  "nextProductionTarget": "If no Unity render appears, inspect balcony rainwater/downpipe owners and produce drainage hardware or causally weather soffit/guardrail interfaces; do not duplicate BalconyLaundryHardware."
+}

@@ -1,0 +1,24 @@
+{
+  "runId":"2026_09_16_balcony_soffit_set",
+  "startHead":"50600e250e1de95fbdf11b827f484ed7c6ebe960",
+  "branch":"gpt/unity-migration",
+  "sourceGitBlobSHA":"4684a278129861ceeace4e0fd3ad9a0bddef9659",
+  "executedExporterSHA256":"e965994bfea0941be4258a0b6533dc2132bdb92704273ba2139b1883c02eead4",
+  "actualGenerated":{"standaloneGLB":15,"standaloneOBJ":15,"reviewGLB":1,"reviewTriangles":4752,"reviewGeometryCount":14},
+  "triangles":{
+    "PaintedFiberCementSoffit3600x1200":[5040,2384,712,328,72],
+    "BalconySoffitAccessHatch450":[1080,760,280,120,60],
+    "SoffitDripEdgeFlashing3600":[3528,1608,528,48,36]
+  },
+  "verification":["finite vertices and normals","nondegenerate triangles","per-component watertightness","consistent winding","positive component volumes","edge incidence=2","GLB triangle and bounds roundtrip","OBJ triangle roundtrip","strict MASTER-to-LOD3 triangle reduction","actual generated-mesh diagnostic preview"],
+  "correctionsDuringRun":["Access hatch LOD2 and LOD3 initially tied at 120 triangles; simplified far silhouette to 60 and regenerated.","Drip flashing LOD2 and LOD3 initially tied at 48 triangles; removed only the tiny hem at LOD3, reaching 36 and regenerated."],
+  "notVerified":["Unity compile/import/render","3840x2160 benchmark pixels and crops","temporal LOD pop/shimmer","target hardware performance","historical SKU identification","structural capacity"],
+  "visualFidelity":{"score":null,"pass":false,"pointsAwarded":0,"expectedImpactOnly":["geometry_construction","material_pbr","texture_microdetail","weathering_causality","period_authenticity"]},
+  "implementationReadiness":{"lastRecordedScore":93,"recomputed":false},
+  "workflowRunsObservedAtStart":0,
+  "godotChanges":0,
+  "baseMerge":false,
+  "formalBenchmarkSceneChanged":false,
+  "excludedThemeIntroduced":false,
+  "nextTarget":"Inspect rainwater/downpipe owner before producing drainage hardware; if Unity evidence appears, stop speculative production and score/fix real pixels."
+}

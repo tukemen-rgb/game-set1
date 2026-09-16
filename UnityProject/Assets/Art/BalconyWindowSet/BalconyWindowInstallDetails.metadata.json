@@ -1,0 +1,39 @@
+{
+  "schema": 1,
+  "date": "2026-09-16",
+  "units": "metres",
+  "owner": "BalconyWindowSet extension; reuses existing sash/screen/flashing owner",
+  "manufactureInstallation": {
+    "sealJoint": "Tooled exterior perimeter sealant over hidden closed-cell backer rod. 10.6 x 7.2 mm nominal visible bead envelope; four corner tool pools. Hand-tooled sub-mm waviness is geometry.",
+    "headDripCap": "0.8 mm folded aluminum head flashing, 45 mm rear leg, 62 mm projection, 18 mm face, 6 mm hem, end dams, five mechanical fasteners and isolation washers.",
+    "weepHoods": "Two removable PP hoods aligned with existing sill weep locations. Open undersides remain openings; residue geometry is shallow and causally restricted to outlet paths.",
+    "interfaces": "Seal joint sits just outside the existing 1.800 m frame; backer rod is behind sealant. Head flashing is above the sealant/frame. Weep hoods mount to the exterior sill face rather than replacing existing weep cavities.",
+    "orientationExposure": "Exterior is +Z; gravity -Y. Future lighting assumes coherent Japanese midsummer sun plus sky fill/reflection; no highlight is baked.",
+    "agingCausality": "Only small mineral residue at weep outlets is authored. No random rust, algae or full-wall grime. Sealant chalking and corner dirt remain material-level future work.",
+    "geometryVsMaterial": "Sealant bead, backer rod, flashing folds, end dams, fasteners, hoods and residue thickness are geometry. Fine tooling, foam pore, extrusion brush, PP grain and mineral roughness are texture proxies."
+  },
+  "materials": {
+    "OffWhiteSealant": {"base":[0.69,0.69,0.64,1],"metallic":0.0,"roughness":0.73,"normalScale":0.22,"microstructure":"tooled polyurethane/silicone skin; slight chalking proxy","wetness":0.0},
+    "GrayBackerFoam": {"base":[0.24,0.25,0.24,1],"metallic":0.0,"roughness":0.93,"normalScale":0.28,"microstructure":"closed-cell foam fine pore proxy","wetness":0.0},
+    "AnodizedAluminum": {"base":[0.44,0.45,0.44,1],"metallic":1.0,"roughness":0.36,"normalScale":0.18,"microstructure":"longitudinal extrusion/fold brushing","wetness":0.0},
+    "GalvanizedSteel": {"base":[0.51,0.53,0.54,1],"metallic":1.0,"roughness":0.46,"normalScale":0.16,"microstructure":"small zinc-spangle proxy","wetness":0.0},
+    "DarkPP": {"base":[0.08,0.085,0.08,1],"metallic":0.0,"roughness":0.58,"normalScale":0.2,"microstructure":"fine injection-mold grain","wetness":0.0},
+    "MineralResidue": {"base":[0.61,0.6,0.52,1],"metallic":0.0,"roughness":0.88,"normalScale":0.4,"microstructure":"causal evaporative residue only at weep paths","wetness":0.0}
+  },
+  "assumptions": [
+    "Dimensions are generic modern installation-modeling references, not identification of a historical product/SKU.",
+    "Sealant/backer proportions are authored to read plausibly at close range and must be checked against the final architecture.",
+    "Weep hood style is an original generic detail; verify period authenticity against final art direction before benchmark placement."
+  ],
+  "triangles": {
+    "WindowPerimeterSealJoint1840x1840": {"MASTER":20800,"LOD0":8672,"LOD1":3680,"LOD2":1984,"LOD3":992},
+    "WindowHeadDripCap1900": {"MASTER":872,"LOD0":632,"LOD1":472,"LOD2":392,"LOD3":312},
+    "WindowSillWeepHoodPair": {"MASTER":2840,"LOD0":872,"LOD1":360,"LOD2":280,"LOD3":120}
+  },
+  "visualFidelity": {"authority":"Assets/QA/visual_fidelity_gate.json","score":null,"pass":false,"pointsAwarded":0},
+  "formalBenchmarkSceneChanged": false,
+  "unityCompile": false,
+  "unityImport": false,
+  "unityRender": false,
+  "nextProductionTarget": "If no Unity pixels appear, add causally placed sash-track dust/water residue as material masks and build one additional high-value balcony structural asset only after owner check."
+}

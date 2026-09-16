@@ -1,0 +1,49 @@
+{
+  "schema":1,
+  "date":"2026-09-17",
+  "status":"SOURCE_AUTHORED_RUNTIME_BLOCKED_NOT_MESH_VERIFIED",
+  "startHead":"9f2892cf3623e46faf69cbe0a740cddee573fcd8",
+  "ownerInspection":{
+    "sourceOwner":"UnityProject/Tools/refine_morning_glory_botanical.py inspected at startHead",
+    "integrationOwner":"UnityProject/Tools/build_balcony_morning_glory_botanical_integration.py retained; new source intentionally emits interface-compatible filenames",
+    "duplicatePlantOwnerCreated":false
+  },
+  "authoredSource":["UnityProject/Tools/refine_morning_glory_canopy_distribution.py"],
+  "productionIntent":{
+    "problem":"Actual prior material-colored mesh review showed the refined leaves still arranged too horizontally/regularly, creating stepped artificial repetition.",
+    "geometryChange":"Keep each inferred stem-side attachment zone fixed; smoothly reorient/rescale distal leaf geometry and its existing five geometric veins using deterministic height, radial canopy position and coherent exposure direction.",
+    "cameraTargetedRandomness":false,
+    "topologyChangeIntended":false,
+    "materialChangeIntended":false,
+    "weatheringChangeIntended":false
+  },
+  "actualVerificationThisRun":{
+    "branchHeadRead":true,
+    "githubActionsRunsObserved":0,
+    "existingBotanicalOwnerSourceRead":true,
+    "containerPythonAvailable":false,
+    "containerFailure":"TransportTimeoutError while executing a trivial runtime availability check",
+    "newGLBGenerated":false,
+    "newOBJGenerated":false,
+    "triangleCountsMeasured":false,
+    "geometryTestsExecuted":false,
+    "materialColoredPreviewGenerated":false,
+    "unityCompile":false,
+    "unityImport":false,
+    "unityRender":false
+  },
+  "visualFidelity":{
+    "score":null,
+    "pass":false,
+    "pointsAwarded":0,
+    "expectedImpactOnly":["geometry_construction","vegetation_natural_complexity"],
+    "criticalDefectRiskAddressedOnly":"obvious_repetition",
+    "reason":"No generated new mesh evidence and no real Unity 3840x2160 frontal/oblique/grazing pixels, 100% crops or temporal evidence."
+  },
+  "implementationReadiness":{"lastRecorded":93,"recomputed":false},
+  "formalBenchmarkSceneChanged":false,
+  "godotChanged":false,
+  "baseMerged":false,
+  "blocker":"Transient geometry runtime/container failure prevents honest GLB/OBJ generation, numerical geometry verification and material-colored preview production in this run.",
+  "nextProductionTarget":"Retry the runtime first. If available, execute the source against the five botanical-refined LOD GLBs, require topology-count preservation plus leaf watertight/positive-volume and GLB/OBJ roundtrip, integrate through the existing botanical integration owner, then produce all-face material-colored whole and closeup previews before any further vegetation expansion."
+}

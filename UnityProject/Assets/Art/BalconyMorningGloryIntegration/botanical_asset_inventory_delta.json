@@ -11,5 +11,18 @@
     {"id":"BalconyMorningGloryBotanicalPlanter","triangles":{"MASTER":85176,"LOD0":49168,"LOD1":27508,"LOD2":10606,"LOD3":4708},"actualGLB":true,"unityVerified":false},
     {"id":"BalconyExteriorHeroSummerMorningGloryBotanical3600","triangles":{"MASTER":266636,"LOD0":151100,"LOD1":76452,"LOD2":36062,"LOD3":20340},"actualGLB":true,"formalBenchmarkSceneChanged":false,"unityVerified":false}
   ],
-  "nextProductionTarget":"Use real Unity pixels first if available. Otherwise continue high-coverage summer vegetation/context production after visual review, not validator expansion."
+  "pendingAuthoring":[
+    {
+      "id":"MorningGloryTrellisPlant_CanopyDistributionRefinement",
+      "extends":"MorningGloryTrellisPlant_BotanicalRefinement",
+      "status":"SOURCE_AUTHORED_PENDING_RUNTIME_EXECUTION",
+      "purpose":"Break the remaining stepped/horizontal leaf repetition with attachment-preserving, height/exposure-driven orientation and scale variation.",
+      "source":"UnityProject/Tools/refine_morning_glory_canopy_distribution.py",
+      "actualGeneratedMeshesThisRun":0,
+      "measuredTrianglesThisRun":null,
+      "coloredPreviewThisRun":false,
+      "unityVerified":false
+    }
+  ],
+  "nextProductionTarget":"When the geometry runtime is available, execute the canopy-distribution source on all five botanical LODs, feed its interface-compatible output to the existing botanical integration owner, validate actual meshes/LOD/clearances, then generate all-face material-colored whole and closeup previews. Use real Unity pixels first if they appear."
 }

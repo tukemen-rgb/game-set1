@@ -1,0 +1,80 @@
+{
+  "schema": 1,
+  "date": "2026-09-17",
+  "branch": "gpt/unity-migration",
+  "startHead": "66eb4eb0470908ff936bab12e9fd68f580042830",
+  "work": "Create a distinct balcony summer tomato planter asset, generate MASTER/LOD0-3 GLB+OBJ, integrate into the latest morning-glory hero on the measured sloped floor, and render material-colored whole/closeup diagnostics.",
+  "asset": {
+    "id": "BalconySummerTomatoPlanter650",
+    "triangles": {
+      "MASTER": 24448,
+      "LOD0": 18048,
+      "LOD1": 7316,
+      "LOD2": 3898,
+      "LOD3": 1874
+    },
+    "allMeshesWatertightAllLevels": true,
+    "degenerateFacesAllLevels": 0,
+    "glbRoundtripAllLevels": true,
+    "objRoundtripAllLevels": true
+  },
+  "integratedHero": {
+    "id": "BalconyExteriorHeroSummerTomatoMorningGlory3600",
+    "triangles": {
+      "MASTER": 291084,
+      "LOD0": 169148,
+      "LOD1": 83768,
+      "LOD2": 39960,
+      "LOD3": 22214
+    },
+    "triangleRoundtripMatchAllLevels": true,
+    "LOD0ClearancesMm": {
+      "rearToFacadePlaneMm": 390.0597565229383,
+      "frontToMainRailInnerMm": 77.66924652327911,
+      "leftToMorningGloryCanopyMm": 328.7263572216034,
+      "rightToACMm": 957.4633300304413
+    }
+  },
+  "sourceSHA256": {
+    "generate": "0dad6604c8d0bafe7d400652f4cda76a1b94e637f56012a625e72b2fd24da87f",
+    "integrate": "f144148726aee4a295e06883f6f02070e5c4f9ce4f43c77c8a88ef201ba2bde0"
+  },
+  "preview": {
+    "overall": "tomato_balcony_color_overall.png",
+    "closeup": "tomato_balcony_color_closeup.png",
+    "overallSHA256": "266a387b6277517bec51973e6f6991e307c9985dfe3205be52fd55f970ec430d",
+    "closeupSHA256": "ddbdb7f0095ec52dac6d7b4e1d8e7cfecb3ec5022dd8722bfe772216cd3a592d",
+    "LOD0TrianglesSubmitted": 169148,
+    "allFacesSubmitted": true,
+    "materialColored": true,
+    "unityRender": false
+  },
+  "manufacturingBoundary": "Dimensions are original design assumptions inspired by common modern Japanese balcony planters and home tomato cultivation; they are not a claim about a specific 2000-era product.",
+  "unity": {
+    "compile": false,
+    "import": false,
+    "render": false,
+    "temporal": false
+  },
+  "visualFidelity": {
+    "authority": "UnityProject/Assets/QA/visual_fidelity_gate.json",
+    "score": null,
+    "pass": false,
+    "pointsAwarded": 0,
+    "expectedImpactOnly": [
+      "geometry_construction",
+      "material_pbr",
+      "vegetation_natural_complexity",
+      "period_authenticity"
+    ],
+    "reason": "No observed Unity 3840x2160 hero/oblique/grazing pixels or temporal evidence."
+  },
+  "implementationReadiness": {
+    "lastRecorded": 93,
+    "reverifiedThisRun": false
+  },
+  "godotChanged": false,
+  "baseMerged": false,
+  "forceRefUpdate": false,
+  "nextProductionTarget": "If Unity pixels remain unavailable, add a separate balcony summer context prop with high silhouette value (e.g. laundry/living detail) or correct the most visible plant support/leaf defect from material-colored diagnostics; do not create duplicate tomato or morning-glory owners."
+}

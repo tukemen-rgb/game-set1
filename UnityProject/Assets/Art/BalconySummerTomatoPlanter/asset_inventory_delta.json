@@ -1,0 +1,46 @@
+{
+  "schema": 1,
+  "updated": "2026-09-17",
+  "isInventoryDelta": true,
+  "newAsset": {
+    "id": "BalconySummerTomatoPlanter650",
+    "owner": "BalconySummerTomatoPlanter650",
+    "kind": "distinct balcony summer tomato planter and living plant context",
+    "triangles": {
+      "MASTER": 24448,
+      "LOD0": 18048,
+      "LOD1": 7316,
+      "LOD2": 3898,
+      "LOD3": 1874
+    },
+    "actualGLB": true,
+    "actualOBJ": true,
+    "unityVerified": false
+  },
+  "sceneVisibleIntegration": {
+    "id": "BalconyExteriorHeroSummerTomatoMorningGlory3600",
+    "triangles": {
+      "MASTER": 291084,
+      "LOD0": 169148,
+      "LOD1": 83768,
+      "LOD2": 39960,
+      "LOD3": 22214
+    },
+    "method": "Add new tomato planter at floor-slope-matched transform; preserve existing morning-glory and hero geometry.",
+    "LOD0ClearancesMm": {
+      "rearToFacadePlaneMm": 390.0597565229383,
+      "frontToMainRailInnerMm": 77.66924652327911,
+      "leftToMorningGloryCanopyMm": 328.7263572216034,
+      "rightToACMm": 957.4633300304413
+    },
+    "actualGLB": true,
+    "unityVerified": false
+  },
+  "previewEvidence": {
+    "LOD0TrianglesSubmitted": 169148,
+    "allFacesSubmitted": true,
+    "materialColored": true,
+    "unityRender": false
+  },
+  "nextProductionTarget": "If Unity pixels remain unavailable, add a separate balcony summer context prop with high silhouette value (e.g. laundry/living detail) or correct the most visible plant support/leaf defect from material-colored diagnostics; do not create duplicate tomato or morning-glory owners."
+}

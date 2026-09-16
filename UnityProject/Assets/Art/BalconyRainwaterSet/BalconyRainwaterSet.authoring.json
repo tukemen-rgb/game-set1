@@ -1,0 +1,20 @@
+{
+  "schema": 1,
+  "units": "metres",
+  "reference": {"type":"modern_dimensional_only","source":"Kubota-Chemix rigid PVC VP nominal 75","od":0.089,"wall":0.0055},
+  "levels": {
+    "MASTER":{"radial":48,"offsetPathSamples":72,"clampFastenerDetail":4},
+    "LOD0":{"radial":32,"offsetPathSamples":48,"clampFastenerDetail":4},
+    "LOD1":{"radial":20,"offsetPathSamples":30,"clampFastenerDetail":2},
+    "LOD2":{"radial":12,"offsetPathSamples":18,"clampFastenerDetail":2},
+    "LOD3":{"radial":8,"offsetPathSamples":10,"clampFastenerDetail":0}
+  },
+  "assets": {
+    "RainwaterDownpipeVP75_2400":{"pipeSegments":[1.19,1.19],"socketLength":0.13,"upperTrimCollar":true,"hollow":true},
+    "RainwaterOffsetAssembly75_520":{"drop":0.52,"offset":0.18,"centerline":"z=0.18*(3*t^2-2*t^3), y=-0.52*t","hollow":true,"socketCollars":true},
+    "RainwaterPipeWallClamp75":{"bandOuterRadius":0.0505,"bandInnerRadius":0.0465,"epdmInnerRadius":0.0448,"wallPlate":[0.09,0.052,0.004],"standOffDepth":0.05,"earBolts":2,"wallScrews":2}
+  },
+  "materialIds":["GrayPVC","GalvanizedSteel","BlackEPDM","JointSealant"],
+  "review":{"clampY":[0.45,1.20,2.00],"formalBenchmarkSceneChanged":false},
+  "limitations":["No Unity compile/import/render evidence","No clamp deformation/contact solve","No flow simulation","LOD temporal behavior unverified"]
+}

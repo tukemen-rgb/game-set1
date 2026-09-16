@@ -1,0 +1,15 @@
+{
+  "runId":"2026_09_16_balcony_rainwater_set",
+  "startHead":"11731f13c1f12052683b9edb06688f3bf2438bca",
+  "branch":"gpt/unity-migration",
+  "workflowRunsObservedAtStart":0,
+  "ownerInspection":{"gutter":false,"downspout":false,"rainwater":false,"existingFloorDrain":"BalconyFloorDrain100; not duplicated"},
+  "actualGenerated":{"glb":15,"objSets":15,"reviewGlb":1},
+  "triangles":{"RainwaterDownpipeVP75_2400":[1920,1280,800,384,192],"RainwaterOffsetAssembly75_520":[14976,6912,2880,960,320],"RainwaterPipeWallClamp75":[2028,1388,588,396,188]},
+  "verification":["finite vertices/normals","nondegenerate faces","watertight parts","consistent winding","positive volume","edge incidence 2","GLB triangle/bounds roundtrip","OBJ triangle roundtrip","strict LOD reduction"],
+  "notVerified":["Unity compile","Unity import","Unity render","3840x2160 benchmark pixels","temporal LOD stability","target hardware performance","flow simulation","clamp deformation"],
+  "visualFidelity":{"score":null,"pass":false,"pointsAwarded":0},
+  "implementationReadiness":{"lastRecordedScore":93,"recomputed":false},
+  "godotChanges":0,"baseMerge":false,"formalBenchmarkSceneChanged":false,
+  "nextTarget":"Inspect exterior wall and ventilation owners; if Unity evidence still does not exist, create a coherent wall-surface/vent construction batch rather than expanding validators."
+}

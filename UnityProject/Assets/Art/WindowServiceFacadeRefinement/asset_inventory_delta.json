@@ -1,0 +1,27 @@
+{
+  "schema": 1,
+  "updated": "2026-09-17",
+  "isInventoryDelta": true,
+  "existingOwnerRefined": "PaintedFiberCementFacadeWindowService3600x2700",
+  "duplicateOwnerCreated": false,
+  "integrationBase": "BalconyExteriorHeroDrainedStructuralRepair3600",
+  "simpleExteriorFacadeV2Integrated": false,
+  "actualGeneratedFacadeTriangles": {
+    "MASTER": 2976,
+    "LOD0": 2208,
+    "LOD1": 732,
+    "LOD2": 344,
+    "LOD3": 120
+  },
+  "actualGeneratedIntegratedTriangles": {
+    "MASTER": 181460,
+    "LOD0": 101932,
+    "LOD1": 48944,
+    "LOD2": 25456,
+    "LOD3": 15632
+  },
+  "actualGeneratedFacadeGLBAndOBJ": true,
+  "actualGeneratedIntegratedGLB": true,
+  "unityVerified": false,
+  "nextProductionTarget": "If real Unity pixels appear, run the formal 4K/crop/temporal gate. Otherwise use material-colored all-face previews to select the next demonstrated geometry/material issue, then move toward high-coverage midsummer vegetation/context rather than validator proliferation."
+}

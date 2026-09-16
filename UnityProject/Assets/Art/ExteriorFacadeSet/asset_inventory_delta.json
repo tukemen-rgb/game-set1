@@ -1,0 +1,14 @@
+{
+  "schema":1,
+  "updated":"2026-09-16",
+  "isInventoryDelta":true,
+  "ownerInspection":{"keywords":["facade","exteriorwall","siding","vent"],"dedicatedFacadeVentOwnerDetected":false,"note":"Current gpt/unity-migration tree was scanned before authoring; existing window, AC, rainwater, soffit and service-corner owners remain separate."},
+  "newAssets":[
+    {"id":"PaintedFiberCementFacade3600x2700","masterTriangles":3744,"lodTriangles":[1824,868,456,232],"actualOBJGLBExports":true,"unityVerified":false},
+    {"id":"ExteriorVentHood150","masterTriangles":3252,"lodTriangles":[2248,1444,900,348],"actualOBJGLBExports":true,"unityVerified":false},
+    {"id":"FacadeBaseStarterFlashing3600","masterTriangles":1620,"lodTriangles":[724,324,180,84],"actualOBJGLBExports":true,"unityVerified":false}
+  ],
+  "reviewIntegrations":[{"path":"ExteriorFacadeInstalledReview_LOD0.glb","triangles":4796,"geometryCount":11,"formalBenchmarkSceneChanged":false,"unityVerified":false}],
+  "productionDeltaThisRun":{"authoredAssetSets":3,"highDetailMasters":3,"runtimeLodSets":3,"standaloneGlbCount":15,"standaloneObjCount":15,"reviewGlbCount":1},
+  "nextProductionTarget":"Integrate facade with existing window/AC/rainwater modules if Unity render remains unavailable."
+}

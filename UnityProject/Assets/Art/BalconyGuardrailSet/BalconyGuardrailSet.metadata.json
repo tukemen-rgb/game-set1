@@ -1,0 +1,39 @@
+{
+  "schema": 1,
+  "date": "2026-09-16",
+  "units": "metres",
+  "owner": "BalconyGuardrailSet",
+  "manufactureInstallation": {
+    "guardrail": "Generic 3.6 m x 1.1 m exterior guardrail. Closed rectangular galvanized-steel profiles with dielectric powder coat; five welded posts, top and lower rails, vertical pickets, capped rail ends, post base plates, EPDM isolation pads and mechanical anchors. MASTER/LOD0 retain raised weld-fillet strips.",
+    "cornerReturn": "Independent 1.2 m return module using the same section family, three posts, miter cover, pickets, base plates and anchors. Reversible and not silently fused to the main guardrail.",
+    "kerb": "Four concrete curb segments with slight outward top fall, exterior drip nib, three actual movement gaps containing recessed sealant and backer rod, plus an inner water-stop detail at near LODs.",
+    "interfaces": "Diagnostic assembly seats guardrail base plates on the curb top. EPDM isolates coated steel from mineral substrate. Anchor geometry is modeled, but no structural load capacity is claimed.",
+    "orientationExposure": "Y up; exterior +Z. Top rail and curb crown receive strongest midsummer UV/rain exposure while inner lower faces are sheltered. Lighting is not baked.",
+    "agingCausality": "No arbitrary rust, rain streaks or mildew. Future wear should concentrate at top-rail UV exposure, fasteners, movement joints, water-stop edge and post-base splash zone.",
+    "geometryVsMaterial": "Rails, pickets, posts, caps, base plates, weld strips, washers/nuts/studs, curb segments, movement joints and backer rods are geometry. Powder-coat orange peel, zinc spangle, rubber grain and concrete microstructure are material proxies."
+  },
+  "materials": {
+    "PowderCoatedSteel": {"albedoSRGB":[0.18,0.19,0.18],"roughness":0.42,"metallic":0.0,"specularF0":0.04,"normalScale":0.16,"microstructure":"polyester powder-coat orange-peel proxy","wetness":0.0,"uvAging":"none baked; top-face chalking future","angularResponse":"dielectric microfacet"},
+    "GalvanizedSteel": {"albedoSRGB":[0.52,0.54,0.55],"roughness":0.48,"metallic":1.0,"specularF0":null,"normalScale":0.17,"microstructure":"fine zinc-spangle proxy","wetness":0.0,"uvAging":"none baked","angularResponse":"conductor"},
+    "EPDM": {"albedoSRGB":[0.025,0.026,0.025],"roughness":0.78,"metallic":0.0,"specularF0":0.04,"normalScale":0.28,"microstructure":"fine rubber grain proxy","wetness":0.0,"uvAging":"none baked","angularResponse":"dielectric microfacet"},
+    "WeatheredConcrete": {"albedoSRGB":[0.53,0.52,0.48],"roughness":0.88,"metallic":0.0,"specularF0":0.04,"normalScale":0.42,"microstructure":"cement-paste plus sparse-aggregate proxy","wetness":0.0,"uvAging":"none baked","angularResponse":"dielectric diffuse/specular"},
+    "JointSealant": {"albedoSRGB":[0.20,0.20,0.19],"roughness":0.72,"metallic":0.0,"specularF0":0.04,"normalScale":0.18,"microstructure":"tooled elastomer skin proxy","wetness":0.0,"uvAging":"slight chalking proxy only","angularResponse":"dielectric microfacet"}
+  },
+  "triangles": {
+    "PowderCoatedBalconyGuardrail3600x1100": {"MASTER":9072,"LOD0":7152,"LOD1":2992,"LOD2":552,"LOD3":384},
+    "BalconyGuardrailCornerReturn1200x1100": {"MASTER":4792,"LOD0":3640,"LOD1":1408,"LOD2":228,"LOD3":180},
+    "ConcreteBalconyKerb3600x180x120": {"MASTER":464,"LOD0":368,"LOD1":296,"LOD2":228,"LOD3":204}
+  },
+  "assumptions": [
+    "Dimensions are generic modern references and are not identification of a specific historical Japanese product or SKU.",
+    "Powder-coated galvanized-steel construction, base-plate anchor pattern and EPDM isolation are authored modeling assumptions.",
+    "LOD3 alternates pickets as a far-distance reduction and therefore requires Unity temporal/LOD-pop verification before benchmark use."
+  ],
+  "sourceDelivery": {"executedGeneratorSHA256":"4b13f2105f79d38acc5733235e0c14a1ba0e53016a29c55e7eb88015c7ff64a1","repositoryStores":"machine-readable authoring data and run evidence; actual OBJ/GLB exports and executed full exporter are delivered outside the repository in the run artifact"},
+  "visualFidelity": {"authority":"Assets/QA/visual_fidelity_gate.json","status":"UNSCORED_UNTIL_REAL_4K_RENDER","score":null,"pass":false,"pointsAwarded":0,"canonicalExpectedImpactOnly":["geometry_construction","material_pbr","texture_microdetail","weathering_causality","period_authenticity"]},
+  "unityCompile": false,
+  "unityImport": false,
+  "unityRender": false,
+  "formalBenchmarkSceneChanged": false,
+  "nextProductionTarget": "If no Unity render appears, add causal post-base splash-zone aging and inspect balcony ceiling/soffit owners before a larger structural batch."
+}

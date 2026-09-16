@@ -1,0 +1,42 @@
+{
+  "schema": 1,
+  "units": "metres",
+  "coordinateSystem": "Y-up; exterior +Z",
+  "assets": {
+    "PowderCoatedBalconyGuardrail3600x1100": {
+      "overall": [3.6,1.1,0.07],
+      "topRail": [3.6,0.052,0.070],
+      "lowerRail": [3.52,0.035,0.035],
+      "posts": {"count":5,"section":[0.050,1.045,0.050]},
+      "pickets": {"section":[0.018,0.845,0.018],"nominalPitch":0.118},
+      "basePlate": [0.120,0.009,0.105],
+      "isolationPad": [0.100,0.003,0.085],
+      "anchorWasherRadii": [0.011,0.0048],
+      "anchorStudRadius": 0.0042
+    },
+    "BalconyGuardrailCornerReturn1200x1100": {
+      "length": 1.2,
+      "height": 1.1,
+      "posts": 3,
+      "picketPitch": 0.118,
+      "topCorner": "separate miter-cover component at near LODs"
+    },
+    "ConcreteBalconyKerb3600x180x120": {
+      "length": 3.6,
+      "heightInner": 0.180,
+      "heightOuter": 0.176,
+      "depth": 0.120,
+      "segments": 4,
+      "movementGap": 0.010,
+      "jointFill": "recessed elastomer sealant plus cylindrical EPDM backer rod"
+    }
+  },
+  "lodRules": {
+    "MASTER": {"bevels":true,"fourAnchorsPerPost":true,"weldFillets":true,"allPickets":true},
+    "LOD0": {"bevels":true,"fourAnchorsPerPost":true,"weldFillets":true,"allPickets":true},
+    "LOD1": {"bevels":true,"twoAnchorsPerPost":true,"weldFillets":false,"allPickets":true},
+    "LOD2": {"bevels":false,"anchors":false,"weldFillets":false,"allPickets":true},
+    "LOD3": {"bevels":false,"anchors":false,"weldFillets":false,"alternatePickets":true,"requiresTemporalReview":true}
+  },
+  "nonNegotiable": {"noBakedHighlights":true,"noRandomWeathering":true,"excludedThemes":["earthquake","disaster","reconstruction"],"formalBenchmarkMutation":false}
+}

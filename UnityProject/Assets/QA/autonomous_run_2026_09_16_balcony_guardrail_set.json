@@ -1,0 +1,23 @@
+{
+  "runId": "2026_09_16_balcony_guardrail_set",
+  "startHead": "5733f43eddbe834e21d4a7763e94ed0aa16deab2",
+  "branch": "gpt/unity-migration",
+  "workflowRunsObservedAtStart": 0,
+  "ownerInspection": {"recursiveTreeKeywords":["railing","handrail","parapet"],"matchingOwnerFound":false},
+  "authoredAssetSets": 3,
+  "actualGenerated": {"glb":15,"obj":15,"diagnosticReviewGlb":1,"preview":1,"zipSHA256":"20c40b8610d3c36085e10124c3d0160c4f23ee366c0fd1e272f63f748b6ea4a2","executedGeneratorSHA256":"4b13f2105f79d38acc5733235e0c14a1ba0e53016a29c55e7eb88015c7ff64a1"},
+  "triangles": {
+    "PowderCoatedBalconyGuardrail3600x1100": {"MASTER":9072,"LOD0":7152,"LOD1":2992,"LOD2":552,"LOD3":384},
+    "BalconyGuardrailCornerReturn1200x1100": {"MASTER":4792,"LOD0":3640,"LOD1":1408,"LOD2":228,"LOD3":180},
+    "ConcreteBalconyKerb3600x180x120": {"MASTER":464,"LOD0":368,"LOD1":296,"LOD2":228,"LOD3":204}
+  },
+  "actualVerification": ["finite vertices/normals","nondegenerate triangles","watertight logical components","consistent winding","positive component volume","manifold edge incidence 2","GLB triangle/bounds roundtrip","OBJ triangle roundtrip","strict MASTER-to-LOD3 reduction"],
+  "notVerified": ["Unity compile","Unity import","Unity render","3840x2160 benchmark","100% crops","temporal LOD/pop/shimmer","target-hardware performance"],
+  "visualFidelity": {"authority":"Assets/QA/visual_fidelity_gate.json","score":null,"pass":false,"pointsAwarded":0,"canonicalExpectedImpactOnly":["geometry_construction","material_pbr","texture_microdetail","weathering_causality","period_authenticity"]},
+  "implementationReadiness": {"lastRecordedScore":93,"recomputed":false},
+  "godotChanges": 0,
+  "baseMerge": false,
+  "formalBenchmarkSceneChanged": false,
+  "excludedThemePresent": false,
+  "nextModelProductionTarget": "Causal post-base splash-zone aging, then balcony ceiling/soffit owner inspection before any new structural subsystem."
+}

@@ -1,0 +1,94 @@
+{
+  "schema": 1,
+  "date": "2026-09-17",
+  "assetId": "BalconyLaundryRailDrapeLifeSetGravityRefined",
+  "integrationId": "BalconyExteriorHeroSummerTomatoMorningGloryLaundryGravityRefined3600",
+  "branch": "gpt/unity-migration",
+  "parentCommit": "fb270460b22ffd70468f69f22067a403d322bf20",
+  "purpose": "Replace the visually flat sheet body with physically authored gravity/tension variation while retaining the existing rail-fitted sheet owner, guardrail contact and source material maps.",
+  "manufactureInstallationReasoning": {
+    "components": [
+      "existing thin woven sheet solid",
+      "existing folded perimeter hem",
+      "new exposed-face physical stitch-thread geometry at MASTER/LOD0/LOD1 only"
+    ],
+    "dimensionsMm": {
+      "finishedWidth": 1400,
+      "finishedLength": 1900,
+      "baseFabricThickness": 0.72,
+      "foldedHemThickness": 1.55,
+      "threadDiameter": 0.64,
+      "bottomDoubleStitchOffsetsFromFinishedEdge": [8,12],
+      "sideStitchInboardOffset": 9
+    },
+    "mounting": "Existing sheet remains draped over the current front guardrail. Vertices at/above Y=-0.18 m are frozen exactly, so prior rail-contact fit is preserved.",
+    "interfacesGapsSeals": "No new interface or seal. Geometry below the frozen contact band receives <=12.16 mm total vertex displacement; stitch geometry stays below the rail-contact region.",
+    "orientationExposure": "Y-up. Outer/front hanging face remains the strongly sun-exposed face; inner/back hanging face remains partially sheltered.",
+    "agingCausality": "Dry maintained state retained. No stains, rain streaks, wet darkening or UV fade were invented in this refinement.",
+    "geometryVsMaterial": "Broad gravity folds, diagonal tension fans, bottom-hem sag and stitch thread are geometry. Fine weave/yarn remains in the source material maps."
+  },
+  "authoring": {
+    "contactBandFrozenYAtOrAboveM": -0.18,
+    "maximumMeasuredVertexDisplacementMm": 12.154878786542657,
+    "contactFreezeMaxDeltaMm": 0.0,
+    "deformation": "deterministic broad gravity folds + finer tension ripples + two localized diagonal tension fans + <=8 mm bottom hem sag + <=2.2 mm free-edge captured-shape flutter",
+    "stitching": "0.64 mm diameter physical thread cylinders; same PaleYellowSheet material; omitted at LOD2/LOD3",
+    "paletteChanges": "none"
+  },
+  "materialPBR": {
+    "id": "PaleYellowSheet",
+    "baseColorTextureSHA256": "c392b59997a3f24099e1f1f413256ea39f53837dd09a4185956e8b2ddf8e1002",
+    "metallicRoughnessTextureSHA256": "f3b63e4d6e7c62286f74c6d522dcfa71add79b35cbd94822cce784e96ad91691",
+    "effectiveMetallicMean": 0.0,
+    "effectiveRoughnessMean": 0.7580078125,
+    "specularF0Assumption": 0.04,
+    "normalMap": false,
+    "normalScale": 0.0,
+    "wetness": 0.0,
+    "uvAging": "none baked; retained from source dry reference",
+    "microstructure": "source woven base-color and roughness maps retained byte-for-byte",
+    "angularBehavior": "dielectric Fresnel behavior expected; no painted/baked highlights added"
+  },
+  "actualTriangles": {
+    "assembly": {"MASTER":80508,"LOD0":45948,"LOD1":22556,"LOD2":18492,"LOD3":17868},
+    "integratedHero": {"MASTER":371592,"LOD0":215096,"LOD1":106324,"LOD2":58452,"LOD3":40082},
+    "addedSeam": {"MASTER":3840,"LOD0":3840,"LOD1":1824,"LOD2":0,"LOD3":0},
+    "sheetSourceFacesPreserved": {"MASTER":true,"LOD0":true,"LOD1":true,"LOD2":true,"LOD3":true}
+  },
+  "verification": {
+    "actualGLB": true,
+    "actualAssemblyOBJ": true,
+    "glbObjTriangleRoundtrip": true,
+    "sheetFiniteWatertightPositiveVolumeAllLevels": true,
+    "nonSheetGeometryUnchangedAfterRoundtrip": true,
+    "sourceSheetMaterialMapsFactorsExact": true,
+    "strictLODDecreaseAssembly": true,
+    "strictLODDecreaseIntegratedHero": true,
+    "unityCompile": false,
+    "unityImport": false,
+    "unityRender": false,
+    "temporalLOD": false
+  },
+  "previewEvidence": {
+    "renderer": "VTK vtkGLTFImporter + offscreen OpenGL diagnostic; Y-up camera, depth buffer, backface culling, all imported polygons submitted; NOT Unity or Visual Fidelity evidence",
+    "lod0TrianglesSubmitted": 215096,
+    "paletteOverride": false,
+    "files": {
+      "laundry_gravity_refined_color_closeup.png": {"sha256":"d002913e04d4aa20a9979db97ea18f34a969d15224e0c1232a1775359d90fd99","bytes":1341699},
+      "laundry_gravity_refined_color_grazing.png": {"sha256":"5097d39c64dc8f11654520eeb6da74c03bc8325fd68aa9fca7e78a95b2363e7c","bytes":1270207},
+      "laundry_gravity_refined_color_overall.png": {"sha256":"17195a589b29447821629bdf95e2534a7c91150b943ebe90ea4ba18ba0b02f6b","bytes":744551}
+    }
+  },
+  "visualFidelity": {
+    "gate": "UnityProject/Assets/QA/visual_fidelity_gate.json",
+    "status": "UNSCORED_UNTIL_OBSERVED_UNITY_3840x2160_CROPS_TEMPORAL",
+    "score": null,
+    "pass": false,
+    "pointsAwarded": 0,
+    "expectedCategoryImpactWithoutPoints": ["geometry_construction","texture_microdetail","cinematic_image"],
+    "criticalDefectsNotClaimedResolved": ["hero_geometry_intersection","severe_aliasing_or_shimmer","visible_lod_pop","unverified_render_claim"]
+  },
+  "implementationReadiness": {"lastRecorded":93,"reverifiedThisRun":false},
+  "nextProductionTarget": "Secure the high-occupancy sheet with purpose-built or verified existing clothespin geometry only if an owner is not already present; otherwise move to a new scene-visible summer-life asset. Unity pixels take priority if a runner becomes available.",
+  "preservation": {"godotModified":false,"baseMerged":false,"forceRefUpdated":false,"formalBenchmarkStateModified":false,"forbiddenDisasterTheme":false}
+}

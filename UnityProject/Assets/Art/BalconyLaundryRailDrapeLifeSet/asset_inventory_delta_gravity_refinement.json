@@ -1,0 +1,31 @@
+{
+  "schema": 1,
+  "date": "2026-09-17",
+  "branch": "gpt/unity-migration",
+  "parentCommit": "fb270460b22ffd70468f69f22067a403d322bf20",
+  "owner": "SummerSheet1400x1900RailDrape",
+  "assetId": "BalconyLaundryRailDrapeLifeSetGravityRefined",
+  "status": "ACTUAL_GLBS_OBJS_GENERATED_EXTERNALLY_COMMITTED_SOURCE_AND_EVIDENCE",
+  "change": "Existing fitted sheet owner materially improved: gravity/tension deformation below frozen rail-contact band plus close-LOD physical seam thread. No duplicate sheet/rail system.",
+  "actualGenerated": {
+    "assemblyTriangles": {"MASTER":80508,"LOD0":45948,"LOD1":22556,"LOD2":18492,"LOD3":17868},
+    "integratedHeroTriangles": {"MASTER":371592,"LOD0":215096,"LOD1":106324,"LOD2":58452,"LOD3":40082}
+  },
+  "verification": {
+    "actualGLB": true,
+    "actualAssemblyOBJ": true,
+    "glbObjTriangleRoundtrip": true,
+    "sheetFiniteWatertightPositiveVolumeAllLevels": true,
+    "nonSheetGeometryUnchangedAfterRoundtrip": true,
+    "sourceSheetMaterialMapsFactorsExact": true,
+    "strictLODDecreaseAssembly": true,
+    "strictLODDecreaseIntegratedHero": true,
+    "unityCompile": false,
+    "unityImport": false,
+    "unityRender": false,
+    "temporalLOD": false
+  },
+  "paletteChanges": "none",
+  "unityRenderEvidence": false,
+  "nextTarget": "Secure the high-occupancy sheet with purpose-built or verified existing clothespin geometry only if an owner is not already present; otherwise move to a new scene-visible summer-life asset. Unity pixels take priority if a runner becomes available."
+}

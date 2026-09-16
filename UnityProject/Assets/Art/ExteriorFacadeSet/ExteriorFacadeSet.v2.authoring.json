@@ -1,0 +1,68 @@
+{
+  "schema": 2,
+  "date": "2026-09-16",
+  "owner": "ExteriorFacadeSet",
+  "refinement": "PaintedFiberCementFacade3600x2700 physical-relief v2",
+  "source": "UnityProject/Tools/generate_exterior_facade_set_v2.py",
+  "baseOwnerSource": "UnityProject/Tools/generate_exterior_facade_set.py",
+  "duplicateOwnerCreated": false,
+  "manufactureInstallation": {
+    "components": "Existing 3.6 x 2.7 m panel field, physical 10 mm joints/backer/sealant, existing vent aperture/reveal, existing fasteners. v2 changes only panel body edge construction and facade-wide surface maps.",
+    "dimensions": {
+      "facadeWidthMm": 3600,
+      "facadeHeightMm": 2700,
+      "existingBoardThicknessMm": 16,
+      "existingJointWidthMm": 10,
+      "masterLod0FrontBevelWidthMm": 2.6,
+      "masterLod0FrontBevelDepthMm": 1.2,
+      "maxPanelPlaneToleranceMm": 0.3
+    },
+    "mounting": "Existing fastener/joint owner is preserved. v2 does not invent a new subframe or replace vent/flashing owners.",
+    "interfaces": "The vent-bearing nominal panel bay is still split around the existing real aperture; all split pieces share one parent-bay plane offset. Sealant/backer dimensions and vent reveal are preserved.",
+    "orientation": "Facade plane is XY, front is +Z, matching the current ExteriorFacadeSet authoring convention.",
+    "exposureAging": "No dirt, leak streak, sun fade or wetness is baked. The only low-frequency color variation is isotropic paint/cement manufacturing variation. Later aging must follow sun/rain/drainage exposure.",
+    "geometryVsMaterial": "Panel thickness and perimeter bevel are geometry. Whole-facade non-repeating sub-pixel cement/paint variation is material texture. No geometry is replaced with painted edge highlights.",
+    "historicalClaim": "The existing 16 mm board thickness is retained as an authoring assumption. The 2.6 x 1.2 mm close-LOD bevel and <=0.3 mm plane tolerance are also authoring assumptions, not identification of a historical product SKU."
+  },
+  "materials": {
+    "PaintedFiberCement": {
+      "albedoSRGBMean": [0.58, 0.59, 0.56],
+      "metallic": 0.0,
+      "roughnessMean": 0.68,
+      "normalScaleProxy": 0.075,
+      "microstructure": "One unique 1024x1024 facade-wide isotropic map using coarse/medium/fine random structure; UV covers the 3.6 x 2.7 m facade once instead of repeating every 0.42 m.",
+      "wetness": 0.0,
+      "uvAging": "none baked",
+      "angularFresnel": "dielectric F0 approximately 0.04; no painted highlight"
+    }
+  },
+  "lodDesign": {
+    "MASTER": {"bevelWidthMm": 2.6, "bevelDepthMm": 1.2},
+    "LOD0": {"bevelWidthMm": 2.6, "bevelDepthMm": 1.2},
+    "LOD1": {"bevelWidthMm": 2.2, "bevelDepthMm": 1.0},
+    "LOD2": {"bevelWidthMm": 1.6, "bevelDepthMm": 0.8},
+    "LOD3": {"bevelWidthMm": 0.0, "bevelDepthMm": 0.0}
+  },
+  "executionThisRun": {
+    "authoringSourceCreated": true,
+    "actualMeshExportsCreated": false,
+    "actualTriangleCounts": null,
+    "glbObjRoundtrip": false,
+    "materialColoredPreviewCreated": false,
+    "blocker": "The conversation container/Python runtime repeatedly returned TransportTimeoutError, so the authoring code could not be executed safely and no generated mesh/render is claimed.",
+    "unityCompile": false,
+    "unityImport": false,
+    "unityRender": false,
+    "visualFidelityScore": null,
+    "visualFidelityPass": false,
+    "visualFidelityPointsAwarded": 0,
+    "implementationReadinessLastRecorded": 93,
+    "implementationReadinessRecomputed": false
+  },
+  "expectedVisualImpactOnly": [
+    "geometry_construction: real panel perimeter grazing-light response",
+    "material_pbr: non-repeating dielectric facade material without baked highlight",
+    "texture_microdetail: whole-facade unique UV/map instead of short-period tiling"
+  ],
+  "nextProductionTarget": "When a Python/container runtime is available, execute v2 for MASTER+LOD0/1/2/3, verify closed geometry and strict LOD reduction, replace only the existing facade field in the latest repaired Drained3600 model, then render all-face material-colored whole and grazing closeups. Do not award Visual Fidelity points from those external previews."
+}

@@ -1,0 +1,60 @@
+{
+  "schema": 1,
+  "date": "2026-09-16",
+  "branch": "gpt/unity-migration",
+  "startHead": "fcf5a938c3be600dc390da10302a37dbf745a2aa",
+  "runGoal": "Materially improve the existing ExteriorFacadeSet owner rather than add a duplicate facade or another validator.",
+  "ownerInspection": {
+    "existingExteriorOwner": "UnityProject/Tools/generate_exterior_facade_set.py",
+    "existingAssets": [
+      "PaintedFiberCementFacade3600x2700",
+      "ExteriorVentHood150",
+      "FacadeBaseStarterFlashing3600"
+    ],
+    "formalQualityBlockKeptSeparate": true,
+    "duplicateOwnerCreated": false
+  },
+  "authoredThisRun": {
+    "source": "UnityProject/Tools/generate_exterior_facade_set_v2.py",
+    "sourceOnly": true,
+    "changes": [
+      "watertight real front-edge panel bevel authoring for MASTER/LOD0/LOD1/LOD2",
+      "<=0.30 mm deterministic parent-panel plane tolerance",
+      "single facade-wide 1024x1024 non-repeating fiber-cement albedo/roughness/normal map",
+      "whole-wall UV domain replacing the prior 0.42 m material repeat",
+      "existing joint/backer/fastener, vent hood and starter flashing ownership preserved"
+    ]
+  },
+  "actualExportsThisRun": {
+    "glb": 0,
+    "obj": 0,
+    "previewImages": 0,
+    "triangles": null,
+    "reason": "Repeated TransportTimeoutError from container, private Python and user-visible Python prevented safe execution/export. No mesh, test or render is claimed from unexecuted source."
+  },
+  "githubActionsAtStartHead": 0,
+  "unity": {
+    "compile": false,
+    "import": false,
+    "render3840x2160": false,
+    "temporal": false
+  },
+  "visualFidelity": {
+    "authority": "UnityProject/Assets/QA/visual_fidelity_gate.json",
+    "score": null,
+    "pass": false,
+    "pointsAwarded": 0
+  },
+  "implementationReadiness": {
+    "lastRecorded": 93,
+    "recomputed": false
+  },
+  "safety": {
+    "godotChanged": false,
+    "baseMerged": false,
+    "forceRefUpdate": false,
+    "formalBenchmarkChanged": false,
+    "forbiddenThemeAdded": false
+  },
+  "next": "Execute the v2 source as soon as the model runtime is available; require MASTER/LOD0-3 actual exports, numerical geometry checks, GLB/OBJ roundtrip and material-colored all-face full/grazing previews before calling the facade refinement generated or visually verified."
+}

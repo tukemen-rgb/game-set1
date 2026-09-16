@@ -1,0 +1,14 @@
+{
+  "schema": 1,
+  "updated": "2026-09-17",
+  "isInventoryDelta": true,
+  "duplicateBaseOwnerCreated": false,
+  "reusedOwners": ["MorningGloryTrellisPlant", "TerracottaPot240", "TerracottaSaucer214"],
+  "materiallyImprovedAsset": "BalconyMorningGloryPlanter",
+  "actualGeneratedPlanterTriangles": {"MASTER":67032,"LOD0":39760,"LOD1":22756,"LOD2":8590,"LOD3":4204},
+  "actualGeneratedIntegratedTriangles": {"MASTER":248492,"LOD0":141692,"LOD1":71700,"LOD2":34046,"LOD3":19836},
+  "actualGeneratedPlanterGLBAndOBJ": true,
+  "actualGeneratedIntegratedGLB": true,
+  "unityVerified": false,
+  "nextProductionTarget": "If real Unity pixels appear, stop external expansion and run the formal 4K/crop/temporal gate. Otherwise improve leaf/petal silhouette curvature or add a second non-duplicative summer vegetation class only after checking formal vegetation owners; do not create another ground-grass owner."
+}

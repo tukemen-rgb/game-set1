@@ -348,6 +348,9 @@ public partial class BenriyaMain : Node3D
         summer.Set("SecondsPerHour", 30.0);
         summer.Set("FlashbackMode", true);
         GetTree().Root.AddChild(summer);
+        // 同じ場所で目が覚める。2000 年の「ぼく」も池のふちに立っている
+        if (summer.GetNodeOrNull<Node3D>("Player") is Node3D kid)
+            kid.Position = _player.Position;
         GetTree().CurrentScene = summer;
         QueueFree();
     }

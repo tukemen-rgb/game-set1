@@ -28,6 +28,14 @@ DEBUG_MSG=1 BENRIYA_FAST=1 godot --headless --path . --fixed-fps 30 --quit-after
 企画: `docs/CONCEPT_BENRIYA.md`。遊び: `scripts/BenriyaMain.cs`。試作の範囲は依頼 5 件・道具 2 つ・原付・回想 1 本。
 動画: [`docs/video/benriya_proto.mp4`](docs/video/benriya_proto.mp4)（36 秒: 2026 年の池で写真を見る → 同じ池の 2000 年の祭りの夕方 → 2026 年の池へ戻る）。GPT とのコード協業: `docs/GPT_CODE_PROTOCOL.md`。
 
+## GPTからの独立モジュール納品（2026-09-17）
+
+依頼JSON読み込み・日と時間・住人の日課の3件を実装した。基準コミットの全C#ソースと合わせた
+ビルドは警告0・エラー0。Godot 4.4のヘッドレス検査は55項目と31日分のSelfTestを通過。
+ゲームシーンへの接続・実画面の撮影はClaudeの次工程。
+全文ファイル・型名の衝突対策・ID参照の修正点・検証手順は
+[納品書](docs/GPT_MODULE_DELIVERY_2026-09-17.md) に記載した。
+
 ## できていること（2000 年の夏）
 
 ### 物語の骨格

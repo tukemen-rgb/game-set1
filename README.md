@@ -26,7 +26,7 @@ DEBUG_MSG=1 BENRIYA_FAST=1 godot --headless --path . --fixed-fps 30 --quit-after
 ```
 
 企画: `docs/CONCEPT_BENRIYA.md`。遊び: `scripts/BenriyaMain.cs`。試作の範囲は依頼 5 件・道具 2 つ・原付・回想 1 本。
-動画: [`docs/video/benriya_proto.mp4`](docs/video/benriya_proto.mp4)（22 秒）。GPT とのコード協業: `docs/GPT_CODE_PROTOCOL.md`。
+動画: [`docs/video/benriya_proto.mp4`](docs/video/benriya_proto.mp4)（36 秒: 2026 年の池で写真を見る → 同じ池の 2000 年の祭りの夕方 → 2026 年の池へ戻る）。GPT とのコード協業: `docs/GPT_CODE_PROTOCOL.md`。
 
 ## できていること（2000 年の夏）
 

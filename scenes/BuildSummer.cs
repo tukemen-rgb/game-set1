@@ -32,22 +32,30 @@ public partial class BuildSummer : SceneTree
         new(0.75f, 0.4f, 0.42f), new(0.4f, 0.5f, 0.7f), new(0.85f, 0.8f, 0.65f),
     };
 
+    /// <summary>
+    /// 案B: BUILD_YEAR=2026 で「26 年後の同じ町」を生成する（benriya_main.tscn）。
+    /// 老朽化した団地、シャッターの商店街、撤去された遊具、柵の付いた池、便利屋の店先。
+    /// 2000 年版は summer_main.tscn のまま（回想で使う）。
+    /// </summary>
+    private static bool Y2026;
+
     public override void _Initialize()
     {
-        var root = new Node3D { Name = "SummerMain" };
+        Y2026 = OS.GetEnvironment("BUILD_YEAR") == "2026";
+        var root = new Node3D { Name = Y2026 ? "BenriyaMain" : "SummerMain" };
 
         BuildEnvironment(root);
         BuildGroundAndRoads(root);
         BuildDanchi(root);
         BuildShotengai(root);
-        BuildRadioTaiso(root);
+        if (!Y2026) BuildRadioTaiso(root);
         BuildPuddles(root);
-        BuildAsagao(root);
+        if (!Y2026) BuildAsagao(root);
         BuildResidents(root);
         BuildSapMark(root);
-        BuildFestival(root);
+        if (!Y2026) BuildFestival(root);
         BuildNoticeBoard(root);
-        BuildOkuribi(root);
+        if (!Y2026) BuildOkuribi(root);
         BuildPark(root);
         BuildVacantLot(root);
         BuildTrees(root);
@@ -56,14 +64,52 @@ public partial class BuildSummer : SceneTree
         BuildPlayer(root);
         BuildCameras(root);
         BuildUi(root);
+        if (Y2026) Build2026Extras(root);
 
         var temp = new Node();
         temp.AddChild(root);
-        root.SetScript(GD.Load<CSharpScript>("res://scripts/SummerMain.cs"));
+        root.SetScript(GD.Load<CSharpScript>(Y2026 ? "res://scripts/BenriyaMain.cs" : "res://scripts/SummerMain.cs"));
         Node reRoot = temp.GetChild(0);
         reRoot.GetNode("Player").SetScript(GD.Load<CSharpScript>("res://scripts/PlayerController.cs"));
 
-        PackAndSave(reRoot, "res://scenes/summer_main.tscn");
+        PackAndSave(reRoot, Y2026 ? "res://scenes/benriya_main.tscn" : "res://scenes/summer_main.tscn");
+    }
+
+    /// <summary>2026 年だけの物: 依頼主の住人、便利屋の看板、バス停、池の柵、撤去跡、原付。</summary>
+    private static void Build2026Extras(Node3D root)
+    {
+        var extras = new Node3D { Name = "Y2026" };
+        // 依頼主。管理人（団地の広場の東）、米屋の田中さん（商店街の北列の前）
+        extras.AddChild(Resident("Kanrinin", new Vector3(-6f, 0f, -4f), 150f, new Color(0.55f, 0.58f, 0.6f), seated: false));
+        extras.AddChild(Resident("Komeya", new Vector3(-8f, 0f, 13.5f), 180f, new Color(0.8f, 0.78f, 0.7f), seated: false));
+        // 便利屋の看板（駄菓子屋だった店先）
+        extras.AddChild(new Label3D
+        {
+            Text = "なんでも屋",
+            FontSize = 96,
+            PixelSize = 0.006f,
+            Modulate = new Color(0.15f, 0.2f, 0.4f),
+            Position = new Vector3(4f, 2.55f, 12.65f + 1.6f),
+            RotationDegrees = new Vector3(0f, 180f, 0f),
+            Billboard = BaseMaterial3D.BillboardModeEnum.Disabled,
+        });
+        // 隣の団地のバス停（東の道の先。原付が無いと届かない）
+        var stop = new Node3D { Name = "BusStop", Position = new Vector3(36f, 0f, 8.5f) };
+        stop.AddChild(MeshI(new CylinderMesh { TopRadius = 0.04f, BottomRadius = 0.04f, Height = 2.4f }, new Vector3(0f, 1.2f, 0f), Mat(ConcreteDark)));
+        stop.AddChild(MeshI(new CylinderMesh { TopRadius = 0.32f, BottomRadius = 0.32f, Height = 0.04f }, new Vector3(0f, 2.3f, 0f), Mat(new Color(0.9f, 0.9f, 0.9f))));
+        stop.AddChild(Box(new Vector3(0.5f, 0.32f, 0.03f), new Vector3(0f, 1.7f, 0f), new Color(0.2f, 0.35f, 0.7f)));
+        stop.AddChild(new Label3D { Text = "となりだんち", FontSize = 48, PixelSize = 0.004f, Position = new Vector3(0f, 1.7f, -0.03f), RotationDegrees = new Vector3(0f, 180f, 0f), Modulate = Colors.White });
+        extras.AddChild(stop);
+        // 池の柵（26 年のあいだに付いた）。ブランコの撤去跡
+        for (int i = 0; i < 28; i++)
+        {
+            float a = Mathf.DegToRad(i * 360f / 28f);
+            extras.AddChild(Box(new Vector3(0.06f, 1.0f, 0.06f), new Vector3(6f + Mathf.Cos(a) * 7.6f, 0.5f, -15f + Mathf.Sin(a) * 7.6f), new Color(0.35f, 0.4f, 0.45f)));
+        }
+        var rail = MeshI(new TorusMesh { InnerRadius = 7.57f, OuterRadius = 7.63f, Rings = 56, RingSegments = 6 }, new Vector3(6f, 0.98f, -15f), new Color(0.35f, 0.4f, 0.45f));
+        extras.AddChild(rail);
+        extras.AddChild(Box(new Vector3(4f, 0.04f, 1.2f), new Vector3(-2f, 0.02f, -17f), new Color(0.6f, 0.58f, 0.55f)));   // ブランコの撤去跡（コンクリ）
+        root.AddChild(extras);
     }
 
     // --- 保存まわり（godot.md の silent-failure 対策そのまま） ---
@@ -278,7 +324,7 @@ public partial class BuildSummer : SceneTree
 
         // 本体（実写コンクリ＋雨だれ）と屋上（砂利防水・パラペット・塔屋・アンテナ）
         b.AddChild(MeshI(new BoxMesh { Size = new Vector3(length, height, 5f) },
-            new Vector3(0f, height / 2f, 0f), TexMat("wall_weathered", new Vector2(4f, 3f), new Color(0.8f, 0.78f, 0.74f))));   // 参考画の壁は白より暗い灰
+            new Vector3(0f, height / 2f, 0f), TexMat("wall_weathered", new Vector2(4f, 3f), Y2026 ? new Color(0.62f, 0.6f, 0.56f) : new Color(0.8f, 0.78f, 0.74f))));   // 参考画の壁は白より暗い灰。2026 年はさらに黒ずむ
         b.AddChild(MeshI(new BoxMesh { Size = new Vector3(length + 0.4f, 0.3f, 5.6f) },
             new Vector3(0f, height + 0.15f, 0f), TexMat("photo/gravel_concrete.jpg", new Vector2(4f, 1.4f))));
         b.AddChild(Box(new Vector3(length + 0.5f, 0.5f, 0.15f), new Vector3(0f, height + 0.45f, 2.75f), Concrete));
@@ -512,8 +558,8 @@ public partial class BuildSummer : SceneTree
             if (i == 5)
                 street.AddChild(BuildDagashiya(new Vector3(x, 0f, 12.7f)));   // 開いている駄菓子屋
             else if (i != 3)
-                street.AddChild(BuildShop(new Vector3(x, 0f, 12.7f), +1, awnings[i], i % 2 == 0, i));
-            street.AddChild(BuildShop(new Vector3(x, 0f, 19.1f), -1, awnings[(i + 3) % 7], i % 2 == 1, i + 7));
+                street.AddChild(BuildShop(new Vector3(x, 0f, 12.7f), +1, Y2026 ? awnings[i].Lerp(new Color(0.6f, 0.6f, 0.58f), 0.6f) : awnings[i], Y2026 ? i == 2 : i % 2 == 0, i));
+            street.AddChild(BuildShop(new Vector3(x, 0f, 19.1f), -1, Y2026 ? awnings[(i + 3) % 7].Lerp(new Color(0.6f, 0.6f, 0.58f), 0.6f) : awnings[(i + 3) % 7], Y2026 ? i == 1 : i % 2 == 1, i + 7));
         }
         street.AddChild(Collider(new Vector3(12f, 3f, 3f), new Vector3(-12f, 1.5f, 12.7f)));
         street.AddChild(Collider(new Vector3(12f, 3f, 3f), new Vector3(4f, 1.5f, 12.7f)));
@@ -1412,6 +1458,7 @@ public partial class BuildSummer : SceneTree
         slideNode.RotationDegrees = new Vector3(0f, 180f, 0f);   // 参考画は右にはしご・左へ降りる
         park.AddChild(slideNode);
 
+        if (Y2026) goto AfterSwing;   // 2026 年はブランコが撤去されている
         var swing = new Node3D { Name = "Swing", Position = new Vector3(-2f, 0f, -17f) };
         var frame = new Color(0.35f, 0.55f, 0.65f);
         swing.AddChild(Box(new Vector3(0.15f, 2.4f, 0.15f), new Vector3(-1.6f, 1.2f, 0f), frame));
@@ -1428,6 +1475,7 @@ public partial class BuildSummer : SceneTree
             swing.AddChild(pivot);
         }
         park.AddChild(swing);
+    AfterSwing:
 
         // 集会所の生垣（z=-8.4）と重なっていたので南東へ。砂は参考画の明るいベージュ
         var sandbox = new Node3D { Position = new Vector3(16f, 0f, -10f) };
@@ -2067,10 +2115,27 @@ public partial class BuildSummer : SceneTree
             Position = new Vector3(0f, 0.6f, 0f),
         });
 
-        var cap = new Color(0.8f, 0.2f, 0.2f);
-        var shirt = new Color(0.97f, 0.97f, 0.98f);
-        var shorts = new Color(0.2f, 0.28f, 0.5f);
+        var cap = Y2026 ? new Color(0.2f, 0.2f, 0.22f) : new Color(0.8f, 0.2f, 0.2f);     // 2026: 短い黒髪
+        var shirt = Y2026 ? new Color(0.36f, 0.45f, 0.58f) : new Color(0.97f, 0.97f, 0.98f); // 2026: 作業シャツ
+        var shorts = Y2026 ? new Color(0.25f, 0.26f, 0.3f) : new Color(0.2f, 0.28f, 0.5f);   // 2026: 長ズボン
         var shoe = new Color(0.92f, 0.92f, 0.93f);
+        if (Y2026)
+        {
+            // 大人（1.75m）。子どもの体を 1.35 倍にし、原付（Shift で乗る間だけ見える）を足す
+            player.Scale = new Vector3(1.35f, 1.35f, 1.35f);
+            var moped = new Node3D { Name = "Moped", Visible = false, Position = new Vector3(0f, 0f, 0f) };
+            var body = new Color(0.75f, 0.12f, 0.1f);
+            moped.AddChild(Box(new Vector3(0.3f, 0.22f, 1.1f), new Vector3(0f, 0.42f, 0f), body));
+            moped.AddChild(Box(new Vector3(0.36f, 0.08f, 0.5f), new Vector3(0f, 0.56f, 0.1f), new Color(0.15f, 0.15f, 0.15f)));   // シート
+            moped.AddChild(Box(new Vector3(0.5f, 0.04f, 0.04f), new Vector3(0f, 0.72f, -0.45f), new Color(0.6f, 0.6f, 0.62f)));  // ハンドル
+            foreach (float wz in new[] { -0.5f, 0.5f })
+            {
+                var wheel = MeshI(new TorusMesh { InnerRadius = 0.16f, OuterRadius = 0.24f }, new Vector3(0f, 0.24f, wz), new Color(0.12f, 0.12f, 0.13f));
+                wheel.RotationDegrees = new Vector3(0f, 90f, 0f);
+                moped.AddChild(wheel);
+            }
+            player.AddChild(moped);
+        }
 
         player.AddChild(MeshI(new CapsuleMesh { Radius = 0.28f, Height = 0.78f },
             new Vector3(0f, 0.72f, 0f), shirt));                              // 白T

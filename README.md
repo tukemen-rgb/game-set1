@@ -13,7 +13,21 @@
 
 ![screenshot](https://raw.githubusercontent.com/tukemen-rgb/game-set1/claude/game-godot-setup-98dhue/docs/screenshot.png)
 
-## できていること
+## 案B「2026年の便利屋」（試作中）
+
+同じ町の 26 年後。会社を辞めて団地に戻った 30 代の便利屋が、依頼板で依頼を受け、
+報酬は金ではなく物（工具箱・台車・原付・古い写真・鍵束）。物が増えるほど受けられる依頼と
+行ける場所が広がる。古い写真を池で見ると **2000 年の夏（下の本編）が回想として差し込まれる**。
+
+```bash
+BUILD_YEAR=2026 godot --headless --path . --script res://scenes/BuildSummer.cs   # 2026 年版の町を生成
+godot --path . scenes/benriya_main.tscn                                          # 便利屋で遊ぶ
+DEBUG_MSG=1 BENRIYA_FAST=1 godot --headless --path . --fixed-fps 30 --quit-after 2400 --script res://test/Benriya.cs
+```
+
+企画: `docs/CONCEPT_BENRIYA.md`。遊び: `scripts/BenriyaMain.cs`。試作の範囲は依頼 5 件・道具 2 つ・原付・回想 1 本。
+
+## できていること（2000 年の夏）
 
 ### 物語の骨格
 

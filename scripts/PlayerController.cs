@@ -15,6 +15,9 @@ public partial class PlayerController : CharacterBody3D
 
     /// <summary>日付切り替え演出中などに移動を止めるフラグ。</summary>
     public bool Frozen { get; set; }
+    /// <summary>便利屋（2026 年）の原付。Shift で乗ると速く、隣の団地（x 40）まで行ける。</summary>
+    public bool HasMoped { get; set; }
+    private const float MopedSpeed = 7.5f;
 
     /// <summary>いま走っているか。虫が逃げるかどうかの判定に使う。</summary>
     public bool Running { get; private set; }
@@ -204,7 +207,10 @@ public partial class PlayerController : CharacterBody3D
 
         Vector2 input = Input.GetVector("ui_left", "ui_right", "ui_up", "ui_down");
         Running = Input.IsActionPressed("run") && input.LengthSquared() > 0.01f;
-        float speed = Running ? RunSpeed : WalkSpeed;
+        bool riding = HasMoped && Input.IsActionPressed("run");
+        float speed = riding ? MopedSpeed : Running ? RunSpeed : WalkSpeed;
+        if (GetNodeOrNull<Node3D>("Moped") is Node3D moped)
+            moped.Visible = riding;
         Vector3 v = Velocity;
         v.X = input.X * speed;
         v.Z = input.Y * speed;
@@ -214,7 +220,7 @@ public partial class PlayerController : CharacterBody3D
 
         // マップ外へ出ない・公園の池に入らない
         Vector3 p = Position;
-        p.X = Mathf.Clamp(p.X, -28f, 28f);
+        p.X = Mathf.Clamp(p.X, -28f, HasMoped ? 40f : 28f);   // 原付があれば隣の団地（東）まで
         p.Z = Mathf.Clamp(p.Z, -19.5f, 17.5f);
         var fromPond = new Vector2(p.X - 6f, p.Z + 15f);
         if (fromPond.Length() < 6.9f)

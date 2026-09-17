@@ -13,6 +13,9 @@ public partial class SummerMain : Node3D
     /// <summary>実時間◯秒 = ゲーム内1時間。キャプチャ時は外から小さくする。</summary>
     [Export]
     public double SecondsPerHour { get; set; } = 20.0;
+    /// <summary>便利屋（2026 年）からの回想。約 28 秒か Z で 2026 年へ戻る。</summary>
+    [Export] public bool FlashbackMode { get; set; }
+    private double _flashbackT;
 
     /// <summary>0 以外ならセミ配置などの乱数を固定する（決定的キャプチャ用）。</summary>
     [Export]
@@ -549,6 +552,8 @@ public partial class SummerMain : Node3D
             return;
         }
         if (_vacationOver || _transitioning)
+            return;
+        if (FlashbackMode && UpdateFlashback(delta))
             return;
         if (CheckDex())
             return;   // ずかんを開いている間は時間も止める
@@ -3281,6 +3286,34 @@ public partial class SummerMain : Node3D
                 return;
             }
         }
+    }
+
+    // --- 回想（2026 年の便利屋から来て、戻る） ---
+
+    private bool UpdateFlashback(double delta)
+    {
+        bool first = _flashbackT == 0.0;
+        _flashbackT += delta;
+        if (first)
+            ShowMessage("——2000年 8月24日、なつまつりの 夕方。\n（Ｚ で 2026年へ もどる）", 6.0, immediate: true);
+        if (_flashbackT < 28.0 && !Input.IsActionJustPressed("dex"))
+            return false;
+        _ = ReturnToPresent();
+        return true;
+    }
+
+    private async Task ReturnToPresent()
+    {
+        _transitioning = true;
+        _player.Frozen = true;
+        Tween tw = CreateTween();
+        tw.TweenProperty(_fade, "color:a", 1.0f, 1.8);
+        await ToSignal(tw, Tween.SignalName.Finished);
+        var packed = GD.Load<PackedScene>("res://scenes/benriya_main.tscn");
+        Node present = packed.Instantiate();
+        GetTree().Root.AddChild(present);
+        GetTree().CurrentScene = present;
+        QueueFree();
     }
 
     // --- 1日の終わり（日記→翌朝） ---

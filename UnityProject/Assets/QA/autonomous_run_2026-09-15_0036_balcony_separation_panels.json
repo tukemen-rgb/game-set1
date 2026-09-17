@@ -1,0 +1,157 @@
+{
+  "schemaVersion": "1.0.0",
+  "runId": "2026-09-15_0036_balcony_separation_panels",
+  "branch": "gpt/unity-migration",
+  "startHead": "e5f60547828790539997d672115c9426ad625818",
+  "substantiveHeadBeforeRunRecord": "d7766886f7f95bbad17e94a247163e4f614c97a8",
+  "objective": "Increase likely Geometry & construction fidelity and period/authenticity by replacing the generated apartment balcony's bracket-only separation cue with a physically reasoned framed mineral-board separation assembly, while preserving evidence integrity and avoiding any unrendered Visual Fidelity claim.",
+  "discovery": {
+    "gap": "Each HD_BayAssembly already contained front low/high divider brackets and fasteners, but no corresponding separation board/frame. The visible support cue therefore lacked the manufactured component it was intended to support.",
+    "priorityReason": "A repeated missing balcony construction element affects all 30 bays and is more likely to cap Geometry & construction fidelity / scene authenticity than another narrow QA-only contract.",
+    "existingDatumReused": "HD_BayAssembly_{floor}_{bay} transforms plus HD_DividerBracketLow/High",
+    "expectedAssemblies": 30
+  },
+  "manufactureReasoning": {
+    "board": "6 mm calcium-silicate/fibre-cement-like dry dielectric board; exact historical manufacturer/model is not claimed.",
+    "frame": "32 mm anodized-aluminium perimeter capture frame.",
+    "mounting": "Existing front divider-bracket zone remains the front attachment context; two explicit rear wall brackets and four 12 mm fastener heads provide the facade-side load path.",
+    "floorInterface": "60 mm clear gap above the generated slab-top datum.",
+    "orientation": "Vertical YZ partition at the left edge of every generated balcony bay.",
+    "exposureAging": "Dry midsummer UV/rain exposure with interface grime/chalking only; no arbitrary damage narrative.",
+    "geometryVsMaterial": "Board thickness, frame, brackets, fasteners and clearances are geometry. Fibre/mineral relief, fine chalking and roughness breakup are material response. Painted highlights/shadows are forbidden."
+  },
+  "materialReasoning": {
+    "boardMaterial": "MAT_BalconyPartitionFiberCement",
+    "baseAlbedoLinearRgb": [0.64, 0.63, 0.58],
+    "metallic": 0.0,
+    "roughnessRange": [0.62, 0.74],
+    "normalScale": 0.32,
+    "wetness": 0.0,
+    "fresnel": "ordinary dielectric angular response only",
+    "physicalData": "1024 normal + metallic/smoothness; Uncompressed, Crunch off, linear, mipmapped, Repeat, Trilinear, anisotropy >=8, no Standalone override",
+    "sharedFrameMaterial": "MAT_AgedAluminum at 14 repeats/metre metric UV",
+    "sharedBracketMaterial": "MAT_DarkGalvanizedSteel at 11 repeats/metre metric UV"
+  },
+  "implementation": {
+    "assemblyRoot": "DanchiBalconySeparationPanels",
+    "ownership": "Separate Danchi child root; DanchiHighDetail remains on its established six-material physical-UV registry.",
+    "sourceGeometry": "Directly generated authored GM_BP_ chamfered/beveled Mesh assets; no Unity Cube/Cylinder source renderers are introduced.",
+    "physicalUv": "UV0 stores metres plus deterministic 8x8 cut-origin phase; phase varies by assembly/part to reduce obvious repeated microtexture restart.",
+    "lod": {
+      "scope": "one LODGroup per balcony panel",
+      "transitionHeights": [0.18, 0.08, 0.03, 0.008],
+      "lod0RenderersPerPanel": 11,
+      "lod1RenderersPerPanel": 7,
+      "lod2RenderersPerPanel": 5,
+      "lod3RenderersPerPanel": 1,
+      "lod3Retention": "board core remains as the large occlusion/silhouette proxy",
+      "fadeMode": "CrossFade",
+      "animatedCrossFade": true
+    },
+    "formalEvidenceGuard": "Reflection, QA4K_, QATemporal_ and QAPreparedTemporal_ pre-cull validation is read-only/fail-closed; no geometry/material/import repair is permitted inside formal render callbacks.",
+    "metadataBinding": "balcony_separation_panel_contract.json is linked into the Danchi domain contractPaths in scene_metadata_coverage_contract.json, so the construction/material evidence binder will include it with the scene evidence generation."
+  },
+  "designCorrectionsDuringRun": [
+    {
+      "issue": "Initial implementation placed the new board material under DanchiHighDetail before the existing physical-UV pass.",
+      "whyWrong": "QualityBlockDetailPhysicalUvUpgrade intentionally permits exactly six canonical detail materials; a seventh board material would be rejected as unregistered and would weaken a mature source contract if silently added.",
+      "correction": "Moved the separation system into a dedicated Danchi child root, generated authored metre-UV meshes directly, gave each panel its own LODGroup, and moved construction after the DanchiHighDetail physical-UV pass. The six-material DanchiHighDetail contract remains unchanged."
+    },
+    {
+      "issue": "Initial metadata described a 24 mm fastener head while the shared mesh-library convention interprets legacyScale.x/z as final diameter.",
+      "correction": "Aligned code and contract to a 12 mm head diameter with 16 mm axial depth."
+    },
+    {
+      "issue": "Initial LOD policy allowed the whole partition to disappear at LOD3.",
+      "correction": "Retained the large board core at LOD3 so the major balcony occlusion/silhouette does not vanish before final cull; actual temporal pixels remain mandatory."
+    }
+  ],
+  "research": [
+    {
+      "title": "久米工業 隔板KU5型（ケイカル板）",
+      "url": "https://www.kume-ind.co.jp/products/1963.html",
+      "use": "manufacturer evidence that framed balcony separation products use calcium-silicate board; no exact benchmark product identity claim"
+    },
+    {
+      "title": "久米工業 隔板KU型 製品一覧",
+      "url": "https://www.kume-ind.co.jp/products-cat/partition-ku",
+      "use": "manufacturer category evidence for framed balcony separation assemblies"
+    },
+    {
+      "title": "アイカ工業 けい酸カルシウム板仕様一覧",
+      "url": "https://www.aica.co.jp/products/wall/n-veneer/specification/",
+      "use": "current scale reference for a common 6 mm calcium-silicate board thickness only"
+    }
+  ],
+  "commits": [
+    {"sha": "e7ca9b41a067195e06276d1abfd83ae847b74a70", "message": "Specify physical balcony separation panels", "status": "superseded in part by 1.1 contract correction"},
+    {"sha": "4cf2286680560d1bd7117c1ab831580faac505fe", "message": "Build physical balcony separation panels", "status": "superseded by isolated-root architecture correction"},
+    {"sha": "d9776a3ecb594cc9578e5fb1e3dcafab2df29ad2", "message": "Bind balcony panels before detail bevel and LOD", "status": "superseded by corrected post-physical-UV ordering"},
+    {"sha": "f5b39912e4fd84729b3e317017f3c0ab584f5565", "message": "Add balcony separation panel lookdev plate", "status": "current"},
+    {"sha": "522201e42cc1a9e3d14186c0e477bf49ff4810e0", "message": "Decouple balcony panel LOD and metric UV path", "status": "current"},
+    {"sha": "69b8dbaf4b8f0a2fd921cf4bb0044f6be238d862", "message": "Isolate balcony panels with authored metric UV LODs", "status": "current"},
+    {"sha": "1094756960e634dbcfa6c88b23304da6a8449ad6", "message": "Build balcony panels after Danchi metric UV binding", "status": "current"},
+    {"sha": "d7766886f7f95bbad17e94a247163e4f614c97a8", "message": "Bind balcony partition metadata into Danchi evidence", "status": "current"}
+  ],
+  "netFilesChangedBeforeRunRecord": [
+    "UnityProject/Assets/Editor/QualityBlockBalconySeparationPanelUpgrade.cs",
+    "UnityProject/Assets/Editor/QualityBlockDetailBevelUpgrade.cs",
+    "UnityProject/Assets/QA/balcony_separation_panel_contract.json",
+    "UnityProject/Assets/QA/balcony_separation_panel_lookdev.svg",
+    "UnityProject/Assets/QA/scene_metadata_coverage_contract.json"
+  ],
+  "verification": {
+    "branchCompareAtSubstantiveHead": {
+      "aheadBy": 8,
+      "behindBy": 0,
+      "mergeBase": "e5f60547828790539997d672115c9426ad625818",
+      "godotFilesChanged": 0
+    },
+    "sourceInspection": [
+      "existing HD_DividerBracketLow/High datums confirmed in QualityBlockDanchiDetailUpgrade",
+      "fixed six-material DanchiHighDetail physical-UV registry identified and preserved",
+      "new panel architecture moved outside DanchiHighDetail to avoid registry fail-open/widening",
+      "scene metadata domain updated so dedicated panel contract is linked under Danchi"
+    ],
+    "githubCommitStatusContextsAtSubstantiveHead": 0,
+    "githubActionsWorkflowRunsOnBranch": 0,
+    "unity6000_3_0f1CompileVerified": false,
+    "unityRuntimeVerified": false,
+    "native3840x2160RenderProducedThisRun": false,
+    "native100PercentCropProducedThisRun": false,
+    "temporalRenderProducedThisRun": false
+  },
+  "failureInjectionPendingUnityRunner": [
+    "delete one board core",
+    "move one panel below the 60 mm slab-clearance datum",
+    "replace any source mesh with Unity Cube/Cylinder or non-GM_BP asset",
+    "make board metallic or emissive",
+    "remove normal or metallic/smoothness map",
+    "compress/sRGB/mipmap-disable/reduce-anisotropy/Standalone-override a board physical-data texture",
+    "delete one rear wall bracket or fastener",
+    "collapse deterministic UV phase diversity",
+    "change per-panel LOD counts/transitions or disable animated cross-fade",
+    "remove the LOD3 board-core proxy"
+  ],
+  "implementationReadiness": {
+    "score": 93,
+    "maximum": 100,
+    "status": "IMPLEMENTATION_READINESS_ONLY",
+    "changeThisRun": 0,
+    "reasonNoIncrease": "The repository still has no Unity 6000.3.0f1 compile/runtime evidence for the branch. Source work cannot substitute for the missing 7-point runtime verification component."
+  },
+  "visualFidelity": {
+    "status": "UNSCORED_UNTIL_REAL_4K_RENDER",
+    "pointsAwardedThisRun": 0,
+    "passClaimed": false,
+    "expectedImpactNotScore": {
+      "geometryConstructionFidelity": "medium-to-large",
+      "materialPbrPhysicalPlausibility": "small-to-medium",
+      "textureMicrodetailTexelFidelity": "small-to-medium",
+      "weatheringContextCausality": "small",
+      "periodAccuracySceneAuthenticity": "medium",
+      "temporalLodAliasingStability": "small-to-medium"
+    }
+  },
+  "nextBlocker": "A real Unity 6000.3.0f1 Runner remains the gating dependency. On first Runner availability, stop speculative expansion: compile, run the listed failure injections, then produce fresh 3840x2160 frontal/oblique/grazing evidence plus 100% panel/frame/bracket crops and panel LOD temporal sequences. Score only those pixels under the existing 100-point Visual Fidelity Gate."
+}

@@ -1,0 +1,87 @@
+{
+  "schemaVersion": "1.0",
+  "runDate": "2026-09-12",
+  "branch": "gpt/unity-migration",
+  "startHead": "cca33ea29b0a2dbbc84e8ff7edbbf7e42990f6a0",
+  "implementationHeadBeforeRecord": "948bc48e2cc67694a0a982d197a574e42801c4bd",
+  "objective": "Reduce first-transition sash-latch silhouette/highlight discontinuity without claiming rendered quality. Preserve the 34 mm / 130 degree crescent physical envelope from 32-ring LOD0 into a 16-ring LOD1 proxy, bind that proxy into the same fail-closed reflection evidence epoch, and keep actual native-4K temporal pixels authoritative for visible_lod_pop and severe_aliasing_or_shimmer.",
+  "decisionRationale": {
+    "observedSourceRisk": "The parent sash-latch implementation used a continuous 32-ring curved LOD0 lever after the previous refinement, but its LOD1 proxy still substituted a single 12 x 70 x 8 mm rotated rectangular lever. Animated cross-fade does not guarantee perceptual continuity when the two silhouettes and highlight trajectories represent materially different forms.",
+    "priorityReason": "visible_lod_pop is a critical automatic FAIL and Temporal/LOD/Aliasing carries 5 points with a hard minimum of 4. Preserving the same manufactured curve envelope through the first LOD transition has higher gate value than adding another decorative detail while Unity rendering is unavailable.",
+    "implementationChoice": "Keep LOD1 as one combined renderer for real-time cost discipline, but replace only its lever form with a 16-ring swept crescent sharing LOD0 radius, sweep, section and corner break. The deterministic proxy overwrites GM_SashLatch_L1_Proxy_P0..P7 in place, so existing LODGroup renderer references remain valid.",
+    "evidencePolicy": "Source geometry/contract checks award zero Visual Fidelity points. A 32-to-16 ring transition can still pop, shimmer or snap highlights in motion; only actual native-4K still/temporal evidence can clear those defects."
+  },
+  "implementationCommits": [
+    {
+      "sha": "8a125a828b17a1b16f6d0bca5f75b40ad9ac4f38",
+      "message": "Refine sash latch LOD1 curve continuity",
+      "change": "Added QualityBlockSashLatchLodContinuityRefinement. It deterministically rebuilds/validates eight LOD1 proxy assets with a 16-ring swept crescent, metric UV phase continuity, simplified chamfered plate/keeper, exact in-place asset paths, formal-epoch dependency hashes, scene-save/pre-cull validation and zero automatic visual points."
+    },
+    {
+      "sha": "90e3dbd9f635af47e3b728713be2d9d500c79af9",
+      "message": "Add sash latch LOD continuity contract",
+      "change": "Added machine-readable manufacture/installation/material/geometry/LOD/weathering/lookdev contract. It explicitly requires the same physical curve envelope across LOD0 and LOD1 and native-4K temporal transition evidence."
+    },
+    {
+      "sha": "bc32493d5c0ae28c6c5e25f64bca0cfe3feb0493",
+      "message": "Bind latch LOD continuity to reflection evidence",
+      "change": "Inserted the LOD1 continuity preparation/validation before parent latch construction in the central reflection-material fingerprint so the first cubemap baseline cannot capture the legacy straight LOD1 proxy while stills later see the refined proxy."
+    },
+    {
+      "sha": "948bc48e2cc67694a0a982d197a574e42801c4bd",
+      "message": "Require latch LOD continuity in reflection contract",
+      "change": "Raised reflection binding schema to 1.4 and fail-closed the new LOD-continuity contract, pre-baseline preparation, every-fingerprint validation, post-arm read-only state and failure-aborts-evidence requirements."
+    }
+  ],
+  "verification": {
+    "branchComparison": "start head to implementation head is ahead 4, behind 0; merge-base remains the start head",
+    "changedFiles": 4,
+    "changedScope": "All implementation changes are under UnityProject/Assets; Godot paths were not touched.",
+    "sourceInspection": [
+      "Confirmed parent LOD0 uses GM_SashLatch_CrescentLever_P* while parent LOD1 previously used a single rotated metric box as its lever inside GM_SashLatch_L1_Proxy_P*.",
+      "Confirmed QualityBlockDetailMeshLibrary exposes deterministic chamfered-box meshes with real millimetric bevel geometry, normals, tangents and UV payload.",
+      "Confirmed central reflection fingerprint executes before RenderProbe request, during observed poll/completion stages and immediately before still capture through the existing reflection-await pipeline.",
+      "Confirmed new reflection contract and C# binding agree on schema 1.4, canonical LOD-continuity contract path and all new fail-closed requirement names."
+    ],
+    "githubActionsRunsAtImplementationHead": 0,
+    "commitStatusContextsAtImplementationHead": 0,
+    "unityCompile": "PENDING_RUNNER",
+    "unityRuntime": "PENDING_RUNNER",
+    "native4kRender": "PENDING_RUNNER",
+    "temporalLodReview": "PENDING_RUNNER"
+  },
+  "scores": {
+    "implementationReadiness": 93,
+    "visualFidelity": "UNSCORED_UNTIL_REAL_4K_RENDER",
+    "visualFidelityPointsAwardedThisRun": 0,
+    "passClaimed": false
+  },
+  "expectedVisualScoreImpactNotAwarded": {
+    "geometryAndConstructionFidelity": "small positive: same manufactured crescent identity is preserved through the first proxy instead of changing to a rectangular substitute",
+    "lightingShadowsReflections": "small positive: first-LOD grazing highlight trajectory should be closer to LOD0 because curvature remains geometric",
+    "temporalLodAliasingStability": "material risk reduction: directly targets silhouette/highlight discontinuity at the 0.006 first LOD cross-fade; no points until temporal render evidence"
+  },
+  "criticalDefectsStillOpenWithoutPixels": [
+    "visible_lod_pop",
+    "severe_aliasing_or_shimmer",
+    "hero_geometry_intersection",
+    "impossible_material_physics",
+    "baked_or_painted_highlights",
+    "obvious_repetition",
+    "unverified_render_claim"
+  ],
+  "runnerPlan": [
+    "Compile Unity 6000.3.0f1 and execute the formal reflection fingerprint; verify GM_SashLatch_L1_Proxy_P0..P7 are repaired before the first probe baseline and remain hash-stable through request/poll/completion/pre-still stages.",
+    "Confirm 30 sash-latch LODGroups still have exactly one LOD1 renderer and the parent root/renderer identities are unchanged.",
+    "Capture native 3840x2160 hero/facade_center, oblique/construction_depth, grazing/sash_rail_response and crop/sash_latch_100pct.",
+    "Capture temporal oblique movement across the 0.006 LOD0-to-LOD1 transition; inspect silhouette width, keeper relationship, highlight direction, phase continuity, shimmer and cross-fade visibility at 100 percent pixels.",
+    "If any transition is perceptible, do not add unrelated assets: tune ring count/transition range/proxy composition from rendered evidence and rerun the same gate."
+  ],
+  "nextBlocker": "No Unity 6000.3.0f1 Runner/workflow/status context is currently available, so compile/runtime behavior and actual native-4K temporal pixels remain unverified.",
+  "constraints": {
+    "godotPreserved": true,
+    "baseMerged": false,
+    "excludedThemesIntroduced": false,
+    "newCommitsAllowedUntil": "2026-09-18"
+  }
+}

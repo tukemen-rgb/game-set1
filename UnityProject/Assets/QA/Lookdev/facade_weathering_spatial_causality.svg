@@ -1,0 +1,61 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900">
+  <rect width="1600" height="900" fill="#f4f1e8"/>
+  <text x="60" y="70" font-family="sans-serif" font-size="34" font-weight="700" fill="#171717">Facade weathering: physical source → residue catchment</text>
+  <text x="60" y="108" font-family="sans-serif" font-size="20" fill="#444">Implementation lookdev / QA diagram — NOT RENDER EVIDENCE — Visual Fidelity points: 0</text>
+
+  <rect x="70" y="160" width="930" height="650" rx="8" fill="#d7d2c6" stroke="#555" stroke-width="3"/>
+  <line x1="70" y1="760" x2="1000" y2="760" stroke="#554837" stroke-width="14"/>
+  <text x="85" y="797" font-family="sans-serif" font-size="18" fill="#554837">grade / splash source</text>
+
+  <g font-family="sans-serif" font-size="17" fill="#222">
+    <rect x="180" y="245" width="230" height="145" fill="#b7c1c8" stroke="#4f5960" stroke-width="8"/>
+    <line x1="165" y1="397" x2="425" y2="397" stroke="#5c6367" stroke-width="10"/>
+    <text x="185" y="232">projecting sill / drip nose</text>
+    <path d="M260 405 C252 470 275 505 258 575" fill="none" stroke="#68766a" stroke-width="10" opacity="0.6"/>
+    <path d="M345 405 C350 455 333 490 342 535" fill="none" stroke="#68766a" stroke-width="7" opacity="0.45"/>
+    <text x="185" y="610">gravity-aligned dry mineral residue</text>
+
+    <rect x="540" y="235" width="330" height="35" fill="#b2aaa0" stroke="#5b5550" stroke-width="3"/>
+    <rect x="575" y="175" width="45" height="60" fill="#777"/>
+    <circle cx="596" cy="220" r="8" fill="#3e3e3e"/>
+    <text x="535" y="157">balcony lip + rail base fixing</text>
+    <path d="M700 275 C692 320 707 344 696 386" fill="none" stroke="#68766a" stroke-width="8" opacity="0.5"/>
+    <path d="M596 237 C593 267 604 285 598 315" fill="none" stroke="#8c4d2e" stroke-width="7" opacity="0.65"/>
+    <text x="535" y="416">water drip residue + sparse fixing oxide runoff</text>
+
+    <rect x="905" y="190" width="42" height="510" rx="18" fill="#777e7b"/>
+    <g stroke="#555" stroke-width="6">
+      <line x1="888" y1="275" x2="963" y2="275"/>
+      <line x1="888" y1="430" x2="963" y2="430"/>
+      <line x1="888" y1="585" x2="963" y2="585"/>
+    </g>
+    <path d="M884 210 C875 330 895 410 878 535 C872 605 890 675 873 746" fill="none" stroke="#68766a" stroke-width="13" opacity="0.52"/>
+    <text x="755" y="725">downpipe concentrated wetting</text>
+  </g>
+
+  <path d="M75 753 C220 713 360 742 520 720 C665 699 790 730 995 660 L995 760 L75 760 Z" fill="#8b6747" opacity="0.24"/>
+  <path d="M780 760 C850 710 920 668 990 625 L990 760 Z" fill="#8b6747" opacity="0.20"/>
+
+  <g transform="translate(1050 170)" font-family="sans-serif">
+    <text x="0" y="0" font-size="25" font-weight="700" fill="#222">Causality rules</text>
+    <text x="0" y="45" font-size="19" fill="#333">1. Source exists as modeled construction.</text>
+    <text x="0" y="80" font-size="19" fill="#333">2. Exposure/flow explains residue direction.</text>
+    <text x="0" y="115" font-size="19" fill="#333">3. Every residue vertex stays in its catchment.</text>
+    <text x="0" y="150" font-size="19" fill="#333">4. Every mandatory source has geometry witnesses.</text>
+    <text x="0" y="185" font-size="19" fill="#333">5. Deterministic variation cannot invent sources.</text>
+
+    <text x="0" y="255" font-size="23" font-weight="700" fill="#222">AC condensate termination</text>
+    <rect x="20" y="290" width="230" height="115" fill="#e5dfd3" stroke="#555" stroke-width="3"/>
+    <rect x="55" y="315" width="150" height="60" fill="#c8c5bc" stroke="#666" stroke-width="3"/>
+    <path d="M200 355 C245 365 245 415 290 430" fill="none" stroke="#e7ded0" stroke-width="12"/>
+    <ellipse cx="290" cy="438" rx="65" ry="24" fill="#757a70" opacity="0.24"/>
+    <text x="0" y="485" font-size="18" fill="#333">Dry local deposit only; no generic wet puddle.</text>
+
+    <text x="0" y="555" font-size="23" font-weight="700" fill="#222">Forbidden interpretations</text>
+    <text x="0" y="593" font-size="18" fill="#333">• free-floating/random stains</text>
+    <text x="0" y="625" font-size="18" fill="#333">• repeated full-width bands</text>
+    <text x="0" y="657" font-size="18" fill="#333">• metallic residue / painted highlights</text>
+    <text x="0" y="689" font-size="18" fill="#333">• wet sheen in the dry benchmark</text>
+    <text x="0" y="721" font-size="18" fill="#333">• weathering used to hide construction errors</text>
+  </g>
+</svg>

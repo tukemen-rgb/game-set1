@@ -1,0 +1,72 @@
+{
+  "schemaVersion": "1.0",
+  "runDate": "2026-09-13",
+  "branch": "gpt/unity-migration",
+  "startHead": "797cdb0968a8e5cf89f8a34cc6e4440a3802b6f6",
+  "substantiveCommits": [
+    "54ff404727d9bd56f3467385b4471f0ef22549a4",
+    "53193d595b8767c705383741fc7dfc744b9f22d6",
+    "0c50a06f7f6faec66df570bb9c526f5e2808375b",
+    "eb09e3c9d8b427797902e7179557c7d7ce1cb22d"
+  ],
+  "scope": {
+    "summary": "Removed the shader-based post-tonemap Graphics.Blit from authoritative native-4K still capture and replaced it with an explicit in-place fixed-function MSAA resolve on the canonical camera RenderTexture. Added fail-closed source/runtime QA and a machine-readable contract so formal evidence cannot silently reintroduce a shader copy or raw multisample binding.",
+    "whyThisWasPrioritized": "The previous capture path rendered the approved filmic output into an sRGB MSAA target, then sampled it through Graphics.Blit into a second LDR target. Unity documents Graphics.Blit as a shader copy and sRGB writes as color-state-sensitive. Even with identical scene assets, this extra stage could alter fine edges, gradients or encoded display values. Evidence-path fidelity is therefore a prerequisite for trustworthy Texture/Microdetail and Cinematic scoring.",
+    "godotPreserved": true,
+    "baseMerged": false,
+    "excludedThemesAdded": false
+  },
+  "changes": [
+    {
+      "path": "Assets/Editor/QualityBlock4KCapture.cs",
+      "effect": "Formal QA4K targets now explicitly use bindMS=false, call ResolveAntiAliasedSurface() in-place when MSAA>1, read pixels directly from that canonical target, and no longer allocate/use a second resolved RenderTexture or Graphics.Blit. Runtime manifest schema is 1.2 and discloses the fixed-function/no-post-tonemap-blit path."
+    },
+    {
+      "path": "Assets/Editor/QualityBlockCaptureResolveIntegrityQA.cs",
+      "effect": "New fail-closed gate verifies the canonical capture source retains bindMS=false, fixed-function resolve, direct readback and no Graphics.Blit call; Camera.onPreCull rejects QA4K targets with bindTextureMS=true or mipmaps."
+    },
+    {
+      "path": "Assets/QA/capture_resolve_integrity_contract.json",
+      "effect": "Machine-readable zero-point contract records resolve/readback requirements, risk mapping, required failure injections and real-render evidence requirements."
+    }
+  ],
+  "verification": {
+    "staticRepositoryVerification": [
+      "Start HEAD to pre-record HEAD compares ahead 4 / behind 0 with merge-base equal to the start HEAD.",
+      "Diff is confined to UnityProject/Assets/Editor and UnityProject/Assets/QA; no Godot path changed.",
+      "Canonical capture source now contains bindMS=false and ResolveAntiAliasedSurface(), reads from msaaTarget, and has no executable Graphics.Blit call.",
+      "Formal manifest continues to identify Unity Camera.Render and remains UNSCORED_REVIEW_REQUIRED."
+    ],
+    "unityCompileRuntimeVerified": false,
+    "githubWorkflowRunsObserved": 0,
+    "commitStatusContextsObserved": 0,
+    "renderVerificationPending": true
+  },
+  "scores": {
+    "implementationReadiness": 93,
+    "implementationReadinessMax": 100,
+    "visualFidelityStatus": "UNSCORED_UNTIL_REAL_4K_RENDER",
+    "visualFidelityPointsAwardedThisRun": 0,
+    "visualFidelityPassClaimed": false
+  },
+  "expectedVisualScoreImpactNotAwarded": {
+    "Texture/microdetail/texel fidelity": "medium-high evidence integrity improvement: removes an unnecessary shader resample/color round-trip after tonemapping, especially relevant to fine foliage, sash rails and wire guards.",
+    "Cinematic image quality/composition/color/exposure": "medium-high evidence integrity improvement: preserves the approved filmic output without an additional color-state-sensitive copy.",
+    "Material/PBR physical plausibility": "small-medium evidence integrity improvement: grazing highlights and roughness response are reviewed from the camera's resolved output rather than a second shader copy.",
+    "Temporal/LOD/aliasing stability": "medium evidence integrity improvement: still-reference edge behavior is less confounded by a separate post-tonemap blit path."
+  },
+  "nextBlocker": {
+    "primary": "Unity 6000.3.0f1 Runner/runtime is still unavailable on this branch, so compile, actual ResolveAntiAliasedSurface behavior, PNG production and pixel review remain unverified.",
+    "failureInjectionWhenRunnerAppears": [
+      "Set bindMS/bindTextureMS=true on a formal QA4K target and require rejection at pre-cull.",
+      "Reintroduce an executable Graphics.Blit call in QualityBlock4KCapture and require source-contract failure before capture.",
+      "Remove ResolveAntiAliasedSurface() and require source-contract failure.",
+      "After clean recovery, capture fresh 3840x2160 hero/oblique/grazing frames plus 100% crops and inspect sash rails, AC round-wire guard, foliage silhouettes, concrete microdetail and sky gradients for resolve/filter/gamma artifacts."
+    ]
+  },
+  "policy": {
+    "visualGateThreshold": 92,
+    "actualRenderedEvidenceRequired": true,
+    "noUnobservableVisualPoints": true
+  }
+}

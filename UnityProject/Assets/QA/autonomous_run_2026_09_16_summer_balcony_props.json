@@ -1,0 +1,22 @@
+{
+  "runId": "2026_09_16_summer_balcony_props",
+  "repository": "tukemen-rgb/game-set1",
+  "branch": "gpt/unity-migration",
+  "initialHead": "fa7b6ccbf86b82f17e3a6af586466d3d97392f9c",
+  "sourceSHA256": "e0a391ee9a9c7eda86c500f551f92792a90c0fe3bdadc5ff7b7bd3222b6207c1",
+  "externalGeometryReportSHA256": "9d339a5bfa97fefdc2b5f2a95b45e3deaf6c070a5a846da72ff07a0dbba326bc",
+  "newAssets": 3,
+  "actualExports": {"masters":3,"runtimeLODMeshes":12,"glbFiles":15,"objFiles":15},
+  "triangles": {
+    "BalconySlipperPair": {"MASTER":1048,"LOD0":944,"LOD1":800,"LOD2":664,"LOD3":616},
+    "EnamelWashBasin280": {"MASTER":5924,"LOD0":4452,"LOD1":2980,"LOD2":1508,"LOD3":772},
+    "MosquitoCoilTray140": {"MASTER":9544,"LOD0":6024,"LOD1":3272,"LOD2":1984,"LOD3":1600}
+  },
+  "executedVerification": ["external mesh generation","finite vertices/normals","no degenerate faces","welded watertight components","positive component volumes and winding consistency","manifold edge incidence exactly two","GLB triangle/bounds roundtrip","OBJ triangle roundtrip","strict LOD triangle reduction","actual non-Unity mesh preview inspection"],
+  "pending": ["full component-to-component contact/intersection audit","Unity compile/import/material/coordinate parity","LODGroup execution","real-time performance","native 3840x2160 stills and 100% crops","temporal/LOD/aliasing review"],
+  "readiness": {"lastRecordedScore":93,"recomputedThisRun":false,"newPointsAwarded":0},
+  "visualFidelity": {"status":"UNSCORED_UNTIL_REAL_4K_RENDER","score":null,"pass":false,"pointsAwarded":0,"expectedImpact":"Period/scene authenticity and lived-in context; geometry/material distinction. No Unity pixels available."},
+  "safety": {"godotFilesChanged":0,"baseMerged":false,"formalBenchmarkSceneChanged":false,"excludedThemesAdded":false},
+  "nextProductionTarget": "Reversible measured balcony review arrangement using existing repaired plant/pot, laundry hardware and household props; if Unity Runner/screenshots appear, stop expansion and score/fix actual render.",
+  "nextBlocker": "No Unity 6000.3.0f1 runner or workflow render evidence."
+}

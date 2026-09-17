@@ -1,0 +1,32 @@
+{
+  "schema":1,
+  "date":"2026-09-16",
+  "units":"metres",
+  "id":"BalconyExteriorHeroBay3600",
+  "owner":"ExteriorFacadeSet",
+  "coordinateSystem":"Y up; exterior +Z",
+  "reusedOwners":["ExteriorFacadeSet","BalconyWindowSet","WindowInstallDetails","BalconyACSet","BalconyRainwaterSet","BalconyGuardrailSet","BalconySoffitSet"],
+  "newFacade":{
+    "id":"PaintedFiberCementFacadeWindowService3600x2700",
+    "size":[3.6,2.7,0.016],
+    "windowRoughOpening":{"centerXY":[-0.62,0.15],"sizeXY":[1.94,1.96]},
+    "ventOpening":{"centerXY":[0.88,0.72],"sizeXY":[0.22,0.22]},
+    "acServiceOpening":{"centerXY":[0.79,-0.17],"sizeXY":[0.14,0.14]},
+    "detailRule":"Openings and returns are geometry. MASTER/LOD0 retain seal/backer and dense fixing heads; LOD1 reduces fixings; LOD2 keeps returns; LOD3 preserves openings while omitting returns and near detail."
+  },
+  "placements":{
+    "windowAssemblyTranslation":[-0.62,0.15,0.018],
+    "ventTranslation":[0.88,0.72,0.0],
+    "baseStarterFlashingTranslation":[0.0,-1.355,0.0],
+    "acAssembly":{"rotationYDegrees":180,"targetWallPenetrationCenter":[0.79,-0.17,0.0],"note":"Existing AC owner faces its diagnostic wall on +Z; whole owner is rotated so condenser remains on facade exterior +Z."},
+    "rainwaterAssemblyTranslation":[1.69,-1.29,0.08],
+    "kerbTranslation":[0.0,-1.35,1.03],
+    "guardrailTranslation":[0.0,-1.17,1.03],
+    "cornerReturnTranslation":[-1.8,-1.17,1.03],
+    "soffitAssemblyTranslation":[0.0,1.37,0.60]
+  },
+  "sourceIntegrationRule":"Preserve per-owner internal placements from each existing LOD0 installed-review manifest; apply the same owner-local placement to corresponding MASTER/LOD1/LOD2/LOD3 exports.",
+  "formalBenchmarkSceneChanged":false,
+  "godotChanged":false,
+  "baseMerge":false
+}

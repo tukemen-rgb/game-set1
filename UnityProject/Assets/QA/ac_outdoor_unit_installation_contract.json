@@ -1,0 +1,110 @@
+{
+  "schemaVersion": "1.0",
+  "scenePath": "Assets/Scenes/QualityBlock1990s.unity",
+  "detailRootName": "DanchiHighDetail",
+  "expectedGeneratedUnits": 15,
+  "policy": "Correct and fail-closed on generated outdoor-unit support, service-line and drain interfaces before realtime reflection or native-4K evidence. This is source/scene construction QA only and awards zero Visual Fidelity points without actual rendered evidence.",
+  "manufactureModel": [
+    "Each generated balcony condenser is a separate sheet-metal/plastic outdoor unit with a front fan/grille, a bottom chassis supported at two manufactured feet, and discrete service/drain connections rather than a box fused into the balcony slab.",
+    "The outdoor unit is mechanically supported above the slab by two visible feet/pads on thin mounting plates; support hardware must remain outside the concrete walking surface and must carry the chassis rather than float below it.",
+    "Paired insulated refrigerant lines leave the unit side, turn toward the facade and enter through a sleeved/collared wall penetration. Their elbows and joints must meet geometrically rather than being approximated by disconnected cylinders.",
+    "A condensate drain hose leaves low on the unit and terminates just above the balcony surface so water can discharge without the hose visibly penetrating the slab.",
+    "Wall clips and the penetration collar are facade-mounted service hardware; moving the condenser vertically must not drag those fixed wall interfaces away from the wall."
+  ],
+  "dimensionsMetres": {
+    "expectedFloorTopLocalY": -0.79,
+    "floorTopTolerance": 0.003,
+    "mountPlateHeight": 0.018,
+    "footHeight": 0.045,
+    "casingHeight": 0.48,
+    "casingFootEmbedTarget": 0.006,
+    "casingFootEmbedMin": 0.002,
+    "casingFootEmbedMax": 0.010,
+    "supportContactTolerance": 0.003,
+    "drainOutletClearanceTarget": 0.010,
+    "drainOutletClearanceMin": 0.005,
+    "drainOutletClearanceMax": 0.020,
+    "pipeJointTolerance": 0.004,
+    "boltPlateEmbedMin": 0.001,
+    "boltPlateEmbedMax": 0.006
+  },
+  "installationSequence": [
+    "Resolve the actual persisted BalconyFloor renderer top for each generated AC bay and verify it remains at the locked fallback elevation.",
+    "Seat each mounting plate on the slab top, then seat its vibration/support foot on the plate; neither support component may be hidden inside the concrete.",
+    "Raise the condenser chassis only as much as required for its lower face to overlap the top of both support feet by the controlled chassis/foot embed range.",
+    "Translate fan disc, hub and grille with the chassis, then reconstruct both insulated refrigerant-line segments from the moved unit-side outlet to the fixed wall-side collar so segment joints stay continuous.",
+    "Reconstruct the drain hose from the moved low-side unit outlet to a terminal point 5-20 mm above the balcony surface; retain the wall collar and pipe clips as fixed facade interfaces.",
+    "Validate support contacts, lateral support under the chassis, visible bolt heads, pipe continuity and drain clearance before reflection probes or benchmark Camera.Render are allowed."
+  ],
+  "interfacesGapsSeals": [
+    "mount-plate bottom to balcony slab top: flush within supportContactTolerance",
+    "support-foot bottom to mount-plate top: flush within supportContactTolerance",
+    "condenser lower face to foot top: controlled 2-10 mm mechanical visual overlap, target 6 mm",
+    "mounting plate and support foot centerlines must remain laterally inside the condenser chassis footprint",
+    "refrigerant horizontal/vertical segment joint: endpoint separation <= pipeJointTolerance",
+    "drain-hose terminal to slab top: 5-20 mm positive clearance, target 10 mm",
+    "visible mount-bolt head must remain above the plate top while retaining a small controlled plate embed"
+  ],
+  "materialsFinish": {
+    "casing": "aged warm off-white coated/plastic exterior; dielectric, low metallic response, mild UV chalking and dirt concentration around grille/recesses rather than painted illumination",
+    "fanAndGrille": "dark protected metal/plastic components; physically separate geometry so occlusion and highlights follow the grille depth",
+    "mountingHardware": "aged galvanized/protected steel plate and fastener hardware with restrained metallic/specular response and localized contact oxidation only where exposure supports it",
+    "pipeInsulation": "aged closed-cell insulation/tape wrap; dielectric, matte, low-frequency compression/UV variation with no metallic highlight",
+    "drainHose": "aged flexible polymer; dielectric and relatively matte, with bending represented by geometry rather than a painted stripe",
+    "wallCollar": "weathered pipe sleeve/collar at the facade penetration; sheltered/recessed grime can accumulate at the interface"
+  },
+  "materialLookdev": {
+    "agedAcPlastic": { "albedoLinearRange": "0.42-0.58 neutral/warm off-white", "roughnessRange": "0.70-0.82", "metallicRange": "0.00", "dielectricF0Range": "0.035-0.055", "normalScale": "0.10-0.20 subtle moulded/coating texture", "microstructure": "fine moulded/coated skin plus localized grille/recess dust", "wetness": "normally dry; rain spotting only on exposed upper/lateral faces", "uvAging": "mild warm/chalked shift on sun-facing surfaces", "angularFresnel": "broad dielectric edge response only; no painted hot edge" },
+    "galvanizedHardware": { "albedoLinearRange": "0.08-0.20 dark weathered zinc/protected metal", "roughnessRange": "0.60-0.78", "metallicRange": "0.45-0.70 effective coated/weathered metal", "dielectricF0Range": "n/a when metallic response dominates", "normalScale": "0.10-0.18 fine zinc/abrasion microtexture", "microstructure": "subtle zinc mottling and contact wear, no large repeated flakes", "wetness": "localized darkening/roughness change at rain-wet horizontal faces", "uvAging": "minimal hue shift; oxidation mainly alters roughness/value", "angularFresnel": "narrower grazing response than casing but dulled by oxidation" },
+    "pipeInsulation": { "albedoLinearRange": "0.30-0.46 aged beige/grey", "roughnessRange": "0.78-0.88", "metallicRange": "0.00", "dielectricF0Range": "0.035-0.050", "normalScale": "0.12-0.24 wrap/compression texture", "microstructure": "fine tape/foam compression and seam variation", "wetness": "small rain-darkened patches only where exposed", "uvAging": "sun-facing yellow/grey desaturation", "angularFresnel": "very broad weak dielectric grazing response" },
+    "drainHose": { "albedoLinearRange": "0.10-0.18 grey polymer", "roughnessRange": "0.82-0.90", "metallicRange": "0.00", "dielectricF0Range": "0.035-0.050", "normalScale": "0.15-0.30 fine corrugation/skin", "microstructure": "small flexible-hose ribbing where visible at 100% crop", "wetness": "possible darker terminal region from condensate", "uvAging": "mild desaturation/chalking", "angularFresnel": "weak polymer edge response" }
+  },
+  "orientationExposureAging": [
+    "condenser front and upper surfaces receive midsummer sun/rain; recesses behind grille stay darker through geometry/occlusion, not baked albedo",
+    "support plates/feet sit in a contact/splash zone and may show grime or oxidation concentrated near slab contact and fasteners",
+    "refrigerant insulation is partly sheltered near the wall but more UV/rain exposed near the unit; aging should follow that gradient",
+    "drain outlet is low and can create localized ordinary condensate wetting/residue immediately below/near the outlet, never arbitrary streaks"
+  ],
+  "geometryVsMaterialDetail": [
+    "casing height, feet, mounting plates, fastener heads, fan/grille depth, pipes, elbows, clips, collar and drain clearance are geometry/interface facts",
+    "plastic chalking, galvanized dulling, insulation wrap texture, grime, micro-scratches and localized wetness are material/microdetail",
+    "contact shadows, pipe occlusion and grazing highlights must arise from physical geometry plus coherent midsummer lighting, never from albedo highlights"
+  ],
+  "lodPolicy": [
+    "LOD0 retains fan disc/hub, crossed grille members, two feet/plates, visible fastener heads, paired refrigerant lines, drain hose, collar and clips for native 4K balcony-service crops.",
+    "LOD1 may simplify grille density and small fasteners while retaining chassis/support silhouette and paired service lines.",
+    "LOD2 merges grille microgeometry and line clips while preserving unit silhouette, mounting gap and service-line bend silhouette.",
+    "LOD3 may reduce to a compact authored silhouette/material set but must not collapse into an exposed Unity primitive in benchmark framing; transition stability remains separately reviewed."
+  ],
+  "lookdevBrief": {
+    "frontal": "Native 3840x2160 facade view: unit must read as a supported manufactured appliance, not a floating box or slab-embedded prop; verify warm aged casing against darker grille and physically separate support gap.",
+    "oblique": "Balcony-services 100% crop: verify both support stacks, chassis-to-foot contact, pipe bends/joints, wall collar and drain terminal clearance with coherent contact shadow.",
+    "grazing": "Midsummer grazing-light crop: casing remains broad dielectric, galvanized mounting hardware responds more sharply, and pipe insulation/drain hose remain matte without baked edge highlights.",
+    "macro100Percent": "Reject buried plates/feet/bolts, floating chassis, disconnected pipe cylinders, drain/slab penetration, z-fighting, light leaks or inconsistent metallic response."
+  },
+  "researchReferences": [
+    {
+      "title": "Daikin outdoor-unit installation foundation guidance",
+      "url": "https://ec.daikinaircon.com/ecatalog/CP09018J10/images/CP09018J10147.pdf",
+      "relevance": "Manufacturer installation material explicitly describes outdoor-unit foundations, anchor bolts, level/smooth support surfaces and drainage. Used only for the support/anchoring/drainage principle, not for exact residential-unit dimensions or period-specific product identification."
+    },
+    {
+      "title": "Panasonic outdoor-unit installation points",
+      "url": "https://panasonic.jp/aircon/contents/outdoor-unit-point.html",
+      "relevance": "Manufacturer guidance confirms that water leaves outdoor units through bottom drainage and placement must account for discharge. Used as general physical installation context, not as a circa-2000 dimensional specification."
+    },
+    {
+      "title": "Daikin room-air-conditioner installation pre-check",
+      "url": "https://www.ac.daikin.co.jp/customercenter/useful/ra_check/main",
+      "relevance": "Manufacturer consumer guidance treats indoor/outdoor unit position, installation space and refrigerant-pipe length as coupled installation constraints, supporting physically connected rather than decorative service-line modelling."
+    }
+  ],
+  "criticalDefectRelationship": [
+    "floating/interpenetrating hero geometry",
+    "visible primitive-placeholder geometry in benchmark framing",
+    "materially impossible metallic/specular values",
+    "missing required construction/material metadata"
+  ],
+  "automaticVisualPoints": 0,
+  "renderVerificationRequired": true
+}

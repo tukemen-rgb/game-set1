@@ -1,0 +1,78 @@
+{
+  "schema_version": "1.0",
+  "run_id": "2026-09-13-vegetation-formal-build-integration",
+  "branch": "gpt/unity-migration",
+  "starting_head": "4d2980104045a68dd7950b2193bb804c26d60440",
+  "substantive_commits": [
+    {
+      "sha": "0b08b96aa9c026bb6c0f0f8edb287971c398bb7d",
+      "summary": "Integrate vegetation ecology and root-zone construction/validation into the formal foliage build path."
+    },
+    {
+      "sha": "aa7b359d16d430fe0df7adc81147961a1bb78a7d",
+      "summary": "Add machine-readable vegetation formal-build integration contract."
+    }
+  ],
+  "problem_found": "The formal 4K scene preparation rebuilt detailed trees and foliage but did not invoke the existing VegetationEcology and VegetationRootZoneInterface passes. A candidate could therefore reach later formal validation with sophisticated canopy optics while silently omitting contextual understory and the physically reconstructed tree-to-ground interface. This was a direct readiness risk for the Vegetation/Natural Complexity hard minimum and a secondary risk for geometry/contact and weathering causality.",
+  "changes": [
+    "QualityBlockFoliageOpticsUpgrade.BuildFoliageOptics now validates the ecology contract, constructs VegetationEcologyDetail, reconstructs the root-zone interfaces, then runs the formal foliage validator.",
+    "QualityBlockFoliageOpticsUpgrade.ValidateOpenScene now requires both QualityBlockVegetationEcologyUpgrade.ValidateOpenScene and QualityBlockVegetationRootZoneInterfaceQA.ValidateOpenScene, making these passes mandatory for formal 4K scene validation.",
+    "Added vegetation_formal_build_integration_contract.json with execution order, construction/material reasoning, cause-based weathering rules, fail-closed conditions and render-only scoring policy."
+  ],
+  "formal_chain_after_change": [
+    "QualityBlock4KCapture.PrepareAndValidateScene",
+    "QualityBlockGroundDetailUpgrade.BuildDetailedGround",
+    "QualityBlockFoliageOpticsUpgrade.BuildFoliageOptics",
+    "QualityBlockTreeDetailUpgrade.BuildDetailedTrees",
+    "QualityBlockTreeWoodyContinuityQA.ApplyToOpenScene",
+    "QualityBlockFoliageMorphologyVariationUpgrade.ApplyToOpenScene",
+    "QualityBlockFoliageOpticsUpgrade.ApplyToOpenScene",
+    "QualityBlockVegetationEcologyContractQA.Validate",
+    "QualityBlockVegetationEcologyUpgrade.ApplyToOpenScene",
+    "QualityBlockVegetationRootZoneInterfaceQA.ApplyToOpenScene",
+    "QualityBlockFoliageOpticsUpgrade.ValidateOpenScene"
+  ],
+  "verification": {
+    "static_source_review": "PASS",
+    "modified_source_re_fetched_from_branch": "PASS",
+    "machine_readable_contract_re_fetched_from_branch": "PASS",
+    "unity_6000_3_0f1_compile": "PENDING_RUNNER",
+    "unity_runtime_formal_prepare": "PENDING_RUNNER",
+    "3840x2160_render": "PENDING_RUNNER",
+    "100_percent_crops": "PENDING_RUNNER",
+    "visual_fidelity_scoring": "NOT_PERMITTED_WITHOUT_RENDER"
+  },
+  "implementation_readiness": {
+    "score_100": 93,
+    "delta_this_run": 0,
+    "reason": "Formal integration is safer, but the missing seven points remain reserved for real Unity compile/runtime and evidence-path execution rather than source inspection."
+  },
+  "visual_fidelity": {
+    "status": "UNSCORED_UNTIL_REAL_4K_RENDER",
+    "points_awarded_this_run": 0,
+    "pass_claimed": false,
+    "expected_score_impact_not_awarded": {
+      "Geometry & construction fidelity": "medium improvement potential from explicit tree-ground interface",
+      "Material/PBR physical plausibility": "small improvement potential from required physical interface materials",
+      "Texture/microdetail/texel fidelity": "small improvement potential from required contextual ground detail",
+      "Weathering/context causality": "medium improvement potential from ecology/root-zone causal metadata",
+      "Vegetation/natural complexity": "major improvement potential because ecology is no longer optional in the formal path",
+      "Temporal/LOD/aliasing stability": "small evidence-readiness improvement; actual stability remains render-only"
+    }
+  },
+  "next_runtime_verification": [
+    "Run a clean Unity 6000.3.0f1 formal PrepareAndValidateScene.",
+    "Confirm exactly six reconstructed root-zone interfaces: five paved and one grass context, with the contracted soil basins and edge/root transitions.",
+    "Failure injection: remove VegetationEcologyDetail after build and confirm QualityBlockFoliageOpticsUpgrade.ValidateOpenScene fails rather than recreating it.",
+    "Failure injection: remove or dimensionally corrupt one required root-zone reconstruction and confirm formal foliage validation fails.",
+    "Capture fresh reflection evidence, then actual 3840x2160 hero/frontal, oblique and applicable grazing-light views plus 100% tree-pit/root-flare and understory/ground-contact crops.",
+    "Run temporal camera evidence across tree LOD ranges and inspect floating vegetation, intersection, obvious repetition, aliasing/shimmer and visible LOD pop before assigning any Visual Fidelity points."
+  ],
+  "constraints": {
+    "godot_preserved": true,
+    "base_merge_performed": false,
+    "earthquake_disaster_reconstruction_theme_added": false,
+    "new_visual_points_claimed_without_render": false
+  },
+  "next_blocker": "No Unity Runner or actual benchmark render is available; compile/runtime, failure injection and 4K pixel evidence remain the gating work."
+}

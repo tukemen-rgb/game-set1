@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="760" viewBox="0 0 1200 760">
+  <rect width="1200" height="760" fill="#f5f3ee"/>
+  <style>
+    .t{font-family:Arial,sans-serif;fill:#222}.h{font-size:24px;font-weight:700}.s{font-size:16px}.d{font-size:14px;fill:#555}
+    .rc{fill:#c7c3b8;stroke:#59564f;stroke-width:2}.void{fill:#e7edf0;stroke:#3f464a;stroke-width:2}.frame{fill:#8d9493;stroke:#343838;stroke-width:2}.seal{fill:#252827}.glass{fill:#b8d1db;fill-opacity:.45;stroke:#5f7d88;stroke-width:2}.back{fill:#596168}.dim{stroke:#8b3f2e;stroke-width:1.5;fill:none}.sun{stroke:#d2902c;stroke-width:3;fill:none}
+  </style>
+  <text x="45" y="48" class="t h">Stair tower aperture — construction/lookdev intent</text>
+  <text x="45" y="75" class="t d">Source-side installation study only. Final judgement requires native 3840×2160 frontal/oblique/grazing evidence.</text>
+
+  <text x="70" y="120" class="t s">Front elevation — five real RC rough openings</text>
+  <rect x="90" y="145" width="300" height="520" class="rc"/>
+  <g>
+    <rect x="170" y="520" width="140" height="58" class="void"/><rect x="176" y="526" width="128" height="46" class="frame"/><rect x="182" y="532" width="116" height="34" class="glass"/>
+    <rect x="170" y="425" width="140" height="58" class="void"/><rect x="176" y="431" width="128" height="46" class="frame"/><rect x="182" y="437" width="116" height="34" class="glass"/>
+    <rect x="170" y="330" width="140" height="58" class="void"/><rect x="176" y="336" width="128" height="46" class="frame"/><rect x="182" y="342" width="116" height="34" class="glass"/>
+    <rect x="170" y="235" width="140" height="58" class="void"/><rect x="176" y="241" width="128" height="46" class="frame"/><rect x="182" y="247" width="116" height="34" class="glass"/>
+    <rect x="170" y="155" width="140" height="58" class="void"/><rect x="176" y="161" width="128" height="46" class="frame"/><rect x="182" y="167" width="116" height="34" class="glass"/>
+  </g>
+  <path d="M90 690h300M90 682v16M390 682v16" class="dim"/><text x="207" y="715" class="t d">tower width 3.20 m</text>
+  <path d="M420 145v520M412 145h16M412 665h16" class="dim"/><text x="438" y="410" class="t d" transform="rotate(90 438 410)">height 13.80 m</text>
+
+  <text x="530" y="120" class="t s">Horizontal section through one stair window</text>
+  <rect x="545" y="225" width="230" height="190" class="rc"/>
+  <rect x="545" y="270" width="230" height="100" fill="#f5f3ee"/>
+  <rect x="735" y="280" width="22" height="80" class="seal"/>
+  <rect x="705" y="278" width="35" height="84" class="frame"/>
+  <line x1="691" y1="284" x2="691" y2="356" class="glass" stroke-width="5"/>
+  <rect x="615" y="286" width="10" height="68" class="back"/>
+  <text x="790" y="247" class="t d">outside / midsummer sun</text>
+  <path d="M940 260l-120 55M834 298l-14 17 22-1" class="sun"/>
+  <text x="785" y="320" class="t d">RC front plane z = −5.350 m</text>
+  <text x="785" y="345" class="t d">frame spans approx. −5.360…−5.290 m</text>
+  <text x="785" y="370" class="t d">glass z = −5.370 m</text>
+  <text x="785" y="395" class="t d">stairwell backing z = −5.520 m</text>
+  <text x="785" y="420" class="t d">RC shell back z = −5.570 m</text>
+
+  <path d="M705 455h70M705 447v16M775 447v16" class="dim"/><text x="697" y="482" class="t d">220 mm front RC shell depth</text>
+  <path d="M735 505h40M735 497v16M775 497v16" class="dim"/><text x="680" y="532" class="t d">30 mm nominal frame-to-rough-opening clearance per side</text>
+
+  <text x="530" y="590" class="t s">Material / causality rules</text>
+  <text x="550" y="620" class="t d">• RC: dielectric, rough, two-scale normals; 2.4 m macro / 0.22 m detail, metric UV phase.</text>
+  <text x="550" y="646" class="t d">• Sash: aged anodized aluminum; geometry carries extrusion depth, BRDF carries grazing response.</text>
+  <text x="550" y="672" class="t d">• Seal: dark matte dielectric; four-sided at near LODs; no painted contact shadow.</text>
+  <text x="550" y="698" class="t d">• Glass: clear dielectric Fresnel; reflections come from coherent sky/sun/probes, never albedo.</text>
+  <text x="550" y="724" class="t d">• Weathering: UV/rain/recess grime only. No disaster, structural-failure or reconstruction narrative.</text>
+</svg>

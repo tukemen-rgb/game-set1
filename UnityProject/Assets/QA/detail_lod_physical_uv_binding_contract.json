@@ -1,0 +1,62 @@
+{
+  "schemaVersion": "1.0",
+  "status": "IMPLEMENTATION_READY_RENDER_PENDING",
+  "purpose": "Fail closed if DanchiHighDetail LOD proxy render state can diverge from the metric physical-UV source state and create texture-phase, material-response or microdetail snapping. This contract is source/evidence integrity only and awards no Visual Fidelity points without native Unity pixels.",
+  "scenePath": "Assets/Scenes/QualityBlock1990s.unity",
+  "detailRootName": "DanchiHighDetail",
+  "detailPhysicalUvContractPath": "Assets/QA/detail_physical_uv_contract.json",
+  "physicalUvMeshRoot": "Assets/Art/GeneratedDetailPhysicalUvMeshes",
+  "proxyRootNames": [
+    "HD_LOD1_Proxy",
+    "HD_LOD2_Proxy",
+    "HD_LOD3_Proxy"
+  ],
+  "requirements": {
+    "requireExactlyFourLodLevels": true,
+    "requireAnimatedCrossFade": true,
+    "requireProgressiveRendererReduction": true,
+    "requireProxySharedMeshIdentityWithLod0Source": true,
+    "requireProxySharedMaterialIdentityWithLod0Source": true,
+    "forbidSourceAndProxyRendererPropertyBlocks": true,
+    "requireWorldTransformIdentityWithLod0Source": true,
+    "requireRendererLightingStateIdentityWithLod0Source": true,
+    "requireLayerIdentityWithLod0Source": true,
+    "requirePhysicalUvMeshAssetForCanonicalDetailMaterials": true,
+    "requireCompleteUv0AndTangents": true,
+    "validateBeforeFormalStillAndTemporalFrames": true,
+    "validateBeforeEveryReflectionLightingFingerprint": true,
+    "actualRenderRequiredForVisualPoints": true
+  },
+  "expectedTransitionHeights": [
+    0.18,
+    0.08,
+    0.03,
+    0.008
+  ],
+  "formalEvidence": {
+    "required100PercentCrops": [
+      "grazing/sash_rail_response",
+      "oblique/balcony_services"
+    ],
+    "reviewFor": [
+      "visible texture phase or manufacture-grain scale snap during LOD transition",
+      "material response or reflection discontinuity across a cross-fade",
+      "micro-normal shimmer or moire introduced by LOD switching",
+      "component disappearance that reads as a distracting visible LOD pop"
+    ]
+  },
+  "criticalDefectRisksReduced": [
+    "visible_lod_pop",
+    "severe_aliasing_or_shimmer"
+  ],
+  "implementationReadinessScore": 93,
+  "visualFidelityPointsAwarded": 0,
+  "visualFidelityStatus": "UNSCORED_UNTIL_REAL_4K_RENDER",
+  "runtimeRenderVerified": false,
+  "limitations": [
+    "Exact mesh/material/transform identity can prevent source-to-proxy physical-UV drift but cannot prove a cross-fade is visually invisible.",
+    "Renderer omission is the current LOD reduction strategy; silhouette quality and disappearing-detail salience require native rendered motion evidence.",
+    "Shared metric UVs do not by themselves prove anisotropic filtering, mip selection or normal-map response is stable at every transition distance.",
+    "The canonical 3840x2160 temporal probes and 100 percent crops remain authoritative for visible LOD pop, shimmer and material-response continuity."
+  ]
+}

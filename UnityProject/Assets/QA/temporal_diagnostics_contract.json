@@ -1,0 +1,35 @@
+{
+  "schemaVersion": "1.0",
+  "purpose": "Generate non-scoring transition diagnostics from sealed native-4K temporal 100% crops so manual reviewers can inspect the most suspicious shimmer/LOD transitions first without allowing heuristics to clear or fail a Visual Fidelity critical defect.",
+  "sourceEvidence": "Assets/QA/temporal_stability_manifest.json plus the SHA-256-validated native 100% crops referenced by that manifest",
+  "manualReviewRequired": true,
+  "automaticVisualPoints": 0,
+  "allowAutomaticCriticalDefectClear": false,
+  "sampleStride": 2,
+  "alignmentSampleStride": 8,
+  "subpixelAlignmentSearchRadiusPixels": 3,
+  "advisoryTransitionSpikeRatio": 2.5,
+  "advisoryHighFrequencyDeltaRatio": 2.0,
+  "metrics": [
+    "per-frame mean luminance",
+    "per-frame edge energy",
+    "per-frame Laplacian/high-frequency energy",
+    "16-bin normalized luminance histogram",
+    "adjacent-frame histogram L1 distance",
+    "adjacent-frame edge-energy relative delta",
+    "adjacent-frame high-frequency relative delta",
+    "small translation-compensated zero-mean luma MAE for subpixel_grazing"
+  ],
+  "policy": [
+    "Diagnostics may only rank exact sealed frame transitions for manual review; they do not constitute an observed visual defect by themselves.",
+    "A low diagnostic metric never proves that severe aliasing/shimmering or visible LOD pop is absent.",
+    "A high diagnostic metric creates a review candidate rather than an automatic FAIL because legitimate parallax, occlusion, vegetation motion appearance and LOD blending can change image statistics.",
+    "Reviewers must inspect the referenced sealed 100% crops at 1:1 pixel scale in frame order before recording observedTemporalRefs or clearing a critical defect.",
+    "No resampling, sharpening, frame interpolation or regenerated proxy image may substitute for the sealed crops."
+  ],
+  "criticalDefectRefs": [
+    "severe_aliasing_or_shimmer",
+    "visible_lod_pop"
+  ],
+  "visualFidelityStatus": "UNSCORED_UNTIL_MANUAL_RENDER_REVIEW"
+}

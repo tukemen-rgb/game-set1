@@ -1,0 +1,97 @@
+{
+  "schemaVersion": "1.0",
+  "status": "IMPLEMENTATION_READY_RENDER_PENDING",
+  "scenePath": "Assets/Scenes/QualityBlock1990s.unity",
+  "shaderPath": "Assets/Shaders/NewTownFoliageTransmission.shader",
+  "assemblyReasoning": {
+    "component": "living broadleaf lamina margin",
+    "constructionModel": "explicit two-sided folded lamina geometry supplies macro curvature; the shader refines only the thin biological margin inside the canonical tip/right/base/left UV domain",
+    "orientation": "raw UV0 preserves tip=(0.5,1), right=(1,0.5), base=(0.5,0), left=(0,0.5) independently from tiled PBR texture coordinates",
+    "interfaces": "visible-pass coverage and shadow-caster coverage use the same LeafEdgeCoverage function so foliage and dapple shadows cannot disagree",
+    "geometryVsMaterial": "fold, size, orientation and attachment remain geometry; sub-centimetre margin irregularity and screen-space edge coverage are material/shader detail",
+    "aging": "no tears, holes, scorch, storm damage or disaster cues are introduced; edge irregularity represents normal healthy leaf morphology only"
+  },
+  "edgeModel": {
+    "leafEdgeInset": 0.055,
+    "leafSerration": 0.020,
+    "leafEdgeAAScale": 1.35,
+    "forwardClipThreshold": 0.01,
+    "shadowClipThreshold": 0.50,
+    "alphaToCoverageRequired": true,
+    "rawCanonicalUvRequired": true,
+    "tiledPbrUvMustNotDriveMacroSilhouette": true,
+    "clusterVariationMayOnlyPhaseMarginIrregularity": true,
+    "runtimeRandomnessForbidden": true
+  },
+  "criticalDefectRisksReduced": [
+    "visible_primitive_placeholder",
+    "obvious_repetition",
+    "severe_aliasing_or_shimmer"
+  ],
+  "scoreTargets": [
+    {
+      "categoryId": "vegetation_natural_complexity",
+      "weight": 8,
+      "potentialImpact": "direct",
+      "autoPoints": 0
+    },
+    {
+      "categoryId": "lighting_shadows_reflections",
+      "weight": 15,
+      "potentialImpact": "secondary through dapple-shadow silhouette coherence",
+      "autoPoints": 0
+    },
+    {
+      "categoryId": "temporal_lod_aliasing",
+      "weight": 5,
+      "potentialImpact": "risk-reduction only until temporal pixels are reviewed",
+      "autoPoints": 0
+    }
+  ],
+  "formalEvidenceRequirements": {
+    "nativeResolution": [3840, 2160],
+    "requiredViews": ["hero", "oblique", "grazing"],
+    "required100PercentCrops": [
+      "oblique/vegetation_grounding",
+      "grazing/tree_shadow_contact"
+    ],
+    "requiredTemporalTarget": "temporal/subpixel_grazing",
+    "humanReviewRequired": true,
+    "actualRenderRequiredForVisualPoints": true,
+    "reviewFor": [
+      "straight diamond-card leaf edges",
+      "repeated identical serration phase at canopy scale",
+      "leaf-edge stair stepping",
+      "subpixel alpha-to-coverage shimmer",
+      "visible-versus-shadow silhouette mismatch",
+      "over-thinned leaf area",
+      "dapple shadow breakup that reads as card geometry"
+    ]
+  },
+  "lookdev": {
+    "illustration": "Assets/QA/lookdev/foliage_silhouette_optics_lookdev.svg",
+    "isRenderEvidence": false
+  },
+  "hardFailRules": [
+    "Formal foliage materials must use NewTown/FoliageTransmission.",
+    "The forward pass must preserve raw canonical UV separately from tiled PBR UV.",
+    "The visible pass must use LeafEdgeCoverage and alpha-to-coverage.",
+    "The shadow caster must use the same LeafEdgeCoverage function.",
+    "LeafEdgeInset must remain between 0.040 and 0.080.",
+    "LeafSerration must remain between 0.010 and 0.030.",
+    "LeafEdgeAAScale must remain between 1.0 and 1.8.",
+    "Runtime-random edge motion is forbidden for formal still and temporal evidence.",
+    "No Visual Fidelity points may be awarded from source-state validation alone.",
+    "Any severe edge shimmer, obvious card silhouette or shadow mismatch in real pixels remains a visual FAIL regardless of source QA."
+  ],
+  "implementationReadinessScore": 93,
+  "visualFidelityStatus": "UNSCORED_UNTIL_REAL_4K_RENDER",
+  "runtimeRenderVerified": false,
+  "autoVisualPoints": 0,
+  "limitations": [
+    "The underlying lamina still uses the existing coarse generated topology; shader coverage cannot create convex geometry outside that mesh boundary.",
+    "Margin phase varies per leaf cluster through the existing deterministic MaterialPropertyBlock, not per individual leaf within a cluster.",
+    "Alpha-to-coverage benefit depends on the actual formal render target MSAA state and must be verified in Unity.",
+    "Shadow-map filtering, camera distance and grazing angle can still expose aliasing that source inspection cannot predict."
+  ]
+}

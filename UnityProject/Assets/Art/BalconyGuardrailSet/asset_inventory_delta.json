@@ -1,0 +1,23 @@
+{
+  "schema": 1,
+  "updated": "2026-09-16",
+  "isInventoryDelta": true,
+  "ownerInspection": {
+    "startHead": "5733f43eddbe834e21d4a7763e94ed0aa16deab2",
+    "recursiveBranchTreeKeywordsChecked": ["railing","handrail","parapet"],
+    "matchingExistingOwnerFound": false,
+    "decision": "Create one BalconyGuardrailSet owner; do not duplicate window, AC, laundry, cleaning or faucet systems."
+  },
+  "newAssets": [
+    {"id":"PowderCoatedBalconyGuardrail3600x1100","masterTriangles":9072,"lodTriangles":[7152,2992,552,384],"actualOBJGLBExports":true,"unityVerified":false},
+    {"id":"BalconyGuardrailCornerReturn1200x1100","masterTriangles":4792,"lodTriangles":[3640,1408,228,180],"actualOBJGLBExports":true,"unityVerified":false},
+    {"id":"ConcreteBalconyKerb3600x180x120","masterTriangles":464,"lodTriangles":[368,296,228,204],"actualOBJGLBExports":true,"unityVerified":false}
+  ],
+  "reviewIntegrations": [
+    {"id":"BalconyGuardrailInstalledReview_LOD0","triangles":11172,"geometryCount":10,"formalBenchmarkSceneChanged":false,"unityVerified":false}
+  ],
+  "productionDeltaThisRun": {"authoredAssetSets":3,"highDetailMasters":3,"runtimeLodSets":3,"actualGlbCount":15,"actualObjCount":15,"diagnosticReviewGlbCount":1},
+  "visualFidelity": {"status":"UNSCORED_UNTIL_REAL_4K_RENDER","score":null,"pass":false,"pointsAwarded":0},
+  "readiness": {"lastRecordedScore":93,"recomputed":false},
+  "nextProductionTarget": "If no Unity render appears, add causal post-base splash-zone aging and inspect balcony ceiling/soffit owners before a larger structural batch."
+}

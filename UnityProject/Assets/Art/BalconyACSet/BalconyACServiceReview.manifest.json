@@ -1,0 +1,11 @@
+{
+  "id":"BalconyACServiceReview_LOD0",
+  "trianglesIncludingDiagnosticContext":23900,
+  "geometryCount":128,
+  "formalBenchmarkSceneChanged":false,
+  "unityVerified":false,
+  "placementPurpose":"External diagnostic only; AC on floor, wall pipe cover behind service side, condensate hose sloping toward floor.",
+  "intentionalPotentialContacts":["pipe cover horizontal run near AC service side","condensate hose starts near unit"],
+  "aabbOverlapValidation":"Not used as physical contact proof.",
+  "binaryDelivery":"Actual review GLB is in the conversation export package, not committed in this text-only GitHub batch."
+}

@@ -1,0 +1,34 @@
+{
+  "runId": "2026_09_16_service_corner_hard_surface",
+  "branch": "gpt/unity-migration",
+  "initialHead": "caf6286ea9c21b8dbace9a7debc0f183e50af0bb",
+  "authoredNewAssets": ["BalconyFloorDrain100"],
+  "materiallyImprovedAssets": ["BalconyFaucetG13","GardenHoseCoilNozzle"],
+  "actualGenerated": {
+    "newDrainMeshes": 5,
+    "heroFaucetMeshes": 5,
+    "restingHoseMeshes": 5,
+    "serviceCornerAssemblies": 1,
+    "heroFaucetTriangles": {"MASTER":10448,"LOD0":7520,"LOD1":4104,"LOD2":2584,"LOD3":1664},
+    "hoseTriangles": {"MASTER":30380,"LOD0":17012,"LOD1":8692,"LOD2":4772,"LOD3":3084},
+    "drainTriangles": {"MASTER":7936,"LOD0":6008,"LOD1":4076,"LOD2":2476,"LOD3":1896},
+    "serviceCornerLOD0Triangles": 49460
+  },
+  "verification": {
+    "heroFaucetReportSHA256": "7a9efed231a686c2cfc9fc742638d07c6d9665e0aebaabe65839c22cb6fa0d18",
+    "hoseReportSHA256": "cb560d50f2ed006f34399e8a9082f183fc2957824367eaf8d25628390c0ac796",
+    "floorDrainReportSHA256": "bf290eda2f0fb82a64ac96b91fcec6b972d06e407f09fd96d5dc258c99e48d5a",
+    "reviewManifestSHA256": "e777516f491277b78efde35fd022899ebf9a88802d635c3ca639227fa7f3d7cf",
+    "sourceSHA256": {
+      "refine_faucet_hero.py": "f125e3bd791a4bf8d18fa5bcd47dd74fd8a1e3ff484b1fa50a3b304ca64c68bf",
+      "refine_hose_nozzle_resting.py": "fc1941b3628b83c42c56b597772ff39c40ad034d69017029c609d8f7d9c86bbc",
+      "generate_balcony_floor_drain.py": "2643722969f57f098a56865353b282c279326d6fc55df904469f92182848794a",
+      "build_service_corner_review.py": "c4be1504de99e2dbd3acccdec470a437d0253b84a2a06bdde07ef5c717c7bc5d"
+    }
+  },
+  "runnerObservation": {"workflowRunCountAtStart":0,"unityRuntimeAvailable":false},
+  "bucketBlocker": "GalvanizedGardenBucket10L exists as the formal ntprop asset, but no matching verified external GLB was available in this run's working container and its formal Unity importer could not execute here. It was intentionally not duplicated with a second owner.",
+  "safety": {"godotChanged":false,"baseMerged":false,"formalBenchmarkSceneChanged":false,"excludedThemeAdded":false},
+  "visualFidelity": {"score":null,"pass":false,"pointsAwarded":0},
+  "implementationReadiness": {"lastRecordedScore":93,"recomputed":false}
+}

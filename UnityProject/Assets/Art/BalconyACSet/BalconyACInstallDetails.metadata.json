@@ -1,0 +1,65 @@
+{
+  "schema": 1,
+  "batchId": "BalconyACInstallDetails_2026_09_16",
+  "units": "metres",
+  "ownerSearch": {
+    "inspectedHead": "b89d22e4c189f24fddbb87fd32ca74c2e5d5de3a",
+    "existingOwner": "UnityProject/Assets/Art/BalconyACSet + UnityProject/Tools/generate_balcony_ac_set.py",
+    "result": "Extended the existing BalconyACSet. No second condenser/trunking owner created. Recursive tree contained no named penetration/putty owner."
+  },
+  "periodScope": "Unbranded around-2000 Japanese residential balcony interpretation. 6.35/9.52 mm tube ODs, cover/sleeve sizes and materials are modern/common modeling references only, not a claim about a particular historical SKU.",
+  "assets": [
+    {
+      "id": "RefrigerantLineSetPair_6p35_9p52",
+      "dimensionsMm": {"liquidTubeOD": 6.35,"gasTubeOD": 9.52,"liquidInsulationOD": 19,"gasInsulationOD": 25,"serviceRunApprox": 280,"flareNutLengths": 18},
+      "manufacture": "Assumed annealed copper refrigerant tubing with closed-cell elastomer insulation, hollow hexagonal flare nuts and short anti-chafe boots.",
+      "mounting": "Connects existing condenser service-stub ends to the existing trunking lower service opening. Authored route is a diagnostic assembly route, not a pressure-rated fabrication drawing.",
+      "interfaces": "Copper remains geometric through the route. Insulation is a real hollow sleeve starting after the visible flare region; flare nuts have a real bore. Review endpoints stop 0.5 mm before existing trunking insulated stubs to avoid coincident surfaces.",
+      "orientationExposure": "Service-side run rises gently toward wall cover; exposed copper/flare region is rain/splash exposed, insulated run is partly sheltered.",
+      "aging": "No green copper oxidation, oil stain or artificial wet highlight baked. Roughness and subtle deterministic micro-normal only.",
+      "geometryVsMaterial": "Copper, insulation wall thickness, flare-nut shell and transition boots are geometry. Fine copper/foam grain is PBR microdetail.",
+      "triangles": {"MASTER":24720,"LOD0":13424,"LOD1":6208,"LOD2":3168,"LOD3":1680},
+      "componentSurfacesPerLevel": 8
+    },
+    {
+      "id": "PipeCoverWallElbow60x55",
+      "dimensionsMm": {"nominalWidth":64,"nominalDepth":55,"wallThickness":2.2,"centerlineBendRadius":55},
+      "manufacture": "Assumed injection-molded exterior PVC snap-cover elbow with hollow wall and a separate lower snap-joint band.",
+      "mounting": "Installed at the top of the existing vertical trunking; review assembly uses 2 mm intentional covered overlap under the joint band.",
+      "interfaces": "True hollow curved rectangular shell. End section enters the wall-sleeve volume; it is not a solid bent box or painted opening.",
+      "orientationExposure": "Vertical-to-wall 90 degree turn; outer crown sun/rain exposed, wall-side underside sheltered.",
+      "aging": "Warm ivory base only. No arbitrary yellow streaks; UV chalking/dirt remains placement-specific.",
+      "geometryVsMaterial": "Hollow shell, end annuli and snap band are geometry; PVC micrograin is PBR material detail.",
+      "triangles": {"MASTER":4224,"LOD0":2208,"LOD1":1216,"LOD2":608,"LOD3":480},
+      "componentSurfacesPerLevel": 2
+    },
+    {
+      "id": "ACWallPenetrationSeal75",
+      "dimensionsMm": {"sleeveOD":75,"sleeveID":69,"sleeveLength":120,"puttyOuterNominalDiameter":88,"puttyOpeningApprox":[68,58],"puttyThickness":12},
+      "manufacture": "Assumed PVC wall sleeve, hand-applied non-hardening exterior sealing putty and thin EPDM interface lip. Putty perimeter is deliberately irregular rather than a perfect torus.",
+      "mounting": "Centered on the wall penetration. Review wall is 140 mm diagnostic concrete thickness; sleeve and putty straddle its exterior plane.",
+      "interfaces": "Sleeve is a true hollow tube. Putty is a closed irregular annular solid with a large central opening for the service-cover end; EPDM lip is a separate annular shell.",
+      "orientationExposure": "Exterior putty face exposed to sun/rain and service handling; sleeve interior sheltered.",
+      "aging": "No cracking, mold or water streaking asserted. Slight warm-gray putty and rough microstructure only until scene-specific aging is authored.",
+      "geometryVsMaterial": "Sleeve bore, putty annulus and EPDM lip are geometry. Fine putty/PVC/rubber texture is material microdetail.",
+      "triangles": {"MASTER":864,"LOD0":640,"LOD1":448,"LOD2":336,"LOD3":240},
+      "componentSurfacesPerLevel": 3
+    }
+  ],
+  "materials": [
+    {"id":"CopperTube","albedoSRGB":[0.55,0.24,0.09],"roughness":0.32,"metallic":1,"normalScale":0.05,"wetness":0,"uvAging":"none baked","angularResponse":"conductor microfacet"},
+    {"id":"InsulationGray","albedoSRGB":[0.24,0.25,0.23],"roughness":0.72,"metallic":0,"dielectricF0":0.04,"normalScale":0.10,"wetness":0,"uvAging":"none baked","angularResponse":"dielectric microfacet"},
+    {"id":"BrassFlareNut","albedoSRGB":[0.46,0.30,0.10],"roughness":0.34,"metallic":1,"normalScale":0.035,"wetness":0,"uvAging":"none baked","angularResponse":"conductor microfacet"},
+    {"id":"PipeCoverPVC","albedoSRGB":[0.79,0.77,0.69],"roughness":0.58,"metallic":0,"dielectricF0":0.04,"normalScale":0.07,"wetness":0,"uvAging":"none baked","angularResponse":"dielectric microfacet"},
+    {"id":"SealingPutty","albedoSRGB":[0.64,0.62,0.56],"roughness":0.82,"metallic":0,"dielectricF0":0.04,"normalScale":0.16,"wetness":0,"uvAging":"none baked","angularResponse":"dielectric microfacet"},
+    {"id":"SleevePVC","albedoSRGB":[0.70,0.70,0.66],"roughness":0.64,"metallic":0,"dielectricF0":0.04,"normalScale":0.06,"wetness":0,"uvAging":"none baked","angularResponse":"dielectric microfacet"},
+    {"id":"BlackEPDM","albedoSRGB":[0.018,0.020,0.019],"roughness":0.80,"metallic":0,"dielectricF0":0.04,"normalScale":0.09,"wetness":0,"uvAging":"none baked","angularResponse":"dielectric microfacet"}
+  ],
+  "authoring": {"generator":"UnityProject/Tools/generate_balcony_ac_install_details.py","generatorSHA256":"4e6d401ebba16338ec341e9c25664382adfa476a34d75ea3c52a5c44e7f1e2d4","reviewBuilder":"UnityProject/Tools/build_balcony_ac_installed_review.py","reviewBuilderSHA256":"bb4dd4c35bd2caa1ba3a826da3b04ff176c04f109cc72c5662a3b51db3de3042","byteIdenticalExecutedSources":true},
+  "exports": {"allLevelsGeneratedExternally":true,"glbCount":15,"objCount":15,"combinedReviewGlbCount":1,"meshBinariesCommitted":false,"packageDelivery":"Conversation artifact ZIP"},
+  "reviewIntegration": {"id":"BalconyACInstalledReview_LOD0","trianglesIncludingDiagnosticContext":40172,"geometryCount":141,"formalBenchmarkSceneChanged":false,"unityVerified":false,"designContactsMm":{"lineToTrunk":0.5,"trunkBackToWallExterior":0.0299,"topElbowOverlap":2.0}},
+  "verification": {"externalFiniteVerticesNormals":true,"nondegenerateFaces":true,"watertightPerComponent":true,"windingConsistent":true,"manifoldEdgeIncidence":true,"positiveComponentVolume":true,"glbTriangleBoundsRoundtrip":true,"objTriangleRoundtrip":true,"strictLodTriangleReduction":true,"cpuDepthBufferedActualMeshPreview":true,"unityCompile":false,"unityImport":false,"unityRender":false,"temporalLod":false,"targetHardwarePerformance":false},
+  "visualFidelity": {"authority":"Assets/QA/visual_fidelity_gate.json","status":"UNSCORED_UNTIL_REAL_4K_RENDER","score":null,"pass":false,"pointsAwarded":0},
+  "readiness": {"lastRecordedScore":93,"recomputedThisRun":false},
+  "pending": ["Unity import/material/normal verification","3840x2160 benchmark captures and 100% crops","temporal LOD/shimmer testing","scene-causal UV chalking, dust and putty aging","full triangle-triangle contact/intersection proof","target-hardware runtime performance"]
+}

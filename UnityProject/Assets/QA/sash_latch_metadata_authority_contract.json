@@ -1,0 +1,48 @@
+{
+  "schemaVersion": "1.0",
+  "centralRegistryPath": "Assets/QA/material_construction_lookdev.json",
+  "physicalLatchContractPath": "Assets/QA/facade_sash_latch_contract.json",
+  "centralAssemblyId": "sliding_window",
+  "legacyObjectPrefix": "HD_WindowHandle_",
+  "legacyMaterialId": "epdm_rubber",
+  "legacyFallbackOnly": true,
+  "mustRemainDisabledForFormalEvidence": true,
+  "expectedLegacyRendererCount": 60,
+  "supersedingAssemblyId": "apartment_sliding_sash_crescent_latch",
+  "supersedingRootName": "FacadeSashLatchHardware",
+  "primaryMaterialId": "anodized_aluminum",
+  "fastenerMaterialId": "galvanized_steel",
+  "primaryMaterialAssetPath": "Assets/Art/GeneratedDetailMaterials/MAT_AgedAluminum.mat",
+  "fastenerMaterialAssetPath": "Assets/Art/GeneratedDetailMaterials/MAT_DarkGalvanizedSteel.mat",
+  "expectedWindowCount": 30,
+  "expectedLodCount": 4,
+  "mountingScrewPitchM": 0.05,
+  "authorityRule": "The HD_WindowHandle_ component entry in material_construction_lookdev.json records provenance for the generated fallback rectangles only. During formal evidence those 60 EPDM renderers must remain disabled. Active visible window-lock construction and material metadata is authoritative only when facade_sash_latch_contract.json, the anodized_aluminum material record and the galvanized_steel fastener record agree with the physical FacadeSashLatchHardware scene QA.",
+  "geometryVsMaterialRule": "Lock base plate, pivot boss, swept crescent lever, keeper throat, screw heads, seating offsets and all four LOD silhouettes are geometry. Aluminum/galvanized microstructure, oxidation, recess grime, hand-contact polish, wet response, UV aging and angular/Fresnel response remain material/weathering behavior. Neither the disabled EPDM fallback nor painted highlights may substitute for manufactured latch geometry.",
+  "lookdevBrief": "Use the actual formal latch assembly in frontal, 35-degree oblique and midsummer grazing-light evidence. The 100-percent sash-latch crop must resolve one metal crescent lock per two-panel window, 50 mm mounting-screw pitch, lever-to-keeper clearance, seated plate/receiver interfaces, distinct aluminum-versus-fastener response and zero visible legacy rubber rectangles. Grazing highlights must roll from geometry plus BRDF/Fresnel rather than albedo paint. Temporal oblique evidence must show four-level cross-fade without visible pop or shimmer.",
+  "automaticVisualPoints": 0,
+  "renderVerificationPending": true,
+  "expectedVisualScoreImpact": {
+    "geometryConstruction": "small-to-medium: removes ambiguity about which manufactured hardware assembly is authoritative",
+    "materialPbr": "medium: binds the visible latch to canonical aluminum/galvanized PBR records instead of the disabled EPDM fallback",
+    "periodAuthenticity": "small: preserves the sourced period-plausible crescent-lock construction contract",
+    "temporalLod": "small: formal scene validation preserves the existing four-level latch LOD contract"
+  },
+  "failureInjection": [
+    "Enable any HD_WindowHandle_ legacy renderer before a QA4K_ or QATemporal_ camera renders; formal latch scene QA must fail.",
+    "Change the central legacy handle material away from epdm_rubber without deliberately updating this authority contract; metadata authority QA must fail.",
+    "Point facade_sash_latch_contract.json primaryAssetPath away from MAT_AgedAluminum.mat; cross-contract authority QA must fail.",
+    "Point the galvanized fastener path away from MAT_DarkGalvanizedSteel.mat; cross-contract authority QA must fail.",
+    "Remove required manufacture, dimensions, mounting, interfaces, exposure, aging, geometry-vs-material, weathering or lookdev reasoning from the physical latch contract; metadata authority QA must fail.",
+    "Set automaticVisualPoints above zero or renderVerificationPending=false without actual reviewed native 4K evidence; metadata authority QA must fail."
+  ],
+  "criticalDefectIds": [
+    "visible_primitive_placeholder",
+    "impossible_material_physics",
+    "hero_geometry_intersection",
+    "severe_aliasing_or_shimmer",
+    "visible_lod_pop",
+    "missing_construction_material_metadata",
+    "unverified_render_claim"
+  ]
+}

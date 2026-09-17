@@ -1,0 +1,92 @@
+{
+  "schemaVersion": "1.0.0",
+  "runId": "2026-09-15_0345_rainwater_evidence_binding",
+  "branch": "gpt/unity-migration",
+  "startHead": "e5470ec70f35fd60bac2da1d0cfd07ebb2174638",
+  "recordParentHead": "f1ea50a190407c7720af9e3af98acf5abb3970e8",
+  "objective": "Close the provenance gap where the authoritative rainwater construction and single-authority contracts existed but were not members of the scene-metadata coverage source set used by the construction/material SHA-256 render binding.",
+  "changes": [
+    {
+      "commit": "30c06fe826b68ee07d30c5551b72c33178719e25",
+      "summary": "Added rainwater_downpipe_installation_contract.json and rainwater_system_authority_contract.json to danchi_domain.contractPaths so QualityBlockConstructionMaterialEvidenceBindingQA includes both in the exact render-bound source bundle."
+    },
+    {
+      "commit": "99885c2ec88eb5aa3c43d0701c8cd558e4cb066c",
+      "summary": "Versioned the rainwater single-authority contract to 1.1.0 and made exact-SHA evidence membership, post-capture mutation rejection, fresh-render requirement and zero automatic visual points machine-readable."
+    },
+    {
+      "commit": "f1ea50a190407c7720af9e3af98acf5abb3970e8",
+      "summary": "Added QualityBlockRainwaterEvidenceBindingQA. Formal QA4K, temporal and reflection pre-cull callbacks now fail closed if either required rainwater contract is not exactly once in danchi_domain, or if the authority evidence-binding policy is weakened. Render callbacks remain read-only."
+    }
+  ],
+  "reasoning": {
+    "issue": "The mature rainwater installation and new single-authority policy were validated at source/runtime level, but danchi_domain.contractPaths omitted both. Because the construction/material evidence binder derives its protected SHA-256 file set from those domain contract paths, a render receipt could previously be sealed without cryptographically including the rainwater-specific contracts.",
+    "risk": "That gap weakened the critical missing_required_construction_material_metadata guarantee for a benchmark-facing service assembly and could allow metadata-policy changes to escape the exact source bundle tied to rendered pixels.",
+    "chosenAction": "Bind existing mature rainwater reasoning into evidence provenance instead of adding another speculative geometry system. Add a narrow fail-closed membership QA rather than duplicating the existing rainwater construction implementation.",
+    "visualPointsAwarded": 0
+  },
+  "machineReadableEnforcement": {
+    "coverageContract": "Assets/QA/scene_metadata_coverage_contract.json",
+    "domain": "danchi_domain",
+    "requiredRainwaterContracts": [
+      "Assets/QA/rainwater_downpipe_installation_contract.json",
+      "Assets/QA/rainwater_system_authority_contract.json"
+    ],
+    "membershipQa": "Assets/Editor/QualityBlockRainwaterEvidenceBindingQA.cs",
+    "bindingQa": "QualityBlockConstructionMaterialEvidenceBindingQA",
+    "formalCameraPrefixes": [
+      "QA4K_",
+      "QATemporal_",
+      "QAPreparedTemporal_"
+    ],
+    "reflectionValidation": true,
+    "renderCallbackMayRepair": false,
+    "automaticVisualPoints": 0
+  },
+  "failureInjection": [
+    "remove rainwater_downpipe_installation_contract.json from danchi_domain.contractPaths and confirm formal pre-cull rejects",
+    "remove rainwater_system_authority_contract.json from danchi_domain.contractPaths and confirm formal pre-cull rejects",
+    "duplicate either required rainwater contract path and confirm membership QA rejects",
+    "change rainwater authority evidenceBinding.domainId away from danchi_domain and confirm rejection",
+    "disable requireExactSha256WithRenderedScene, rejectPostCaptureContractMutation or freshUnityRenderRequiredAfterMutation and confirm rejection",
+    "seal a real render receipt, mutate either bound rainwater contract, and confirm construction/material evidence binding invalidates the candidate rather than reusing old pixels"
+  ],
+  "verification": {
+    "sourceDiffReviewed": true,
+    "compareStatusFromStart": "ahead",
+    "aheadByBeforeRunRecord": 3,
+    "behindByBeforeRunRecord": 0,
+    "mergeBaseStayedAtStartHead": true,
+    "changedFilesBeforeRunRecord": [
+      "UnityProject/Assets/Editor/QualityBlockRainwaterEvidenceBindingQA.cs",
+      "UnityProject/Assets/QA/rainwater_system_authority_contract.json",
+      "UnityProject/Assets/QA/scene_metadata_coverage_contract.json"
+    ],
+    "godotChanged": false,
+    "baseMerged": false,
+    "excludedThemesIntroduced": false,
+    "githubWorkflowRunsOnBranch": 0,
+    "githubStatusContextsOnRecordParent": 0,
+    "unityCompileVerified": false,
+    "unityRuntimeVerified": false,
+    "native3840x2160RenderVerified": false,
+    "renderVerification": "PENDING_REAL_UNITY_RUNNER"
+  },
+  "scores": {
+    "implementationReadiness": 93,
+    "implementationReadinessMax": 100,
+    "remainingImplementationBlocker": "unity_compile_verification",
+    "visualFidelityStatus": "UNSCORED_UNTIL_REAL_4K_RENDER",
+    "visualFidelityPointsAddedThisRun": 0,
+    "visualPassClaimed": false
+  },
+  "expectedVisualScoreImpact": {
+    "directPixelImpact": "none",
+    "geometryConstructionEvidenceReliability": "medium",
+    "materialPbrEvidenceReliability": "medium",
+    "weatheringCausalityEvidenceReliability": "small-to-medium",
+    "temporalLodEvidenceReliability": "small",
+    "note": "No category receives points until fresh 3840x2160 Unity renders and 100% crops are reviewed. The change prevents rainwater metadata provenance from being omitted or silently weakened."
+  },
+  "nextBlocker": "No Unity 6000.3.0f1 runner/workflow is available on the branch. When one appears, stop speculative expansion, compile first, execute the rainwater evidence-membership failure injections, then capture fresh frontal/oblique/grazing 3840x2160 frames plus rainwater 100% crops and temporal LOD evidence before scoring."
+}

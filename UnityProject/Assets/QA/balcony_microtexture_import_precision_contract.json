@@ -1,0 +1,66 @@
+{
+  "schemaVersion": "1.0.0",
+  "contractId": "balcony-microtexture-import-precision-v1",
+  "scope": "Runtime import precision for the generated 1024x1024 balcony waterproof micro-normal and metallic/smoothness textures used by the 30-bay generated fallback.",
+  "problem": "The source pair intentionally carries subtle millimetre-scale normal structure and a bounded dielectric smoothness signal. Block compression may quantize, flatten or block these signals even when source PNG generation, physical construction metadata and material bindings remain correct.",
+  "sourceSignal": {
+    "normalTexture": "Assets/Art/GeneratedBalconyDrainage/TX_BalconyWaterproofing_MicroNormal.png",
+    "metallicSmoothnessTexture": "Assets/Art/GeneratedBalconyDrainage/TX_BalconyWaterproofing_MetallicSmoothness.png",
+    "textureSize": 1024,
+    "worldPeriodM": 0.50,
+    "normalFeatureScale": "approximately 2.8-16 mm from the deterministic periodic frequencies in QualityBlockBalconySurfaceMicrostructureUpgrade",
+    "runtimeNormalScale": 0.18,
+    "metallicChannel": 0.0,
+    "smoothnessRange": [0.22, 0.34],
+    "dataColorSpace": "linear",
+    "reasonForPrecision": "Preserve subtle tangent-space orientation and roughness variation for native-4K grazing review without inventing additional visual detail."
+  },
+  "requiredImportState": {
+    "textureCompression": "Uncompressed",
+    "crunchedCompression": false,
+    "minimumMaxTextureSize": 1024,
+    "mipmapsRequired": true,
+    "filterMode": "Trilinear",
+    "wrapMode": "Repeat",
+    "minimumAnisotropy": 8,
+    "standalonePlatformOverrideAllowed": false,
+    "normalTextureType": "NormalMap",
+    "maskTextureType": "Default",
+    "sRGB": false,
+    "alphaSource": "FromInput",
+    "maskAlphaCarriesSmoothness": true
+  },
+  "evidencePolicy": {
+    "preparationMayRepairBeforeFormalCapture": true,
+    "formalPreCullIsReadOnly": true,
+    "requiredNativeResolution": [3840, 2160],
+    "requiredViews": ["oblique", "grazing"],
+    "required100PercentCrops": ["oblique/balcony_services", "grazing/material_grazing"],
+    "actualPixelsRequiredForVisualCredit": true,
+    "runtimeRenderVerification": "PENDING_UNITY_RUNTIME",
+    "visualFidelityPointsAwarded": 0
+  },
+  "failureInjection": [
+    "set either texture to CompressedHQ",
+    "enable Crunch compression",
+    "set Standalone override to a compressed format",
+    "reduce maxTextureSize below 1024",
+    "disable mipmaps",
+    "change Trilinear filtering to Bilinear or Point",
+    "reduce anisotropy below 8",
+    "enable sRGB on either physical-data texture",
+    "change normal texture type away from NormalMap",
+    "discard the metallic/smoothness texture alpha channel"
+  ],
+  "visualFidelityRelevance": {
+    "textureMicrodetailTexelFidelity": "direct risk reduction; no points until real 4K pixels",
+    "materialPbrPhysicalPlausibility": "supports stable roughness/normal response",
+    "lightingShadowsReflections": "supports correct grazing-light microresponse",
+    "temporalLodAliasingStability": "mip/trilinear/aniso constraints reduce risk but require actual temporal evidence"
+  },
+  "prohibitions": [
+    "Do not use import precision as evidence of rendered quality.",
+    "Do not add painted highlights, baked lighting, directional runoff or fake wet sheen to compensate for missing detail.",
+    "Do not weaken mipmapping or anisotropic filtering to make a still frame look sharper at the expense of temporal stability."
+  ]
+}

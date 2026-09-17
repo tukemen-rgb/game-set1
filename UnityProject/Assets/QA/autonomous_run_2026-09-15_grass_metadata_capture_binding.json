@@ -1,0 +1,70 @@
+{
+  "schemaVersion": "1.0.0",
+  "runDate": "2026-09-15",
+  "branch": "gpt/unity-migration",
+  "startHead": "35cdcd07a65c01ce3ce21ab25009760ba411f1b7",
+  "substantiveCommits": [
+    "bd2bc9c5440f1e9bf7ec110448639ef99cd64065",
+    "13d1182d879cbcf873c19fed44b20539e962b928",
+    "87ad0a012a9664878f4197c2ae21af638a634ce8"
+  ],
+  "issue": {
+    "summary": "GrassBladeFieldDetail renderers are parented below Ground, but grass_blade_field_contract.json was absent from ground_domain.contractPaths. The renderer-domain coverage check therefore had a generic Ground scope while the detailed grass manufacture/material specification was omitted from the construction/material source bundle sealed to future render evidence.",
+    "criticalDefectRisk": "missing_construction_material_metadata",
+    "reasonForPriority": "A visually strong grass render must not be scoreable if its detailed physical metadata is not bound to the same capture. This is a fail-closed evidence-admissibility issue, not a source-side Visual Fidelity point gain."
+  },
+  "changes": [
+    "Linked Assets/QA/grass_blade_field_contract.json exactly once from ground_domain.contractPaths.",
+    "Upgraded grass_blade_native_packet_integration_contract.json to schema 1.2.0 and required Ground-domain metadata binding plus construction/material bundle enumeration.",
+    "Extended QualityBlockGrassBladeNativePacketQA to reject missing, duplicate or wrong-domain grass metadata links and to verify the construction/material binder still enumerates domain contractPaths into the SHA-256 source bundle."
+  ],
+  "verification": {
+    "githubActionsRunsObserved": 0,
+    "unityRuntimeAvailable": false,
+    "unityCompileVerified": false,
+    "native4KRenderProduced": false,
+    "sourceAudit": [
+      "Grass root path remains QualityBlock1990s/Ground/GrassBladeFieldDetail.",
+      "ground_domain.contractPaths contains Assets/QA/grass_blade_field_contract.json exactly once.",
+      "QualityBlockConstructionMaterialEvidenceBindingQA enumerates domain.contractPaths into its required source set and SHA-256 bundle.",
+      "Grass native-packet preflight now fails if the grass physical contract is missing, duplicated, assigned to another metadata domain, or no longer enumerated by the evidence binder."
+    ],
+    "renderVerification": "PENDING_REAL_UNITY_6000.3.0f1_EXECUTION"
+  },
+  "implementationReadiness": {
+    "score": 93,
+    "possible": 100,
+    "deltaThisRun": 0,
+    "blocker": "Fresh Unity 6000.3.0f1 CleanBuildCache compile evidence is still unavailable."
+  },
+  "visualFidelity": {
+    "status": "UNSCORED_UNTIL_REAL_4K_RENDER",
+    "pointsAwardedThisRun": 0,
+    "passClaimed": false
+  },
+  "expectedVisualScoreImpact": {
+    "geometryConstruction": "Evidence admissibility and construction-metadata integrity improvement only; no visual points awarded.",
+    "materialPbr": "The grass physical material specification will now be cryptographically bound to the same future render receipt; no visual points awarded.",
+    "vegetationNaturalComplexity": "Future observed grass evidence can no longer rely on an unbound detailed grass contract; no visual points awarded.",
+    "criticalDefect": "Reduces the risk that missing_construction_material_metadata is incorrectly cleared for the physical grass system."
+  },
+  "failureInjection": [
+    "remove grass_blade_field_contract.json from ground_domain.contractPaths",
+    "duplicate grass_blade_field_contract.json in ground_domain.contractPaths",
+    "move grass_blade_field_contract.json to a non-Ground metadata domain",
+    "remove domain.contractPaths enumeration from QualityBlockConstructionMaterialEvidenceBindingQA"
+  ],
+  "constraints": {
+    "godotModified": false,
+    "baseMerged": false,
+    "forbiddenEarthquakeDisasterReconstructionThemesAdded": false
+  },
+  "nextBlocker": "No Unity 6000.3.0f1 runner/workflow execution or real 3840x2160 evidence is available yet.",
+  "nextActionsWhenRunnerAppears": [
+    "Run the four metadata-binding failure injections and require fail-closed preflight behavior.",
+    "Run the authoritative fresh CleanBuildCache compile verification.",
+    "Stop speculative expansion and prepare the complete Native 4K review packet.",
+    "Inspect fresh 3840x2160 hero, oblique and grazing frames plus 100% vegetation/grass-relevant crops.",
+    "Inspect sealed temporal subpixel_grazing and lod_walk_oblique evidence for shimmer and visible LOD pop before assigning any Visual Fidelity points."
+  ]
+}

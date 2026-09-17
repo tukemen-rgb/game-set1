@@ -1,0 +1,31 @@
+{
+  "date": "2026-09-16",
+  "branchAtInspection": "gpt/unity-migration @ 3b00f07f533086bae3949603c3082ef68dbf167c",
+  "runnerEvidence": {"githubActionsRunsObserved":0,"screenshotsObserved":false},
+  "workCompleted": [
+    "real drain-opening floor rebuild",
+    "existing FloorDrain100 owner re-execution",
+    "full routed condensate hose refinement",
+    "MASTER+LOD0/1/2/3 drained hero integration"
+  ],
+  "actualVerification": {
+    "existingDrainTriangleParity":true,
+    "finiteVerticesNormals":true,
+    "noDegenerateFaces":true,
+    "componentWatertight":true,
+    "windingConsistent":true,
+    "positiveVolume":true,
+    "edgeIncidence2":true,
+    "glbRoundtrip":true,
+    "objRoundtrip":true,
+    "strictLodReduction":true,
+    "routeGravityFall":true,
+    "drainFlush":true,
+    "hoseFloorClearance":true
+  },
+  "visualFidelityPointsAwarded": 0,
+  "implementationReadinessLastRecorded": 93,
+  "implementationReadinessReverified": false,
+  "blocker": "No Unity runner/render evidence; Visual Fidelity category scoring remains prohibited.",
+  "nextTarget": "If Unity pixels still do not appear, prioritize high-coverage facade/floor microvariation and contextual vegetation; add underside drain plumbing only if it can appear in a real camera framing."
+}

@@ -1,0 +1,14 @@
+{
+  "schema": 1,
+  "date": "2026-09-17",
+  "assetId": "BalconySummerTomatoPlanter650",
+  "referenceBoundary": "Original dimensional design assumptions inspired by common modern Japanese rectangular balcony planters and home tomato cultivation; not a claim about a specific 2000-era product.",
+  "dimensionsMetres": {"planterTopWidth": 0.65, "planterDepth": 0.26, "planterBodyHeight": 0.22, "nominalPPWallThickness": 0.003, "bambooStakeTopHeight": 1.42, "nominalTomatoDiameter": 0.042},
+  "construction": {"planter": "tapered injection-molded polypropylene proxy with physically closed wall/bottom shell and thick rim", "soil": "contained dry potting-soil volume with non-flat top", "support": "three bamboo stakes with modeled nodes, two jute cross ties, and short stem ties", "plant": "two tomato vines with main stems, compound serrated leaflet shells, rachises, flowers, pedicels/calyx, and green/turning/ripe fruit"},
+  "materials": {"PlanterPP": {"metallic": 0.0, "roughness": 0.56}, "PlanterEdge": {"metallic": 0.0, "roughness": 0.60}, "PottingSoil": {"metallic": 0.0, "roughness": 0.96}, "Bamboo": {"metallic": 0.0, "roughness": 0.70}, "BambooNode": {"metallic": 0.0, "roughness": 0.78}, "JuteTwine": {"metallic": 0.0, "roughness": 0.92}, "TomatoStem": {"metallic": 0.0, "roughness": 0.72}, "TomatoLeaf": {"metallic": 0.0, "roughness": 0.68}, "LeafVein": {"metallic": 0.0, "roughness": 0.74}, "TomatoRipe": {"metallic": 0.0, "roughness": 0.40}, "TomatoTurning": {"metallic": 0.0, "roughness": 0.43}, "TomatoGreen": {"metallic": 0.0, "roughness": 0.50}, "Calyx": {"metallic": 0.0, "roughness": 0.74}, "FlowerYellow": {"metallic": 0.0, "roughness": 0.66}},
+  "weathering": "No arbitrary dirt decals or baked highlights. Soil is dry-matte; bamboo/node/jute roughness is material-specific. Engine wetness, UV aging, subsurface/transmission and calibrated Fresnel response remain Unity-unverified.",
+  "geometryMaterialSplit": "Silhouette, planter wall thickness/rim, soil volume, bamboo/twine supports, stems, leaflets, fruit, flowers and calyx are geometry. Color and surface roughness are material properties; no painted highlight is used.",
+  "actualExternalLODtriangles": {"MASTER": 24448, "LOD0": 18048, "LOD1": 7316, "LOD2": 3898, "LOD3": 1874},
+  "unityVerified": false,
+  "visualFidelityScore": null
+}

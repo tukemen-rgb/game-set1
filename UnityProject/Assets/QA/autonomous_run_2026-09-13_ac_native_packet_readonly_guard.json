@@ -1,0 +1,58 @@
+{
+  "schemaVersion": "1.0",
+  "runDate": "2026-09-13",
+  "scope": "native-4K formal packet AC assembly preservation",
+  "startingHead": "2ddfa393a7759da902b573a7fafc228ff2a37853",
+  "substantiveCommit": "bebe9bdf90b92e8e4f6cc29025cc352968e9d1bf",
+  "finding": "The complete native-4K review packet rebuilt the formal Danchi, whose AC path correctly performs mechanical installation before replacing the legacy fan disc/grille, but then invoked QualityBlockAcOutdoorUnitInstallationQA.ApplyAndPersist again after physical fan replacement. That mutator requires HD_AC_FanDisc and HD_AC_GrilleH/V legacy children that QualityBlockAcFanPhysicalRefinement deliberately destroys, so the first real review packet could fail before reflection/still capture despite the formal Danchi build itself being valid.",
+  "correction": [
+    "Removed the post-refinement AC installation mutation from the native-4K packet; the mechanically corrected state produced by the formal Danchi chain is now treated as read-only after physical fan replacement.",
+    "Added explicit AC fan physical, round-wire guard and guard-mount contract validation at packet preflight.",
+    "Added explicit installation + physical fan + round-wire + mount scene validation after final building-interface work and immediately before reflection synchronization.",
+    "Added the same physical AC validation immediately before still capture and again before temporal evidence, preventing later passes from silently restoring legacy/floating/incomplete fan geometry."
+  ],
+  "staticVerification": {
+    "legacyMutatorRequirement": "QualityBlockAcOutdoorUnitInstallationQA.ShiftCasingMountedDetail requires HD_AC_FanDisc, HD_AC_FanHub and HD_AC_GrilleH/V children.",
+    "physicalRefinementBehavior": "QualityBlockAcFanPhysicalRefinement destroys HD_AC_FanDisc and HD_AC_GrilleH/V and replaces them with rotor, shroud and guard; later guard refinements add round-wire geometry and HD_AC_GuardMountFeet.",
+    "formalOrderingContract": "ac_outdoor_unit_formal_build_integration_contract.json already requires installation before fan replacement and LOD generation.",
+    "nativePacketState": "After this change no AC installation mutator runs after physical fan replacement; evidence-phase checks are read-only validators.",
+    "unityCompileRuntime": "PENDING_UNITY_RUNNER",
+    "actual3840x2160Render": "NOT_AVAILABLE",
+    "visualScoreAwarded": 0
+  },
+  "implementationReadiness": {
+    "score": 93,
+    "possible": 100,
+    "unchanged": true,
+    "blocker": "Unity 6000.3.0f1 compile/runtime verification remains unavailable."
+  },
+  "expectedVisualScoreImpactOnly": {
+    "geometry_construction": "high evidence-path impact: avoids formal capture abort and prevents post-refinement AC assembly corruption",
+    "material_pbr": "low-medium evidence-path impact: keeps validated dielectric rotor/shroud and galvanized guard/mount bindings intact",
+    "lighting_shadows_reflections": "medium evidence-path impact: ensures final physical AC state is validated before reflection cubemap baseline",
+    "temporal_lod_aliasing": "medium evidence-path impact: preserves the same validated AC LOD assembly into still and temporal phases",
+    "automaticPoints": 0
+  },
+  "criticalDefectRiskReduced": [
+    "visible primitive-placeholder geometry in benchmark framing",
+    "floating/interpenetrating hero geometry",
+    "materially impossible metallic/specular values",
+    "missing required construction/material metadata",
+    "visible LOD pop",
+    "severe aliasing/shimmering",
+    "claiming render quality without an actual render"
+  ],
+  "nextRunnerVerification": [
+    "Compile under Unity 6000.3.0f1 and execute QualityBlockNative4KReviewPacket.Prepare from a clean editor session.",
+    "Confirm all 15 units retain no HD_AC_FanDisc or HD_AC_GrilleH/V after formal preparation while rotor/shroud/round-wire guard/guard mounts remain present and bound to the expected four-level LOD policy.",
+    "Failure-inject deletion of one physical guard or one HD_AC_GuardMountFeet and require the packet to fail before reflection synchronization without repairing the candidate.",
+    "Failure-inject one AC support/drain/service-line interface violation and require installation validation to fail while the physical fan state remains untouched.",
+    "If the packet reaches rendering, stop speculative expansion and inspect the real oblique/balcony_services 100% crop plus temporal LOD evidence before any Visual Fidelity score is assigned."
+  ],
+  "policies": {
+    "godotChanged": false,
+    "baseMerged": false,
+    "forbiddenDisasterThemesAdded": false,
+    "visualFidelityStatus": "UNSCORED_UNTIL_REAL_4K_RENDER"
+  }
+}

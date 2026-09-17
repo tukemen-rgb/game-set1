@@ -1,0 +1,110 @@
+{
+  "schemaVersion": "1.1",
+  "generatedUtc": "2026-09-10T21:02:00Z",
+  "runtimeRenderVerified": false,
+  "visualFidelityStatus": "UNSCORED_UNTIL_REAL_4K_RENDER",
+  "intent": "Increase vegetation/natural complexity through maintained root-zone planting interfaces and cause-based low understory while preserving the benchmark's ordinary midsummer Japanese residential-estate character.",
+  "authoritativeRootZoneInterfaceContract": "Assets/QA/vegetation_root_zone_interface_contract.json",
+  "sceneAssumptions": {
+    "treeAnchorCount": 6,
+    "pavedTreePitCount": 4,
+    "grassGroundTreeCount": 2,
+    "dryBenchmark": true,
+    "noGameplayColliderChanges": true
+  },
+  "assemblies": [
+    {
+      "id": "maintained_paved_tree_pit",
+      "establishment": "Four tree anchors touch the plaza paving footprint. One ring is fully pavement-supported; three sit on a plaza/lawn boundary and therefore require the curb modules to follow their actual local support grade rather than hover at one world height.",
+      "nominalDimensions": "final exposed-soil opening diameter 2.32 m; radius 1.16 m sized from the generated mature root-flare envelope including authored mesh irregularity; 12 edging modules; edging section 150 x 80 mm; approximately 12 mm tangential dry joints",
+      "materialsFinish": "dry mineral topsoil with compacted fine aggregate; matte non-metallic precast concrete edging with small physical chamfers; root bark remains a rough dielectric",
+      "mounting": "the root-zone visual volume extends below the lower lawn datum so its underside cannot become visible; paving-supported curb modules embed 8 mm and lawn-supported modules embed 6 mm. The intended soil construction datum is flush/slightly recessed, while the retained coarse collision slab requires only a 1.5 mm positive visual separation that must be invisible at native 4K.",
+      "interfaces": "generated root flare -> exposed soil with at least 90 mm contracted conservative clearance -> inner curb face -> 12 mm module joint -> locally supported plaza paving or lawn; runtime QA measures the exact transformed root-flare mesh vertices; no unexplained painted contact ring or floating curb is allowed",
+      "orientationExposure": "upward-facing, rain/sun exposed, with three boundary rings following the approximately 50 mm plaza-to-lawn grade change and one interior ring fully supported by paving",
+      "aging": "ordinary compaction, circulation-side soil wear, mild soil darkening near the trunk and slight concrete aggregate exposure are permitted only where caused by use/exposure; arbitrary damage cues are not used",
+      "geometryVsMaterial": "opening radius, exact root clearance, soil volume, curb height/embed, module joints and support-grade steps are geometry; soil grain, bark fissure, concrete pores and ordinary UV/roughness variation remain material detail",
+      "lodPolicy": "root flares remain through tree LOD0/1/2/3; tree-pit substrate and edging remain static construction geometry; added biological understory uses explicit LOD0/1/2/3",
+      "lookdevBrief": "At oblique 100 percent crop, roots must remain inside the exposed root zone without entering curb/paving, every curb module must bear on its local pavement/lawn grade, and the 1.5 mm fallback separation must not read as a raised brown slab. Grazing light should reveal real curb chamfers/joints rather than baked highlights."
+    },
+    {
+      "id": "cause_based_low_understory",
+      "establishment": "Sparse spontaneous/maintained low vegetation establishes within the root zone. Density is reduced toward the nearest pedestrian-pressure source and remains denser on protected sides instead of being distributed uniformly.",
+      "nominalDimensions": "plant height 0.18-0.42 m; leaf-rosette spread approximately 0.20-0.36 m at LOD0; paved pits use 7-9 source plants while grass-ground trees use 16-22 source plants before LOD reduction",
+      "materialsFinish": "thin dielectric foliage using the existing two-sided foliage transmission model; small green stems reuse non-metallic foliage material",
+      "mounting": "paved-pit plant origins are reset to 1 mm above the final root-zone soil visual surface and grass-tree origins to 4 mm above the lawn datum so finite-radius stem geometry penetrates its support instead of floating",
+      "interfaces": "root-zone soil/grass -> stem -> leaf spray; circulation-facing sector has lower occupancy due to ordinary foot traffic/maintenance pressure",
+      "orientationExposure": "midsummer sun/sky context from the existing deterministic environment; individual rosettes have deterministic yaw and modest pitch variation",
+      "aging": "ordinary summer growth with modest size/color variation only",
+      "geometryVsMaterial": "stem direction, rosette silhouette, spacing, physical root datum and LOD reduction are explicit geometry; leaf vein/color and transmitted-light response are material/shader detail",
+      "lodPolicy": "four renderer-distinct levels with animated cross-fade; plant population is progressively reduced and stems are removed after LOD1; visible LOD pop is an automatic fail",
+      "lookdevBrief": "Close view should reveal independent low plants with stem bases entering soil/grass, not hovering above it. Oblique view should show lower circulation-side occupancy; far view must collapse smoothly without shimmer or a sudden green ring."
+    }
+  ],
+  "materials": [
+    {
+      "id": "root_zone_soil",
+      "sourceAsset": "Assets/Art/GeneratedPBR/PBR_DrySoil.mat",
+      "albedoGuidance": "dry warm-brown mineral soil; no baked lighting or black contact-shadow halo",
+      "roughnessRange": [0.90, 0.98],
+      "metallicRange": [0.0, 0.0],
+      "normalScaleGuidance": "fine soil/aggregate microrelief only; root-zone volume/opening remains geometric",
+      "microstructure": "fine mineral grains, small aggregate and compaction variation",
+      "wetnessResponse": "not active in the dry benchmark; any later wet variant must follow physical catchment and contact logic",
+      "uvAging": "no UV hue shift beyond mild ordinary summer desaturation",
+      "angularFresnelResponse": "weak dielectric grazing reflection; never metallic"
+    },
+    {
+      "id": "precast_tree_pit_edging",
+      "sourceAsset": "Assets/Art/GeneratedPBR/PBR_WashedConcrete.mat",
+      "albedoGuidance": "neutral aged precast concrete without painted edge highlights",
+      "roughnessRange": [0.84, 0.94],
+      "metallicRange": [0.0, 0.0],
+      "normalScaleGuidance": "small aggregate and pores; 80 mm section, support-grade step and chamfer are geometry",
+      "microstructure": "washed/aged cement paste with visible fine aggregate",
+      "wetnessResponse": "dry benchmark only; any future wet state must be source/catchment based",
+      "uvAging": "small exposure-driven lightening permitted, no stylized bleaching",
+      "angularFresnelResponse": "broad subdued dielectric grazing response created by real illumination"
+    },
+    {
+      "id": "understory_leaf",
+      "sourceAsset": "Assets/Art/GeneratedPBR/PBR_LeafMid_Transmission.mat",
+      "albedoGuidance": "midsummer green foliage with cluster-level variation; no emissive green",
+      "roughnessRange": [0.75, 0.90],
+      "metallicRange": [0.0, 0.0],
+      "normalScaleGuidance": "leaf micro-normal/vein response from the existing foliage material",
+      "microstructure": "thin leaf lamina with vein-scale normal variation",
+      "wetnessResponse": "dry benchmark; no generic wet sheen",
+      "uvAging": "small ordinary sun-exposure variation only",
+      "angularFresnelResponse": "two-sided dielectric leaf response with modest transmission under coherent midsummer sun"
+    }
+  ],
+  "qa": {
+    "requiredPatchCount": 6,
+    "requiredPavedPitCount": 4,
+    "requiredEdgingModulesPerPit": 12,
+    "requiredUnderstoryLodCount": 4,
+    "minimumDistinctLod0RendererCountsAcrossTrees": 4,
+    "requireAnimatedCrossFade": true,
+    "requireNoGeneratedColliders": true,
+    "requireNonPrimitiveMeshes": true,
+    "requireNonMetallicSoilAndConcrete": true,
+    "renderInspectionTargets": [
+      "oblique/vegetation_grounding",
+      "grazing/tree_shadow_contact",
+      "hero/ground_contact"
+    ],
+    "automaticFail": [
+      "root flare intersects the maintained pit curb or uninterrupted paving",
+      "tree-pit curb module visibly floats above its local pavement/lawn support",
+      "root-zone soil reveals an unsupported underside",
+      "understory stems visibly float above their support surface",
+      "uniform circular/stamped understory distribution immediately obvious at benchmark framing",
+      "visible Unity primitive mesh in ecology detail",
+      "metallic soil or concrete",
+      "severe foliage aliasing or shimmering",
+      "visible understory LOD pop",
+      "claiming vegetation visual quality without an actual Unity render"
+    ]
+  },
+  "verification": "Source/contract only. The detailed numeric root-zone authority is vegetation_root_zone_interface_contract.json. Unity 6000.3.0f1 compile and native 3840x2160 oblique/grazing render evidence are still required before any Visual Fidelity points are awarded."
+}

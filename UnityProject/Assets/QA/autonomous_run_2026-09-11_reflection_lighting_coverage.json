@@ -1,0 +1,111 @@
+{
+  "schemaVersion": "1.0",
+  "runDate": "2026-09-11",
+  "branch": "gpt/unity-migration",
+  "startHead": "7979a46b21db57380773a7fcad9e0108b6832cdd",
+  "substantiveWorkHead": "a97965a272688f70c0785fcc880d3005cd4e6524",
+  "readinessRecordHead": "d4faa7bb509a1543917dda28ce5dad1c8664372f",
+  "commitsBeforeThisRecord": [
+    {
+      "sha": "1a51a04efdb2c3a533c61da33e2dac50734815c7",
+      "purpose": "Harden reflection-probe synchronization contract with legal-but-render-changing lighting-policy coverage and canonical critical-defect IDs."
+    },
+    {
+      "sha": "63bf3aa3723e243eda2841d83c2f9c45310eb2d0",
+      "purpose": "Add fail-closed ReflectionLightingCoverageQA for canonical gate mapping and fingerprint coverage requirements."
+    },
+    {
+      "sha": "8904ce205420f98dc40d81f43db4600737459af7",
+      "purpose": "Advance reflection lighting fingerprint to v3 and hash SummerSun renderMode/bounceIntensity, subtractive shadow color, pixelLightCount and shadowmaskMode."
+    },
+    {
+      "sha": "a97965a272688f70c0785fcc880d3005cd4e6524",
+      "purpose": "Bind the reflection-lighting coverage validator into the existing core Visual Gate integrity dependency path."
+    },
+    {
+      "sha": "d4faa7bb509a1543917dda28ce5dad1c8664372f",
+      "purpose": "Refresh Implementation Readiness record without awarding Visual Fidelity points."
+    }
+  ],
+  "problemFound": {
+    "summary": "Reflection synchronization could accept two individually legal lighting-policy states as coherent because several rendering-affecting values were validated for permissibility but were not identity-bound across probe request and still capture. The reflection contract also mapped to two stale noncanonical critical-defect aliases.",
+    "staleCriticalAliases": [
+      "inconsistent_sun_shadow_direction",
+      "claiming_render_quality_without_actual_render"
+    ],
+    "canonicalReplacements": [
+      "sun_shadow_inconsistency",
+      "unverified_render_claim"
+    ],
+    "previouslyUnboundLegalState": [
+      "SummerSun.renderMode",
+      "SummerSun.bounceIntensity",
+      "RenderSettings.subtractiveShadowColor",
+      "QualitySettings.pixelLightCount",
+      "QualitySettings.shadowmaskMode"
+    ],
+    "risk": "A realtime cubemap and the subsequent still could both pass source validity checks while using different legal render policy, contaminating Lighting/Material/Cinematic evidence without changing the prior reflection hash."
+  },
+  "changes": [
+    "Updated reflection_probe_capture_sync_contract.json while keeping schema 1.1 backward-compatible; added explicit lighting coverage booleans and replaced stale critical aliases with exact canonical gate IDs.",
+    "Added QualityBlockReflectionLightingCoverageQA.cs. It requires exact mapped critical-defect IDs, verifies those IDs exist in visual_fidelity_gate.json, and fail-closes if request/poll/completion/pre-still lighting coverage is weakened.",
+    "Updated QualityBlockReflectionLightingStateFingerprint to reflection-lighting-state-v3. The SHA-256 now includes sun.renderMode, sun.bounceIntensity, RenderSettings.subtractiveShadowColor, QualitySettings.pixelLightCount and QualitySettings.shadowmaskMode in addition to existing sun/sky/ambient/shadow/LOD/render-state data.",
+    "Bound the new coverage validator into QualityBlockReflectionMaterialPhysicalityBindingQA.ValidateContractConfigOnly, which is already invoked by QualityBlockVisualGateIntegrityQA, so direct core-gate integrity validation cannot silently ignore the new reflection policy.",
+    "Updated implementation_readiness.json while keeping the score at 93/100 and Visual Fidelity unscored."
+  ],
+  "verification": {
+    "githubSourceReview": true,
+    "branchCompareStartToSubstantiveHead": {
+      "ahead": 4,
+      "behind": 0,
+      "mergeBaseUnchanged": true,
+      "changedPaths": [
+        "UnityProject/Assets/Editor/QualityBlockReflectionLightingCoverageQA.cs",
+        "UnityProject/Assets/Editor/QualityBlockReflectionLightingStateFingerprint.cs",
+        "UnityProject/Assets/Editor/QualityBlockReflectionMaterialPhysicalityBindingQA.cs",
+        "UnityProject/Assets/QA/reflection_probe_capture_sync_contract.json"
+      ]
+    },
+    "godotChanged": false,
+    "baseMerged": false,
+    "forbiddenThemeAdded": false,
+    "unity6000_3_0f1CompileVerified": false,
+    "unityRuntimeVerified": false,
+    "native3840x2160EvidenceGenerated": false,
+    "actualPixelReviewPerformed": false,
+    "visualFidelityScored": false,
+    "note": "No GitHub Actions workflow or commit-status context was available for the substantive head. Source review can establish implementation intent and fail-closed wiring only; it cannot prove Unity API compilation or rendered image quality."
+  },
+  "scores": {
+    "implementationReadiness": 93,
+    "implementationReadinessPossible": 100,
+    "visualFidelityStatus": "UNSCORED_UNTIL_REAL_4K_RENDER",
+    "visualFidelityPointsAwardedThisRun": 0,
+    "visualFidelityPassClaimed": false
+  },
+  "expectedVisualScoreImpactAfterRealRender": [
+    {
+      "category": "lighting_shadows_reflections",
+      "impact": "Higher evidence coherence: realtime cubemap and still must share the same legal light rendering policy, not merely each satisfy broad validity ranges."
+    },
+    {
+      "category": "material_pbr",
+      "impact": "Grazing/Fresnel review is less likely to compare materials against reflections produced under a different legal policy state."
+    },
+    {
+      "category": "cinematic_image",
+      "impact": "Highlight/exposure review is less likely to be contaminated by stale specular energy from a differently configured reflection capture."
+    },
+    {
+      "category": "critical_defect_integrity",
+      "impact": "Reflection evidence mapping now uses the exact canonical IDs sun_shadow_inconsistency, major_light_leak and unverified_render_claim; aliases cannot silently become nonbinding documentation."
+    }
+  ],
+  "limitations": [
+    "The new fields are source/API state observations, not pixel evidence. Matching hashes do not prove physically convincing illumination.",
+    "A transient state mutation entirely between observed Editor callbacks remains outside this source-only proof and must be judged with actual runner evidence.",
+    "No Unity 6000.3.0f1 compile occurred, so API availability/behavior remains runtime verification pending despite reuse of APIs already present elsewhere in the branch.",
+    "No 3840x2160 benchmark stills or 100% crops exist on the branch; Visual Fidelity remains unscored."
+  ],
+  "nextBlocker": "Unity 6000.3.0f1 Runner. When available, stop speculative expansion and run Prepare Complete Native 4K Review Packet. Confirm reflection-lighting-state-v3 remains identical from pre-RenderProbe request through every observed poll, completion and immediate pre-still validation, then score only the sealed hero/oblique/grazing 3840x2160 frames and 100% crops."
+}

@@ -1,0 +1,126 @@
+{
+  "schemaVersion": "1.0.0",
+  "scenePath": "Assets/Scenes/QualityBlock1990s.unity",
+  "assemblyId": "circa2000_balcony_vertical_lattice_guardrail",
+  "expectedBays": 30,
+  "purpose": "Replace benchmark-visible stock Cube balcony guard members with a dimensioned, manufactured vertical-lattice guardrail while preserving the legacy Unity collider envelope as gameplay compatibility data. This is source-side construction readiness only; it awards no Visual Fidelity points without native 4K evidence.",
+  "referenceBasis": [
+    {
+      "source": "LIXIL/TOSTEM product chronology and current archive for ベランダ手すりⅡ",
+      "factUsed": "The series is documented as sold from 1996-10 and includes vertical-lattice configurations with top/lower horizontal members and repeated slender vertical members.",
+      "useLimit": "Used only to establish period-plausible product family and assembly logic around 2000; this generated fallback is not claimed to reproduce a specific TOSTEM SKU or proprietary section dimension."
+    },
+    {
+      "source": "Japan MLIT child-fall-prevention housing evaluation guidance",
+      "factUsed": "A balcony fall-prevention reference condition uses 1100 mm floor-to-top height and 110 mm maximum clear dimension between vertical guard members.",
+      "useLimit": "Used as a conservative safety/plausibility datum for the generated fallback, not as a claim that every circa-2000 balcony used these exact members."
+    }
+  ],
+  "manufacture": {
+    "components": [
+      "continuous anodized-aluminum top rail extrusion",
+      "seven primary 40 x 40 mm support posts aligned with existing floor base plates",
+      "twenty-two 18 x 20 mm vertical infill bars between/around primary posts",
+      "existing physically seated lower rail retained as the lower capture member",
+      "small top/post and lower/post insertion sleeves visible only at close LOD",
+      "existing base plates and anchor heads retained as the slab attachment interface"
+    ],
+    "process": "Factory-cut extrusions are assembled into repeated vertical-lattice panels. Primary posts transfer load into existing base plates/anchors; infill bars are captured by horizontal rails and do not pretend to be free-standing rods.",
+    "geometryVsMaterial": "Top rail section, posts, infill bars, capture overlap, base attachment and silhouette are geometry. Extrusion grain, oxidation haze, fine scratches, UV dulling and rain residue are material/microdetail. Lighting/highlights may never be painted into albedo."
+  },
+  "dimensionsThickness": {
+    "guardTopHeightAboveFinishedFloorM": 1.10,
+    "topRail": { "lengthM": 3.55, "heightM": 0.070, "depthM": 0.080 },
+    "primaryPost": { "count": 7, "widthM": 0.040, "depthM": 0.040, "centerPitchM": 0.480, "slabEmbedM": 0.040 },
+    "infill": { "count": 22, "widthM": 0.018, "depthM": 0.020, "modulePitchM": 0.120, "maximumCalculatedClearOpeningM": 0.102 },
+    "lowerCapture": { "floorClearanceM": 0.070, "existingRailHeightM": 0.040, "barInsertionM": 0.005 },
+    "closeLodSleeve": { "widthM": 0.050, "heightM": 0.012, "depthM": 0.050 },
+    "tolerances": { "heightM": 0.005, "supportCenterToBasePlateM": 0.005, "lowerCaptureM": 0.006, "lodBoundsM": 0.010 }
+  },
+  "materials": [
+    {
+      "id": "aged_clear_anodized_aluminum_guardrail",
+      "finish": "weathered clear/silver anodized aluminum represented as a dielectric oxide-coated surface approximation in Unity Standard",
+      "albedoLinearApprox": [0.48, 0.50, 0.49],
+      "roughness": 0.50,
+      "smoothness": 0.50,
+      "metallic": 0.0,
+      "dielectricF0Approx": 0.045,
+      "normalScale": 0.24,
+      "microstructure": "deterministic 256 px extrusion/scuff normal, 0.08 m physical tile, mipmapped/trilinear/aniso 8; per-bay phase offset prevents all thirty manufactured modules from restarting the same micro-pattern",
+      "wetness": "0.0 in the benchmark dry midsummer state; old rain streaking may alter roughness/residue locally but not create a current wet sheen",
+      "uvAging": "slight upper/exterior-face dulling consistent with long exterior exposure; no random damage mask",
+      "angularFresnel": "rough dielectric-coating grazing response from PBR/shading only; no painted highlight or impossible mirror-metal flash"
+    }
+  ],
+  "mounting": {
+    "loadPath": "top rail/infill wind and occupant load -> seven primary posts -> existing seated base plates -> anchor heads/slab",
+    "primaryPostAlignment": "Primary post centers remain at bay-local x = -1.44, -0.96, -0.48, 0, 0.48, 0.96, 1.44 m, exactly above the seven existing base-plate centers.",
+    "infillLayout": "Twenty-nine vertical centerlines span x=-1.68..+1.68 m at 0.12 m pitch; the seven 0.48 m-grid positions are primary posts and the remaining twenty-two are infill bars.",
+    "legacyCompatibility": "The original RailTop_* and Rail_* GameObjects, MeshFilters and BoxColliders remain as named gameplay/bookkeeping anchors at their original transforms. Their stock Cube MeshRenderers are disabled only after the generated four-LOD visual guardrail exists; generated render geometry adds no collider."
+  },
+  "interfacesGapsSeals": {
+    "topRail": "Primary posts/infill terminate 5 mm into the top-rail underside capture zone; visible positive air gaps are forbidden.",
+    "lowerRail": "Infill bars terminate 5 mm into the already-corrected lower rail. The existing lower-rail underside remains 70 mm above the balcony finished floor.",
+    "openingRule": "Maximum horizontal clear opening between vertical members is 102 mm; any source calculation above 110 mm is FAIL.",
+    "base": "Primary posts penetrate 40 mm below finished-floor datum and remain centered over existing base plates; base plates/anchor heads continue to be governed by balcony_construction_interface_contract.json and are rechecked by final-state guardrail QA after the legacy post renderers are disabled.",
+    "seals": "No elastomeric seal is invented between exposed railing extrusions; close joints are mechanical insertion/welded/fixed interfaces."
+  },
+  "orientationExposure": {
+    "orientation": "Front balcony guard is fully exterior, rain/sun exposed; inner faces behind posts are more sheltered.",
+    "sun": "All rail highlights and post edge gradients must agree with the same coherent midsummer Japanese sun used by facade/shadow QA.",
+    "rain": "Top rail and outer vertical faces receive direct rain/UV; sheltered lower interfaces can retain slightly higher residue/roughness.",
+    "contact": "Hand-contact polishing may subtly lower roughness on the top rail only; it cannot be represented as a bright painted stripe."
+  },
+  "aging": {
+    "allowedCauses": ["anodic weathering/dulling", "UV exposure", "rain runoff/residue", "hand-contact polishing", "sheltered-joint grime"],
+    "forbiddenAppearance": ["uniform random dirt mask", "painted specular streak", "structural deformation without cause", "catastrophe/damage narrative"],
+    "causality": "Weathering intensity follows face exposure, drainage and contact; manufactured spacing/section remains regular."
+  },
+  "lodPolicy": {
+    "levels": 4,
+    "transitions": [0.18, 0.08, 0.03, 0.008],
+    "crossFadeRequired": true,
+    "lod0": "Combined chamfered generated top/post/infill geometry plus close-range insertion sleeves. Legacy RailTop_*/Rail_* stock MeshRenderers are disabled rather than reused as visible LOD geometry.",
+    "lod1": "Single combined chamfered proxy preserves top rail, all seven posts and all twenty-two infill bars; sleeves are removed.",
+    "lod2": "Single combined non-primitive box proxy preserves every vertical centerline and exact macro bounds with reduced edge complexity.",
+    "lod3": "Top rail and seven supports remain closed box geometry; all twenty-two infill centerlines remain as crossed thin long-distance proxies so guard density does not collapse into a visibly different pattern.",
+    "hardRule": "All four LODs preserve 1.10 m guard top and the same 3.55 m span; macro bounds may drift by at most 10 mm. Source triangle count must decrease LOD0 > LOD1 > LOD2 > LOD3. Visible pop/shimmer remains a rendered temporal critical check."
+  },
+  "qaRules": {
+    "legacyBuiltInCubeRendererEnabledAfterApply": "FAIL",
+    "guardTopHeightBelowM": 1.095,
+    "guardTopHeightAboveM": 1.105,
+    "maximumClearOpeningM": 0.110,
+    "primaryPostCount": 7,
+    "infillCount": 22,
+    "generatedColliderCount": 0,
+    "missingFourLodsOrCrossFade": "FAIL",
+    "nonDecreasingLodTriangles": "FAIL",
+    "basePlateFloorContactToleranceM": 0.003,
+    "anchorHeadEmbedRangeM": [0.001, 0.006],
+    "materialMetallicMax": 0.02,
+    "materialSmoothnessRange": [0.42, 0.58],
+    "normalMapRequired": true,
+    "bakedHighlightAllowed": false,
+    "renderVerification": "PENDING until Unity 6000.3.0f1 produces native 3840x2160 hero/oblique/grazing frames, 100% crops and bound temporal evidence"
+  },
+  "renderEvidencePlan": {
+    "hero": "Verify the old seven widely spaced Cube bars no longer read as the complete guard; confirm a dense vertical-lattice silhouette and 1.10 m proportion against doors/windows/balcony depth.",
+    "oblique": "At 100% crop verify top-rail depth/chamfers, all post-to-base alignments, lower capture, no floating/interpenetrating members and no coplanar duplicate rail geometry.",
+    "grazing": "Verify anodized aluminum behaves as a rough dielectric-coated surface with real edge highlights from geometry/PBR, not painted light; repeated micro-normal phase must not be obvious.",
+    "temporal": "Verify all four LODs retain the same guard density/span/height without bar disappearance, shimmer, severe aliasing or visible pop."
+  },
+  "expectedVisualScoreImpact": {
+    "geometryConstruction": "Potentially removes a benchmark-visible primitive/under-populated railing deduction and corrects the floor-to-guard proportion plus real support/infill load path.",
+    "materialPbr": "Potentially replaces generic metal response with restrained anodized dielectric-coated behavior and manufacture-scale micro-normal.",
+    "periodAuthenticity": "Vertical-lattice aluminum balcony guard product families are documented in the 1996+ period, supporting a circa-2000 scene without claiming an exact SKU.",
+    "temporalLod": "Four explicit cross-faded levels retain all vertical centerlines instead of allowing the railing pattern to collapse at distance.",
+    "automaticCredit": 0
+  },
+  "visualCreditPolicy": {
+    "autoVisualPoints": 0,
+    "criticalDefectClearedBySourcePass": false,
+    "reason": "Construction/math/metadata can reduce risk but cannot prove the appearance of a 4K render. Visual Fidelity stays UNSCORED until actual Unity pixels are reviewed."
+  }
+}

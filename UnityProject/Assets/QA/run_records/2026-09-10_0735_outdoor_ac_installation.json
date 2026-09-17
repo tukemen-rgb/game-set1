@@ -1,0 +1,128 @@
+{
+  "schemaVersion": "1.0",
+  "generatedUtc": "2026-09-10T00:35:48Z",
+  "branch": "gpt/unity-migration",
+  "startHead": "4fae5d1754c11de084e57e5a935b3781951443fd",
+  "substantiveWorkHead": "51f50ebce5afce80ba14db2aafc359d1dc9a402b",
+  "substantiveCommits": [
+    {
+      "sha": "0ca5ae7a35b8680ab274e73c07df07ff8fa920f2",
+      "message": "qa: define outdoor AC installation contract"
+    },
+    {
+      "sha": "dc5f37e66adde62ac5451902062c97bba7e7ea8d",
+      "message": "fix: reconstruct outdoor AC support interfaces",
+      "auditNote": "Initial implementation established the support/service-line correction path but a subsequent static audit found that its service-line transform scaling assumed an untouched Unity Cylinder. The detailed bevel pass actually bakes cylinder dimensions into GM_HD mesh assets and resets transform scale to one, so this implementation was superseded in the same run."
+    },
+    {
+      "sha": "f45fd4c1c00aac7d5067f3ecc80245ee21f34980",
+      "message": "qa: gate native capture on outdoor AC installation"
+    },
+    {
+      "sha": "51f50ebce5afce80ba14db2aafc359d1dc9a402b",
+      "message": "fix: preserve authored AC service-line meshes",
+      "auditNote": "Corrected the service-line reconstruction to rebuild dimension-baked beveled-cylinder meshes through QualityBlockDetailMeshLibrary and keep transform scale at one. Endpoint validation now derives length from actual mesh bounds, so it supports both untouched Unity Cylinder input and the post-bevel GM_HD representation."
+    }
+  ],
+  "focus": "Geometry & construction fidelity / Material-PBR plausibility / outdoor-unit floating-interpenetrating critical risk",
+  "sourceDefectFound": {
+    "assembly": "generated balcony outdoor air-conditioner support + service-line installation",
+    "evidence": [
+      "The generated fallback BalconyFloor top is approximately bay-local Y=-0.79 m (floor center -0.85 m, height 0.12 m).",
+      "HD_AC_MountPlate_±1 was authored at Y=-0.817 m with height 0.018 m, giving a top near -0.808 m: the whole plate is inside the 0.12 m balcony-floor volume rather than sitting on its top surface.",
+      "HD_AC_Foot_±1 was authored at Y=-0.785 m with height 0.045 m, giving a bottom near -0.8075 m: roughly 17.5 mm of the support foot penetrates the slab.",
+      "The base AC casing is 0.48 m high centered at bay-local Y=-0.53 m, placing its lower face near -0.77 m. A physically legible plate+foot stack above the slab therefore requires moving the casing and casing-mounted detail upward instead of leaving support hardware buried.",
+      "Paired refrigerant pipes and the drain hose were dimensioned from the old unit-side elevations. Raising only the casing would disconnect those services, so the unit-side endpoints must move while the wall-side collar and slab-relative drain termination remain fixed interfaces."
+    ]
+  },
+  "implementation": {
+    "contract": "Assets/QA/ac_outdoor_unit_installation_contract.json",
+    "qaCode": "Assets/Editor/QualityBlockAcOutdoorUnitInstallationQA.cs",
+    "authoritativePacket": "Assets/Editor/QualityBlockNative4KReviewPacket.cs",
+    "runtimeReport": "Assets/QA/ac_outdoor_unit_installation_runtime_report.json",
+    "manufactureInstallationReasoning": "Model the balcony condenser as a separate manufactured appliance supported by two mounting plates and two feet above the RC balcony slab. The chassis is supported by the feet with only a small controlled overlap; visible fastener heads remain above their plates; paired insulated refrigerant lines continuously connect moved unit-side outlets to fixed wall-side interfaces; a low condensate hose terminates slightly above the slab. Wall collar and clips remain facade-fixed rather than following the moved appliance.",
+    "hardSceneMetrics": {
+      "expectedGeneratedFloorTopLocalYMetres": -0.79,
+      "floorTopToleranceMetres": 0.003,
+      "mountPlateHeightMetres": 0.018,
+      "supportFootHeightMetres": 0.045,
+      "casingHeightMetres": 0.48,
+      "casingFootEmbedTargetMetres": 0.006,
+      "casingFootEmbedHardRangeMetres": [0.002, 0.010],
+      "supportContactToleranceMetres": 0.003,
+      "pipeJointToleranceMetres": 0.004,
+      "drainOutletClearanceTargetMetres": 0.010,
+      "drainOutletClearanceHardRangeMetres": [0.005, 0.020],
+      "boltPlateEmbedHardRangeMetres": [0.001, 0.006]
+    },
+    "materialReasoning": "The contract separates aged dielectric AC casing/plastic, darker fan/grille components, galvanized/protected mounting hardware, matte insulated refrigerant lines and matte polymer drain hose. It records albedo/roughness/metallic-or-F0/normal-scale/microstructure/wetness/UV-aging/angular-Fresnel guidance per material class and prohibits painted edge illumination.",
+    "lodReasoning": "LOD0 retains fan, grille, support stack, visible fastener heads, paired refrigerant lines, drain, collar and clips; LOD1/2 progressively simplify microgeometry while preserving mounting gap and service-line silhouette; LOD3 may simplify further but may not expose a stock primitive in benchmark framing. Actual transition stability remains render/temporal evidence only.",
+    "authoritativeOrder": "The Complete Native 4K Review Packet validates the AC installation contract, builds the final scene, applies and persists balcony-rail/slab correction, applies and persists AC support/service correction, validates it before realtime reflection rendering, validates it again after probe completion immediately before Camera.Render, and validates it again after still sealing before temporal capture.",
+    "automaticVisualPoints": 0
+  },
+  "staticAudit": {
+    "importantCorrectionWithinRun": "The first AC implementation attempted to re-scale service-line transforms. Static inspection of QualityBlockDetailBevelUpgrade and QualityBlockDetailMeshLibrary showed that high-detail cylinders are converted to dimension-baked GM_HD meshes and their transform scale is reset to one. The final implementation therefore rebuilds the actual beveled mesh asset for the new line length/diameter and keeps scale=1. This prevents a source-side regression where pipes could become incorrectly scaled after the bevel pass.",
+    "finalEndpointMethod": "Service-line endpoint validation uses sharedMesh.bounds.extents.y multiplied by localScale.y and the transform's local rotation. This works for both an untouched Unity Cylinder and the dimension-baked GM_HD representation used in the prepared scene.",
+    "expectedGeneratedUnits": 15,
+    "expectedSupportStacks": 30,
+    "expectedMountBolts": 60,
+    "countsStatus": "CODE_PATH_EXPECTATION_ONLY_NOT_RUNTIME_PROVEN"
+  },
+  "research": {
+    "usePolicy": "Manufacturer material is used only to ground physical support/anchoring/drainage/service-line principles. No exact product identity or modern dimension is projected backward onto the circa-2000 benchmark.",
+    "references": [
+      {
+        "title": "Daikin outdoor-unit installation foundation guidance",
+        "url": "https://ec.daikinaircon.com/ecatalog/CP09018J10/images/CP09018J10147.pdf"
+      },
+      {
+        "title": "Panasonic outdoor-unit installation points",
+        "url": "https://panasonic.jp/aircon/contents/outdoor-unit-point.html"
+      },
+      {
+        "title": "Daikin room-air-conditioner installation pre-check",
+        "url": "https://www.ac.daikin.co.jp/customercenter/useful/ra_check/main"
+      }
+    ]
+  },
+  "verification": {
+    "type": "GitHub source/static inspection only; no Unity editor/runtime execution available in this run",
+    "branchComparison": "Start head to substantive work head is ahead by 4 and behind by 0. The changed paths are only UnityProject/Assets/Editor/QualityBlockAcOutdoorUnitInstallationQA.cs, UnityProject/Assets/Editor/QualityBlockNative4KReviewPacket.cs and UnityProject/Assets/QA/ac_outdoor_unit_installation_contract.json. Godot is untouched and no base merge occurred.",
+    "projectEditorVersion": "6000.3.0f1",
+    "compileState": "PENDING_UNITY_6000_3_0f1_RUNTIME",
+    "renderEvidenceState": "No actual 3840x2160 hero/oblique/grazing frames, 100% crops, AC runtime report or temporal evidence were generated/reviewed in this run.",
+    "visualScoringPolicy": "No construction/material/render points can be self-awarded from this source correction. The native evidence-bound 100-point gate remains authoritative."
+  },
+  "implementationReadiness": {
+    "score": 93,
+    "possible": 100,
+    "status": "UNCHANGED",
+    "reason": "This run reduces a concrete source-level construction risk and strengthens the authoritative render preflight, but the existing readiness model still withholds 7 points for missing Unity 6000.3.0f1 compile/runtime verification."
+  },
+  "visualFidelity": {
+    "status": "UNSCORED_UNTIL_REAL_4K_RENDER",
+    "pointsAwardedThisRun": 0,
+    "passClaimed": false,
+    "criticalDefectCleared": false
+  },
+  "expectedVisualScoreImpact": [
+    "Geometry & construction fidelity (20): replaces a source arrangement with buried mounting plates and slab-penetrating feet by a measurable slab -> plate -> foot -> chassis interface; preserves connected service geometry when the chassis moves.",
+    "Material/PBR physical plausibility (20): codifies distinct dielectric casing/insulation/hose response versus restrained galvanized hardware response and prevents painted-highlight reasoning from substituting for real angular light response.",
+    "Lighting/shadows/reflections (15): physically separated support contacts and continuous pipes can produce causal contact shadow, occlusion and grazing response after reflection probes are regenerated from the corrected persisted scene; no points are awarded until observed.",
+    "Weathering/context causality (10): ordinary splash/contact grime, UV exposure, insulation aging and condensate wetting are constrained to physically causal zones rather than uniform random noise.",
+    "Critical-defect integrity: source risk for floating/interpenetrating hero geometry, primitive-looking service geometry, impossible material response and missing assembly metadata is reduced but not cleared without actual native-4K evidence."
+  ],
+  "lookdevVerificationPriority": [
+    "oblique/balcony_services 100% crop: inspect plate-on-slab and foot-on-plate seating, casing/foot overlap, visible mount-bolt heads, line joints, wall collar and drain/slab clearance",
+    "hero/facade_center: confirm repeated outdoor units read as supported manufactured appliances rather than floating boxes while avoiding visually obvious module sameness",
+    "grazing/sash_rail_response or nearest AC-visible grazing crop: verify broad dielectric casing response separates from galvanized hardware and matte insulation/hose without painted edge highlights",
+    "temporal/lod walk: reject any support/service-line disappearance, LOD pop or shimmer introduced by future LOD simplification"
+  ],
+  "correctivePolicyIfRuntimeFails": "Do not loosen contact, embed, pipe-joint or drain-clearance tolerances merely to pass QA. Use the runtime report and sealed 100% crops to identify the wrong interface, fix the generator/correction geometry or authored replacement, rerun reflection synchronization, and recapture the same benchmark evidence.",
+  "nextBlocker": "Unity 6000.3.0f1 editor/runner compile and execution. At first availability, stop speculative expansion and run Prepare Complete Native 4K Review Packet. If compilation or ac_outdoor_unit_installation_runtime_report.json fails, fix the concrete API/geometry defect first. If source/runtime QA passes, inspect oblique/balcony_services at 100% before scoring any category.",
+  "constraintsPreserved": {
+    "godotUntouched": true,
+    "baseMerged": false,
+    "earthquakeDisasterReconstructionThemesAdded": false
+  }
+}

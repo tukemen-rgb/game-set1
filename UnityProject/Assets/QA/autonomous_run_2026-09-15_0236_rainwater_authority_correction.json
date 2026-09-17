@@ -1,0 +1,70 @@
+{
+  "schemaVersion": "1.0.0",
+  "runId": "2026-09-15_0236_rainwater_authority_correction",
+  "branch": "gpt/unity-migration",
+  "startHead": "a47adb5134b1d14065f7678d4c5b9deca8455fdb",
+  "substantiveWorkHead": "1ad212134e19bff2ee187b9e959889d9421bfce6",
+  "substantiveCommits": [
+    "b2073471760d084ab7c7466deadd90a521038c46",
+    "54c9d11f4d4d2200b44578fa6f654b4aa787ddc1",
+    "86ac86aed41d2730145f758856a2b0473dd20aa2",
+    "6454ffeacd07e2a45ae53e5405a68907e74a9efe",
+    "1b3451e192f7037ec93bbd12d9fc82d4474cf154",
+    "1ad212134e19bff2ee187b9e959889d9421bfce6"
+  ],
+  "reasonForPriority": "A source audit found that the immediately preceding rainwater pass had independently introduced DanchiRainwaterDrainage even though the native-4K path already owns a mature authoritative rainwater implementation through QualityBlockRainwaterDownpipeInstallationQA. The benchmark builder creates one RainGutter at the authoritative facade datum, the installation QA reconstructs that body plus HD_RainwaterDownpipeAssembly, and the native-4K packet explicitly applies and repeatedly validates that system. The duplicate used unrelated installation coordinates, attempted to disable legacy RainGutter objects and was not part of the native-4K preparation path. Leaving it in place would create conflicting construction authority and could block or contaminate formal rendering, so correction outranked further speculative detail expansion.",
+  "changes": [
+    "Removed QualityBlockRainwaterDownpipeUpgrade.cs, the duplicate system mutator.",
+    "Removed QualityBlockRainwaterDownpipeConstructionQA.cs, whose formal pre-cull requirement depended on the duplicate root.",
+    "Removed the duplicate rainwater_downpipe_contract.json and rainwater_downpipe_lookdev.svg so they cannot be mistaken for the formal construction authority.",
+    "Added rainwater_system_authority_contract.json declaring Danchi/RainGutter plus Danchi/DanchiHighDetail/HD_RainwaterDownpipeAssembly as the single formal system and binding that authority to the existing installation contract, lookdev and native-4K entry point.",
+    "Added QualityBlockRainwaterSystemAuthorityQA.cs. It fails closed if duplicate source/contract files return, if the duplicate scene root exists, if more than one active RainGutter renderer exists, if the authoritative accessory root is missing/moved/inactive, if the macro body still exposes a Unity primitive mesh at formal-render time, or if the native-4K apply/validation tokens drift.",
+    "The authority gate is read-only on QA4K, temporal and prepared-temporal culls. Reflection culls are also checked once the authoritative accessory root exists; pre-build editor reflections are not mutated or blocked while the assembly is not yet established."
+  ],
+  "sourceAuditEvidence": {
+    "benchmarkBuilder": "BuildQualityBlock1990s.BuildDanchi creates exactly one RainGutter at x=4.45, z=-6.55 before high-detail reconstruction.",
+    "authoritativeInstallation": "QualityBlockRainwaterDownpipeInstallationQA reconstructs the RainGutter body at the documented facade datum, creates HD_RainwaterDownpipeAssembly under DanchiHighDetail, uses hollow joint/band/receiver construction, explicit support interfaces and physical material checks, then rebinds the Danchi LOD stack.",
+    "formalEntryPoint": "QualityBlockNative4KReviewPacket calls QualityBlockRainwaterDownpipeInstallationQA.ApplyAndPersist exactly once and QualityBlockRainwaterDownpipeInstallationQA.ValidateOpenScene multiple times before still and temporal evidence.",
+    "duplicateConflict": "The removed DanchiRainwaterDrainage pass used a separate root and unrelated coordinates and disabled RainGutter renderers, which conflicts with the already authoritative formal path."
+  },
+  "verification": {
+    "type": "GitHub/source review only",
+    "unityVersionTarget": "6000.3.0f1",
+    "unityCompileRuntimeVerified": false,
+    "native4KRenderAvailable": false,
+    "visualFidelityScored": false,
+    "githubStatusContexts": 0,
+    "githubWorkflowRuns": 0,
+    "compareFromStart": "6 commits ahead / 0 behind before this run-record commit; merge base remained the start HEAD",
+    "godotChanged": false,
+    "baseMerged": false,
+    "excludedThemeContentAdded": false
+  },
+  "implementationReadiness": {
+    "score": 93,
+    "possible": 100,
+    "status": "UNCHANGED",
+    "missing": "Unity 6000.3.0f1 compile/runtime verification"
+  },
+  "visualFidelity": {
+    "status": "UNSCORED_UNTIL_REAL_4K_RENDER",
+    "pointsAwardedThisRun": 0,
+    "passClaimed": false
+  },
+  "expectedVisualScoreImpact": [
+    "Geometry & construction fidelity: medium risk reduction by restoring one coherent rainwater load-path authority instead of two contradictory assemblies. No points without pixels.",
+    "Material/PBR physical plausibility: small-to-medium risk reduction by preventing a second incompatible PVC/galvanized material system from being rendered alongside or instead of the mature installation contract.",
+    "Period accuracy/scene authenticity: small-to-medium risk reduction by retaining the already documented benchmark-facing assembly rather than adding an unsupported second placement.",
+    "Temporal/LOD/aliasing stability: medium risk reduction by preventing two independent rainwater LOD ownership models from competing in formal still/temporal state.",
+    "Critical-defect safety: materially reduces risk of visible primitive placeholder, duplicated/interpenetrating hero geometry, obvious module duplication and missing/ambiguous construction metadata. Automatic Visual Fidelity impact remains 0."
+  ],
+  "failureInjectionForFirstRunner": [
+    "create Danchi/DanchiRainwaterDrainage and confirm formal authority validation fails",
+    "duplicate the active RainGutter renderer and confirm exact-one authority fails",
+    "move HD_RainwaterDownpipeAssembly outside DanchiHighDetail and confirm hierarchy authority fails",
+    "reintroduce either forbidden duplicate source file and confirm config-only authority fails",
+    "remove the authoritative ApplyAndPersist token from the native-4K path and confirm source binding fails",
+    "replace the formal RainGutter mesh with Unity Cylinder after authoritative reconstruction and confirm pre-cull rejection"
+  ],
+  "nextBlocker": "Unity 6000.3.0f1 runner. At first availability, compile the new authority gate, execute the failure injections, run the existing authoritative rainwater reconstruction through the native-4K packet, then inspect fresh 3840x2160 frontal/oblique/grazing images plus the rainwater construction-depth 100% crop and temporal LOD sequence. Only actual rendered evidence may change Visual Fidelity scores."
+}

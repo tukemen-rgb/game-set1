@@ -1,0 +1,249 @@
+{
+  "schema": 1,
+  "kind": "production_manifest",
+  "assetId": "BalconyLaundryRailDrapeLifeSet",
+  "date": "2026-09-17",
+  "branch": "gpt/unity-migration",
+  "source": {
+    "externalDeliveredScript": "integrate_balcony_laundry_rail_drape_life_set.py",
+    "sha256": "6731d8416fdb2c5f60fb4debf28afb009cd4943f0daebc3b3b7d0465dca3a349",
+    "committedSource": false
+  },
+  "inventory": {
+    "schema": 1,
+    "updated": "2026-09-17",
+    "isInventoryDelta": true,
+    "sceneVisibleAssembly": {
+      "id": "BalconyLaundryRailDrapeLifeSet",
+      "kind": "existing summer sheet physically fit to current guardrail plus existing clothespin basket slope-matched to waterproof floor",
+      "sourceOwners": [
+        "SummerSheet1400x1900RailDrape",
+        "ClothespinBasket224"
+      ],
+      "triangles": {
+        "MASTER": 76668,
+        "LOD0": 42108,
+        "LOD1": 20732,
+        "LOD2": 18492,
+        "LOD3": 17868
+      },
+      "actualGLB": true,
+      "actualOBJGeometryParity": true,
+      "unityVerified": false
+    },
+    "sceneVisibleIntegration": {
+      "id": "BalconyExteriorHeroSummerTomatoMorningGloryLaundry3600",
+      "triangles": {
+        "MASTER": 367752,
+        "LOD0": 211256,
+        "LOD1": 104500,
+        "LOD2": 58452,
+        "LOD3": 40082
+      },
+      "actualGLB": true,
+      "unityVerified": false
+    },
+    "lodContactPolicy": {
+      "MASTER": "MASTER",
+      "LOD0": "LOD0",
+      "LOD1": "LOD1",
+      "LOD2": "LOD1",
+      "LOD3": "LOD1"
+    },
+    "previewEvidence": {
+      "overall": "laundry_life_balcony_color_overall.png",
+      "closeup": "laundry_sheet_rail_contact_color_closeup.png",
+      "overallSHA256": "b2474b54e1c4350264dbb17ed29ba839595ea0bb82bf6f96a311542481d50354",
+      "closeupSHA256": "d95e91b34c7a0fe557a000e426d2664e209e97c9f16d8b919dc46a50b1c810e3",
+      "LOD0TrianglesSubmitted": 211256,
+      "overallAllSourceFacesSubmitted": true,
+      "closeupAllSourceFacesSubmitted": true,
+      "materialColored": true,
+      "paletteOverride": false,
+      "unityRender": false
+    },
+    "nextProductionTarget": "If Unity pixels remain unavailable, improve the high-occupancy sheet itself: smoother rail-contact crown and gravity-fold curvature plus physically authored perimeter stitching/microfold detail, without adding a duplicate laundry owner or QA-only validator."
+  },
+  "materialConstruction": {
+    "schema": 1,
+    "date": "2026-09-17",
+    "assetId": "BalconyLaundryRailDrapeLifeSet",
+    "integrationId": "BalconyExteriorHeroSummerTomatoMorningGloryLaundry3600",
+    "referenceBoundary": "Reuses previously modeled unbranded household sheet and clothespin basket. Their dimensions are modeling assumptions/common household scales, not claims of exact year-2000 product SKUs.",
+    "components": {
+      "sheet": {
+        "owner": "SummerSheet1400x1900RailDrape",
+        "manufacture": "Assumed thin woven cotton-blend summer sheet with folded stitched perimeter hems; closed thin fabric solid rather than alpha cards.",
+        "dimensionsMm": {
+          "finishedWidth": 1400,
+          "finishedLength": 1900,
+          "baseFabricThickness": 0.72,
+          "foldedHemThickness": 1.55
+        },
+        "installation": "Existing source sheet was physically re-fitted to the current actual powder-coated steel front guardrail. No duplicate rail or laundry arm is created.",
+        "interfaces": "Authoring clearance envelope is 7 mm around the isolated top-member cross-section. External sampled interference uses sheet vertices, unique-edge midpoints and face centroids against every disconnected rail-component AABB; this is conservative sampled evidence, not a continuous collision solver.",
+        "exposure": "Outer/front panel is strongly sun-exposed; inner/back panel is partially sheltered. Current dry state has no invented stains or wetness.",
+        "geometryVsMaterial": "Drape silhouette, rail wrap/contact fold, gravity scallops and hem thickness are geometry. Fine weave/yarn/fuzz are material microstructure."
+      },
+      "basket": {
+        "owner": "ClothespinBasket224",
+        "manufacture": "Assumed injection-molded slotted plastic basket with real aperture walls, floor, rim, handle hoop, pivot bosses and eyes.",
+        "dimensionsMm": {
+          "bodyRimWidth": 224,
+          "bodyRimDepth": 146.6,
+          "nominalSideSlots": 32,
+          "handleRodDiameter": 9
+        },
+        "installation": "Freestanding on the existing waterproof floor. The whole basket is rotated to the measured 1.5% floor slope and translated so its lowest bearing vertices meet the actual fitted floor plane.",
+        "interfaces": "No vertex is more than 0.05 mm below the measured waterproof-floor plane in any generated scene LOD.",
+        "exposure": "Dry maintained balcony-use reference; no invented macro grime or weathering masks.",
+        "geometryVsMaterial": "Slots, walls, rim, handle and pivot geometry are physical mesh. Molding grain/surface roughness are material detail."
+      }
+    },
+    "materials": {
+      "PaleYellowSheet": {
+        "albedoSRGB": [0.76, 0.7, 0.48],
+        "roughness": 0.76,
+        "metallic": 0,
+        "specularF0": 0.04,
+        "normalScale": 0,
+        "wetness": 0,
+        "uvAging": "none baked",
+        "microstructure": "deterministic woven base-color/roughness proxy",
+        "angularResponse": "dielectric Fresnel; no painted highlight"
+      },
+      "WarmWhitePP": {
+        "albedoSRGB": [0.72, 0.7, 0.61],
+        "roughness": 0.53,
+        "metallic": 0,
+        "specularF0": 0.04,
+        "normalScale": 0,
+        "wetness": 0,
+        "uvAging": "none baked; placement-dependent aging pending"
+      },
+      "MintPE": {
+        "albedoSRGB": [0.25, 0.43, 0.37],
+        "roughness": 0.57,
+        "metallic": 0,
+        "specularF0": 0.04,
+        "normalScale": 0,
+        "wetness": 0,
+        "uvAging": "none baked; placement-dependent aging pending"
+      }
+    },
+    "paletteChanges": "none; source GLB material maps/factors were preserved through fitting/integration",
+    "floor": {
+      "measuredPlaneLOD0": {
+        "a": -1.2461999998781312,
+        "bX": -3.794085027056249e-09,
+        "cZ": -0.015000059625219265,
+        "maxFitResidualMm": 4.527464425585492e-05
+      },
+      "slopeMatchDegreesAboutX": 0.8593756591496057
+    },
+    "lodPolicy": {
+      "MASTER": "MASTER",
+      "LOD0": "LOD0",
+      "LOD1": "LOD1",
+      "LOD2": "LOD1",
+      "LOD3": "LOD1"
+    },
+    "lodPolicyReason": "The source LOD2/LOD3 sheet folds intersect the actual current rail unless displaced roughly 10-20 mm. Scene LOD2/LOD3 therefore retain the physically fitted source LOD1 sheet topology while the basket and rest of the Hero continue to reduce. This trades some triangle reduction for contact stability and lower visible contact pop risk.",
+    "actualTriangles": {
+      "assembly": {"MASTER": 76668, "LOD0": 42108, "LOD1": 20732, "LOD2": 18492, "LOD3": 17868},
+      "integratedHero": {"MASTER": 367752, "LOD0": 211256, "LOD1": 104500, "LOD2": 58452, "LOD3": 40082}
+    },
+    "lod0PhysicalEvidence": {
+      "sampledTopRailMinClearanceMm": 3.8214544695339394,
+      "railComponentSampleHits": [],
+      "basketMinimumVertexToFloorGapMm": -3.556954730754569e-07,
+      "basketPenetratingVerticesBelow0p05mm": 0,
+      "basketContactVerticesWithin0p1mm": 97
+    },
+    "verification": {
+      "actualGLB": true,
+      "actualOBJGeometryParity": true,
+      "strictLODDecrease": {"assembly": true, "integratedHero": true},
+      "sheetFiniteWatertightPositiveVolumeAllLevels": true,
+      "glbObjTriangleRoundtrip": true,
+      "unityCompile": false,
+      "unityImport": false,
+      "unityRender": false,
+      "temporalLOD": false
+    },
+    "visualFidelity": {
+      "authority": "UnityProject/Assets/QA/visual_fidelity_gate.json",
+      "score": null,
+      "pass": false,
+      "pointsAwarded": 0,
+      "reason": "No observed native Unity 3840x2160/crop/temporal pixels."
+    },
+    "implementationReadiness": {"lastRecorded": 93, "reverifiedThisRun": false}
+  },
+  "verification": {
+    "schema": 1,
+    "date": "2026-09-17",
+    "branch": "gpt/unity-migration",
+    "startHead": "cd241ac5b518e5a209bb0727cf338ec32d7312ad",
+    "work": "Reuse and physically fit the existing SummerSheet1400x1900RailDrape to the actual current front guardrail and place the existing ClothespinBasket224 on the measured sloped waterproof floor; integrate both into the latest tomato+morning-glory Hero without duplicate laundry hardware.",
+    "sourceOwnerReuse": ["SummerSheet1400x1900RailDrape", "ClothespinBasket224"],
+    "duplicateLaundryHardwareCreated": false,
+    "assembly": {
+      "id": "BalconyLaundryRailDrapeLifeSet",
+      "triangles": {"MASTER": 76668, "LOD0": 42108, "LOD1": 20732, "LOD2": 18492, "LOD3": 17868},
+      "actualGLB": true,
+      "actualOBJ": true,
+      "strictLODDecrease": true
+    },
+    "integratedHero": {
+      "id": "BalconyExteriorHeroSummerTomatoMorningGloryLaundry3600",
+      "triangles": {"MASTER": 367752, "LOD0": 211256, "LOD1": 104500, "LOD2": 58452, "LOD3": 40082},
+      "actualGLB": true,
+      "strictLODDecrease": true
+    },
+    "sheetLODPolicy": {"MASTER": "MASTER", "LOD0": "LOD0", "LOD1": "LOD1", "LOD2": "LOD1", "LOD3": "LOD1"},
+    "sheetContactEvidence": {
+      "MASTER": {"sampledTopRailMinClearanceMm": 5.158965192036896, "railComponentSampleHits": [], "watertight": true, "degenerateFaces": 0},
+      "LOD0": {"sampledTopRailMinClearanceMm": 3.8214544695339394, "railComponentSampleHits": [], "watertight": true, "degenerateFaces": 0},
+      "LOD1": {"sampledTopRailMinClearanceMm": 1.2987903359690631, "railComponentSampleHits": [], "watertight": true, "degenerateFaces": 0},
+      "LOD2": {"sampledTopRailMinClearanceMm": 1.2982715136511982, "railComponentSampleHits": [], "watertight": true, "degenerateFaces": 0},
+      "LOD3": {"sampledTopRailMinClearanceMm": 1.2982715136511982, "railComponentSampleHits": [], "watertight": true, "degenerateFaces": 0}
+    },
+    "basketFloorEvidence": {
+      "MASTER": {"slopeMatchDegreesAboutX": 0.8593756591496057, "minimumVertexToFloorPlaneGapMm": -3.556954730754569e-07, "penetratingVerticesBelow0p05mm": 0},
+      "LOD0": {"slopeMatchDegreesAboutX": 0.8593756591496057, "minimumVertexToFloorPlaneGapMm": -3.556954730754569e-07, "penetratingVerticesBelow0p05mm": 0},
+      "LOD1": {"slopeMatchDegreesAboutX": 0.8593756591496057, "minimumVertexToFloorPlaneGapMm": -3.556954730754569e-07, "penetratingVerticesBelow0p05mm": 0},
+      "LOD2": {"slopeMatchDegreesAboutX": 0.8593756591496057, "minimumVertexToFloorPlaneGapMm": -3.556954730754569e-07, "penetratingVerticesBelow0p05mm": 0},
+      "LOD3": {"slopeMatchDegreesAboutX": 0.8593756591496057, "minimumVertexToFloorPlaneGapMm": -3.556954730754569e-07, "penetratingVerticesBelow0p05mm": 0}
+    },
+    "roundtripAllLevels": true,
+    "sourceSHA256": {"integrationScript": "6731d8416fdb2c5f60fb4debf28afb009cd4943f0daebc3b3b7d0465dca3a349"},
+    "preview": {
+      "overall": "laundry_life_balcony_color_overall.png",
+      "closeup": "laundry_sheet_rail_contact_color_closeup.png",
+      "overallSHA256": "b2474b54e1c4350264dbb17ed29ba839595ea0bb82bf6f96a311542481d50354",
+      "closeupSHA256": "d95e91b34c7a0fe557a000e426d2664e209e97c9f16d8b919dc46a50b1c810e3",
+      "LOD0TrianglesSubmitted": 211256,
+      "overallAllSourceFacesSubmitted": true,
+      "closeupAllSourceFacesSubmitted": true,
+      "materialColored": true,
+      "paletteOverride": false,
+      "unityRender": false
+    },
+    "unity": {"compile": false, "import": false, "render": false, "temporal": false},
+    "visualFidelity": {
+      "authority": "UnityProject/Assets/QA/visual_fidelity_gate.json",
+      "score": null,
+      "pass": false,
+      "pointsAwarded": 0,
+      "expectedImpactOnly": ["geometry_construction", "material_pbr", "texture_microdetail", "weathering_causality", "period_authenticity", "cinematic_image"],
+      "reason": "No observed Unity pixels; diagnostic CPU previews award no Visual Fidelity points."
+    },
+    "implementationReadiness": {"lastRecorded": 93, "reverifiedThisRun": false},
+    "godotChanged": false,
+    "baseMerged": false,
+    "forceRefUpdate": false,
+    "nextProductionTarget": "If Unity pixels remain unavailable, improve the high-occupancy sheet itself: smoother rail-contact crown and gravity-fold curvature plus physically authored perimeter stitching/microfold detail, without adding a duplicate laundry owner or QA-only validator."
+  },
+  "binaryPolicy": "Generated GLB/OBJ and material-colored PNG evidence are delivered in the conversation archive and are not claimed committed to GitHub."
+}

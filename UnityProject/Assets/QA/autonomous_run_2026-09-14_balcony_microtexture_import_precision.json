@@ -1,0 +1,74 @@
+{
+  "schemaVersion": "1.0.0",
+  "runDate": "2026-09-14",
+  "branch": "gpt/unity-migration",
+  "startingHead": "eb8503b3898343f40b80cebc1e41bebea3bbd745",
+  "headBeforeRunRecord": "2325bbd86e7d76c27605d353a13bb13ccdff7605",
+  "objective": "Reduce native-4K balcony material/texel risk without awarding visual points before real Unity pixels exist.",
+  "investigation": {
+    "firstCandidate": "The legacy detail builder assigns HD_BalconySlabLip an aged-aluminum material even though the element represents the concrete balcony slab fascia.",
+    "disposition": "No duplicate change made. Existing QualityBlockBalconyConstructionInterfaceQA already documents this exact legacy defect, restores the fascia to the balcony-floor concrete material, seats it to the slab top and validates the final binding.",
+    "selectedIssue": "The generated balcony waterproof micro-normal and metallic/smoothness textures are authored at 1024x1024 with millimetre-scale/subtle physical signals, while their generator imports them using CompressedHQ. Existing balcony microstructure QA validates dimensions, linear color space, mipmaps, filtering, anisotropy and PBR bindings but does not fail compressed runtime imports or Standalone compression overrides.",
+    "risk": "Block compression can alter normal orientation or quantize smoothness before the formal 4K grazing view, creating avoidable texel/PBR instability even though the source PNG and material contract are correct."
+  },
+  "changes": [
+    {
+      "commit": "5c23b9952366e8354860b65781d8146700d6f274",
+      "path": "UnityProject/Assets/QA/balcony_microtexture_import_precision_contract.json",
+      "summary": "Added machine-readable import-precision authority for both balcony microtextures: Uncompressed, no Crunch, >=1024, mipmapped, Repeat, Trilinear, anisotropy>=8, no Standalone override, linear data, canonical texture types and source alpha preservation. Automatic Visual Fidelity points remain zero."
+    },
+    {
+      "commit": "2325bbd86e7d76c27605d353a13bb13ccdff7605",
+      "path": "UnityProject/Assets/Editor/QualityBlockBalconyMicrotextureImportPrecisionQA.cs",
+      "summary": "Added preparation-time repair plus formal-camera read-only/fail-closed validation. Reimports both generated physical-data textures as Uncompressed, disables Crunch/Standalone override, preserves mip/trilinear/aniso, validates runtime size+mip presence, and reasserts precision after generated-source imports."
+    }
+  ],
+  "formalEvidenceBehavior": {
+    "preparation": "May repair importer state before formal capture and after generated texture imports.",
+    "formalPreCull": "Read-only. QA4K_, QATemporal_ and QAPreparedTemporal_ target captures are blocked if canonical import/runtime state is absent.",
+    "visualScoring": "No automatic points. Actual 3840x2160 oblique/grazing frames and 100% crops remain mandatory for visual credit.",
+    "authoredReplacement": "Generated-fallback import precision is skipped if the authored danchi replacement is active."
+  },
+  "failureInjection": [
+    "CompressedHQ on either generated texture",
+    "Crunch enabled",
+    "Standalone compressed override",
+    "maxTextureSize below 1024",
+    "mipmaps disabled",
+    "Bilinear or Point filtering",
+    "anisotropy below 8",
+    "sRGB enabled for physical data",
+    "normal source no longer imported as NormalMap",
+    "source alpha discarded"
+  ],
+  "verification": {
+    "repositoryDiff": "2 substantive files added from starting head before this run record; no Godot paths changed.",
+    "mergeBase": "Starting head remained the merge base; no base merge performed.",
+    "unityCompileRuntime": "PENDING_UNITY_RUNTIME",
+    "native4kRender": "PENDING_UNITY_RUNTIME",
+    "githubActionsRunsAtCheck": 0,
+    "commitStatusContextsAtCheck": 0,
+    "visualFidelityStatus": "UNSCORED_UNTIL_REAL_4K_RENDER",
+    "visualFidelityPointsAdded": 0,
+    "visualPassClaimed": false
+  },
+  "implementationReadiness": {
+    "score": 93,
+    "outOf": 100,
+    "reason": "Source/contract coverage improved, but Unity 6000.3.0f1 compile/runtime and formal rendered evidence remain unavailable."
+  },
+  "expectedVisualScoreImpactNotAwarded": {
+    "textureMicrodetailTexelFidelity": "medium",
+    "materialPbrPhysicalPlausibility": "small-to-medium",
+    "lightingShadowsReflections": "small",
+    "temporalLodAliasingStability": "small-to-medium",
+    "note": "Expected impact is a prioritization estimate only, not a Visual Fidelity score."
+  },
+  "constraints": {
+    "godotPreserved": true,
+    "baseMerged": false,
+    "excludedThemesAdded": false,
+    "earthquakeDisasterReconstructionThemes": "absent"
+  },
+  "nextBlocker": "Unity 6000.3.0f1 Runner/runtime. When available, stop speculative expansion; execute importer failure injections, regenerate/reimport the balcony pair, then capture native 3840x2160 oblique/grazing evidence plus 100% balcony-services/material-grazing crops and temporal subpixel-grazing evidence. Score only observed pixels."
+}

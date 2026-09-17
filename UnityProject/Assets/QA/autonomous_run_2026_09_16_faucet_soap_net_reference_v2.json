@@ -1,0 +1,77 @@
+{
+  "runId": "2026_09_16_faucet_soap_net_reference_v2",
+  "startHead": "cc3cfb9721386da944ac8d906cd65bfc8a7ef1da",
+  "branch": "gpt/unity-migration",
+  "assetProduction": {
+    "newAssetSets": 0,
+    "materiallyRefinedAssetSets": 2,
+    "effectiveInventoryAssetSets": 24,
+    "actualFaucetGlb": 5,
+    "actualFaucetObj": 5,
+    "actualSoapNetGlb": 5,
+    "actualSoapNetObj": 5,
+    "combinedReviewGlb": 1
+  },
+  "faucetTriangles": {
+    "MASTER": 13472,
+    "LOD0": 8712,
+    "LOD1": 4992,
+    "LOD2": 3080,
+    "LOD3": 2012
+  },
+  "soapNetTriangles": {
+    "MASTER": 88480,
+    "LOD0": 51552,
+    "LOD1": 25872,
+    "LOD2": 14352,
+    "LOD3": 8672
+  },
+  "combinedReviewLod0Triangles": 60264,
+  "executed": [
+    "regenerated five faucet levels",
+    "regenerated five soap-net levels",
+    "finite geometry/normals",
+    "nondegenerate faces",
+    "watertight/winding/positive component volumes",
+    "faucet UV and normal maps",
+    "GLB reload triangle/bounds roundtrip",
+    "OBJ triangle roundtrip",
+    "strict LOD triangle decrease",
+    "analytic net-versus-soap clearance samples",
+    "actual GLB CPU depth-buffer previews with backface culling"
+  ],
+  "observedVisibleChanges": [
+    "faucet cross handle -> single lever",
+    "cylindrical faucet body -> rounded cast silhouette",
+    "hose barb outlet -> short hooked outlet with open sleeve",
+    "soap-net rigid regular suspension -> shorter slack bag with metal neck hanger",
+    "wall escutcheon reduced to 63 mm modeled diameter"
+  ],
+  "notVerified": [
+    "Unity compile/import/render",
+    "native 4K images/crops",
+    "temporal/LOD/aliasing stability",
+    "full yarn/yarn and hanger contact intersections",
+    "cloth/contact simulation",
+    "target hardware performance"
+  ],
+  "workflowRunsObservedAtStart": 0,
+  "visualFidelity": {
+    "score": null,
+    "pass": false,
+    "pointsAwarded": 0,
+    "status": "UNSCORED_UNTIL_REAL_4K_RENDER"
+  },
+  "readiness": {
+    "lastRecordedScore": 93,
+    "recomputed": false
+  },
+  "safety": {
+    "godotChanges": 0,
+    "baseMerged": false,
+    "formalBenchmarkSceneChanged": false,
+    "excludedThemesAdded": false,
+    "sourcePhotoPixelsReused": false
+  },
+  "nextTarget": "Add a scene-visible service-corner utility asset if Unity evidence remains unavailable; otherwise stop speculative expansion and score/fix real Unity pixels."
+}

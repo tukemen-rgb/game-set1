@@ -1,0 +1,76 @@
+{
+  "schema": 1,
+  "date": "2026-09-17",
+  "startHead": "28745c4873cf87d0d6b2e68d581364cace6f28a9",
+  "workCompleted": [
+    "actual window-service facade panel bevel geometry",
+    "actual joint sealant placement repair",
+    "facade-wide nonrepeating PBR material",
+    "MASTER+LOD0+LOD1+LOD2+LOD3 facade GLB/OBJ",
+    "five-level repaired-hero GLB integration",
+    "material-colored whole/front/grazing diagnostic renders"
+  ],
+  "actualGenerated": {
+    "facadeTriangles": {"MASTER": 2976, "LOD0": 2208, "LOD1": 732, "LOD2": 344, "LOD3": 120},
+    "integratedTriangles": {"MASTER": 181460, "LOD0": 101932, "LOD1": 48944, "LOD2": 25456, "LOD3": 15632},
+    "integratedGeometryCount": {"MASTER": 311, "LOD0": 275, "LOD1": 215, "LOD2": 168, "LOD3": 135},
+    "facadeGeometryCount": {"MASTER": 60, "LOD0": 60, "LOD1": 36, "LOD2": 22, "LOD3": 10}
+  },
+  "construction": {
+    "boardThicknessMm": 16.0,
+    "frontBevelMm": {"MASTER": [2.6,1.2], "LOD0": [2.6,1.2], "LOD1": [2.2,1.0], "LOD2": [1.6,0.8], "LOD3": [0.0,0.0]},
+    "sealantBodyDepthMm": 3.0,
+    "sealantExteriorCrownMm": 0.4,
+    "material": {"albedoSRGBMean": [0.72,0.70,0.64], "metallic": 0.0, "roughnessMean": 0.72, "normalScaleProxy": 0.060, "coverageM": [3.6,2.7], "wetness": 0.0, "uvAging": "none baked", "fresnel": "dielectric F0 approximately 0.04"},
+    "openingEnvelopesM": {
+      "window": {"x": [-1.59,0.35], "y": [-0.83,1.13]},
+      "vent": {"x": [0.77,0.99], "y": [0.61,0.83]},
+      "ac_service": {"x": [0.72,0.86], "y": [-0.24,-0.10]}
+    }
+  },
+  "actualVerification": {
+    "actualGLBGeneratedAndReloaded": true,
+    "facadeOBJGeneratedAndTriangleReloaded": true,
+    "newPanelAndSealMeshesFiniteClosedWatertight": true,
+    "noDegenerateNewFaces": true,
+    "windingConsistent": true,
+    "positiveVolume": true,
+    "edgeIncidence2": true,
+    "nonFacadeReloadVerticesExact": true,
+    "nonFacadeReloadFacesExact": true,
+    "unchangedFacadeReloadVerticesExact": true,
+    "unchangedFacadeReloadFacesExact": true,
+    "openingsPreservedWithinFloat32AreaTolerance": true,
+    "strictIntegratedLODReduction": true,
+    "strictFacadeLODReduction": true,
+    "allLOD0FacesSubmittedToMaterialPreviews": true,
+    "previewFaceLimit": null,
+    "unityCompile": false,
+    "unityImport": false,
+    "unityRender": false,
+    "temporalLOD": false,
+    "performance": false
+  },
+  "previewEvidence": {
+    "facade_refined_color_overall.png": {"sha256":"826d69e0cdc1ce715a27e4acd48ae810c27073abd2ebb3153055cd8e24276d4f","trianglesSubmitted":101932,"size":[1600,1120],"unityRender":false},
+    "facade_refined_color_front_detail.png": {"sha256":"4cda4b2c65c88b3ede1f1922c5d29d6fea3666907f5a9d4dc635ee8e5e31fc13","trianglesSubmitted":101932,"size":[1500,1080],"unityRender":false},
+    "facade_refined_color_grazing_detail.png": {"sha256":"04368b29742e285e3d07f8844d7f5bb904cc1e0e28432b9e4b55129311dd4a95","trianglesSubmitted":101932,"size":[1500,1080],"unityRender":false},
+    "facade_refined_standalone_front.png": {"sha256":"078f84cedac78b67cc6ace449c1d37ee566ba3f4a1125f1e05dbfb67251e05dc","trianglesSubmitted":2208,"size":[1450,1050],"unityRender":false},
+    "facade_refined_standalone_grazing.png": {"sha256":"03d18b68c4c56d2056c5c4ea8ae4fa3b75a8f2562dca89c6a84c694032924d46","trianglesSubmitted":2208,"size":[1450,1050],"unityRender":false}
+  },
+  "visualFidelity": {
+    "authority": "UnityProject/Assets/QA/visual_fidelity_gate.json",
+    "status": "UNSCORED_UNTIL_REAL_UNITY_3840x2160_RENDER",
+    "score": null,
+    "pass": false,
+    "pointsAwarded": 0,
+    "expectedImpactOnly": ["geometry_construction","material_pbr","texture_microdetail"]
+  },
+  "implementationReadiness": {"lastRecorded": 93, "recomputedThisRun": false},
+  "githubActionsRunsObservedAtStartHead": 0,
+  "formalBenchmarkSceneChanged": false,
+  "godotChanged": false,
+  "baseMerged": false,
+  "blocker": "No GitHub Actions/Unity Runner render evidence for the current branch. CPU material previews are diagnostic only.",
+  "delivery": "Binary GLB/OBJ/textures/previews plus exact executed local source are delivered in window_service_facade_refinement_2026-09-17.zip; GitHub stores reproducible authoring source and machine-readable evidence only."
+}

@@ -1,0 +1,59 @@
+{
+  "runId": "2026-09-10_0335_physical_texel_density",
+  "startHead": "ff299601f7675d6cbc0a0583ecdf7d62d82fd348",
+  "substantiveWorkHead": "316773373ec7d952186e8bb7530049281f9f3cfd",
+  "substantiveCommits": [
+    "829bc0859c9e4107cbc9750722ca91126a108e44",
+    "6c46c1bbfd072a97bffc56447393e9b30fe1a453",
+    "1c27f67bb4103d67b477ff5790970ddde8cc8df1",
+    "56240fec20f4097db406516beb98317d57fc95e8",
+    "316773373ec7d952186e8bb7530049281f9f3cfd"
+  ],
+  "workSummary": "Added a machine-readable physical texel-density contract and an Editor QA pass that measures generated textured MeshRenderer submeshes from UV0 area, _MainTex tiling, actual imported Texture2D dimensions, and world-space triangle area. The native 4K review packet now validates the contract up front, then validates the final persisted prepared scene before realtime reflection rendering or any benchmark pixel capture, and repeats the check after still capture before temporal evidence. Mirrored/negative UV tiling remains valid because density uses absolute tiling area.",
+  "reasoning": {
+    "problem": "The existing texture-sampling gate guaranteed mipmaps, trilinear filtering, anisotropy, semantic color space and PBR map registration, but it did not prove that a textured manufactured surface had enough source texels for its physical world area. A 512/1024 texture can still be visibly under-resolved when stretched across a large surface even when importer settings are perfect.",
+    "manufactureInstallationRelevance": "Physical microstructure has a real-world scale. Painted RC pores, aggregate, textile weave, metal finish and PVC/weathering detail must not change apparent size merely because a mesh or UV island is larger. The new metric binds source resolution to measured world area rather than accepting resolution alone.",
+    "hardFloor": "256 texels per metre area-weighted per generated textured submesh; 512 texels per metre is recorded as the preferred hero-surface target but is not an automatic Visual Fidelity score.",
+    "nonScoringBoundary": "A pass only proves a conservative source-density floor. It cannot prove sharpness, authentic microstructure, non-repetition, absence of shimmer, or visual plausibility without sealed native 3840x2160 evidence and 100% crops."
+  },
+  "verification": {
+    "sourceInspection": "PASS_STATIC_ONLY",
+    "branchCompare": "5 substantive commits ahead of start after final QA fix; changed paths are only UnityProject/Assets/Editor and UnityProject/Assets/QA. Godot was not modified and base was not merged.",
+    "unityApiBasis": "Unity Mesh APIs expose UV coordinates and per-submesh triangle lists; submeshes correspond to separate triangle lists/material bindings. The QA uses those stable source-side primitives plus renderer localToWorldMatrix and Material.GetTextureScale(_MainTex).",
+    "commitStatusesOnSubstantiveHead": 0,
+    "workflowRunsOnSubstantiveHead": 0,
+    "unityCompile": "PENDING_UNITY_6000_3_0F1_RUNNER",
+    "native4KStillEvidence": "ABSENT",
+    "native100PercentCrops": "ABSENT",
+    "temporalEvidence": "ABSENT"
+  },
+  "implementationReadiness": {
+    "score": 93,
+    "possible": 100,
+    "status": "IMPLEMENTATION_READINESS_ONLY",
+    "reasonNotIncreased": "The remaining seven readiness points are reserved for actual Unity compile/runner verification. This run improves source QA coverage but does not execute Unity."
+  },
+  "visualFidelity": {
+    "status": "UNSCORED",
+    "pointsAwardedThisRun": 0,
+    "passClaimed": false,
+    "criticalDefectsClearedByThisRun": []
+  },
+  "expectedVisualScoreImpact": [
+    "Texture/microdetail/texel fidelity: prevents obviously stretched low-density generated textures from reaching the formal 4K review path, increasing the chance of meeting the 9/10 hard minimum once real pixels exist.",
+    "Material/PBR physical plausibility: ties authored microstructure density to physical surface area so concrete pores, textile weave, metal finish and other maps are less likely to imply impossible physical feature sizes.",
+    "Temporal/LOD/aliasing stability: source density is now measured independently of filtering; actual over-frequency shimmer or mip/LOD instability remains a temporal render check and receives no automatic points.",
+    "Evidence efficiency: a source-density failure now stops before reflection-probe rendering and native capture, so the first real Runner session spends time on render-visible defects rather than avoidable texture stretching."
+  ],
+  "lookdev": {
+    "repositoryIllustrationGenerated": false,
+    "preciseGenerationBrief": "Assets/QA/physical_texel_density_contract.json#lookdevGenerationBrief",
+    "note": "A metric calibration-sheet brief is maintained for painted RC, aged aluminum, galvanized steel, PVC-U, ground aggregate, curtain textile and foliage under orthographic/oblique/grazing light with native 100% crops."
+  },
+  "constraintsVerified": {
+    "godotPreserved": true,
+    "baseMergePerformed": false,
+    "earthquakeDisasterReconstructionThemeAdded": false
+  },
+  "nextBlocker": "Unity 6000.3.0f1 editor/runner. At first availability run Prepare Complete Native 4K Review Packet. The newly prepared scene must first pass physical texel-density QA. If any submesh is below 256 texel/m, increase physically correct texture resolution/tiling or re-author UVs instead of weakening the floor. If source preflight passes, continue through async reflection synchronization, native 3840x2160 hero/oblique/grazing captures, 100% crops and temporal sequences; then score only the actual rendered evidence and fix the largest observed deduction or any critical defect."
+}

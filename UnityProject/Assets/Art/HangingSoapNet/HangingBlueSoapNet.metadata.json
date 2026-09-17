@@ -1,0 +1,165 @@
+{
+  "schema": 1,
+  "assetId": "HangingBlueSoapNet",
+  "variant": "reference_v2_soft_mesh_wire_hanger",
+  "date": "2026-09-16",
+  "units": "metres",
+  "root": "Host inlet-neck axis; review translation [0,0.55,0.024].",
+  "reference": {
+    "source": "User-supplied photo of faucet with blue soap net",
+    "usedFor": "short blue open-mesh bag, ivory soap and thin wire hanger around faucet neck",
+    "photoPixelsReused": false,
+    "referenceImageRedistributed": false,
+    "assumptions": "Exact fibre, hanger alloy, knot pattern, age and dimensions are not recoverable from the photo. Nylon/stainless and dimensions are explicit modeling assumptions, not a historical SKU claim."
+  },
+  "manufactureInstallation": {
+    "components": [
+      "28 crossing yarns",
+      "soft irregular bound mouth",
+      "gathered heel",
+      "rounded used soap",
+      "closed neck wire loop",
+      "curved wire drop",
+      "two wire mouth-handle arches",
+      "two mouth ties"
+    ],
+    "dimensionsMm": {
+      "bagHeightApprox": 115,
+      "mouthWidthApprox": 82,
+      "mouthDepthApprox": 52,
+      "netYarnDiameter": 0.68,
+      "mouthCordDiameter": 2.1,
+      "hangerWireDiameter": 1.44,
+      "hostNeckDiameter": 33,
+      "soapXYZ": [
+        56,
+        62,
+        26
+      ]
+    },
+    "loadPath": "Existing inlet neck -> closed wire loop -> curved drop -> split wire mouth handle -> bound net -> gathered heel -> soap. Static authored pose, not a cloth/contact solve.",
+    "interfaces": "Yarn path envelope is expanded around the modeled soap. Vertices and triangle centres remain outside the analytic soap volume at all LODs; this is not exhaustive triangle-triangle contact proof. Wire/cord joint overlaps are intentional assembly contacts.",
+    "orientationExposure": "Gravity-down hanging pose, mouth upward, soap at lower bag. Dry maintained reference; final wetness/residue depends on scene state.",
+    "agingCausality": "Used soap rounding is geometry. No arbitrary grime/rust or painted wet glints. Net fade and soap residue are not baked because exposure history is unknown.",
+    "geometryVsMaterial": "All holes are true open spaces between 3D yarns. Hanger wire, mouth binding and soap are geometry. Fine fibre/soap signal is material-only."
+  },
+  "materials": [
+    {
+      "id": "BlueNylon",
+      "albedoSRGB": [
+        0.02,
+        0.38,
+        0.6
+      ],
+      "roughness": 0.58,
+      "metallic": 0,
+      "dielectricF0": 0.04,
+      "normalScale": 0,
+      "wetness": 0,
+      "microstructure": "geometric 0.68 mm yarn plus subtle 128px albedo/roughness proxy",
+      "uvAging": "none baked",
+      "angularResponse": "dielectric microfacet"
+    },
+    {
+      "id": "BlueBoundCord",
+      "albedoSRGB": [
+        0.018,
+        0.31,
+        0.48
+      ],
+      "roughness": 0.64,
+      "metallic": 0,
+      "dielectricF0": 0.04,
+      "normalScale": 0,
+      "wetness": 0,
+      "microstructure": "bound cord geometry and subtle roughness proxy",
+      "uvAging": "none baked",
+      "angularResponse": "dielectric microfacet"
+    },
+    {
+      "id": "UsedIvorySoap",
+      "albedoSRGB": [
+        0.82,
+        0.8,
+        0.7
+      ],
+      "roughness": 0.7,
+      "metallic": 0,
+      "dielectricF0": 0.04,
+      "normalScale": 0,
+      "wetness": 0,
+      "microstructure": "rounded superellipsoid, no logo/product texture",
+      "uvAging": "consumption represented only by rounded geometry",
+      "angularResponse": "dielectric microfacet"
+    },
+    {
+      "id": "DarkStainlessWire",
+      "albedoSRGB": [
+        0.34,
+        0.35,
+        0.36
+      ],
+      "roughness": 0.42,
+      "metallic": 1,
+      "normalScale": 0,
+      "wetness": 0,
+      "microstructure": "smooth bent wire plus low-amplitude roughness",
+      "uvAging": "none baked",
+      "angularResponse": "conductor microfacet"
+    }
+  ],
+  "triangles": {
+    "MASTER": 88480,
+    "LOD0": 51552,
+    "LOD1": 25872,
+    "LOD2": 14352,
+    "LOD3": 8672
+  },
+  "logicalComponentsPerLevel": 37,
+  "runtimeMaterialMeshesPerLevel": 4,
+  "minimumAnalyticSoapClearanceMaster": 0.08713367852063025,
+  "authoringSource": "UnityProject/Tools/generate_hanging_soap_net.py",
+  "sourceSHA256": "bde69b5c5666509bfa3052f102f14b4797f4e8674d37ba80006f27d5b22c5ab0",
+  "sourceGitBlobSHA": "282498a2abd3a33cb349018d685a0da1eebab2b0",
+  "hostOwner": "UnityProject/Tools/refine_faucet_hero.py",
+  "baseHostOwner": "UnityProject/Tools/generate_faucet_hose.py",
+  "lookdev": {
+    "method": "Three actual-GLB CPU depth-buffer/backface-cull diagnostic views; not Unity/PBR benchmark",
+    "observedChanges": [
+      "shorter/wider bag than v1",
+      "irregular mouth sag and path slack",
+      "metal neck loop and split wire hanger instead of blue triangular suspension cords",
+      "reference-style single-lever faucet used in combined review"
+    ],
+    "visualPointsAwarded": 0
+  },
+  "verification": {
+    "externalGeometry": true,
+    "checkedComponentSurfacesAcrossLevels": 185,
+    "watertightPerLogicalComponent": true,
+    "edgeIncidence2": true,
+    "glbRoundtrip": true,
+    "objTriangleRoundtrip": true,
+    "strictLodTriangleReduction": true,
+    "unityCompile": false,
+    "unityImport": false,
+    "unityRender": false,
+    "fullYarnIntersectionProof": false,
+    "clothSimulation": false,
+    "temporalLod": false
+  },
+  "visualFidelity": {
+    "authority": "Assets/QA/visual_fidelity_gate.json",
+    "status": "UNSCORED_UNTIL_REAL_4K_RENDER",
+    "score": null,
+    "pass": false,
+    "pointsAwarded": 0
+  },
+  "pending": [
+    "true knitted-loop/knot topology beyond crossed yarn approximation",
+    "full yarn-yarn and hanger contact proof",
+    "wet soap/residue state if scene history requires it",
+    "Unity 4K and temporal evidence",
+    "runtime performance"
+  ]
+}

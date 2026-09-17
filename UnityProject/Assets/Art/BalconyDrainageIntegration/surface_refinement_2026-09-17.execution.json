@@ -1,0 +1,429 @@
+{
+  "schema": 1,
+  "owner": "BalconyDrainageIntegration; existing curb material refined in place",
+  "materials": {
+    "WaterproofCoating": {
+      "color": [
+        0.47,
+        0.49,
+        0.47
+      ],
+      "roughness": 0.72,
+      "heightRmsM": 4e-05,
+      "pigmentVariation": 0.0,
+      "resolution": [
+        2048,
+        576
+      ],
+      "coverageMetres": [
+        3.62,
+        0.99
+      ],
+      "roughnessMinMax": [
+        0.609286190930678,
+        0.8450145502501897
+      ],
+      "heightRmsMeasuredMm": 0.032415526373406216,
+      "normalTiltMaxDegrees": 4.580583572245628,
+      "metallic": 0,
+      "wetness": 0,
+      "bakedLighting": false,
+      "uniqueField": true,
+      "albedoTexture": false
+    },
+    "CementMortar": {
+      "color": [
+        0.54,
+        0.52,
+        0.47
+      ],
+      "roughness": 0.85,
+      "heightRmsM": 6.5e-05,
+      "pigmentVariation": 0.008,
+      "resolution": [
+        2048,
+        576
+      ],
+      "coverageMetres": [
+        3.62,
+        0.99
+      ],
+      "roughnessMinMax": [
+        0.730697533434077,
+        0.94
+      ],
+      "heightRmsMeasuredMm": 0.052663407085370165,
+      "normalTiltMaxDegrees": 6.681632891657755,
+      "metallic": 0,
+      "wetness": 0,
+      "bakedLighting": false,
+      "uniqueField": true,
+      "albedoTexture": true
+    },
+    "WeatheredConcrete": {
+      "color": [
+        0.58,
+        0.56,
+        0.52
+      ],
+      "roughness": 0.85,
+      "heightRmsM": 7e-05,
+      "pigmentVariation": 0.01,
+      "resolution": [
+        2048,
+        576
+      ],
+      "coverageMetres": [
+        3.62,
+        0.99
+      ],
+      "roughnessMinMax": [
+        0.7360250168695548,
+        0.94
+      ],
+      "heightRmsMeasuredMm": 0.056745780873924324,
+      "normalTiltMaxDegrees": 6.891565617596844,
+      "metallic": 0,
+      "wetness": 0,
+      "bakedLighting": false,
+      "uniqueField": true,
+      "albedoTexture": true
+    }
+  },
+  "records": [
+    {
+      "level": "MASTER",
+      "input": "BalconyExteriorHeroDrainedStructuralRepairFacadeRefined3600_MASTER.glb",
+      "inputSHA256": "8850b895d4ec3ffadd951493b6e594b0b8276f4b7c3d01b2b2217ae9ed0444ff",
+      "output": "BalconyExteriorHeroDrainedStructuralRepairFacadeRefined3600_MASTER_SurfaceRefined.glb",
+      "outputSHA256": "85d4a5b33276bfd53b9125b5c7e24f3702e626e7e66058c49d52220b9585f0b5",
+      "triangles": 180792,
+      "changedSurfaces": [
+        {
+          "name": "DrainIntegratedFloor_WaterproofSkinWithRealDrainCutout",
+          "material": "WaterproofCoating",
+          "triangles": 416,
+          "beforeVertices": 208,
+          "afterVertices": 1248,
+          "beforeDegenerateUVTriangles": 208,
+          "afterDegenerateUVTriangles": 0,
+          "triangleCornersAndWindingPreserved": true,
+          "weldedWatertight": true,
+          "hardFaceNormals": true
+        },
+        {
+          "name": "DrainIntegratedFloor_SlopedMortarWithRealDrainCutout",
+          "material": "CementMortar",
+          "triangles": 416,
+          "beforeVertices": 208,
+          "afterVertices": 1248,
+          "beforeDegenerateUVTriangles": 208,
+          "afterDegenerateUVTriangles": 0,
+          "triangleCornersAndWindingPreserved": true,
+          "weldedWatertight": true,
+          "hardFaceNormals": true
+        },
+        {
+          "name": "DrainIntegratedFloor_WallBaseWaterproofTurnUp",
+          "material": "WaterproofCoating",
+          "triangles": 12,
+          "beforeVertices": 8,
+          "afterVertices": 36,
+          "beforeDegenerateUVTriangles": 8,
+          "afterDegenerateUVTriangles": 0,
+          "triangleCornersAndWindingPreserved": true,
+          "weldedWatertight": true,
+          "hardFaceNormals": true
+        },
+        {
+          "name": "ExistingHero_Kerb_WeatheredConcrete",
+          "material": "WeatheredConcrete",
+          "triangles": 140,
+          "beforeVertices": 88,
+          "afterVertices": 420,
+          "beforeDegenerateUVTriangles": 80,
+          "afterDegenerateUVTriangles": 0,
+          "triangleCornersAndWindingPreserved": true,
+          "weldedWatertight": true,
+          "hardFaceNormals": true
+        }
+      ],
+      "nodeCount": 308,
+      "allNodeTransformsPreserved": true,
+      "allTriangleCornersAndWindingPreserved": true,
+      "allOtherGeometryNormalsUVMaterialsPreserved": true,
+      "glbRoundtrip": true,
+      "objRoundtrip": true
+    },
+    {
+      "level": "LOD0",
+      "input": "BalconyExteriorHeroDrainedStructuralRepairFacadeRefined3600_LOD0.glb",
+      "inputSHA256": "fcf2aacb604aae6c3744998f944fb797a587a55699034723aeaa9d03390e9336",
+      "output": "BalconyExteriorHeroDrainedStructuralRepairFacadeRefined3600_LOD0_SurfaceRefined.glb",
+      "outputSHA256": "7dcc12ef8c4a429ae1470a662637da23c6c0328d0f0d4c63bc14fb6b290ccee5",
+      "triangles": 101392,
+      "changedSurfaces": [
+        {
+          "name": "DrainIntegratedFloor_WaterproofSkinWithRealDrainCutout",
+          "material": "WaterproofCoating",
+          "triangles": 320,
+          "beforeVertices": 160,
+          "afterVertices": 960,
+          "beforeDegenerateUVTriangles": 160,
+          "afterDegenerateUVTriangles": 0,
+          "triangleCornersAndWindingPreserved": true,
+          "weldedWatertight": true,
+          "hardFaceNormals": true
+        },
+        {
+          "name": "DrainIntegratedFloor_SlopedMortarWithRealDrainCutout",
+          "material": "CementMortar",
+          "triangles": 320,
+          "beforeVertices": 160,
+          "afterVertices": 960,
+          "beforeDegenerateUVTriangles": 160,
+          "afterDegenerateUVTriangles": 0,
+          "triangleCornersAndWindingPreserved": true,
+          "weldedWatertight": true,
+          "hardFaceNormals": true
+        },
+        {
+          "name": "DrainIntegratedFloor_WallBaseWaterproofTurnUp",
+          "material": "WaterproofCoating",
+          "triangles": 12,
+          "beforeVertices": 8,
+          "afterVertices": 36,
+          "beforeDegenerateUVTriangles": 8,
+          "afterDegenerateUVTriangles": 0,
+          "triangleCornersAndWindingPreserved": true,
+          "weldedWatertight": true,
+          "hardFaceNormals": true
+        },
+        {
+          "name": "ExistingHero_Kerb_WeatheredConcrete",
+          "material": "WeatheredConcrete",
+          "triangles": 140,
+          "beforeVertices": 88,
+          "afterVertices": 420,
+          "beforeDegenerateUVTriangles": 80,
+          "afterDegenerateUVTriangles": 0,
+          "triangleCornersAndWindingPreserved": true,
+          "weldedWatertight": true,
+          "hardFaceNormals": true
+        }
+      ],
+      "nodeCount": 272,
+      "allNodeTransformsPreserved": true,
+      "allTriangleCornersAndWindingPreserved": true,
+      "allOtherGeometryNormalsUVMaterialsPreserved": true,
+      "glbRoundtrip": true,
+      "objRoundtrip": true
+    },
+    {
+      "level": "LOD1",
+      "input": "BalconyExteriorHeroDrainedStructuralRepairFacadeRefined3600_LOD1.glb",
+      "inputSHA256": "f49d96ad61073e176541833b7a62079a124c6738ea8c7992eb83ca39c03bb7d3",
+      "output": "BalconyExteriorHeroDrainedStructuralRepairFacadeRefined3600_LOD1_SurfaceRefined.glb",
+      "outputSHA256": "6d101509a3a9fc2005748d197b62594e53c7ab11aed6d4637afb7ff77f0f7b93",
+      "triangles": 48872,
+      "changedSurfaces": [
+        {
+          "name": "DrainIntegratedFloor_WaterproofSkinWithRealDrainCutout",
+          "material": "WaterproofCoating",
+          "triangles": 224,
+          "beforeVertices": 112,
+          "afterVertices": 672,
+          "beforeDegenerateUVTriangles": 112,
+          "afterDegenerateUVTriangles": 0,
+          "triangleCornersAndWindingPreserved": true,
+          "weldedWatertight": true,
+          "hardFaceNormals": true
+        },
+        {
+          "name": "DrainIntegratedFloor_SlopedMortarWithRealDrainCutout",
+          "material": "CementMortar",
+          "triangles": 224,
+          "beforeVertices": 112,
+          "afterVertices": 672,
+          "beforeDegenerateUVTriangles": 112,
+          "afterDegenerateUVTriangles": 0,
+          "triangleCornersAndWindingPreserved": true,
+          "weldedWatertight": true,
+          "hardFaceNormals": true
+        },
+        {
+          "name": "DrainIntegratedFloor_WallBaseWaterproofTurnUp",
+          "material": "WaterproofCoating",
+          "triangles": 12,
+          "beforeVertices": 8,
+          "afterVertices": 36,
+          "beforeDegenerateUVTriangles": 8,
+          "afterDegenerateUVTriangles": 0,
+          "triangleCornersAndWindingPreserved": true,
+          "weldedWatertight": true,
+          "hardFaceNormals": true
+        },
+        {
+          "name": "ExistingHero_Kerb_WeatheredConcrete",
+          "material": "WeatheredConcrete",
+          "triangles": 140,
+          "beforeVertices": 88,
+          "afterVertices": 420,
+          "beforeDegenerateUVTriangles": 80,
+          "afterDegenerateUVTriangles": 0,
+          "triangleCornersAndWindingPreserved": true,
+          "weldedWatertight": true,
+          "hardFaceNormals": true
+        }
+      ],
+      "nodeCount": 212,
+      "allNodeTransformsPreserved": true,
+      "allTriangleCornersAndWindingPreserved": true,
+      "allOtherGeometryNormalsUVMaterialsPreserved": true,
+      "glbRoundtrip": true,
+      "objRoundtrip": true
+    },
+    {
+      "level": "LOD2",
+      "input": "BalconyExteriorHeroDrainedStructuralRepairFacadeRefined3600_LOD2.glb",
+      "inputSHA256": "93d0d2534b174e6d40187b8f9a881b687ce5f683a370a553ecf80fdb9812166b",
+      "output": "BalconyExteriorHeroDrainedStructuralRepairFacadeRefined3600_LOD2_SurfaceRefined.glb",
+      "outputSHA256": "29fb35df7d78eb5bcbaef46a9ab825dd29ca43d2a02f3fe2228849a53f7ce031",
+      "triangles": 25824,
+      "changedSurfaces": [
+        {
+          "name": "DrainIntegratedFloor_WaterproofSkinWithRealDrainCutout",
+          "material": "WaterproofCoating",
+          "triangles": 160,
+          "beforeVertices": 80,
+          "afterVertices": 480,
+          "beforeDegenerateUVTriangles": 80,
+          "afterDegenerateUVTriangles": 0,
+          "triangleCornersAndWindingPreserved": true,
+          "weldedWatertight": true,
+          "hardFaceNormals": true
+        },
+        {
+          "name": "DrainIntegratedFloor_SlopedMortarWithRealDrainCutout",
+          "material": "CementMortar",
+          "triangles": 160,
+          "beforeVertices": 80,
+          "afterVertices": 480,
+          "beforeDegenerateUVTriangles": 80,
+          "afterDegenerateUVTriangles": 0,
+          "triangleCornersAndWindingPreserved": true,
+          "weldedWatertight": true,
+          "hardFaceNormals": true
+        },
+        {
+          "name": "ExistingHero_Kerb_WeatheredConcrete",
+          "material": "WeatheredConcrete",
+          "triangles": 96,
+          "beforeVertices": 64,
+          "afterVertices": 288,
+          "beforeDegenerateUVTriangles": 56,
+          "afterDegenerateUVTriangles": 0,
+          "triangleCornersAndWindingPreserved": true,
+          "weldedWatertight": true,
+          "hardFaceNormals": true
+        }
+      ],
+      "nodeCount": 165,
+      "allNodeTransformsPreserved": true,
+      "allTriangleCornersAndWindingPreserved": true,
+      "allOtherGeometryNormalsUVMaterialsPreserved": true,
+      "glbRoundtrip": true,
+      "objRoundtrip": true
+    },
+    {
+      "level": "LOD3",
+      "input": "BalconyExteriorHeroDrainedStructuralRepairFacadeRefined3600_LOD3.glb",
+      "inputSHA256": "04926ad668a723421c4ebdf6f43570d4838af90577fca132e77623473f8010d1",
+      "output": "BalconyExteriorHeroDrainedStructuralRepairFacadeRefined3600_LOD3_SurfaceRefined.glb",
+      "outputSHA256": "604811f99c5ccc59d11124ea87e5262384ee1af06974b0eff37b9ac489013287",
+      "triangles": 16136,
+      "changedSurfaces": [
+        {
+          "name": "DrainIntegratedFloor_WaterproofSkinWithRealDrainCutout",
+          "material": "WaterproofCoating",
+          "triangles": 112,
+          "beforeVertices": 56,
+          "afterVertices": 336,
+          "beforeDegenerateUVTriangles": 56,
+          "afterDegenerateUVTriangles": 0,
+          "triangleCornersAndWindingPreserved": true,
+          "weldedWatertight": true,
+          "hardFaceNormals": true
+        },
+        {
+          "name": "DrainIntegratedFloor_SlopedMortarWithRealDrainCutout",
+          "material": "CementMortar",
+          "triangles": 112,
+          "beforeVertices": 56,
+          "afterVertices": 336,
+          "beforeDegenerateUVTriangles": 56,
+          "afterDegenerateUVTriangles": 0,
+          "triangleCornersAndWindingPreserved": true,
+          "weldedWatertight": true,
+          "hardFaceNormals": true
+        },
+        {
+          "name": "ExistingHero_Kerb_WeatheredConcrete",
+          "material": "WeatheredConcrete",
+          "triangles": 96,
+          "beforeVertices": 64,
+          "afterVertices": 288,
+          "beforeDegenerateUVTriangles": 56,
+          "afterDegenerateUVTriangles": 0,
+          "triangleCornersAndWindingPreserved": true,
+          "weldedWatertight": true,
+          "hardFaceNormals": true
+        }
+      ],
+      "nodeCount": 135,
+      "allNodeTransformsPreserved": true,
+      "allTriangleCornersAndWindingPreserved": true,
+      "allOtherGeometryNormalsUVMaterialsPreserved": true,
+      "glbRoundtrip": true,
+      "objRoundtrip": true
+    }
+  ],
+  "sourceSHA256": {
+    "build_balcony_drainage_integration.py": "f293128d6a15e3aac0019669eef7b6549a632b1b60d4f2de25cb4cccda7b82d1",
+    "render_material_preview.py": "5b4b0b4bb6654dd29b993fed9e502c35a637e8aeaa8bb6fac9f984bae3ebb4a6"
+  },
+  "assemblerSHA256": "17bf132c6e5fb2924170532975b23a6436538a4b7e4477e9bb8f760e99d687a1",
+  "unityCompile": false,
+  "unityImport": false,
+  "unityRender": false,
+  "temporalVerified": false,
+  "visualFidelity": {
+    "score": null,
+    "pass": false
+  },
+  "limits": [
+    "External CPU previews; no Unity glass/reflection/GI parity.",
+    "All material dimensions are authored assumptions, not historical product identification.",
+    "No complete-scene claim: the output contains exactly the input nodes supplied to this run."
+  ],
+  "date": "2026-09-17",
+  "branch": "gpt/unity-migration",
+  "startHead": "fb270460b22ffd70468f69f22067a403d322bf20",
+  "continuedHead": "d22582fcd95af750c6f721036d499cfb26d5116b",
+  "shadowRegression": {
+    "uniformPlaneLuminanceRange": 0.0,
+    "maxAllowedRange": 0.00784313725490196,
+    "trueCastShadowContrast": 0.14509803921568626,
+    "minimumRequiredContrast": 0.08,
+    "passed": true
+  },
+  "oldShadowRegression": {
+    "oldRendererFailure": "('false self-shadow on a uniform plane', 0.04313725490196074)",
+    "oldSourceCommit": "fcf5a938c3be600dc390da10302a37dbf745a2aa"
+  },
+  "scope": "Building-component material review. Later plant/laundry GLBs were not accessible here; their repository sources and records are retained. Do not replace complete later scenes with this preview assembly.",
+  "existingFormalOwner": "QualityBlockBalconySurfaceMicrostructureUpgrade",
+  "newUnityOwnerCreated": false,
+  "formalSceneChanged": false,
+  "godotChanged": false
+}

@@ -1,0 +1,68 @@
+{
+  "schema": 1,
+  "date": "2026-09-16",
+  "units": "metres",
+  "owner": "BalconyDrainageIntegration",
+  "ownership": {
+    "existingFloorDrainOwner": "UnityProject/Tools/generate_balcony_floor_drain.py",
+    "existingCondensateHoseOwner": "UnityProject/Tools/generate_balcony_ac_set.py",
+    "integrationPolicy": "Base owners remain unchanged. This owner re-executes FloorDrain100 and adds a reversible routed-hose/floor refinement."
+  },
+  "manufactureInstallation": {
+    "floor": "Sloped cementitious balcony floor with 4 mm waterproof skin, preserving the rainwater penetration and adding a real circular floor-drain well cutout.",
+    "floorDrain": "Existing-owner BalconyFloorDrain100 re-executed with 18 real grate slots, EPDM bedding ring, PVC flange/well/outlet and center screw; grate top translated flush to finished floor.",
+    "condensateRoute": "Existing corrugated condensate-hose concept refined into a continuous hollow gravity-fall route from the measured service-side start center to 18 mm above the drain center.",
+    "interfaces": "Hose start matches prior owner center; 43.4 mm floor cutout clears the 43 mm drain well while retaining 8.6 mm radial flange bearing beneath the 52 mm flange.",
+    "weathering": "Only a thin mineral/silt trace is authored on the low/outward side of the drain, following the 1.5% floor fall. No random grime, algae, rust or painted shadow.",
+    "orientationExposure": "Y up; exterior +Z; floor falls 1.5% to +Z. Lighting is unbaked and remains a Unity responsibility.",
+    "geometryVsMaterial": "Floor/drain openings, mortar/coating solids, grate apertures, flange/well/outlet, hollow corrugated hose and outlet sleeve are geometry; microstructure is PBR texture proxy."
+  },
+  "materials": {
+    "CementMortar": {"base":[0.48,0.46,0.42],"metallic":0.0,"roughness":0.88,"normalScale":0.4,"microstructure":"fine cement-paste and sparse aggregate proxy","wetness":0.0,"uvAging":"none baked","fresnel":"dielectric F0 approximately 0.04"},
+    "WaterproofCoating": {"base":[0.39,0.4,0.39],"metallic":0.0,"roughness":0.7,"normalScale":0.28,"microstructure":"rolled/sand-textured polymer waterproofing proxy","wetness":0.0,"uvAging":"subtle exposure chalking only","fresnel":"dielectric F0 approximately 0.04"},
+    "DrainHosePVC": {"base":[0.45,0.48,0.43],"metallic":0.0,"roughness":0.66,"normalScale":0.09,"microstructure":"aged flexible PVC extrusion and corrugation","wetness":0.0,"uvAging":"exterior chalking reserved for later causal mask","fresnel":"dielectric F0 approximately 0.04"},
+    "WarmWhitePowderCoat": {"base":[0.72,0.71,0.65],"metallic":0.0,"roughness":0.53,"normalScale":0.13,"microstructure":"fine powder-coat orange-peel proxy","wetness":0.0,"uvAging":"none baked","fresnel":"dielectric F0 approximately 0.04"},
+    "MineralResidue": {"base":[0.61,0.6,0.54],"metallic":0.0,"roughness":0.91,"normalScale":0.18,"microstructure":"thin dried mineral/silt deposit at low side of drain only","wetness":0.0,"uvAging":"not applicable","fresnel":"dielectric F0 approximately 0.04"},
+    "StainlessGrate": {"base":[0.5,0.53,0.55],"metallic":1.0,"roughness":0.31,"normalScale":0.1,"microstructure":"fine pressed/brushed stainless","wetness":0.0,"uvAging":"none baked","fresnel":"conductor"},
+    "GrayPVC": {"base":[0.25,0.27,0.27],"metallic":0.0,"roughness":0.62,"normalScale":0.14,"microstructure":"molded PVC grain","wetness":0.0,"uvAging":"none baked","fresnel":"dielectric F0 approximately 0.04"},
+    "BlackEPDM": {"base":[0.018,0.02,0.02],"metallic":0.0,"roughness":0.8,"normalScale":0.1,"microstructure":"matte rubber grain","wetness":0.0,"uvAging":"none baked","fresnel":"dielectric F0 approximately 0.04"}
+  },
+  "metrics": {
+    "originalHoseOwnerStartCenterWorld":[1.08009202,-0.94782974,0.262],
+    "routedHoseStartCenterWorld":[1.08009202,-0.94782974,0.262],
+    "startCenterDeltaMm":0.0,
+    "routedHoseEndCenterWorld":[0.45,-1.2405000000000002,0.82],
+    "drainCenterXZ":[0.45,0.82],
+    "hoseEndHorizontalOffsetFromDrainCenterMm":0.0,
+    "hoseOutletCenterAboveFinishedFloorMm":18.000000000000014,
+    "minimumOuterHoseClearanceAboveFinishedFloorMm":7.8000000000000345,
+    "floorSlopePercent":1.5,
+    "drainCutoutRadiusMm":43.4,
+    "drainFlangeRadiusMm":52.0,
+    "flangeBearingWidthMm":8.599999999999996,
+    "drainTopFlushDeltaMm":0.00002002716081861422,
+    "routedHoseCenterlineMonotonicGravityFall":true
+  },
+  "triangles": {
+    "BalconyFloorDrain100_ReexecutedOwner":{"MASTER":7936,"LOD0":6008,"LOD1":4076,"LOD2":2476,"LOD3":1896},
+    "BalconyWaterproofFloorDrainIntegrated3600x970":{"MASTER":320,"LOD0":256,"LOD1":192,"LOD2":116,"LOD3":56},
+    "CondensateDrainHose16_FloorDrainRoute":{"MASTER":24020,"LOD0":12064,"LOD1":4872,"LOD2":2420,"LOD3":1296}
+  },
+  "integratedHeroTriangles":{"MASTER":181180,"LOD0":101684,"LOD1":48720,"LOD2":25284,"LOD3":15584},
+  "verification": {
+    "actualNewOrImprovedMeshSets":["BalconyWaterproofFloorDrainIntegrated3600x970","CondensateDrainHose16_FloorDrainRoute"],
+    "existingOwnerReexecuted":["BalconyFloorDrain100"],
+    "glbObjRoundtrip":true,"componentWatertight":true,"finiteVerticesNormals":true,"noDegenerateFaces":true,"windingConsistent":true,"positiveVolume":true,"edgeIncidence2":true,"strictLodReduction":true,
+    "unityCompile":false,"unityImport":false,"unityRender":false,"temporal":false,"performance":false
+  },
+  "visualFidelity": {
+    "authority":"UnityProject/Assets/QA/visual_fidelity_gate.json",
+    "status":"UNSCORED_UNTIL_REAL_UNITY_3840x2160_RENDER",
+    "score":null,"pass":false,"pointsAwarded":0,
+    "expectedImpactOnly":["geometry_construction","material_pbr","texture_microdetail","weathering_causality"],
+    "criticalDefectsNotScoredWithoutPixels":["hero_geometry_intersection","severe_aliasing_or_shimmer","visible_lod_pop","unverified_render_claim"]
+  },
+  "implementationReadiness":{"lastRecorded":93,"recomputedThisRun":false},
+  "formalBenchmarkSceneChanged":false,
+  "nextProductionTarget":"If Unity pixels still do not appear, prioritize high-coverage facade/floor microvariation and contextual vegetation; add underside drain plumbing only if it can appear in a real camera framing."
+}

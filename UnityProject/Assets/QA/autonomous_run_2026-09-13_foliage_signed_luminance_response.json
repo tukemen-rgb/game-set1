@@ -1,0 +1,83 @@
+{
+  "runId": "2026-09-13-foliage-signed-luminance-response",
+  "branch": "gpt/unity-migration",
+  "startHead": "39e175451483cf29541b8d45cb8bd25405599899",
+  "status": "IMPLEMENTATION_READY_RENDER_PENDING",
+  "summary": "Corrected a confirmed one-sided foliage value-response bug: formal foliage generation assigns both signed canopy exposure bias and signed leaf-value variation, but the shader saturated 1 + exposureBias + leafVariation before multiplication, deleting every positive response while retaining negative darkening. The shader now applies the signed multiplier first and clamps only resulting albedo channels. Formal physicality QA and the machine-readable optical contract now fail closed if the pre-multiply unity clamp returns or generated leaf variation loses either sign.",
+  "substantiveCommits": [
+    {
+      "sha": "d4368afa5f5166daee1df99fd0f3d5b431da86c8",
+      "message": "fix: preserve signed foliage value response"
+    },
+    {
+      "sha": "27aed1f8fc6be4d3b5b12041b273f2f16109d318",
+      "message": "qa: enforce signed foliage luminance response"
+    },
+    {
+      "sha": "3fa5fb9329db5dd120df1d63fc6e770e226aaddd",
+      "message": "qa: bind signed foliage response contract"
+    }
+  ],
+  "problemEvidence": {
+    "formalGenerator": "QualityBlockFoliageOpticsUpgrade assigns _LeafVariation by lerping -0.045..+0.045 and _ExposureBias by lerping -0.105..+0.075.",
+    "previousShaderExpression": "saturate(1.0h + _ExposureBias + _LeafVariation)",
+    "failureMode": "Any positive combined bias was capped to multiplier 1.0 before albedo multiplication, while negative bias still darkened. This made the intended signed variation one-sided and could bias canopy values darker/ flatter while weakening repetition breakup.",
+    "correctedShaderExpression": "half exposureMultiplier = 1.0h + _ExposureBias + _LeafVariation; half3 albedo = saturate(tex.rgb * exposureMultiplier);",
+    "formalMultiplierEnvelopeFromAssignedExtrema": [0.85, 1.12]
+  },
+  "changes": [
+    "NewTownFoliageTransmission.shader preserves positive and negative exposure/variation around unity and applies the physical 0..1 clamp only after texture multiplication.",
+    "QualityBlockFoliagePhysicalityQA validates the exact signed shader response and rejects the old pre-multiply saturate form.",
+    "QualityBlockFoliagePhysicalityQA validates per-renderer exposure bias -0.13..+0.10 and leaf variation -0.05..+0.05, and generated foliage must contain both negative and positive variation values.",
+    "foliage_optical_physicality_contract.json advanced to v1.1.0, explicitly records _ExposureBias/_LeafVariation, signed response, final albedo clamp, prohibited pre-multiply unity clamp, assigned ranges and render-inspection targets.",
+    "Existing QualityBlockFoliageFormalEvidenceBindingQA already delegates to QualityBlockFoliagePhysicalityQA before formal reflection/still/temporal evidence, so no unbound standalone QA path was introduced."
+  ],
+  "verification": {
+    "sourceReview": "PASS_STATIC",
+    "machineReadableContract": "PASS_STATIC",
+    "formalEvidenceBinding": "EXISTING_DELEGATION_CONFIRMED",
+    "unityVersionRequired": "6000.3.0f1",
+    "unityCompileRuntime": "PENDING_NO_RUNNER",
+    "native3840x2160Render": "PENDING_NO_RUNNER",
+    "workflowRunsAtPreRecordHead": 0,
+    "commitStatusContextsAtPreRecordHead": 0,
+    "visualFidelityPointsAwarded": 0,
+    "visualFidelityPassClaimed": false
+  },
+  "implementationReadiness": {
+    "score100": 93,
+    "visualFidelityStatus": "UNSCORED_UNTIL_REAL_4K_RENDER",
+    "reasonNotHigher": "Unity 6000.3.0f1 compile/runtime, sealed 3840x2160 stills, 100% crops and temporal evidence remain unavailable."
+  },
+  "expectedVisualScoreImpactOnly": [
+    {
+      "category": "vegetation_natural_complexity",
+      "impact": "MEDIUM_TO_LARGE",
+      "reason": "Restores two-sided canopy value diversity instead of dark-only variation, improving natural breakup and reducing CG-flat repetition risk."
+    },
+    {
+      "category": "material_pbr_physical_plausibility",
+      "impact": "SMALL_TO_MEDIUM",
+      "reason": "Context/value modulation remains bounded and is applied before the final physical albedo clamp rather than clipping the response asymmetrically."
+    },
+    {
+      "category": "cinematic_image_quality",
+      "impact": "SMALL_TO_MEDIUM",
+      "reason": "Restored highlight-side leaf-value variation should improve canopy tonal separation, but this cannot be scored before actual rendered pixels."
+    }
+  ],
+  "runnerFailureInjectionPlan": [
+    "Reintroduce saturate(1.0h + _ExposureBias + _LeafVariation); formal physicality QA must fail before reflection/still capture.",
+    "Force all _LeafVariation property blocks to 0; generated-foliage signed-distribution QA must fail.",
+    "Set one _LeafVariation outside -0.05..+0.05; QA must fail.",
+    "Set one _ExposureBias outside -0.13..+0.10; QA must fail.",
+    "Clean rebuild, fresh reflection capture, then inspect hero/oblique/grazing 3840x2160 plus 100% canopy crops and temporal/subpixel_grazing for natural value distribution, repetition, clipped leaf colors, aliasing and shimmer."
+  ],
+  "constraints": {
+    "godotChanged": false,
+    "baseMerged": false,
+    "prohibitedThemesAdded": false,
+    "visualPointsSelfAwarded": false
+  },
+  "nextBlocker": "Actual Unity 6000.3.0f1 runner/render evidence. When it appears, stop speculative expansion and review/fix the real canopy pixels first."
+}

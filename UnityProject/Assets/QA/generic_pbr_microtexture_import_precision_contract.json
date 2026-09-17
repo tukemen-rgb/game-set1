@@ -1,0 +1,167 @@
+{
+  "schemaVersion": "1.0.0",
+  "contractId": "generic-pbr-microtexture-import-precision-v1",
+  "objective": "Preserve weak normal and metallic/smoothness physical-data signals for the generic PBR library until native-4K frontal, oblique, grazing and temporal evidence can verify them.",
+  "requiredMaterialSets": 8,
+  "requiredPhysicalDataTextures": 16,
+  "sourceGenerator": "QualityBlockPbrUpgrade",
+  "textureRoot": "Assets/Art/GeneratedPBR",
+  "canonicalImportState": {
+    "textureCompression": "Uncompressed",
+    "crunchedCompression": false,
+    "standalonePlatformOverrideAllowed": false,
+    "minimumMaxTextureSize": 1024,
+    "runtimeWidth": 1024,
+    "runtimeHeight": 1024,
+    "mipmapsRequired": true,
+    "filterMode": "Trilinear",
+    "wrapMode": "Repeat",
+    "minimumAnisotropy": 8,
+    "sRGB": false,
+    "normalTextureType": "NormalMap",
+    "metallicSmoothnessTextureType": "Default",
+    "alphaSource": "FromInput"
+  },
+  "manufactureAndMaterialReasoning": {
+    "sharedRules": {
+      "metallic": 0.0,
+      "dielectricF0Approx": 0.04,
+      "wetness": 0.0,
+      "wetnessRule": "Dry midsummer benchmark baseline. Wetness may only be introduced by a modeled causal water source and may not be painted into a highlight.",
+      "angularResponse": "Dielectric microfacet response with Fresnel increase toward grazing angles; highlight direction must come from scene lighting, never from texture paint.",
+      "geometryVsMaterialDetail": "Silhouette, construction thickness, joints, curb edges, trunks, branches and leaf cards stay geometric. Texture normals/masks carry only surface-scale aggregate, pores, grains, veins, fibres and similarly fine relief.",
+      "uvAging": "Age only through bounded loss of saturation/contrast and cause-based exposure effects; no light-direction-dependent aging is baked into albedo, normal or smoothness."
+    },
+    "profiles": [
+      {
+        "id": "PBR_GrassWorn",
+        "substrateAndAssembly": "Dry maintained grass over soil; broad clumps and ground exposure are geometric/contextual while blade-scale relief is material detail.",
+        "generatorBaseColorRgb": [0.24, 0.34, 0.12],
+        "roughness": 0.91,
+        "normalScaleGenerator": 3.2,
+        "tileScaleGenerator": 5.0,
+        "metallic": 0.0,
+        "wetness": 0.0,
+        "exposureAndAging": "Midsummer sun permits restrained dry/bare flecks from daily wear; no unexplained glossy wet response.",
+        "angularResponse": "Broad dielectric grass/soil response; grazing sparkle must be controlled by mip/aniso behavior rather than baked brightness."
+      },
+      {
+        "id": "PBR_DrySoil",
+        "substrateAndAssembly": "Compacted mineral soil with small pebble-scale relief; depressions/grade changes remain geometry.",
+        "generatorBaseColorRgb": [0.39, 0.29, 0.18],
+        "roughness": 0.96,
+        "normalScaleGenerator": 2.5,
+        "tileScaleGenerator": 4.0,
+        "metallic": 0.0,
+        "wetness": 0.0,
+        "exposureAndAging": "Dry exposed earth; local darkening requires modeled moisture or occlusion context.",
+        "angularResponse": "Very broad low-intensity dielectric lobe with no metallic glint."
+      },
+      {
+        "id": "PBR_DanchiConcrete",
+        "substrateAndAssembly": "Cast exterior concrete; slab/fascia thickness, seams and construction interfaces are geometry, while pores and fine aggregate remain texture relief.",
+        "generatorBaseColorRgb": [0.63, 0.62, 0.58],
+        "roughness": 0.88,
+        "normalScaleGenerator": 1.6,
+        "tileScaleGenerator": 3.0,
+        "metallic": 0.0,
+        "wetness": 0.0,
+        "exposureAndAging": "Neutral aggregate/pitting baseline. Streaks or deposits require a sill, drain, ground edge or metal source.",
+        "angularResponse": "Rough mineral dielectric response; no directional highlight is stored in the maps."
+      },
+      {
+        "id": "PBR_WashedConcrete",
+        "substrateAndAssembly": "Washed/aggregate-exposed concrete; aggregate-scale variation is material relief while panel thickness and joins remain geometry.",
+        "generatorBaseColorRgb": [0.56, 0.55, 0.51],
+        "roughness": 0.90,
+        "normalScaleGenerator": 2.2,
+        "tileScaleGenerator": 3.5,
+        "metallic": 0.0,
+        "wetness": 0.0,
+        "exposureAndAging": "Exposure can vary aggregate contrast modestly; stains remain cause-based and separate from the neutral substrate.",
+        "angularResponse": "Broad rough dielectric lobe whose grazing breakup follows aggregate normals."
+      },
+      {
+        "id": "PBR_WarmPaving",
+        "substrateAndAssembly": "Mineral paving surface; curb height, slab/module boundaries and major joints are geometry where benchmark-visible, with granular relief in textures.",
+        "generatorBaseColorRgb": [0.53, 0.52, 0.48],
+        "roughness": 0.91,
+        "normalScaleGenerator": 1.4,
+        "tileScaleGenerator": 4.5,
+        "metallic": 0.0,
+        "wetness": 0.0,
+        "exposureAndAging": "Dry pedestrian exposure with restrained joint contrast; no unexplained dark wet patches.",
+        "angularResponse": "Rough dielectric paving response; highlight orientation follows coherent midsummer sun and sky fill."
+      },
+      {
+        "id": "PBR_LeafDark",
+        "substrateAndAssembly": "Dry broadleaf lamina represented by foliage geometry/cards; veins and minute lamina undulation remain material microdetail.",
+        "generatorBaseColorRgb": [0.12, 0.27, 0.075],
+        "roughness": 0.86,
+        "normalScaleGenerator": 2.7,
+        "tileScaleGenerator": 2.8,
+        "metallic": 0.0,
+        "wetness": 0.0,
+        "exposureAndAging": "Midsummer sun variation is bounded; no wet sheen absent a causal source.",
+        "angularResponse": "Dielectric leaf response with grazing Fresnel; no painted sun spot or view-dependent highlight in texture data."
+      },
+      {
+        "id": "PBR_LeafMid",
+        "substrateAndAssembly": "Dry broadleaf lamina represented by foliage geometry/cards; veins and minute lamina undulation remain material microdetail.",
+        "generatorBaseColorRgb": [0.16, 0.33, 0.09],
+        "roughness": 0.85,
+        "normalScaleGenerator": 2.7,
+        "tileScaleGenerator": 2.8,
+        "metallic": 0.0,
+        "wetness": 0.0,
+        "exposureAndAging": "Midsummer sun variation is bounded; no wet sheen absent a causal source.",
+        "angularResponse": "Dielectric leaf response with grazing Fresnel; microdetail must survive mips without temporal sparkle."
+      },
+      {
+        "id": "PBR_Bark",
+        "substrateAndAssembly": "Tree bark on geometric trunk/branches; trunk taper, branch junctions and silhouette remain geometry while fibre/ridge relief is material detail.",
+        "generatorBaseColorRgb": [0.25, 0.16, 0.095],
+        "roughness": 0.95,
+        "normalScaleGenerator": 3.0,
+        "tileScaleGenerator": 2.8,
+        "metallic": 0.0,
+        "wetness": 0.0,
+        "exposureAndAging": "Dry weathered bark may vary fibre value/chroma modestly with exposure; glossy or directional streaks require a modeled cause.",
+        "angularResponse": "Very rough dielectric response; ridge normals may break grazing light but may not encode a fixed light direction."
+      }
+    ]
+  },
+  "evidencePolicy": {
+    "formalTargets": ["QA4K_*", "QATemporal_*", "QAPreparedTemporal_*"],
+    "preCullBehavior": "READ_ONLY_FAIL_CLOSED",
+    "repairDuringFormalRender": false,
+    "requiredNativeCaptures": ["frontal", "oblique", "grazing"],
+    "requiredCrops": ["concrete_or_paving_100pct", "bark_or_foliage_100pct"],
+    "requiredTemporalEvidence": ["subpixel_grazing", "foliage_or_material_motion"],
+    "scoreOnlyFromRenderedPixels": true
+  },
+  "failureInjection": [
+    "Regress one protected normal or metallic/smoothness map to CompressedHQ and require formal pre-cull failure.",
+    "Enable Crunch compression and require failure.",
+    "Enable a Standalone platform override and require failure.",
+    "Reduce runtime texture size below 1024 and require failure.",
+    "Disable mipmaps and require failure.",
+    "Change Trilinear to Bilinear or Point and require failure.",
+    "Reduce anisotropy below 8 and require failure.",
+    "Enable sRGB on physical data and require failure.",
+    "Change a normal away from NormalMap and require failure.",
+    "Remove source alpha from a metallic/smoothness map and require failure before evidence rendering."
+  ],
+  "visualGate": {
+    "visualFidelityPointsAwarded": 0,
+    "passClaimAllowedWithoutRenderedEvidence": false,
+    "runtimeRenderVerification": "PENDING_UNITY_RUNTIME",
+    "expectedImpactNotAwarded": {
+      "Material/PBR physical plausibility": "medium",
+      "Texture/microdetail/texel fidelity": "medium-large",
+      "Vegetation/natural complexity": "medium",
+      "Lighting/shadows/reflections": "small-medium",
+      "Temporal/LOD/aliasing stability": "medium"
+    }
+  }
+}

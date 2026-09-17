@@ -1,0 +1,199 @@
+{
+  "schemaVersion": "1.1.0",
+  "contractId": "balcony_separation_panel_physical_assembly",
+  "scenePath": "Assets/Scenes/QualityBlock1990s.unity",
+  "sourceDatumRootName": "DanchiHighDetail",
+  "assemblyRootName": "DanchiBalconySeparationPanels",
+  "expectedBayAssemblies": 30,
+  "purpose": "Replace the bracket-only generated balcony divider cue with a physically assembled ordinary balcony separation panel while keeping the established DanchiHighDetail six-material metric-UV contract unchanged. The panel owns authored metric-UV meshes and per-bay LOD0/1/2/3 groups. Source validity awards zero Visual Fidelity points until native Unity pixels are reviewed.",
+  "manufactureInstallation": {
+    "assembly": "Thin calcium-silicate/fibre-cement-like board captured inside an anodized-aluminium perimeter frame, aligned to the existing front low/high divider-bracket datum and separately supported by rear wall brackets plus fasteners.",
+    "installationSequence": [
+      "Resolve each of the 30 existing HD_BayAssembly transforms as installation datums; do not duplicate or reinterpret the apartment bay spacing.",
+      "Seat the perimeter frame 60 mm above the persisted generated balcony slab top so the board is neither buried in the slab nor painted onto the facade.",
+      "Run the panel depth from the facade-side rear frame toward the existing front divider bracket zone while remaining behind the front railing plane.",
+      "Capture the 6 mm board inside the frame with 32 mm perimeter members and an explicit physical inset.",
+      "Retain the existing front low/high divider brackets as front attachment context; use separate rear wall brackets and fastener heads so the panel has a two-sided load path rather than a floating sheet.",
+      "Build source parts directly from authored chamfered/beveled meshes with metre-based UV0; do not insert a seventh material into the DanchiHighDetail physical-UV registry.",
+      "Generate one four-level animated-cross-fade LODGroup per balcony panel so LOD selection is based on the panel's own screen footprint rather than the bounds of the entire apartment block."
+    ]
+  },
+  "dimensionsMetres": {
+    "partitionLocalX": -1.78,
+    "floorTopLocalY": -0.79,
+    "bottomClearance": 0.06,
+    "overallHeight": 1.78,
+    "rearLocalZ": -7.18,
+    "frontLocalZ": -6.285,
+    "overallDepth": 0.895,
+    "frameSection": 0.032,
+    "boardThickness": 0.006,
+    "boardInset": 0.032,
+    "rearBracketDepth": 0.14,
+    "fastenerHeadDiameter": 0.012,
+    "fastenerHeadDepth": 0.016,
+    "geometryTolerance": 0.004
+  },
+  "materialPhysicalModel": {
+    "boardMaterial": "MAT_BalconyPartitionFiberCement",
+    "boardBaseAlbedoLinearRgb": [0.64, 0.63, 0.58],
+    "metallic": 0.0,
+    "roughnessRange": [0.62, 0.74],
+    "specularModel": "dielectric Unity Standard response; ordinary dielectric Fresnel only, never metallic",
+    "normalScale": 0.32,
+    "microstructure": "low-amplitude isotropic mineral/fibre surface breakup generated into tangent-space normal; no directional light signal and no painted edge highlight",
+    "wetness": 0.0,
+    "uvAging": "dry midsummer UV/chalking may slightly broaden roughness and lower chroma; it must not create glossy wet sheen",
+    "angularFresnelResponse": "grazing brightness must arise from the realtime sun/sky/reflection solution and dielectric Fresnel response, not albedo paint",
+    "frameMaterial": "existing MAT_AgedAluminum microstructured anodized-aluminium family",
+    "rearBracketAndFastenerMaterial": "existing MAT_DarkGalvanizedSteel family"
+  },
+  "physicalUvPolicy": {
+    "units": "meters",
+    "phaseBinsPerAxis": 8,
+    "phaseStepMeters": 0.017,
+    "boardRepeatsPerMeter": 2.5,
+    "aluminumRepeatsPerMeter": 14.0,
+    "galvanizedSteelRepeatsPerMeter": 11.0,
+    "perAssemblyPhaseVariationRequired": true,
+    "reasoning": "Repeated balcony modules may share manufacture but must not restart an identical microtexture patch in screen space. UV0 stores metres and deterministic cut-origin phase; shared material texture scale converts metres into material-specific repeats."
+  },
+  "interfacesGapsSeals": [
+    "board edge is physically inset 32 mm behind the perimeter frame on all four sides",
+    "frame bottom is 60 mm above slab top; no slab interpenetration is permitted",
+    "front frame overlaps the existing front divider-bracket attachment zone while remaining behind the railing plane",
+    "rear frame sits at the facade-side endpoint and the 140 mm rear brackets bridge toward the facade support plane",
+    "no panel component may overlap the neighbouring window opening or AC assembly"
+  ],
+  "orientationExposureAging": {
+    "orientation": "vertical YZ partition at the left boundary of each generated balcony bay",
+    "exposure": "outer faces receive midsummer UV, wind-driven rain and airborne dust; framed edges and bracket recesses retain more grime",
+    "aging": "cause-based UV chalking, rain wash and interface dirt only; no arbitrary impact story or baked streak lighting",
+    "dryBenchmark": true
+  },
+  "geometryVsMaterialDetail": {
+    "geometry": [
+      "6 mm board thickness",
+      "32 mm perimeter frame",
+      "60 mm slab clearance",
+      "front/rear mounting interfaces",
+      "rear wall brackets and 12 mm fastener heads"
+    ],
+    "material": [
+      "sub-millimetre fibre/mineral relief",
+      "fine coating chalking",
+      "roughness variation",
+      "very fine dust/wash response"
+    ],
+    "forbidden": [
+      "painted frame shadows",
+      "painted sun highlights",
+      "fake geometry seams in albedo",
+      "metallic board response"
+    ]
+  },
+  "lodPolicy": {
+    "transitionHeights": [0.18, 0.08, 0.03, 0.008],
+    "lod0": "complete board, perimeter frame, rear brackets and fastener heads",
+    "lod1": "board/frame plus rear brackets; fastener heads are removed as sub-pixel hardware",
+    "lod2": "board and perimeter frame remain to preserve balcony depth/occlusion; rear brackets are removed",
+    "lod3": "board core remains as the final large occlusion/silhouette proxy; frame and hardware are removed before final cull",
+    "animatedCrossFadeRequired": true,
+    "perPanelLodGroupRequired": true,
+    "actualTemporalEvidenceRequired": true
+  },
+  "materialTextureImport": {
+    "size": 1024,
+    "normalTextureType": "NormalMap",
+    "metallicSmoothnessTextureType": "Default",
+    "metallicChannel": "R",
+    "smoothnessChannel": "A",
+    "sRGB": false,
+    "compression": "Uncompressed",
+    "crunch": false,
+    "mipmaps": true,
+    "filterMode": "Trilinear",
+    "wrapMode": "Repeat",
+    "minimumAnisotropy": 8
+  },
+  "lookdev": {
+    "illustrationPath": "Assets/QA/balcony_separation_panel_lookdev.svg",
+    "frontal": "Show a readable but restrained off-white mineral panel between balcony bays; verify board/frame silhouette and no primitive-placeholder reading.",
+    "oblique": "Reveal the real 6 mm board thickness, 32 mm frame depth, 60 mm floor clearance, rear wall bracket and existing front bracket relationship.",
+    "grazing": "Verify broad rough dielectric response on the board versus narrower anodized-aluminium frame response; no painted highlight is allowed.",
+    "crop100Percent": "Inspect board/frame inset, rear bracket/fastener contact, front bracket relationship, z-fighting, floating gaps, bevel response and micro-normal stability.",
+    "temporal": "Inspect LOD0/1/2/3 cross-fades, especially the frame-to-board-core reduction, for visible pop, shimmer or aliasing; any visible pop remains an automatic Visual Fidelity failure."
+  },
+  "researchReferences": [
+    {
+      "title": "久米工業 隔板KU5型（ケイカル板）",
+      "url": "https://www.kume-ind.co.jp/products/1963.html",
+      "relevance": "Manufacturer evidence that balcony partition systems use calcium-silicate board as a framed balcony separation product; exact benchmark product identity is not claimed."
+    },
+    {
+      "title": "久米工業 隔板KU型 製品一覧",
+      "url": "https://www.kume-ind.co.jp/products-cat/partition-ku",
+      "relevance": "Manufacturer category evidence for balcony separation assemblies and multiple framed installation variants."
+    },
+    {
+      "title": "アイカ工業 けい酸カルシウム板仕様一覧",
+      "url": "https://www.aica.co.jp/products/wall/n-veneer/specification/",
+      "relevance": "Current material-scale reference showing common painted calcium-silicate board at 910 x 1820 x 6 mm; used only to anchor plausible board thickness, not to claim the benchmark uses this specific modern product."
+    }
+  ],
+  "nativePacketIntegration": {
+    "formalRunnerPath": "Assets/Editor/QualityBlockNative4KReviewPacket.cs",
+    "buildMethod": "QualityBlockBalconySeparationPanelFormalIntegrationQA.ApplyAndPersist",
+    "validateMethod": "QualityBlockBalconySeparationPanelFormalIntegrationQA.ValidateOpenScene",
+    "persistBeforeReflection": true,
+    "validationOnlyAfterReflectionRequest": true,
+    "requiredPacketValidationBoundaries": 3,
+    "requiredBoundaries": [
+      "pre_reflection",
+      "post_reflection_pre_still",
+      "post_still_pre_temporal"
+    ],
+    "visualGateAuthorityPath": "Assets/QA/visual_fidelity_gate.json",
+    "evidenceBindingContractPath": "Assets/QA/scene_metadata_coverage_contract.json",
+    "evidenceBindingDomainId": "danchi_domain",
+    "reasoning": "The generated benchmark scene is rebuilt on demand and the panel root is not part of the core DanchiHighDetail build chain. Formal evidence therefore must explicitly build and save the panel hierarchy before reflection synchronization. After the reflection request, the panel path is validation-only so reflection, still and temporal evidence cannot observe different panel geometry/material/LOD states."
+  },
+  "formalEvidencePolicy": {
+    "preCullBehavior": "READ_ONLY_FAIL_CLOSED",
+    "formalTargetPrefixes": ["QA4K_", "QATemporal_", "QAPreparedTemporal_"],
+    "reflectionCameraValidated": true,
+    "repairDuringFormalCapture": false,
+    "visualFidelityPointsAwarded": 0,
+    "visualFidelityStatusWithoutRender": "UNSCORED_UNTIL_REAL_4K_RENDER"
+  },
+  "criticalDefectRisks": [
+    "visible_primitive_placeholder",
+    "impossible_material_physics",
+    "obvious_repetition",
+    "hero_geometry_intersection",
+    "visible_lod_pop",
+    "missing_construction_material_metadata",
+    "unverified_render_claim"
+  ],
+  "forbiddenLegacyCriticalAliases": [
+    "materially_impossible_metallic_or_specular",
+    "floating_or_interpenetrating_hero_geometry",
+    "obvious_repeated_module_pattern",
+    "missing_required_construction_or_material_metadata"
+  ],
+  "failureInjection": [
+    "Delete one panel core and require formal pre-cull failure.",
+    "Move one panel below the slab-clearance datum and require failure.",
+    "Set board metallic above zero tolerance and require failure.",
+    "Remove the generated board normal or metallic/smoothness map and require failure.",
+    "Compress either physical-data texture, enable sRGB, disable mipmaps, reduce anisotropy below 8 or enable a Standalone override and require failure.",
+    "Delete one rear wall bracket or its fasteners and require failure.",
+    "Replace any source mesh with Unity Cube/Cylinder or a non-authored asset and require failure.",
+    "Collapse deterministic UV phase diversity so every repeated panel shares one phase and require failure.",
+    "Remove expected LOD0/1/2/3 renderers, change transition heights or disable animated cross-fade and require failure.",
+    "Remove the explicit Native 4K ApplyAndPersist call, duplicate it, or move it after reflection synchronization and require integration preflight failure.",
+    "Remove the pre-reflection, post-reflection/pre-still or post-still/pre-temporal validation boundary and require integration preflight failure.",
+    "Replace any canonical critical-defect ID with a legacy alias or unknown ID and require integration preflight failure."
+  ],
+  "prohibitedThemes": ["earthquake", "disaster", "reconstruction"]
+}

@@ -1,0 +1,16 @@
+{
+  "runId":"2026_09_16_exterior_facade_set",
+  "startHead":"07b832bcb84744b7079e990cff36001879a6f85c",
+  "branch":"gpt/unity-migration",
+  "ownerInspection":{"keywords":["facade","exteriorwall","siding","vent"],"dedicatedOwnerFound":false},
+  "actualGenerated":{"assetSets":3,"standaloneGlb":15,"standaloneObj":15,"reviewGlb":1,"reviewTriangles":4796,"reviewGeometryCount":11,"sourceSHA256":"5e54f82d2af5fa4674d6257775e6263bb573100db390b8ec3853868eff562fbf","deliveryZipSHA256":"18c1ef9249eb8a9b651889e448158fe6e9ef108ce5e466e40de8121390c0ecb0"},
+  "triangles":{"PaintedFiberCementFacade3600x2700":[3744,1824,868,456,232],"ExteriorVentHood150":[3252,2248,1444,900,348],"FacadeBaseStarterFlashing3600":[1620,724,324,180,84]},
+  "executedChecks":["finite vertices and normals","nondegenerate faces","component watertightness","consistent winding","positive component volume","edge incidence equals two","GLB triangle and bounds roundtrip","OBJ triangle roundtrip","strict MASTER to LOD3 triangle reduction"],
+  "notVerified":["Unity compile","Unity import","Unity render","3840x2160 benchmark pixels","100 percent crops","temporal LOD pop/shimmer","target-hardware performance","exhaustive inter-component collision"],
+  "visualFidelity":{"authority":"Assets/QA/visual_fidelity_gate.json","score":null,"pass":false,"pointsAwarded":0,"expectedImpact":"High-coverage construction geometry, physically separated wall/vent/flashing materials, real aperture and causal installation detail; no visual points awarded without Unity pixels."},
+  "implementationReadiness":{"lastRecorded":93,"recomputed":false},
+  "workflowRunsObservedBeforeProduction":0,
+  "godotChanged":false,"baseMerged":false,"formalBenchmarkSceneChanged":false,"excludedThemeIntroduced":false,
+  "nextProductionTarget":"If Unity evidence remains unavailable, integrate facade with existing window/AC/rainwater systems in one reversible exterior-wall review before adding another isolated prop family.",
+  "blocker":"No Unity runner/screenshots or Actions run are available on this branch."
+}

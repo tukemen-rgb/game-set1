@@ -1,0 +1,74 @@
+{
+  "schemaVersion": "1.0",
+  "runDate": "2026-09-11",
+  "branch": "gpt/unity-migration",
+  "startHead": "8d43509b8bcd71e4d328ea729d220342e7ea8984",
+  "substantiveWorkHead": "fc0b8abdc6915dd1db96d8cf41917599f1725cea",
+  "objective": "Close the reflection-probe blind spot left by the new manufacturing-scale Danchi detail UV system. Formal MainCamera pre-cull already validates metric UV meshes before still/temporal frames, but ReflectionProbe.RenderProbe does not invoke that callback; therefore stale normalized UVs, wrong per-piece phase identities or drifted six-material texture transforms could otherwise seed a realtime cubemap before the still-frame guard rejects them.",
+  "substantiveCommits": [
+    "8b150699ccd1c4b76103827b949ee54f42729897",
+    "761c160fd705a744e0e77c48c0b81bcf5126ff36",
+    "fc0b8abdc6915dd1db96d8cf41917599f1725cea"
+  ],
+  "changes": [
+    {
+      "path": "Assets/QA/reflection_detail_physical_uv_binding_contract.json",
+      "summary": "Adds a machine-readable fail-closed contract requiring manufacturing-scale detail-UV validation before every reflection-lighting fingerprint boundary: pre-RenderProbe request, every observed Editor poll, completion and immediate pre-still. It maps only to obvious_repetition and severe_aliasing_or_shimmer risk reduction, awards zero Visual Fidelity points and keeps readiness at 93."
+    },
+    {
+      "path": "Assets/Editor/QualityBlockReflectionDetailPhysicalUvBindingQA.cs",
+      "summary": "Adds source/runtime contract validation and a report-free reflection-path scene check. The scene check delegates to QualityBlockDetailPhysicalUvQA.ValidateOpenScene(false), covering the DanchiHighDetail manifest, minimum source renderer/phase diversity, all six canonical material transforms, persisted physical-UV mesh identities, UV/tangent completeness and deterministic phase tokens without performing deep per-edge geometry work on every poll."
+    },
+    {
+      "path": "Assets/Editor/QualityBlockReflectionMaterialPhysicalityBindingQA.cs",
+      "summary": "Chains the new physical-UV contract into the existing reflection material binding that is already called by QualityBlockReflectionLightingStateFingerprint. This makes the established async reflection request/poll/completion/pre-still path fail closed for invalid detail UV state and also makes the new contract reachable transitively from core Visual Fidelity Gate Integrity."
+    }
+  ],
+  "reasoning": {
+    "whyThisTaskNow": "The immediately preceding run made detail microstructure metric and phase-diverse, but its strongest runtime guard was Camera.onPreCull. Realtime reflection probes are independent cameras and do not pass through that formal MainCamera callback. Because metal/roughness microstructure is visible through reflection response, allowing a cubemap to be generated from a stale UV state would undermine both repetition and grazing-light evidence even if the subsequent still itself used valid UVs.",
+    "whyNoNewAssetExpansion": "With no Runner or sealed pixels available, another speculative asset would not be scoreable. Closing a known evidence-state inconsistency protects future Material/PBR, Texture/Microdetail and Temporal judgments without pretending that source validation is image quality.",
+    "validationDepth": "Reflection polling uses the lightweight physical-UV scene validator rather than the deep chamfer-edge metric-isometry pass. The lightweight path still verifies every active source renderer binding, persisted generated mesh identity, complete UV/tangent data, phase token, material transform, minimum phase diversity and all six canonical materials. Deep edge isometry remains part of explicit prepared-scene validation and need not be recomputed on every asynchronous probe poll.",
+    "pixelAuthority": "The new binding cannot establish that texture repetition is visually imperceptible or that normal maps are temporally stable. grazing/material_grazing, grazing/sash_rail_response and oblique/balcony_services at native 100% remain authoritative."
+  },
+  "selfAudit": [
+    "The existing reflection-lighting fingerprint was re-read before editing. It calls QualityBlockReflectionMaterialPhysicalityBindingQA.ValidateOpenScene before computing the fingerprint, and that fingerprint is the state used by the established request/poll/completion/pre-still synchronization path. The new UV check therefore reuses an existing formal synchronization choke point rather than creating a parallel probe lifecycle.",
+    "QualityBlockDetailPhysicalUvQA.ValidateOpenScene(false) was confirmed public and report-free. In the formal fingerprint path the benchmark scene is already required to be open; the delegated lightweight validator does not generate evidence reports, save assets or alter UV data.",
+    "Core QualityBlockVisualGateIntegrityQA was re-read and confirmed to invoke QualityBlockReflectionMaterialPhysicalityBindingQA.ValidateContractConfigOnly. Because that method now invokes QualityBlockReflectionDetailPhysicalUvBindingQA.ValidateContractConfigOnly, weakening or deleting the new machine-readable UV binding contract prevents the core source-side gate-integrity check from succeeding.",
+    "The new critical-risk IDs are exactly the canonical gate IDs obvious_repetition and severe_aliasing_or_shimmer. No alias vocabulary was introduced.",
+    "No Visual Fidelity category score was changed. Source coherence reduces future evidence risk but does not prove a rendered pixel or clear a critical defect.",
+    "The substantive compare from startHead to substantiveWorkHead is 3 commits ahead / 0 behind with merge-base equal to startHead; all changed files are under UnityProject/."
+  ],
+  "verification": {
+    "sourceReview": "PASS for call-chain integration, contract/QA field agreement, canonical critical-risk vocabulary and use of the existing report-free lightweight physical-UV validator.",
+    "branchCompare": "3 commits ahead / 0 behind startHead; merge-base equals startHead; exactly three changed files and all are under UnityProject/.",
+    "godotPreserved": true,
+    "baseMerged": false,
+    "forbiddenThemesIntroduced": false,
+    "unityVersionDeclared": "6000.3.0f1",
+    "githubWorkflowRunsObserved": 0,
+    "githubCommitStatusContextsObserved": 0,
+    "unity6000_3_0f1CompileVerified": false,
+    "unityRuntimeVerified": false,
+    "preRenderProbePhysicalUvGuardObserved": false,
+    "native3840x2160RenderProduced": false,
+    "renderVerificationPending": true,
+    "visualFidelityScored": false
+  },
+  "readiness": {
+    "implementationReadinessScore": 93,
+    "possibleScore": 100,
+    "visualFidelityStatus": "UNSCORED_UNTIL_REAL_4K_RENDER",
+    "visualFidelityPointsAwardedThisRun": 0,
+    "passClaimed": false,
+    "reasonReadinessNotRaised": "The remaining seven readiness points remain reserved for real Unity 6000.3.0f1 compile/runtime, generated physical-UV asset observation and native evidence. Adding a source-side reflection binding cannot substitute for Runner verification."
+  },
+  "expectedVisualScoreImpactNotAwarded": [
+    "Texture/microdetail/texel fidelity: protects future evidence from a probe/still mismatch where metric UV and phase diversity are valid only at still time.",
+    "Material/PBR physical plausibility: protects reflection response from being generated with stale microstructure placement before the still is captured.",
+    "Critical obvious_repetition risk: reduced source-side evidence risk because a stale normalized or wrong-phase Danchi detail state now aborts before formal reflection synchronization.",
+    "Temporal/LOD/aliasing stability: reduced evidence-integrity risk only; actual shimmer, moire and LOD behavior remain native-pixel judgments.",
+    "No category receives numeric Visual Fidelity points without sealed native 3840x2160 evidence."
+  ],
+  "nextBlocker": "Unity 6000.3.0f1 Runner/Editor execution. On first Runner, stop speculative expansion; confirm compilation, run the normal prepared-scene chain, verify persisted physical-UV meshes and phase diversity, then start formal reflection synchronization and prove that the new UV guard passes before RenderProbe and remains stable through observed polls/completion/pre-still. After that, seal hero/oblique/grazing 3840x2160 frames and inspect the three required 100% crops for repetition, wrong grain direction, cylinder seams, bevel stretch and shimmer before assigning any Visual Fidelity score.",
+  "stopPolicy": "No new commits after 2026-09-18 without new user instruction; on or after 2026-09-19 summarize rather than extending the branch."
+}

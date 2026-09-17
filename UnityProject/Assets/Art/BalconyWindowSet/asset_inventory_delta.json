@@ -1,0 +1,29 @@
+{
+  "schema": 1,
+  "updated": "2026-09-16",
+  "isInventoryDelta": true,
+  "baseInventory": "Assets/Art/GardenProps/asset_inventory.json",
+  "existingOwnersChecked": {
+    "windowSashOwner": "UnityProject/Tools/generate_balcony_window_set.py",
+    "acOwner": "existing BalconyACSet owner plus installation-detail extension",
+    "decision": "Extend BalconyWindowSet installation interface; do not create duplicate sash, screen, sill flashing, AC, or wall-penetration systems."
+  },
+  "newAssets": [
+    {"id":"AluminumSlidingSashWindow1800x1800","masterTriangles":5124,"lodTriangles":[3852,2532,1676,1212],"actualOBJGLBExports":true,"unityVerified":false},
+    {"id":"MosquitoScreenPanel870x1760","masterTriangles":7812,"lodTriangles":[5268,2724,1436,672],"actualOBJGLBExports":true,"unityVerified":false},
+    {"id":"ExteriorSillDripFlashing1800","masterTriangles":1032,"lodTriangles":[792,552,392,312],"actualOBJGLBExports":true,"unityVerified":false},
+    {"id":"WindowPerimeterSealJoint1840x1840","masterTriangles":20800,"lodTriangles":[8672,3680,1984,992],"actualOBJGLBExports":true,"unityVerified":false,"ownerExtension":true},
+    {"id":"WindowHeadDripCap1900","masterTriangles":872,"lodTriangles":[632,472,392,312],"actualOBJGLBExports":true,"unityVerified":false,"ownerExtension":true},
+    {"id":"WindowSillWeepHoodPair","masterTriangles":2840,"lodTriangles":[872,360,280,120],"actualOBJGLBExports":true,"unityVerified":false,"ownerExtension":true}
+  ],
+  "reviewIntegrations": [
+    {"id":"BalconyWindowInstalledReview_LOD0","triangles":9948,"formalBenchmarkSceneChanged":false,"unityVerified":false},
+    {"id":"BalconyWindowInstallDetailReview_LOD0","triangles":20088,"geometryCount":20,"formalBenchmarkSceneChanged":false,"unityVerified":false},
+    {"id":"BalconyFacadeWindowACReview_LOD0","triangles":60260,"geometryCount":161,"reusesPriorACInstalledReview":true,"formalBenchmarkSceneChanged":false,"unityVerified":false}
+  ],
+  "productionDeltaThisRun": {"authoredAssetSets":3,"highDetailMasters":3,"runtimeLodSets":3},
+  "ownerSubtotal": {"authoredAssetSets":6,"highDetailMasters":6,"runtimeLodSets":6},
+  "visualFidelity": {"status":"UNSCORED_UNTIL_REAL_4K_RENDER","score":null,"pass":false,"pointsAwarded":0},
+  "readiness": {"lastRecordedScore":93,"recomputed":false},
+  "nextProductionTarget": "If no Unity render appears, add causal track/sill grime as material masks and inspect balcony handrail/parapet owners before authoring a major structural asset."
+}

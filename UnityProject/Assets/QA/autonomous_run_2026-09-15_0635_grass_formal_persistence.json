@@ -1,0 +1,67 @@
+{
+  "schemaVersion": "1.0.0",
+  "runId": "2026-09-15_0635_grass_formal_persistence",
+  "branch": "gpt/unity-migration",
+  "startHead": "58fff0b2d01b6028855dee218c8364877e7c50ac",
+  "substantiveWorkHead": "657aeae56d12716139b3fcdd998cb1ffc1dbd7f3",
+  "substantiveCommits": [
+    "6f526ef1a9e1402ebd4949ce76d1f77b59033bd1",
+    "657aeae56d12716139b3fcdd998cb1ffc1dbd7f3"
+  ],
+  "priorityDecision": "Do not add another visual assembly before proving that the immediately preceding grass-blade upgrade is actually persisted into the canonical scene used by formal native-4K evidence. Source audit found that QualityBlock4KCapture.PrepareSceneForSynchronizedCapture reopens the canonical scene, while QualityBlockGrassBladeFieldUpgrade's scene-open convenience path calls ApplyToOpenScene(false). That can create a renderable in-memory GrassBladeFieldDetail after reopen without explicitly persisting that newly generated hierarchy into the scene evidence state. Closing that gap has higher expected gate value than speculative expansion because the intended vegetation improvement must first survive into valid evidence.",
+  "changes": [
+    {
+      "path": "Assets/QA/grass_blade_formal_persistence_contract.json",
+      "summary": "Machine-readable fail-closed contract requiring the canonical scene-open path to persist deterministic grass, record a latest scene-saved grass fingerprint baseline, keep render callbacks read-only, and require QualityCamera/reflection/still/temporal culls to match that baseline. Runtime render verification remains false and Visual Fidelity award remains zero."
+    },
+    {
+      "path": "Assets/Editor/QualityBlockGrassBladeFormalPersistenceQA.cs",
+      "summary": "InitializeOnLoad scene-open/save/formal-pre-cull integration. On canonical scene open, once the generated grass source material and contracts exist, the existing deterministic grass builder is invoked with persist=true. Every canonical scene save records a SHA-256 fingerprint over grass hierarchy transforms, mesh asset/dependency identity, renderer/material live PBR state and LOD assignments. Formal camera pre-cull is read-only and fails if current grass differs from the latest saved fingerprint or if no saved baseline exists. Temporary benchmark-camera transforms do not invalidate the grass-specific baseline."
+    }
+  ],
+  "verification": {
+    "unityRuntimeAvailable": false,
+    "native4KRenderAvailable": false,
+    "githubStatusContexts": 0,
+    "githubWorkflowRuns": 0,
+    "sourceChecks": [
+      "confirmed QualityBlock4KCapture.PrepareSceneForSynchronizedCapture explicitly reopens Assets/Scenes/QualityBlock1990s.unity",
+      "confirmed QualityBlockGrassBladeFieldUpgrade scene-open convenience path uses ApplyToOpenScene(false)",
+      "confirmed existing formal grass camera guards validate but do not persist source state",
+      "confirmed final source diff before run-record commit is exactly two added Unity files, 2 commits ahead / 0 behind, with merge-base equal to the start head",
+      "confirmed no Godot path is modified"
+    ],
+    "limitations": "Static GitHub/source audit only. No Unity 6000.3.0f1 compile, Editor event-order execution, generated-scene persistence assertion, Camera.Render, 3840x2160 pixel review or temporal review is claimed."
+  },
+  "failureInjectionForFirstRunner": [
+    "open the prepared canonical scene, delete one grass patch without saving, then render QualityCamera; pre-cull must reject fingerprint drift",
+    "change one grass LOD transition without saving; formal pre-cull must reject",
+    "swap one grass patch mesh or material after the latest scene save; formal pre-cull must reject",
+    "clear/reload without a scene-saved grass baseline and invoke a formal camera; render must fail closed rather than auto-repair",
+    "remove GrassBladeFieldDetail before canonical reopen; scene-open persistence must deterministically rebuild and save it before formal capture continues"
+  ],
+  "implementationReadiness": {
+    "score": 93,
+    "possible": 100,
+    "changeThisRun": 0,
+    "reason": "The run closes a source-side evidence persistence gap but cannot earn the missing 7-point Unity compile/runtime verification without an actual Unity 6000.3.0f1 runner."
+  },
+  "visualFidelity": {
+    "status": "UNSCORED_UNTIL_REAL_4K_RENDER",
+    "pointsAwardedThisRun": 0,
+    "passClaimed": false,
+    "expectedScoreImpact": [
+      "Vegetation/natural complexity: preserves the already-implemented physical grass silhouette layer in the saved scene actually used for evidence; medium evidence-value improvement, not a pixel score.",
+      "Temporal/LOD/aliasing stability: binds formal temporal culls to the latest saved grass LOD/render state; small-medium evidence-value improvement, no points until motion pixels are reviewed.",
+      "Critical-defect review: reduces provenance ambiguity when judging primitive fallback, repeated grass structure, floating/interpenetrating lawn detail and visible LOD pop; it does not auto-clear any critical defect.",
+      "Direct rendered appearance change from this run: none; automatic Visual Fidelity impact is 0."
+    ]
+  },
+  "constraints": {
+    "godotPreserved": true,
+    "baseMerged": false,
+    "excludedThemesIntroduced": false,
+    "newDisasterOrReconstructionContent": false
+  },
+  "nextBlocker": "Unity 6000.3.0f1 runner/runtime remains the primary blocker. At first availability, stop speculative expansion, compile the new persistence guard, verify canonical reopen -> persistent GrassBladeFieldDetail -> sceneSaved fingerprint ordering, execute the failure injections, then run the authoritative native-4K packet and inspect fresh hero/oblique/grazing 3840x2160 frames, 100% lawn/vegetation crops and sealed temporal LOD evidence before assigning any Visual Fidelity points."
+}

@@ -1,0 +1,112 @@
+{
+  "schemaVersion": "1.1",
+  "status": "IMPLEMENTATION_READY_RENDER_PENDING",
+  "purpose": "Keep generated fallback foliage morphology, folded lamina geometry, visible/shadow silhouette, dry dielectric leaf optics, cause-based understory ecology and the dimensioned tree-to-ground root-zone interface inside the same authoritative reflection/still/temporal evidence state. ReflectionProbe rendering does not rely on MainCamera pre-cull, so all vegetation state must be proven explicitly before and throughout the formal reflection lifecycle.",
+  "scenePath": "Assets/Scenes/QualityBlock1990s.unity",
+  "reflectionBindingSource": "Assets/Editor/QualityBlockReflectionMaterialPhysicalityBindingQA.cs",
+  "formalBuildSource": "Assets/Editor/QualityBlockFoliageOpticsUpgrade.cs",
+  "upstreamContracts": [
+    "Assets/QA/foliage_morphology_diversity_contract.json",
+    "Assets/QA/foliage_lamina_geometry_contract.json",
+    "Assets/QA/foliage_silhouette_optics_contract.json",
+    "Assets/QA/foliage_optical_physicality_contract.json",
+    "Assets/QA/vegetation_ecology_contract.json",
+    "Assets/QA/vegetation_root_zone_interface_contract.json",
+    "Assets/QA/vegetation_formal_build_integration_contract.json"
+  ],
+  "requirements": {
+    "validateBeforeEveryReflectionLightingFingerprint": true,
+    "reflectionFingerprintUsedBeforeRenderProbeRequest": true,
+    "reflectionFingerprintRevalidatedOnEveryEditorPoll": true,
+    "reflectionFingerprintRevalidatedAtCompletion": true,
+    "reflectionFingerprintRevalidatedImmediatelyBeforeStillCapture": true,
+    "validationMustBeReportFreeAndMutationFree": true,
+    "sourceStateMayNotAutoRepairInFlight": true,
+    "requireMorphologyAssignmentAndLodIdentity": true,
+    "requireFoldedBaseAndDerivedLamina": true,
+    "requireVisibleShadowSilhouetteCoherence": true,
+    "requireDryDielectricLeafPhysicality": true,
+    "requireMidsummerSolarDirectionAndSoftShadowCoherence": true,
+    "requireVegetationEcologyContractAndScene": true,
+    "requireRootZoneConstructionAndGrounding": true,
+    "requireFormalBuildIntegrationContract": true,
+    "requireCauseBasedVegetationGroundContact": true,
+    "actualRenderRequiredForVisualPoints": true
+  },
+  "criticalDefectRisksReduced": [
+    "obvious_repetition",
+    "impossible_material_physics",
+    "hero_geometry_intersection",
+    "severe_aliasing_or_shimmer",
+    "visible_lod_pop",
+    "missing_construction_material_metadata"
+  ],
+  "formalEvidenceRequirements": {
+    "nativeResolution": [3840, 2160],
+    "requiredViews": ["hero", "oblique", "grazing"],
+    "required100PercentCrops": [
+      "oblique/vegetation_grounding",
+      "grazing/tree_shadow_contact"
+    ],
+    "requiredTemporalTarget": "temporal/subpixel_grazing",
+    "reviewFor": [
+      "repeated leaf-spray silhouettes or synchronized canopy patterning",
+      "planar-card highlight flashes at grazing incidence",
+      "leaf-edge aliasing or alpha-to-coverage shimmer",
+      "visible/shadow silhouette mismatch",
+      "LOD morphology, understory density or optical-response pop",
+      "plastic or metallic leaf, soil, curb or bark response",
+      "dapple-shadow discontinuity",
+      "reflection/still vegetation-state mismatch",
+      "root flare intersecting maintained curb or uninterrupted paving",
+      "curb modules, root-zone soil or understory visibly floating from their support surface",
+      "stamped circular understory distribution or globally synchronized tree-pit patterning",
+      "missing construction/material provenance for the root-zone assembly"
+    ],
+    "humanReviewRequired": true,
+    "actualRenderRequiredForVisualPoints": true
+  },
+  "scoreTargets": [
+    {
+      "categoryId": "geometry_construction",
+      "weight": 20,
+      "autoPoints": 0,
+      "expectedImpactOnly": "Keeps root flare, exposed soil opening, precast curb support and understory grounding inside the formal evidence state; actual intersection/float quality remains render-only."
+    },
+    {
+      "categoryId": "weathering_causality",
+      "weight": 10,
+      "autoPoints": 0,
+      "expectedImpactOnly": "Keeps circulation/exposure-driven understory density and dry root-zone weathering provenance attached to the scoreable candidate; rendered causality remains unobserved."
+    },
+    {
+      "categoryId": "vegetation_natural_complexity",
+      "weight": 8,
+      "autoPoints": 0,
+      "expectedImpactOnly": "Keeps morphology variants, folded lamina, low-understory ecology and six deterministic root-zone contexts in the actual scoreable evidence state; rendered naturalness remains unobserved."
+    },
+    {
+      "categoryId": "lighting_shadows_reflections",
+      "weight": 15,
+      "autoPoints": 0,
+      "expectedImpactOnly": "Requires the same foliage silhouette, physical optics and grounded vegetation assembly to be present before reflection cubemaps are accepted; actual transmitted light, dapple shadow and reflection balance remain unobserved."
+    },
+    {
+      "categoryId": "temporal_lod_aliasing",
+      "weight": 5,
+      "autoPoints": 0,
+      "expectedImpactOnly": "Prevents stale morphology, understory LOD or root-zone state from being sealed as temporal evidence; pop and shimmer still require actual temporal pixels."
+    }
+  ],
+  "implementationReadinessScore": 93,
+  "visualFidelityStatus": "UNSCORED_UNTIL_REAL_4K_RENDER",
+  "runtimeRenderVerified": false,
+  "visualFidelityPointsAwarded": 0,
+  "limitations": [
+    "No Unity 6000.3.0f1 compile or runtime execution is available yet.",
+    "Source-state validation cannot determine whether leaf margins, understory density or root-zone construction read naturally at native 4K.",
+    "Source-state validation cannot prove alpha-to-coverage stability, shadow-map stability or tree/understory LOD invisibility in motion.",
+    "Root/soil/curb dimensional contracts do not clear visible intersection, floating, repetition or contact defects without actual rendered crops.",
+    "No Visual Fidelity point or critical-defect clearance may be inferred from this binding without actual rendered evidence."
+  ]
+}

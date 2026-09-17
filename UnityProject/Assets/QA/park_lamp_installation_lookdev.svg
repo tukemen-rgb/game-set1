@@ -1,0 +1,66 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="1000" viewBox="0 0 1600 1000">
+  <rect width="1600" height="1000" fill="#f5f4ef"/>
+  <style>
+    text{font-family:Arial,'Noto Sans JP',sans-serif;fill:#202226} .h{font-size:30px;font-weight:700}.s{font-size:19px}.n{font-size:17px}.dim{font-size:16px;fill:#555b61}.line{stroke:#30343a;stroke-width:3;fill:none}.thin{stroke:#666c72;stroke-width:2;fill:none}.dash{stroke:#777;stroke-width:2;stroke-dasharray:9 7;fill:none}.conc{fill:#aaa9a2;stroke:#444;stroke-width:2}.wet{fill:#777a73;stroke:#444;stroke-width:2}.paint{fill:#315c69;stroke:#26353a;stroke-width:2}.rubber{fill:#232726;stroke:#111;stroke-width:2}.diff{fill:#d9ded3;fill-opacity:.80;stroke:#59615b;stroke-width:2}.metal{fill:#8a9194;stroke:#3e4548;stroke-width:2}.paper{fill:#fff;stroke:#b8b5ac;stroke-width:1}.call{stroke:#b14e3b;stroke-width:2.5;fill:none}.tick{stroke:#555;stroke-width:2}
+  </style>
+  <text x="55" y="55" class="h">HD_Lamp — manufacture / installation lookdev (source-side, not render evidence)</text>
+  <text x="55" y="88" class="s">Circa-2000 neighborhood-park intent. Continuous concrete taper, real service cover, inserted head adapter, retained globe. Dimensions are scene design assumptions unless explicitly referenced.</text>
+
+  <!-- FRONT ELEVATION -->
+  <text x="90" y="145" class="h">Front elevation (+Z service side)</text>
+  <line x1="80" y1="845" x2="650" y2="845" class="line"/>
+  <text x="85" y="874" class="dim">visible grade Y=0</text>
+  <!-- tapered pole; 4.00 m shown at 150 px/m -->
+  <path d="M282 845 L287 815 L296 245 L318 245 L327 815 L332 845 Z" class="conc"/>
+  <path d="M282 845 L287 815 L326 815 L332 845 Z" class="wet"/>
+  <path d="M287 815 L288 785 L326 785 L327 815 Z" class="wet"/>
+  <path d="M282 845 L332 845 L336 857 L278 857 Z" class="conc"/>
+  <text x="350" y="836" class="dim">0.20 m splash/capillary material zone; same pole surface, no bulged dirt ring</text>
+  <!-- hatch -->
+  <rect x="295" y="690" width="28" height="44" rx="5" class="rubber"/>
+  <rect x="298" y="693" width="22" height="38" rx="5" class="paint"/>
+  <circle cx="302" cy="698" r="2.4" class="metal"/><circle cx="316" cy="698" r="2.4" class="metal"/>
+  <circle cx="302" cy="726" r="2.4" class="metal"/><circle cx="316" cy="726" r="2.4" class="metal"/>
+  <path d="M323 710 L410 685" class="call"/><text x="420" y="686" class="n">curved painted service cover</text>
+  <text x="420" y="710" class="n">EPDM gasket behind; 4 × 8 mm heads at LOD0 only</text>
+  <!-- top adapter/head -->
+  <rect x="296" y="230" width="22" height="17" class="paint"/>
+  <rect x="302" y="193" width="10" height="39" class="paint"/>
+  <rect x="288" y="187" width="38" height="8" rx="3" class="paint"/>
+  <!-- globe profile -->
+  <path d="M307 187 C279 182 270 161 274 142 C279 115 296 99 307 99 C318 99 335 115 340 142 C344 161 335 182 307 187 Z" class="diff"/>
+  <rect x="288" y="95" width="38" height="6" rx="3" class="paint"/>
+  <rect x="284" y="90" width="46" height="5" rx="2" class="paint"/>
+  <path d="M326 191 L440 175" class="call"/><text x="450" y="176" class="n">lower retainer overlaps diffuser lower neck 5 mm</text>
+  <path d="M328 98 L440 120" class="call"/><text x="450" y="120" class="n">upper retainer + weather cap; no floating crown</text>
+  <path d="M318 228 L440 228" class="call"/><text x="450" y="229" class="n">65 mm painted adapter inserted into pole top and lower retainer</text>
+  <!-- dimensions -->
+  <line x1="245" y1="845" x2="245" y2="245" class="thin"/><line x1="236" y1="845" x2="254" y2="845" class="tick"/><line x1="236" y1="245" x2="254" y2="245" class="tick"/>
+  <text x="130" y="555" class="dim" transform="rotate(-90 130 555)">3.92 m grade → concrete pole top</text>
+  <line x1="190" y1="857" x2="190" y2="845" class="thin"/><text x="95" y="865" class="dim">0.08 m embed below grade</text>
+  <line x1="282" y1="880" x2="332" y2="880" class="thin"/><line x1="282" y1="872" x2="282" y2="888" class="tick"/><line x1="332" y1="872" x2="332" y2="888" class="tick"/><text x="259" y="910" class="dim">Ø190 mm at grade</text>
+  <line x1="296" y1="270" x2="318" y2="270" class="thin"/><text x="335" y="275" class="dim">Ø125 mm at top</text>
+
+  <!-- SERVICE COVER SECTION -->
+  <text x="790" y="145" class="h">Service-cover horizontal section @ Y=0.86 m</text>
+  <circle cx="1040" cy="390" r="145" class="conc"/>
+  <path d="M914 319 A145 145 0 0 1 1166 319" class="rubber" style="stroke-width:14;fill:none"/>
+  <path d="M924 331 A153 153 0 0 1 1156 331" class="paint" style="stroke-width:17;fill:none"/>
+  <line x1="1040" y1="390" x2="1040" y2="220" class="dash"/><text x="1052" y="235" class="dim">local +Z / benchmark-facing</text>
+  <path d="M1150 326 L1270 285" class="call"/><text x="1280" y="285" class="n">curved cover follows pole radius</text>
+  <text x="1280" y="311" class="n">rather than a flat plate floating at its corners</text>
+  <path d="M1164 315 L1270 355" class="call"/><text x="1280" y="355" class="n">EPDM remains visible as narrow weather seal</text>
+  <text x="805" y="585" class="s">Locked interface math</text>
+  <text x="805" y="620" class="n">• pole ↔ adapter overlap: 2 mm</text>
+  <text x="805" y="650" class="n">• adapter ↔ lower retainer overlap: 2 mm</text>
+  <text x="805" y="680" class="n">• lower / upper retainer ↔ diffuser neck overlap: 5 mm each</text>
+  <text x="805" y="710" class="n">• retainer ↔ weather-cap gap: 0 mm target</text>
+  <text x="805" y="740" class="n">• hard positive interface gap: ≤3 mm; unintended penetration: ≤8 mm</text>
+
+  <text x="805" y="795" class="s">Material response</text>
+  <rect x="805" y="815" width="22" height="22" class="conc"/><text x="840" y="832" class="n">concrete: dielectric, rough 0.80–0.93, millimetric aggregate</text>
+  <rect x="805" y="850" width="22" height="22" class="paint"/><text x="840" y="867" class="n">painted head/cover: metallic 0, rough 0.60–0.76; no painted highlight</text>
+  <rect x="805" y="885" width="22" height="22" class="rubber"/><text x="840" y="902" class="n">EPDM: metallic 0, roughness 0.92</text>
+  <rect x="805" y="920" width="22" height="22" class="diff"/><text x="840" y="937" class="n">aged globe: dielectric, no daytime emission; real sky/sun Fresnel only</text>
+  <text x="55" y="975" class="dim">Visual Fidelity credit = 0 until native 3840×2160 + 100% crops + temporal evidence are reviewed. This drawing is construction intent, not rendered proof.</text>
+</svg>

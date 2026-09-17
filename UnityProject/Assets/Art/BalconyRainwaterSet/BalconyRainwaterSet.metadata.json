@@ -1,0 +1,33 @@
+{
+  "schema":1,
+  "date":"2026-09-16",
+  "units":"metres",
+  "owner":"BalconyRainwaterSet",
+  "manufactureInstallation":{
+    "components":"two hollow vertical VP75-scale pipe lengths, hollow socket coupling, top offset with socket/seal collars, independent galvanized/EPDM wall clamp",
+    "dimensions":"modern scale reference: nominal 75 rigid PVC body OD 89 mm, minimum wall 5.5 mm; main run 2400 mm; offset drop 520 mm with 180 mm shift",
+    "mounting":"diagnostic review uses three clamp instances at 450/1200/2000 mm; wall plate, stand-off, screws and ears are explicit geometry",
+    "interfaces":"pipe insertion overlaps within socket depth by design; clamp liner surrounds the pipe OD without claiming deformation simulation",
+    "orientationExposure":"Y up, wall at -Z; gravity drainage downward; UV/rain exposure depends on final placement",
+    "agingCausality":"no arbitrary rust, algae or rain streaks baked; future chalking/splash must follow exposure and drainage",
+    "geometryVsMaterial":"bores, sockets, band, liner, ears, stand-off, plate and fasteners are geometry; PVC/zinc/rubber/sealant microstructure are texture proxies"
+  },
+  "materials":{
+    "GrayPVC":{"base":[0.48,0.50,0.49],"metallic":0.0,"roughness":0.54,"normalScale":0.14,"microstructure":"fine extrusion/handling proxy","wetness":0.0,"uvAging":"none baked","fresnel":"dielectric F0 approximately 0.04"},
+    "GalvanizedSteel":{"base":[0.52,0.54,0.55],"metallic":1.0,"roughness":0.46,"normalScale":0.18,"microstructure":"fine zinc-spangle proxy","wetness":0.0,"uvAging":"none baked","fresnel":"conductor response from base reflectance"},
+    "BlackEPDM":{"base":[0.025,0.027,0.026],"metallic":0.0,"roughness":0.78,"normalScale":0.28,"microstructure":"fine rubber grain proxy","wetness":0.0,"uvAging":"compression only","fresnel":"dielectric F0 approximately 0.04"},
+    "JointSealant":{"base":[0.22,0.22,0.21],"metallic":0.0,"roughness":0.71,"normalScale":0.16,"microstructure":"tooled elastomer skin proxy","wetness":0.0,"uvAging":"subtle chalking only","fresnel":"dielectric F0 approximately 0.04"}
+  },
+  "triangles":{
+    "RainwaterDownpipeVP75_2400":{"MASTER":1920,"LOD0":1280,"LOD1":800,"LOD2":384,"LOD3":192},
+    "RainwaterOffsetAssembly75_520":{"MASTER":14976,"LOD0":6912,"LOD1":2880,"LOD2":960,"LOD3":320},
+    "RainwaterPipeWallClamp75":{"MASTER":2028,"LOD0":1388,"LOD1":588,"LOD2":396,"LOD3":188}
+  },
+  "modernDimensionalReference":{"source":"Kubota-Chemix rigid PVC VP nominal 75","outsideDiameterMm":89.0,"minimumWallThicknessMm":5.5,"scope":"pipe body scale only; fittings and clamp are original modeling assumptions"},
+  "visualFidelity":{"authority":"Assets/QA/visual_fidelity_gate.json","status":"UNSCORED_UNTIL_REAL_4K_RENDER","score":null,"pass":false,"pointsAwarded":0},
+  "unityCompile":false,
+  "unityImport":false,
+  "unityRender":false,
+  "formalBenchmarkSceneChanged":false,
+  "nextProductionTarget":"If no Unity render appears, inspect exterior wall/vent owners and add one high-coverage wall-surface construction batch."
+}

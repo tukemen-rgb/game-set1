@@ -1,0 +1,11 @@
+# BalconyWindowSet
+
+Six reversible exterior-window assets are now owned by this subsystem: the original aluminum sliding sash, removable mosquito screen and sill drip flashing, plus perimeter seal/backer joint, head drip cap and sill weep hood pair. Existing window and AC owners were inspected first; this run extends the window installation interface rather than creating duplicate sash, screen, sill or AC systems.
+
+The perimeter joint is actual 3D geometry: a hand-tooled visible sealant bead, hidden backer rod and corner tool pools. The head cap is a folded 0.8 mm aluminum flashing with rear leg, projection, drip face, hem, end dams, fasteners and isolation washers. The two sill weep hoods have genuinely open undersides; shallow mineral residue is restricted to the outlet paths rather than random grime. Dimensions are generic installation-modeling assumptions, not identification of a historical SKU.
+
+Repository authoring source: `python UnityProject/Tools/generate_window_install_details.py --output /path/to/out`. It reproduces the three assets' geometry/LOD triangle budgets as GLB and was separately executed before commit. The conversation delivery also contains the exact fuller exporter used for this run; that exporter additionally produced OBJ, deterministic base/MR/normal textures, numerical verification, the window-detail review and the wider window+AC facade review. Prior window and AC binaries are immutable diagnostic inputs only.
+
+Triangle counts this extension: seal joint `20800/8672/3680/1984/992`; head drip cap `872/632/472/392/312`; weep hood pair `2840/872/360/280/120`. The new window-detail diagnostic review is 20,088 triangles; the wider window+AC review is 60,260 triangles. Finite geometry, nondegenerate faces, component watertightness, winding, positive volume, manifold edge incidence, GLB/OBJ roundtrip and strict MASTER→LOD3 reduction passed on the fuller executed exporter outside Unity.
+
+Visual Fidelity remains unscored. No Unity runner, compile/import, native 3840×2160 render, 100% crops, temporal LOD review or target-hardware performance result exists. Implementation Readiness remains the last recorded 93/100 and was not recomputed. Godot, base branch and formal benchmark scenes remain untouched.

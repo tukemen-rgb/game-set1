@@ -1,0 +1,74 @@
+{
+  "schemaVersion": "1.0",
+  "assemblyId": "balcony_clothes_pole_receiver_support_lod_closure",
+  "dependsOnAssemblyId": "balcony_clothes_pole_receiver_support",
+  "purpose": "Close the generated clothes-support assembly over the actual DanchiHighDetail LOD chain. LOD0 must contain every physical source component, LOD1 keeps the support arm plus receiver/plate/pivot, LOD2 keeps only the load-bearing support-arm silhouette, and LOD3 removes the sub-pixel hardware. Animated cross-fade remains mandatory. This is source/runtime readiness QA only and awards no Visual Fidelity points.",
+  "sourceIssue": "The generated hardware refinement can add plate/pivot/anchor renderers after an existing Danchi LODGroup has already been built, so stale ownership still requires closure. The earlier generic-'Bracket'-before-'ClothesBracket' classifier precedence defect is now fixed in QualityBlockDanchiLodUpgrade: the specific ClothesBracket medium-detail rule runs first, so a clean rebuild naturally retains all 340 mm support arms through LOD2. Explicit promotion remains only as compatibility repair for a persisted scene produced before that source fix.",
+  "repairPolicy": {
+    "allowedOutsideFormalCapture": true,
+    "sceneSavedClosureRequired": true,
+    "formalCameraReadOnlyValidation": true,
+    "rebuildParentLodBeforePromotion": true,
+    "compatibleWithFutureUpstreamClassifierFix": true,
+    "upstreamClassifierStatus": "SOURCE_FIXED_SPECIFIC_CLOTHES_RULE_PRECEDES_GENERIC_BRACKET",
+    "explicitPromotionIsLegacySceneFallbackOnly": true,
+    "proxyFidelityContract": "Assets/QA/danchi_lod_proxy_fidelity_contract.json",
+    "duplicateLod2ArmProxiesForbidden": true
+  },
+  "geometry": {
+    "bayCount": 30,
+    "supportCount": 60,
+    "sourceRendererCount": 360,
+    "lodCount": 4,
+    "components": {
+      "supportArm": { "sourceCount": 60, "lodRendererCounts": [60, 60, 60, 0] },
+      "annularReceiver": { "sourceCount": 60, "lodRendererCounts": [60, 60, 0, 0] },
+      "basePlate": { "sourceCount": 60, "lodRendererCounts": [60, 60, 0, 0] },
+      "pivot": { "sourceCount": 60, "lodRendererCounts": [60, 60, 0, 0] },
+      "anchorHead": { "sourceCount": 120, "lodRendererCounts": [120, 0, 0, 0] }
+    }
+  },
+  "temporalPolicy": {
+    "parentFadeMode": "CrossFade",
+    "animateCrossFading": true,
+    "supportArmPersistsThroughLod2": true,
+    "receiverPlatePivotCullBeforeLod2": true,
+    "anchorsCullAfterLod0": true,
+    "lod3ClothesHardwareCount": 0,
+    "rationale": "The 340 mm support arm remains a readable facade silhouette after the 90 mm receiver and centimetre-scale mounting hardware become sub-pixel. Smaller circular/fastener geometry is removed earlier to reduce shimmer rather than being kept as unstable distant pixels."
+  },
+  "lookdevAuthority": "Assets/QA/clothes_drying_hardware_lookdev.svg",
+  "requiredEvidenceRefs": [
+    "hero/frontal_balcony_hardware",
+    "oblique/construction_depth",
+    "grazing/galvanized_edge_response",
+    "crop/clothes_receiver_100pct",
+    "temporal/oblique_lod_stability"
+  ],
+  "failureInjection": [
+    "remove one refined source renderer from LOD0 and require FAIL before formal capture",
+    "remove one clothes support-arm proxy from LOD2 and require FAIL",
+    "regress classifier precedence so generic Bracket captures HD_ClothesBracket_* before the specific rule and require FAIL",
+    "retain any receiver, base plate, pivot or anchor renderer in LOD2 and require FAIL",
+    "retain any clothes-support renderer in LOD3 and require FAIL",
+    "add a second LOD2 proxy for any clothes support arm and require count/topology FAIL",
+    "disable CrossFade or animateCrossFading and require FAIL via the parent Danchi LOD contract",
+    "delete the clothes-hardware manifest and require FAIL rather than silently accepting legacy solid receivers"
+  ],
+  "criticalDefectRiskReduced": [
+    "visible_lod_pop",
+    "severe_aliasing_or_shimmer",
+    "visible_primitive_placeholder",
+    "missing_construction_material_metadata",
+    "unverified_render_claim"
+  ],
+  "visualFidelityPointsAwarded": 0,
+  "implementationReadinessOnly": true,
+  "runtimeRenderVerification": "PENDING_UNITY_RUNTIME",
+  "expectedVisualScoreImpactIfRenderedCleanly": {
+    "geometryConstructionFidelity": "small-to-medium",
+    "temporalLodAliasingStability": "medium-to-large",
+    "cinematicImageQuality": "small"
+  },
+  "forbiddenThemes": ["earthquake", "disaster", "reconstruction"]
+}

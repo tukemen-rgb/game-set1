@@ -1,0 +1,109 @@
+{
+  "schemaVersion": "1.0",
+  "runUtc": "2026-09-09T15:58:00Z",
+  "branch": "gpt/unity-migration",
+  "startHead": "db3d51ff7d7f086ab151373708d019df8bb523b2",
+  "substantiveWorkHead": "90616d77b95c3db2734fb91807d5a373e48deed4",
+  "readinessBookkeepingHead": "f54347c6b4927df35badbda59bc7142c858c7627",
+  "substantiveCommits": [
+    {
+      "sha": "b7917681b6fead3b8669a0cd71f6d40796be6ac7",
+      "purpose": "Add an Editor-update-based reflection-probe waiter so RenderProbe completion is observed after Unity advances instead of being assumed in the same call stack."
+    },
+    {
+      "sha": "368ced034dbc7ca8f93f264b90da14d598b2414d",
+      "purpose": "Split benchmark scene preparation from Camera.Render so reflection probes can synchronize between final scene rebuild and still capture without invalidating the cubemaps."
+    },
+    {
+      "sha": "ef61d489f79ae6326a1188e44c1d86aba5bb9a5e",
+      "purpose": "Make the complete native-4K review packet yield to the asynchronous reflection waiter and resume the sealed still/temporal pipeline only after completion."
+    },
+    {
+      "sha": "aa7352b36abe55cb24fc1ae7b750e69b59bed9c9",
+      "purpose": "Update the machine-readable synchronization contract to require later Editor updates and fail-closed timeout behavior."
+    },
+    {
+      "sha": "7423b832cca1019e99afe440157b4cc92122f241",
+      "purpose": "Enforce the later-Editor-update observation policy in the reflection synchronization QA."
+    },
+    {
+      "sha": "599cd208a8b7d61853deb5e5391bd85e4516dc9d",
+      "purpose": "Add a second async-wait proof containing poll count/timing/RenderIDs and SHA-256 binding to the exact reflection completion receipt."
+    },
+    {
+      "sha": "e5f4286503e681eb0cd2ac0c97b50e4ff831dad1",
+      "purpose": "Require the SHA-256-bound async wait proof in the complete native-4K packet before and after still evidence sealing."
+    },
+    {
+      "sha": "ca5c54b190e45f38c131c471baa1dbc294a5ee0c",
+      "purpose": "Record async-wait proof requirements, freshness, hash binding and failure modes in the machine-readable synchronization contract."
+    },
+    {
+      "sha": "44776954e985fe84f59d153420640788a0f847a9",
+      "purpose": "Require the async wait proof inside CapturePreparedSceneAfterProbeSync itself so legacy synchronous capture/provenance routes fail closed rather than creating authoritative stills."
+    },
+    {
+      "sha": "90616d77b95c3db2734fb91807d5a373e48deed4",
+      "purpose": "Enforce async-wait proof path/schema/poll-count/freshness/hash-policy parameters in QA instead of leaving them as documentation-only contract fields."
+    }
+  ],
+  "bookkeepingCommit": "f54347c6b4927df35badbda59bc7142c858c7627",
+  "scopeVerification": {
+    "compareStatus": "ahead",
+    "aheadByBeforeRunRecord": 11,
+    "behindBy": 0,
+    "changedPathsBeforeRunRecord": [
+      "UnityProject/Assets/Editor/QualityBlock4KCapture.cs",
+      "UnityProject/Assets/Editor/QualityBlockNative4KReviewPacket.cs",
+      "UnityProject/Assets/Editor/QualityBlockReflectionProbeAwaiter.cs",
+      "UnityProject/Assets/Editor/QualityBlockReflectionProbeCaptureSyncQA.cs",
+      "UnityProject/Assets/QA/implementation_readiness.json",
+      "UnityProject/Assets/QA/reflection_probe_capture_sync_contract.json"
+    ],
+    "allChangedPathsUnderUnityProject": true,
+    "godotModified": false,
+    "baseMerged": false,
+    "excludedThemesIntroduced": false
+  },
+  "technicalFinding": {
+    "issue": "The previous reflection hardening called RenderProbe() and immediately required IsFinishedRendering(RenderID)==true in the same editor call stack. That is stricter than fire-and-forget but can still fail before Unity advances the frame that performs a NoTimeSlicing realtime cubemap render.",
+    "risk": "The first real Unity runner could abort before producing any actual 4K evidence even when the probe would complete normally on the next Editor update. Conversely, accepting a same-stack completion assumption would weaken evidence integrity for glass/metal/reflection review.",
+    "unityApiBasis": "Current Unity 6 documentation states RenderProbe returns a RenderID and demonstrates IsFinishedRendering(RenderID) from later Update calls. NoTimeSlicing renders the probe entirely in one frame, which does not imply that the RenderProbe method call itself is a completed rendering frame.",
+    "correction": "The authoritative review packet now builds/saves/reopens the final scene, requests both 512px HDR ViaScripting probes, returns control to Unity, polls on EditorApplication.update while requesting PlayerLoop/SceneView progression, aborts after 30 seconds, requires finished RenderIDs plus created Cube textures, writes the normal runtime completion receipt, writes a fresh async-wait receipt SHA-256-bound to it, and only then renders hero/oblique/grazing without rebuilding the scene. The final Camera.Render entry also validates the wait proof so direct legacy synchronous paths fail closed."
+  },
+  "verification": {
+    "method": "GitHub source/static inspection plus current Unity 6 Scripting API documentation review",
+    "sourceConfigurationReviewed": true,
+    "unityCompileVerified": false,
+    "runtimeProbeReceiptGenerated": false,
+    "asyncWaitProofGenerated": false,
+    "native3840x2160Rendered": false,
+    "pixelExact100PercentCropsGenerated": false,
+    "temporalProbeRendered": false,
+    "githubCommitStatusContexts": 0,
+    "githubWorkflowRuns": 0,
+    "captures4KDirectoryPresent": false,
+    "visualEvidenceAvailable": false,
+    "notes": "Container-side git clone was also attempted for independent local inspection but network DNS access to github.com is unavailable in the execution container; repository verification therefore used the connected GitHub source API."
+  },
+  "implementationReadiness": {
+    "score": 93,
+    "possible": 100,
+    "status": "IMPLEMENTATION_READINESS_ONLY",
+    "reasonNotIncreased": "The remaining seven points are reserved for actual Unity 6000.3.0f1 compile/runner verification. Improving the evidence pipeline cannot substitute for executable verification."
+  },
+  "visualFidelity": {
+    "status": "UNSCORED",
+    "pointsAwardedThisRun": 0,
+    "passClaimed": false,
+    "reason": "No actual Unity 3840x2160 benchmark render exists. No visual category or critical defect may be cleared from source/configuration alone."
+  },
+  "expectedVisualScoreImpact": [
+    "Lighting/shadows/reflections: removes a synchronization blocker and prevents merely-requested/stale cubemaps from contaminating scored reflection evidence.",
+    "Material/PBR physical plausibility: ensures glass Fresnel, aluminum/galvanized-metal highlights and wetness-sensitive specular review correspond to the exact current midsummer environment and scene geometry.",
+    "Cinematic image quality: keeps highlight/exposure diagnostics tied to the synchronized reflection state while awarding zero automatic points.",
+    "Critical evidence integrity: the official capture path and final Camera.Render now require a fresh SHA-256-bound proof that Unity advanced through at least one later Editor update before accepting reflection completion."
+  ],
+  "nextBlocker": "Unity 6000.3.0f1 editor/runner. At first availability run NewTown/QA/Prepare Complete Native 4K Review Packet. First confirm the new waiter compiles, advances the editor, produces both reflection_probe_refresh_receipt.json and reflection_probe_async_wait_receipt.json, and reaches native still capture. If it times out or fails, repair runtime synchronization before accepting any render. If it succeeds, stop speculative expansion and score/fix actual hero, oblique, grazing and temporal evidence from the largest observed deduction or any critical defect.",
+  "note": "Only UnityProject source/data changed. Godot is preserved, no base merge was performed, and earthquake/disaster/reconstruction themes remain excluded."
+}

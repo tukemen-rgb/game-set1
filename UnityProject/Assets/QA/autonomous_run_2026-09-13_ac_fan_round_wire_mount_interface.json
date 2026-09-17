@@ -1,0 +1,202 @@
+{
+  "schema_version": "1.0",
+  "run_id": "2026-09-13-ac-fan-round-wire-mount-interface",
+  "branch": "gpt/unity-migration",
+  "starting_head": "4d4048f5b8ca3b78705687620eacf8e5a84c4a5e",
+  "substantive_commits": [
+    {
+      "sha": "cf7422e9f4e6398fa7a07dce134bb6678da8e438",
+      "summary": "Add source-side AC guard round-wire refinement pass."
+    },
+    {
+      "sha": "5cf4cb7375359944623381d4bede82b4fe66e264",
+      "summary": "Harden the AC fan construction contract for round-wire geometry."
+    },
+    {
+      "sha": "5b25b93d4b6b40c81b310430ed268eb73d116ac7",
+      "summary": "Harden round-wire topology, material binding, axial-clearance and LOD validation."
+    },
+    {
+      "sha": "0b69504fdbddf057f9c5a959e2c3f6c1e771de27",
+      "summary": "Bind round-wire refinement before Danchi LOD generation and into final Danchi validation."
+    },
+    {
+      "sha": "225c470027f2514aedeeeb33bbc1982bd17b0a34",
+      "summary": "Document the round-wire cross-section in the AC fan lookdev illustration."
+    },
+    {
+      "sha": "c0699ffd7b286954956114c685941834fd9031cd",
+      "summary": "Raise guard ring/cross-section tessellation contract for native-4K grazing response."
+    },
+    {
+      "sha": "8076627f1629622c1d3fb3c0093dbc41cc036049",
+      "summary": "Implement 48-segment ring paths and 12-sided 5 mm round wire for reduced specular faceting."
+    },
+    {
+      "sha": "e8162f6642375b245d33d7335c334569c677fdeb",
+      "summary": "Align lookdev documentation with the higher 4K guard tessellation."
+    },
+    {
+      "sha": "32523977f342e1af1c6d1cc840c0a307bef1c7fe",
+      "summary": "Add a physical galvanized guard-to-shroud mounting-interface refinement."
+    },
+    {
+      "sha": "f59726a154603d668513be3fee6fbcc246999840",
+      "summary": "Define physical guard mounting feet, seating and LOD policy in the construction contract."
+    },
+    {
+      "sha": "e6eaf359280666863d0ca2e5cedcc0d977f7b121",
+      "summary": "Bind guard mounts before Danchi LOD proxy generation and directly validate them."
+    },
+    {
+      "sha": "52f64816edabce2c8635641d2a7998b8da9aefd9",
+      "summary": "Separate round-wire and mount-interface contract revisions so both validators remain fail-closed and compatible."
+    },
+    {
+      "sha": "ff8bf7112bf46dc45efe87869c7142f83d4b591a",
+      "summary": "Rename guard-mount objects to avoid collision with the existing HD_AC_FanGuard LOD-count prefix while retaining Feet-based LOD1 classification."
+    },
+    {
+      "sha": "d58ddb2d5f0c046dd19b2d4f238b9422ff29e87e",
+      "summary": "Update lookdev with four physical guard mounting feet and seating evidence targets."
+    }
+  ],
+  "problems_found": [
+    "The existing construction contract and lookdev described the outdoor-condenser guard as round-section rings plus radial spokes, but the generated radial spokes were finite-thickness rectangular extrusions. At native-4K grazing angles this could produce flat-strip metallic highlights inconsistent with the claimed manufactured wire construction.",
+    "The guard was intentionally offset in front of the molded shroud, leaving about 5.5 mm of axial air gap, but no explicit mounting hardware bridged that gap. In close benchmark framing the guard could therefore read as unsupported/floating, which is a critical-defect risk rather than a cosmetic issue."
+  ],
+  "manufacture_installation_reasoning": {
+    "scope": "manufacturer-neutral late-1990s/circa-2000 Japanese balcony condenser benchmark reconstruction; not a specific maker/model claim",
+    "rotor": "five finite-thickness swept/tapered blades on the existing motor/hub axis; deterministic stopped clock-angle variation remains unchanged",
+    "inlet_shroud": "finite-depth molded annular intake lip remains the large circular long-distance form",
+    "wire_guard": {
+      "construction": "four concentric rings plus eight radial spokes, all with physical circular 5 mm wire section",
+      "ring_radii_m": [0.052, 0.096, 0.140, 0.184],
+      "spoke_radial_span_m": [0.030, 0.188],
+      "ring_major_segments": 48,
+      "wire_cross_section_segments": 12,
+      "mesh_vertices": 2512,
+      "mesh_triangles": 4992,
+      "geometry_vs_material": "round curvature is geometry so the metallic grazing highlight is produced by surface orientation; no painted/baked highlight is introduced"
+    },
+    "guard_mount_interface": {
+      "construction": "four formed/welded galvanized circular feet/standoffs aligned to diagonal guard directions",
+      "count_per_unit": 4,
+      "center_radius_m": 0.188,
+      "foot_radius_m": 0.0075,
+      "axial_back_from_guard_datum_m": -0.0085,
+      "axial_front_from_guard_datum_m": 0.0025,
+      "radial_segments": 16,
+      "shared_mesh_vertices": 136,
+      "shared_mesh_triangles": 256,
+      "controlled_shroud_seat_embed_m": 0.0005,
+      "geometry_vs_material": "axial bridge and physical seating are geometry; zinc/steel dulling and oxidation remain PBR/weathering response"
+    },
+    "interfaces": {
+      "analytical_rotor_to_guard_back_clearance_m": 0.0235,
+      "analytical_shroud_to_guard_back_air_gap_m": 0.0055,
+      "guard_mounts_bridge_gap": true,
+      "mounts_reach_guard_plane": true,
+      "floating_guard_read_is_forbidden": true
+    },
+    "materials": {
+      "rotor_and_shroud": "existing dark injection-molded dielectric polymer contract retained; metallic <= 0.02, dry benchmark",
+      "guard_and_mounts": "existing aged galvanized-steel material retained; metallic response comes from steel/zinc plus physical round curvature, not highlight painting",
+      "wetness": 0.0
+    },
+    "weathering": "guard and mounting feet inherit rain/sun exposure with FerrousFixture + UVExposure causality; no arbitrary rust/contact dirt is added solely to make the hardware visible"
+  },
+  "formal_build_and_lod": {
+    "verified_static_order": [
+      "QualityBlockAcFanPhysicalRefinement.ApplyToOpenScene",
+      "QualityBlockAcFanGuardRoundWireRefinement.ApplyToOpenScene",
+      "QualityBlockAcFanGuardMountInterfaceRefinement.ApplyToOpenScene",
+      "QualityBlockDanchiLodUpgrade.ApplyToOpenScene"
+    ],
+    "formal_4k_chain_static_trace": "QualityBlock4KCapture -> GroundDetail -> FoliageOptics -> TreeDetail -> DanchiLod",
+    "final_danchi_validation_direct_dependencies": [
+      "QualityBlockAcFanPhysicalRefinement.ValidateOpenScene",
+      "QualityBlockAcFanGuardRoundWireRefinement.ValidateOpenScene",
+      "QualityBlockAcFanGuardMountInterfaceRefinement.ValidateOpenScene"
+    ],
+    "lod0": "rotor + shroud + full round-wire guard + physical mounts",
+    "lod1": "same canonical round-wire guard and mount meshes retained with cross-fade",
+    "lod2": "guard and mounting feet removed before sub-pixel wire/hardware aliasing; rotor + shroud remain",
+    "lod3": "shroud remains as intake silhouette; rotor/guard/mounts removed",
+    "mount_prefix_regression_fixed": "Mount object is HD_AC_GuardMountFeet rather than an HD_AC_FanGuard* prefix so the existing physical fan validator still counts exactly 15 wire guards while Feet classification retains the mount through LOD1."
+  },
+  "lookdev": {
+    "path": "Assets/QA/Lookdev/ac_outdoor_fan_physical_refinement.svg",
+    "updated": true,
+    "documents": [
+      "5 mm round wire with 48 ring segments and 12-sided wire section",
+      "four 15 mm-diameter physical galvanized guard feet",
+      "controlled shroud seating rather than a floating guard",
+      "dry dielectric/polymer and metallic galvanized response",
+      "cause-based weathering",
+      "LOD0/1 retention and LOD2 removal",
+      "100 percent oblique/balcony_services review targets"
+    ]
+  },
+  "verification": {
+    "current_source_refetch": "PASS",
+    "round_wire_topology_math": "PASS_2512_VERTICES_4992_TRIANGLES",
+    "mount_topology_math": "PASS_136_VERTICES_256_TRIANGLES",
+    "analytical_rotor_guard_clearance": "PASS_23_5_MM",
+    "analytical_shroud_guard_air_gap": "PASS_5_5_MM",
+    "analytical_mount_shroud_seat": "PASS_0_5_MM_CONTROLLED_EMBED",
+    "formal_build_static_trace": "PASS",
+    "direct_final_danchi_validation_binding": "PASS_STATIC_SOURCE",
+    "branch_compare_before_run_record": "PASS_AHEAD_14_BEHIND_0_MERGE_BASE_UNCHANGED",
+    "changed_scope_before_run_record": "PASS_ONLY_UNITYPROJECT_AC_FAN_DANCHI_QA_LOOKDEV_FILES",
+    "github_actions_before_run_record": "ZERO_RUNS",
+    "commit_status_contexts_before_run_record": "ZERO_CONTEXTS",
+    "unity_6000_3_0f1_compile": "PENDING_RUNNER",
+    "unity_runtime_formal_prepare": "PENDING_RUNNER",
+    "actual_generated_mesh_asset_import": "PENDING_RUNNER",
+    "reflection_probe_lifecycle": "PENDING_RUNNER",
+    "3840x2160_render": "PENDING_RUNNER",
+    "100_percent_crops": "PENDING_RUNNER",
+    "temporal_lod_render_evidence": "PENDING_RUNNER",
+    "visual_fidelity_scoring": "NOT_PERMITTED_WITHOUT_ACTUAL_RENDER"
+  },
+  "implementation_readiness": {
+    "score_100": 93,
+    "delta_this_run": 0,
+    "reason": "Construction fidelity and QA coverage improved, but the repository's remaining seven readiness points are explicitly reserved for Unity 6000.3.0f1 compile/runtime verification and native capture evidence, which are still unavailable."
+  },
+  "visual_fidelity": {
+    "status": "UNSCORED_UNTIL_REAL_4K_RENDER",
+    "points_awarded_this_run": 0,
+    "pass_claimed": false,
+    "expected_score_impact_not_awarded": {
+      "Geometry & construction fidelity": "major positive potential: radial guard elements now match the declared round-wire manufacture and the guard has an explicit load/support path into the shroud",
+      "Material/PBR physical plausibility": "medium positive potential: galvanized highlights now derive from circular geometry and material response rather than a flat spoke strip; no painted highlight added",
+      "Lighting/shadows/reflections": "small-to-medium positive potential: round wire and physical mounting feet create more plausible grazing specular/shadow/contact behavior, pending actual reflection/capture pixels",
+      "Texture/microdetail/texel fidelity": "small positive potential: denser 48x12 guard tessellation reduces geometric faceting risk in the 4K service crop; this is not a texture-score claim",
+      "Weathering/context causality": "small-to-medium positive potential: new exposed galvanized mounts carry explicit ferrous/UV/rain causality rather than arbitrary grime",
+      "Period accuracy/scene authenticity": "small-to-medium positive potential: the balcony condenser reads more like an assembled manufactured unit rather than abstract guard geometry",
+      "Cinematic image quality/composition/color/exposure": "medium positive potential in oblique/grazing service highlights; unobservable until native render",
+      "Temporal/LOD/aliasing stability": "medium potential: guard and mount are explicitly retained together through LOD1 and removed before LOD2, but pop/shimmer can only be judged from motion pixels"
+    }
+  },
+  "next_runtime_verification": [
+    "At first Unity Runner availability, stop speculative expansion and compile with Unity 6000.3.0f1.",
+    "Run QualityBlock4KCapture.PrepareAndValidateScene from a clean Editor session and confirm formal build order executes physical fan -> round wire -> mounts -> Danchi LOD.",
+    "Verify imported canonical guard mesh is exactly 2512 vertices / 4992 triangles and canonical mount mesh is exactly 136 vertices / 256 triangles with complete UV0/normals/tangents.",
+    "Verify all 15 generated condenser units use the canonical round-wire guard and mount mesh; LOD0/1 each contain 15 guards and 15 mount renderers, LOD2/3 contain zero guard/mount renderers.",
+    "Failure injection: replace one guard with the old rectangular-spoke mesh and confirm round-wire validator fails rather than repairing during evidence validation.",
+    "Failure injection: delete one HD_AC_GuardMountFeet object and confirm final Danchi validation fails.",
+    "Failure injection: move one mount interface backward enough to lose controlled shroud seating and confirm mount-interface validator fails.",
+    "Failure injection: alter galvanized material metallic/smoothness beyond the physical contract and confirm physical fan validation fails.",
+    "After clean rebuild, acquire fresh reflection probes and native 3840x2160 hero/oblique/grazing stills plus 100% oblique/balcony_services evidence and native temporal LOD evidence.",
+    "At 100 percent inspect round-wire specular faceting, support/mount visibility, guard/shroud/rotor intersection, fifteen-unit repetition, shadow/contact coherence and LOD1->LOD2 guard/mount pop or shimmer before assigning any Visual Fidelity points."
+  ],
+  "constraints": {
+    "godot_preserved": true,
+    "base_merge_performed": false,
+    "earthquake_disaster_reconstruction_theme_added": false,
+    "new_visual_points_claimed_without_render": false
+  },
+  "next_blocker": "No Unity Runner or actual benchmark render exists for this branch. Compile/runtime execution, failure injection, reflection lifecycle and native 4K/temporal pixel evidence remain the gating work."
+}

@@ -1,0 +1,50 @@
+{
+  "schema": 1,
+  "date": "2026-09-17",
+  "startHead": "b26567af1090cc98fa8e4bd4495a5a5af574efc9",
+  "workCompleted": [
+    "reused repaired MorningGloryTrellisPlant rather than duplicating its owner",
+    "reused TerracottaPot240 and TerracottaSaucer214",
+    "authored plant PBR base/MR/normal micro-material maps without baked lighting or random weathering",
+    "generated BalconyMorningGloryPlanter MASTER+LOD0+LOD1+LOD2+LOD3 GLB/OBJ",
+    "installed whole planter to follow the existing 1.5% balcony floor slope",
+    "generated five-level review-only integration with current facade-refined drained structural hero",
+    "generated material-colored all-face whole and close-up previews"
+  ],
+  "actualGenerated": {
+    "planterTriangles": {"MASTER":67032,"LOD0":39760,"LOD1":22756,"LOD2":8590,"LOD3":4204},
+    "integratedTriangles": {"MASTER":248492,"LOD0":141692,"LOD1":71700,"LOD2":34046,"LOD3":19836}
+  },
+  "actualVerification": {
+    "glbReloadTriangleParity": true,
+    "objReloadTriangleParity": true,
+    "finiteVerticesNormals": true,
+    "noDegenerateTriangles": true,
+    "windingConsistentGeometryGroups": true,
+    "strictLodReduction": true,
+    "planterEnvelopeClearOfFacadeAndRails": true,
+    "replayIntegrationScriptExecutedAllFiveLevels": true,
+    "unityCompile": false,
+    "unityImport": false,
+    "unityRender": false,
+    "temporalLOD": false
+  },
+  "previewEvidence": {
+    "morning_glory_balcony_color_overall.png": {"sha256":"281cda99b45300709894047f4e0946c1cb69f9869175c1ece6012eec84aec04c","trianglesSubmitted":141692,"size":[1400,980],"allSourceFacesSubmitted":true,"unityRender":false},
+    "morning_glory_balcony_color_closeup.png": {"sha256":"659f596f894d0ad658f740073a07eba73ac1e9d6f088b57630d019610b57b248","trianglesSubmitted":141692,"size":[1200,1100],"allSourceFacesSubmitted":true,"unityRender":false},
+    "morning_glory_planter_color_standalone.png": {"sha256":"3d0c426ec2d6f52ce581ae6437c88ac620a1c3a141b7d822213f36bbc4e2bcf1","trianglesSubmitted":39760,"size":[900,1100],"allSourceFacesSubmitted":true,"unityRender":false}
+  },
+  "sourceEvidence": {
+    "exactLocalAuthoringSourceSHA256": "08a723e642f9126794e592f8fc38e9eacbd968fb78795a37e706d70925db3288",
+    "testedMaterialPreviewRendererSHA256": "507ddd2f1993d4ad699a35002fcc2ae1ea2e1a86b710360552b0c77772ecf229",
+    "committedReplayScriptSHA256": "fcbcba24b38b960b77f98c1268a20075013d8e8a3ccff1c54e84f914be326f5c",
+    "deliveryPackageSHA256": "7b18a125bd3ca79539e1daf0789562a415eafe73acf3493f39747acc860e1919"
+  },
+  "visualFidelity": {"authority":"Assets/QA/visual_fidelity_gate.json","status":"UNSCORED_UNTIL_REAL_UNITY_3840x2160_RENDER","score":null,"pass":false,"pointsAwarded":0},
+  "implementationReadiness": {"lastRecorded":93,"recomputedThisRun":false},
+  "formalBenchmarkSceneChanged": false,
+  "godotChanged": false,
+  "baseMerged": false,
+  "blocker": "No actual Unity 3840x2160 render, formal 100% crops, reflection proof or temporal evidence.",
+  "delivery": "Actual binaries/textures/previews plus exact local authoring source are in balcony_morning_glory_planter_integration_2026-09-17.zip; binaries are not claimed committed to GitHub."
+}

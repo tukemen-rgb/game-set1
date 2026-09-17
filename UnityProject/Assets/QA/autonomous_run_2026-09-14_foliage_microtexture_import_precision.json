@@ -1,0 +1,86 @@
+{
+  "schemaVersion": "1.0.0",
+  "runDate": "2026-09-14",
+  "branch": "gpt/unity-migration",
+  "startingHead": "d2e58bba82e404b940c5e81e44e2ea57fc0f37aa",
+  "headBeforeRunRecord": "c0ecb635558194a0b61dfaf521a6864f2cbb9e73",
+  "objective": "Protect foliage physical-data texel fidelity before native-4K grading by closing an importer-precision gap in generated dry-leaf normal and smoothness maps, without awarding visual points before real Unity-rendered evidence exists.",
+  "investigation": {
+    "selectedIssue": "QualityBlockPbrUpgrade generates PBR_LeafDark and PBR_LeafMid normal plus metallic/smoothness textures through the generic generated-PBR path, whose importer policy is CompressedHQ. Existing foliage physicality QA validates shader/material physics, transmission, dielectric response and morphology but did not independently require lossless import precision for the generated leaf normal direction and smoothness alpha signals.",
+    "risk": "Block compression can quantize the weak tangent-space micro-normal and dry-leaf smoothness signals before grazing-light or subpixel-temporal review. A scene could therefore satisfy the foliage material contract while the imported physical-data texture no longer preserves the authored signal closely enough for a credible 4K benchmark.",
+    "scopeDecision": "Gate only the four high-value physical-data textures: LeafDark/LeafMid normal maps and metallic-smoothness maps. Do not force leaf albedo lossless: NewTown/FoliageTransmission derives lamina silhouette analytically rather than from albedo alpha, so the lower-frequency colour map does not justify the same memory cost. Preserve physical-data precision where it directly affects normals, roughness and temporal grazing response."
+  },
+  "changes": [
+    {
+      "commit": "440e9074524c92546b468557499c13b9332002c9",
+      "path": "UnityProject/Assets/QA/foliage_microtexture_import_precision_contract.json",
+      "summary": "Added a machine-readable zero-point contract for the four generated foliage physical-data textures. Canonical state is Uncompressed, Crunch off, no Standalone override, 1024x1024, mipmapped, Repeat, Trilinear, anisotropy >=8 and linear; normals remain NormalMap and smoothness masks preserve input alpha. The contract records dry dielectric leaf physics, formal-evidence requirements, failure injections and zero automatic Visual Fidelity points."
+    },
+    {
+      "commit": "c0ecb635558194a0b61dfaf521a6864f2cbb9e73",
+      "path": "UnityProject/Assets/Editor/QualityBlockFoliageMicrotextureImportPrecisionQA.cs",
+      "summary": "Added InitializeOnLoad/import/save preparation plus formal pre-cull read-only validation. Preparation may reassert canonical importer state after generated textures are created or reimported; QA4K_, QATemporal_ and QAPreparedTemporal_ targets never repair in-flight and fail closed on compression, Crunch, platform override, size, mip, filter, anisotropy, colour-space, texture-type or alpha drift."
+    }
+  ],
+  "physicalReasoning": {
+    "manufactureAndStructure": "Leaf macro morphology, lamina thickness/curvature, twig attachment and woody continuity remain owned by the existing foliage morphology/physicality systems; this run changes only texture-signal preservation and does not invent new plant geometry.",
+    "normalSignal": "Generated leaf micro-normal uses the existing analytic height/noise/vein construction and is consumed by NewTown/FoliageTransmission with bounded normal scale. The importer must preserve tangent-space direction rather than introduce block-scale facets.",
+    "materialResponse": "Living dry leaves remain non-metallic dielectric material with custom F0 around 0.03, bounded smoothness, GGX direct specular and Schlick Fresnel. No baked or painted highlight is permitted.",
+    "wetness": 0.0,
+    "exposure": "dry midsummer Japanese new-town canopy",
+    "weathering": "No new arbitrary weathering was added; existing cause-based foliage/vegetation context remains authoritative."
+  },
+  "formalEvidenceBehavior": {
+    "preparation": "Generated target imports and scene-save preparation may restore canonical import state before evidence capture.",
+    "formalPreCull": "Read-only and fail-closed for QA4K_*, QATemporal_* and QAPreparedTemporal_* render targets; no importer repair is allowed during formal evidence capture.",
+    "futureRequiredVisualEvidence": [
+      "fresh 3840x2160 frontal benchmark with foliage visible",
+      "fresh 3840x2160 oblique benchmark with foliage visible",
+      "fresh 3840x2160 grazing-light foliage case",
+      "100% foliage microdetail crop",
+      "temporal subpixel/grazing sequence demonstrating stable mips and absence of leaf shimmer"
+    ],
+    "visualScoring": "No automatic points. Vegetation, texture and temporal categories must still be scored only from actual Unity-rendered pixels."
+  },
+  "failureInjection": [
+    "Set any protected leaf normal or smoothness texture to CompressedHQ",
+    "Enable Crunch compression",
+    "Enable a Standalone platform override",
+    "Reduce max texture size below 1024",
+    "Disable mipmaps",
+    "Change filter mode to Bilinear or Point",
+    "Reduce anisotropy below 8",
+    "Enable sRGB on a physical-data texture",
+    "Change a leaf normal away from NormalMap texture type",
+    "Discard or ignore source alpha on a leaf smoothness texture"
+  ],
+  "verification": {
+    "sourceReview": "QualityBlockPbrUpgrade, QualityBlockFoliagePhysicalityQA, NewTownFoliageTransmission.shader and the established ground import-precision implementation were inspected before implementation. The committed new contract and QA source were fetched back from gpt/unity-migration after commit.",
+    "repositoryDiffBeforeRunRecord": "Two substantive files added under UnityProject/Assets/Editor and UnityProject/Assets/QA only.",
+    "unityCompileRuntime": "PENDING_UNITY_RUNTIME",
+    "native4kRender": "PENDING_UNITY_RUNTIME",
+    "visualFidelityStatus": "UNSCORED_UNTIL_REAL_4K_RENDER",
+    "visualFidelityPointsAdded": 0,
+    "visualPassClaimed": false
+  },
+  "implementationReadiness": {
+    "score": 93,
+    "outOf": 100,
+    "reason": "Foliage physical-data importer precision now has a fail-closed machine-readable gate, but Unity 6000.3.0f1 compile/runtime, failure-injection execution and real native-4K pixels remain unavailable."
+  },
+  "expectedVisualScoreImpactNotAwarded": {
+    "vegetationNaturalComplexity": "medium preservation of leaf-surface credibility under grazing light",
+    "textureMicrodetailTexelFidelity": "medium preservation of normal and smoothness texel signal",
+    "temporalLodAliasingStability": "medium expected reduction of compression-induced subpixel sparkle risk",
+    "materialPbrPhysicalPlausibility": "small-to-medium preservation of bounded dielectric highlight response",
+    "lightingShadowsReflections": "small-to-medium preservation of physically coherent leaf grazing response",
+    "note": "These are expected impacts only and are not Visual Fidelity points."
+  },
+  "constraints": {
+    "godotPreserved": true,
+    "baseMerged": false,
+    "excludedThemesAdded": false,
+    "earthquakeDisasterReconstructionThemes": "absent"
+  },
+  "nextBlocker": "Unity 6000.3.0f1 Runner/runtime. When available, stop speculative expansion; execute every foliage import failure injection first, then capture fresh 3840x2160 frontal/oblique/grazing evidence, a 100% foliage microdetail crop and temporal subpixel/grazing evidence. Score leaf microdetail, angular response, shimmer and mip stability only from those observed pixels."
+}

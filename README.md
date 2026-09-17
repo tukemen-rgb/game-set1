@@ -1,5 +1,11 @@
 # game-set1 — ニュータウンの夏
 
+**Unity版の最新制作前提（2026-09-16）:** 1990年代の大阪・千里中央。具体的な年は未確定。
+現在の3D制作差分は [Drained3600の床・天井・手すり修正](UnityProject/Assets/Art/BalconyStructuralContactRepair/README.md) を参照。
+追加更新（2026-09-17）: [床・コンクリート材質とプレビューの影](UnityProject/Assets/Art/BalconyDrainageIntegration/SURFACE_REFINEMENT_JA.md)。植栽・洗濯物付き全体モデルへの適用は未検証。
+追加更新（2026-09-17）: [使用感・雨だれ・材質別の汚れ](UnityProject/Assets/Art/BalconyDrainageIntegration/CONTEXT_WEATHERING_JA.md)。既存の建物部分の床・外壁・塗装鋼を更新。Unity実レンダーと最新の小物付き全体への適用は未検証。
+以下は既存Godot版の設定と実装記録です。
+
 **2026年の疲れたサラリーマンが、2000年の夏休みに戻る**ゲーム。
 舞台は千里ニュータウンを参考にした架空の1住区（団地・商店街・公園・空き地）。
 [Godogen](https://github.com/htdt/godogen) の Godot/Claude パイプライン

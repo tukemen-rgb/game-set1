@@ -1,0 +1,46 @@
+{
+  "schema": 1,
+  "date": "2026-09-17",
+  "assetId": "BalconyMorningGloryPlanter",
+  "units": "metres",
+  "coordinateSystem": "Y-up",
+  "sourceOwners": {
+    "plant": "repaired MorningGloryTrellisPlant candidate; existing owner retained",
+    "pot": "TerracottaPot240 / GardenProps",
+    "saucer": "TerracottaSaucer214 / GardenProps",
+    "integrationBase": "BalconyExteriorHeroDrainedStructuralRepairFacadeRefined3600"
+  },
+  "installation": {
+    "centre": [-1.45, -1.25445, 0.55],
+    "floorSlopePercent": 1.5,
+    "assemblyTiltDegrees": 0.8593722436,
+    "saucerBottomCenterToFinishedFloorMm": 0.0,
+    "rearCanopyToFacadePlaneMm": 387.6088,
+    "frontCanopyToMainRailInnerMm": 241.7525,
+    "leftCanopyToReturnRailInnerMm": 154.5860,
+    "lod0WorldBounds": [[-1.592914, -1.255785, 0.387609], [-1.300702, -0.083964, 0.735747]]
+  },
+  "manufactureInstallationReasoning": {
+    "assembly": "Existing 240 mm-class unglazed terracotta pot and 214 mm saucer support the repaired potted morning-glory trellis. Three bamboo stakes remain soil-inserted and jute-tied.",
+    "dimensions": "Actual pot mesh bounds 246 mm max diameter x 224 mm high; saucer 214 mm max diameter x 36 mm high. Repaired trellis reaches about 1.16 m in source coordinates and retains the prior 10 mm pot/plant lift above saucer datum.",
+    "orientationExposure": "Balcony exterior is +Z. Outdoor midsummer exposure; no directional illumination is baked into albedo.",
+    "agingCausality": "No random dirt, moss, wet halo, mineral ring, or rust was added. Water staining is deferred until drainage/maintenance causality is observed.",
+    "geometryVsMaterial": "Pot, saucer, bamboo, ties, vines, repaired leaf shells, repaired flower shells, geometric veins and soil are geometry; fine fibre/cuticle/petal/soil variation is material microdetail."
+  },
+  "materials": {
+    "Bamboo": {"albedoSRGB":[0.36,0.32,0.16],"roughness":0.60,"metallic":0.0,"normalScaleIntent":0.18,"wetness":0.0,"uvAging":"none baked","fresnel":"dielectric F0 about 0.04"},
+    "JuteTwine": {"albedoSRGB":[0.43,0.33,0.20],"roughness":0.86,"metallic":0.0,"normalScaleIntent":0.28,"wetness":0.0,"uvAging":"none baked","fresnel":"dielectric F0 about 0.04"},
+    "LivingStem": {"albedoSRGB":[0.16,0.34,0.09],"roughness":0.56,"metallic":0.0,"normalScaleIntent":0.14,"wetness":0.0,"uvAging":"none baked","fresnel":"dielectric F0 about 0.04"},
+    "LivingLeaf": {"albedoSRGB":[0.10,0.28,0.07],"roughness":0.50,"metallic":0.0,"normalScaleIntent":0.22,"wetness":0.0,"uvAging":"none baked","fresnel":"dielectric F0 about 0.04"},
+    "LeafVein": {"albedoSRGB":[0.13,0.31,0.08],"roughness":0.56,"metallic":0.0,"normalScaleIntent":0.12,"wetness":0.0,"uvAging":"none baked","fresnel":"dielectric F0 about 0.04"},
+    "FlowerBlue": {"albedoSRGB":[0.19,0.19,0.56],"roughness":0.43,"metallic":0.0,"normalScaleIntent":0.10,"wetness":0.0,"uvAging":"none baked","fresnel":"dielectric F0 about 0.04"},
+    "FlowerThroat": {"albedoSRGB":[0.82,0.78,0.88],"roughness":0.46,"metallic":0.0,"normalScaleIntent":0.08,"wetness":0.0,"uvAging":"none baked","fresnel":"dielectric F0 about 0.04"},
+    "DrySoil": {"albedoSRGB":[0.12,0.075,0.04],"roughness":0.93,"metallic":0.0,"normalScaleIntent":0.38,"wetness":0.0,"uvAging":"none baked","fresnel":"dielectric F0 about 0.04"}
+  },
+  "triangles": {"MASTER":67032,"LOD0":39760,"LOD1":22756,"LOD2":8590,"LOD3":4204},
+  "integratedHeroTriangles": {"MASTER":248492,"LOD0":141692,"LOD1":71700,"LOD2":34046,"LOD3":19836},
+  "verification": {"actualGLBAndOBJ":true,"glbRoundtrip":true,"objRoundtrip":true,"finiteVerticesNormals":true,"noDegenerateTriangles":true,"windingConsistentGeometryGroups":true,"strictLodReduction":true,"unityCompile":false,"unityImport":false,"unityRender":false,"temporal":false},
+  "visualFidelity": {"authority":"UnityProject/Assets/QA/visual_fidelity_gate.json","status":"UNSCORED_UNTIL_REAL_UNITY_3840x2160_RENDER","score":null,"pass":false,"pointsAwarded":0,"expectedImpactOnly":["vegetation_natural_complexity","period_authenticity","material_pbr","geometry_construction"]},
+  "implementationReadiness": {"lastRecorded":93,"recomputedThisRun":false},
+  "formalBenchmarkSceneChanged": false
+}

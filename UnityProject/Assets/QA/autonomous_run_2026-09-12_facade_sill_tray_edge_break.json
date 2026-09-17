@@ -1,0 +1,94 @@
+{
+  "schemaVersion": "1.0",
+  "runId": "2026-09-12_facade_sill_tray_edge_break",
+  "branch": "gpt/unity-migration",
+  "startHead": "9fd761ba40b82175c11fc46fc64f5952cfe2224a",
+  "preRecordHead": "69ce48a7476c2a2a100dc5d0a3b9e96deac39758",
+  "objective": "Remove the known mathematically sharp front corners from the generated aluminum sill tray without changing drainage dimensions, then keep the same physical edge-break geometry in the already-referenced combined LOD1/2/3 proxies and freeze that mesh state into the formal reflection evidence epoch.",
+  "priorityRationale": "The preceding sill run explicitly left the custom tray cross-section as a native-4K risk because its exposed front edges had no millimetric bevel. A razor edge can create an implausibly thin or unstable grazing highlight and directly harms Geometry/Construction, Material/PBR and Cinematic image plausibility. Because visible LOD pop is also a critical automatic FAIL, refining only LOD0 would be insufficient; the combined far proxy must carry the same edge geometry before any new decorative asset is added.",
+  "commitsBeforeRunRecord": [
+    {
+      "sha": "69ce48a7476c2a2a100dc5d0a3b9e96deac39758",
+      "message": "visual: add physical sill tray edge-break refinement"
+    }
+  ],
+  "changedPathsBeforeRunRecord": [
+    "UnityProject/Assets/Editor/QualityBlockFacadeSillTrayEdgeBreakRefinement.cs",
+    "UnityProject/Assets/Editor/QualityBlockFacadeSillDrainageReflectionBindingQA.cs",
+    "UnityProject/Assets/QA/facade_sill_tray_edge_break_contract.json",
+    "UnityProject/Assets/QA/facade_sill_drainage_reflection_binding_contract.json",
+    "UnityProject/Assets/QA/lookdev/facade_sill_tray_edge_break_lookdev.svg"
+  ],
+  "implementation": {
+    "manufactureReasoning": "Treats the existing fallback sill as an extruded/anodized aluminum profile. Hydro custom-extrusion guidance states that razor-sharp extrusion corners cannot be achieved and rounded corners are more practical. The exact 2 mm edge break is explicitly a benchmark reconstruction assumption rather than an identified historic product dimension.",
+    "geometry": "Replaces the four-point tray depth profile with a six-point convex profile. The weather-facing front-top and front-bottom corners each receive a 2 mm physical chamfer while the outer front/back/top/bottom envelope, 2.460 m sill width, lower-frame seat, drain recess and drain opening positions remain unchanged.",
+    "lodContinuity": "After each used phase-specific LOD0 tray asset is refined, the existing shared GM_FacadeSill_CombinedProxy_P* asset is rebuilt from SillTray + Skirt_Left + Skirt_Center + Skirt_Right + DripNose in assembly-local space. LOD1/2/3 continue to share that one proxy asset, so the front-edge break does not disappear at a cross-fade.",
+    "material": "No new material or highlight texture. Refined faces inherit canonical MAT_AgedAluminum and the existing mapped metallic 0.82-0.94, roughness 0.43-0.55, tangent-space microstructure, metric UV phase and wetness=0 policy.",
+    "weathering": "No new stain source is invented. Existing RainLedge, DrainRunoff and UVExposure metadata remains authoritative; the chamfer is geometry only.",
+    "evidenceBinding": "The sill reflection-binding contract is schema 1.2. Formal preparation runs the deterministic edge refinement before the sill reflection epoch is armed. A separate SessionState SHA-256 mesh fingerprint covers persisted used tray/proxy assets and is read-only after arm, including across script/assembly reloads. QA4K/QATemporal MainCamera pre-cull also rejects an unarmed or drifted refinement.",
+    "lookdev": "Added a technical SVG showing the two 2 mm front edge breaks, preserved envelope/interfaces, inherited PBR values and frontal/oblique/grazing/temporal pixel checks.",
+    "visualPointsAwardedByThisWork": 0
+  },
+  "sourceBasis": {
+    "external": "Hydro custom aluminum extrusion design guidance reviewed 2026-09-12: razor-sharp corners cannot be achieved in custom extrusions and rounded corners are more practical.",
+    "scopeLimit": "The source supports removing the mathematical knife edge as a manufacturing principle only. It does not establish a 2 mm radius/chamfer for a specific 1990s Japanese sash, so 2 mm remains an authored reconstruction assumption."
+  },
+  "verification": {
+    "githubStaticSourceReview": "PASS_BY_INSPECTION",
+    "contractSourceConsistencyReview": "PASS_BY_INSPECTION",
+    "geometryInvariantReview": "PASS_BY_INSPECTION: outer tray extrema and existing interface constants are unchanged; only front profile corners are split into chamfer faces",
+    "lodProxySourceReview": "PASS_BY_INSPECTION: combined proxy is rebuilt from the five current LOD0 renderers and LOD1/2/3 are required to share the same persisted proxy mesh",
+    "reflectionBindingSourceReview": "PASS_BY_INSPECTION: edge refinement runs before parent reflection epoch arm and read-only mesh-fingerprint validation runs on every post-arm sill reflection validation",
+    "branchLinearityFromStartHead": "PASS: compare reports 1 ahead / 0 behind before this run record and merge-base equals startHead",
+    "changedPathScope": "PASS: all five substantive paths are under UnityProject/Assets; no Godot path changed",
+    "godotPreserved": true,
+    "baseMerged": false,
+    "excludedThemeContentAdded": false,
+    "githubActionsRunsAtPreRecordHead": 0,
+    "commitStatusContextsAtPreRecordHead": 0,
+    "unityTargetVersion": "6000.3.0f1",
+    "unityCompile": "PENDING_RUNNER",
+    "unityEditorRuntime": "PENDING_RUNNER",
+    "edgeBreakMeshGeneration": "PENDING_RUNNER",
+    "combinedProxyRebuild": "PENDING_RUNNER",
+    "reflectionRequestPollCompletionExecution": "PENDING_RUNNER",
+    "assemblyReloadFingerprintPersistence": "PENDING_RUNNER",
+    "native3840x2160Hero": "PENDING_RUNNER",
+    "native3840x2160Oblique": "PENDING_RUNNER",
+    "native3840x2160Grazing": "PENDING_RUNNER",
+    "pixelExact100PercentSillCrop": "PENDING_RUNNER",
+    "temporalLodWalk": "PENDING_RUNNER",
+    "renderedVisualReview": "PENDING_RUNNER"
+  },
+  "currentScores": {
+    "implementationReadiness": 93,
+    "implementationReadinessMax": 100,
+    "visualFidelity": null,
+    "visualFidelityStatus": "UNSCORED_UNTIL_REAL_4K_RENDER",
+    "visualPointsAwardedThisRun": 0,
+    "visualPassClaimed": false
+  },
+  "expectedVisualScoreImpactNotAwarded": {
+    "geometry_construction_fidelity": "medium-positive if rendered: removes a mathematical knife edge from a hero-facing manufactured aluminum assembly while preserving its established installation envelope",
+    "material_pbr_physical_plausibility": "medium-positive if rendered: grazing highlight width/orientation can now come from a finite physical face rather than a zero-radius edge; no painted highlight was added",
+    "lighting_shadows_reflections": "small-to-medium positive if rendered: reflection response should have a finite edge face and the same refined mesh is frozen into the reflection baseline",
+    "texture_microdetail_texel_fidelity": "neutral-to-small positive: existing metric UV phases are retained on rebuilt tray geometry",
+    "weathering_context_causality": "neutral: existing cause metadata is deliberately preserved without arbitrary new grime",
+    "vegetation_natural_complexity": "none",
+    "period_accuracy_scene_authenticity": "small positive in manufacturing plausibility only; no claim of a specific product dimension",
+    "cinematic_image_quality": "medium-positive if rendered: intended to reduce razor-thin CG edge highlights in grazing 4K shots",
+    "temporal_lod_aliasing_stability": "medium-positive if rendered: LOD1/2/3 combined proxies are rebuilt from the refined LOD0 assembly so the edge break does not vanish at transition",
+    "automaticVisualPoints": 0
+  },
+  "unresolvedRisks": [
+    "Unity 6000.3.0f1 compile/runtime behavior is still unverified because the substantive commit has no workflow run or commit-status context.",
+    "The 2 mm authored edge break may prove too wide or too narrow at the actual benchmark camera distance; source-side manufacturing plausibility is not pixel validation.",
+    "A real Editor must confirm the generated tray topology is 60 vertices / 72 triangle indices, retains valid UV/normal/tangent data and saves cleanly into the existing mesh assets.",
+    "A real Editor must confirm rebuilding the combined proxy from live LOD0 child transforms preserves exact skirt/drip placement and does not introduce normal/tangent or UV discontinuities.",
+    "The formal capture environment must verify the independent SessionState mesh fingerprint survives its exact script/assembly reload path and fails closed after deliberate post-arm mesh mutation.",
+    "Only native 4K grazing pixels can determine whether the finite edge highlight reads as real anodized aluminum rather than a bright decorative line.",
+    "Only temporal native-4K pixels can clear visible_lod_pop, highlight-centroid snap, shimmer or severe aliasing across sill LOD transitions."
+  ],
+  "nextBlocker": "No Unity Runner or new benchmark screenshots are available. At first runtime availability stop speculative expansion and execute: clean Unity 6000.3.0f1 session -> formal sill preparation -> verify each used GM_FacadeSill_Tray_P* has the six-point/2 mm profile and 60 vertices/72 indices -> verify LOD1/2/3 shared proxy carries the same edge points -> first reflection fingerprint/epoch arm -> force assembly reload and verify mesh fingerprint persistence -> deliberately mutate one tray/proxy vertex and confirm FAIL -> restart clean -> fresh reflection request/poll/completion -> native 3840x2160 hero/oblique/grazing plus 100% sill-edge crop and temporal oblique. Score only those actual pixels.",
+  "stopPolicy": "Continue safe source-side readiness work only while no runner/render exists and the date is no later than 2026-09-18. On runner/screenshots, prioritize actual render scoring/fixes. No new commits on or after 2026-09-19 without new instructions."
+}

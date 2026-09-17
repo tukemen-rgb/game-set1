@@ -1,0 +1,92 @@
+{
+  "runDate": "2026-09-11",
+  "branch": "gpt/unity-migration",
+  "startHead": "a7e0e5e0da72c4fc10a901de629bed82be5ee610",
+  "implementationTheme": "deterministic foliage morphology diversity and formal evidence binding",
+  "constraintsPreserved": {
+    "godotUntouched": true,
+    "baseMergePerformed": false,
+    "forbiddenEarthquakeDisasterReconstructionSceneContentAdded": false,
+    "visualFidelityClaimedWithoutRender": false
+  },
+  "problem": "The generated fallback trees already had connected woody geometry, three explicit two-sided leaf-spray meshes, thin-dielectric foliage optics and LODs. However, three exact spray topologies repeated across at least 24 source leaf clusters per tree, creating a native-4K risk that neighboring foliage would read as stamped/cloned cards even when material shading was physically plausible.",
+  "sourceAudit": {
+    "existingLeafSprayMasters": 3,
+    "existingLeafMeshConstruction": "BuildLeafSprayMesh emits each explicit two-sided leaf as a contiguous eight-vertex group (front/back duplicated for coherent normals/tangents).",
+    "generatedSourceClustersPerTree": 28,
+    "clusterCountDerivation": "Seven primary branches x two secondary branches x two twigs/leaf clusters = 28 source LeafCluster ordinals per generated tree.",
+    "existingVariation": "The original tree generator varied cluster transform scale and cycled only GM_LeafSpray_A/B/C. Foliage optics varied dark/mid material and exposure/transmission, but exact geometry topology still repeated frequently.",
+    "risk": "At 3840x2160, repeated silhouette/card topology can trigger obvious_repetition and reduce vegetation natural-complexity credibility; a morphology swap between retained LOD proxies can additionally create visible_lod_pop or temporal shimmer."
+  },
+  "implementation": {
+    "derivedMorphologyMeshes": 12,
+    "baseSources": ["GM_LeafSpray_A", "GM_LeafSpray_B", "GM_LeafSpray_C"],
+    "perLeafGeometryVariation": {
+      "widthScale": [0.90, 1.08],
+      "lengthScale": [0.92, 1.10],
+      "depthScale": [0.97, 1.03],
+      "pitchDegrees": [-8, 8],
+      "yawDegrees": [-12, 12],
+      "rollDegrees": [-18, 18],
+      "centerOffsetMetersApprox": [-0.01, 0.012]
+    },
+    "preservedData": ["UV0 topology", "UV2 when present", "triangle topology", "vertex colors when present"],
+    "recomputedData": ["normals", "tangents", "bounds"],
+    "assignment": "Stable integer mapping from tree index + LeafCluster ordinal to 12 morphology assets; no runtime randomness. Consecutive ordinals traverse all twelve variants because multiplier 7 is coprime to 12.",
+    "theoretical28ClusterDistribution": {
+      "distinctVariantsPerGeneratedTree": 12,
+      "maximumUseOfAnyExactVariantPerGeneratedTree": 3
+    },
+    "lodIdentity": "Every source and retained proxy renderer carrying the same parsed LeafCluster ordinal is assigned the exact same morphology mesh asset.",
+    "buildChain": "QualityBlockFoliageOpticsUpgrade now applies morphology immediately after QualityBlockTreeDetailUpgrade and before thin-leaf optical material/property-block application. QualityBlockGroundDetailUpgrade already calls BuildFoliageOptics in the normal quality chain.",
+    "formalGuard": "QualityBlockFoliageMorphologyDiversityQA is InitializeOnLoad and re-validates the machine-readable contract plus current morphology state on 3840x2160 QA4K_/QAPreparedTemporal_ pre-cull.",
+    "lookdev": "Assets/QA/lookdev/foliage_morphology_diversity_lookdev.svg documents clone risk, 12-variant intent, LOD identity and required rendered review; explicitly not render evidence."
+  },
+  "commitsBeforeThisRecord": [
+    "715e32d6d581735b70ae5b5e5b184be1da1957fe",
+    "1d7486b6f5d31bba05cd92d74c2072dc7c6c2ae8",
+    "3d8923daec984cd9e4e628b91eee314acc8a647c",
+    "350fae6efb7c996ea44aab00787745dd9708f999",
+    "c497718058a32590055bcfcc9fd44964e2c5a0a6"
+  ],
+  "verification": {
+    "compareAgainstStart": "5 commits ahead / 0 behind before this run-record commit; merge-base remained startHead; changed files were exclusively under UnityProject/.",
+    "visualGateCriticalIdsCheckedAgainstCanonicalGate": ["obvious_repetition", "severe_aliasing_or_shimmer", "visible_lod_pop"],
+    "assignmentArithmeticChecked": "For ordinals 0..27 on tree indices 0..5, the deterministic mapping produces all 12 variants with maximum exact use 3 per tree.",
+    "sourceTopologyChecked": "Existing BuildLeafSprayMesh source confirms eight vertices per two-sided lamina, matching the derivation algorithm's grouping assumption.",
+    "githubCommitStatusesAtPreRecordHead": 0,
+    "githubWorkflowRunsAtPreRecordHead": 0,
+    "unity6000Compile": "PENDING_RUNNER",
+    "unityRuntime": "PENDING_RUNNER",
+    "generatedTwelveMeshAssetsObservedInUnity": "PENDING_RUNNER",
+    "formal3840x2160StillEvidence": "PENDING_RUNNER",
+    "formalTemporalEvidence": "PENDING_RUNNER",
+    "actualPixelReview": "PENDING_RUNNER"
+  },
+  "scorePolicy": {
+    "implementationReadiness": 93,
+    "visualFidelity": "UNSCORED_UNTIL_REAL_4K_RENDER",
+    "visualPointsAwardedThisRun": 0,
+    "passClaimed": false,
+    "expectedFutureImpact": {
+      "vegetationNaturalComplexity": "Direct positive source-side potential by reducing exact leaf-spray clone recognition.",
+      "textureMicrodetail": "Indirect positive potential because repeated silhouette/card topology no longer reinforces repeated texture perception as strongly.",
+      "temporalLodAliasing": "Positive source-side potential because retained LeafCluster ordinals keep exact morphology identity across LODs.",
+      "cinematicImage": "Secondary positive potential through more natural crown breakup at hero/oblique framing."
+    }
+  },
+  "renderReviewWhenRunnerAppears": {
+    "stopSpeculativeExpansion": true,
+    "sequence": [
+      "Compile/import in Unity 6000.3.0f1.",
+      "Run normal build chain and confirm twelve GM_LeafSpray_Morph_00..11 assets are generated.",
+      "Run morphology formal-state QA and verify each generated tree has all twelve source variants with max exact use <=3 in the current 28-cluster construction.",
+      "Confirm retained LOD proxies preserve exact morphology identity by LeafCluster ordinal.",
+      "Produce sealed 3840x2160 hero, oblique and grazing stills plus required 100% crops.",
+      "Review oblique/vegetation_grounding and grazing/tree_shadow_contact for clone recognition, floating clusters, plastic/metallic flash and crown silhouette.",
+      "Review temporal/subpixel_grazing for leaf-edge shimmer and morphology/BRDF LOD discontinuity.",
+      "Only then score Vegetation, Texture/Microdetail and Temporal/LOD from actual rendered evidence."
+    ]
+  },
+  "nextBlocker": "No Unity Runner, workflow run or commit-status context is available on the branch. Compile/runtime generation and actual 4K/temporal rendered evidence remain the next authoritative blocker."
+}

@@ -1,0 +1,105 @@
+{
+  "runDateLocal": "2026-09-11",
+  "branch": "gpt/unity-migration",
+  "startHead": "95a126d4612649a74bd0da8b5a5913bcc81d6825",
+  "substantiveWorkHead": "5e77a8f7b656dc17e6f321f2c6ba44f31363756b",
+  "substantiveCommits": [
+    {
+      "sha": "55437280e67cc13d756e8e836dedf05ff4efec59",
+      "message": "Strengthen period rooftop mast installation"
+    },
+    {
+      "sha": "35353f090906bf7b76bb2d46cae48d094640d8ba",
+      "message": "Document rooftop antenna support load path"
+    },
+    {
+      "sha": "168da92d10ce6a22259041671833ead9ab212262",
+      "message": "Add rooftop reception installation lookdev"
+    },
+    {
+      "sha": "5e77a8f7b656dc17e6f321f2c6ba44f31363756b",
+      "message": "Bind period rooftop assembly into native 4K packet"
+    }
+  ],
+  "scope": {
+    "godotChanged": false,
+    "baseMerged": false,
+    "excludedThemesIntroduced": false,
+    "visualFidelityGateThresholdChanged": false
+  },
+  "problemFound": "The year-2000 rooftop receiving assembly had a 3.28 m x 48 mm mast sitting in a low saddle on paired ballast rails but no explicit lateral restraint. Its machine-readable contract called that a legible load path, while the native review packet did not explicitly install or revalidate the period assembly even though locked hero/oblique rooftop crops were already part of the evidence contract. This created both a construction-fidelity risk and a risk that formal rooftop evidence could target an absent/stale assembly.",
+  "implementation": {
+    "mast": {
+      "outsideDiameterMeters": 0.048,
+      "heightAboveRoofMeters": 3.28,
+      "referenceNote": "Japanese communal-reception mast documentation was used only as a dimensional/manufacturing comparator; it documents hot-dip-galvanized 40A/48.6 mm masts in 3.0-4.0 m lengths and is not treated as proof of one exact year-2000 product."
+    },
+    "supportSystem": {
+      "stayCountPerLod": 4,
+      "stayDiameterMeters": 0.025,
+      "stayLengthMetersSourceMath": 0.9769597,
+      "stayAngleFromVerticalDegreesSourceMath": 35.0795,
+      "collarHeightMeters": 0.98,
+      "collarOuterDiameterMeters": 0.082,
+      "footPlateCountLod0And1": 4,
+      "footPlateBottomY": 0.1625,
+      "baseRailTopY": 0.1625,
+      "loadPath": "precast ballast -> paired galvanized rail -> formed stay foot -> four diagonal stays -> mast collar/lugs -> 48 mm mast",
+      "lodPolicy": "All four stays and collar persist in LOD0/1/2/3. Small foot/lug hardware remains in LOD0/1 and is omitted only when sub-pixel."
+    },
+    "cableRestraint": {
+      "clipCountLod0": 6,
+      "clipCountLod1": 6,
+      "clipCountLod2": 0,
+      "clipCountLod3": 0,
+      "reasoning": "Near-camera cable no longer floats beside the mast; distant LODs remove only sub-pixel clip geometry."
+    },
+    "evidenceIntegration": "The authoritative Native 4K Review Packet now validates the period contract, explicitly applies the rooftop assembly after benchmark scene preparation, and revalidates it before reflection capture, immediately before still Camera.Render, and again before temporal evidence."
+  },
+  "machineReadableQa": [
+    "period_authenticity_contract.json contractVersion 2 locks mast/stay/collar/foot dimensions, material response, causal aging and four-LOD load-path persistence.",
+    "QualityBlockPeriodAuthenticityUpgrade.ValidateContractConfigOnly fails if the contract or installation lookdev is absent or required support dimensions/status tokens drift.",
+    "ValidateOpenScene checks exact VHF/UHF counts at every LOD, four ballast blocks and four mast stays at every LOD, collar presence, LOD0/1 feet/lugs/clips, no generated colliders, authored GM_HD meshes, PBR metallic/smoothness ranges, no emission and coherent shadow participation.",
+    "Each mast stay is checked against its exact authored rail-foot-to-collar midpoint and direction; renderer material must remain hot-dip galvanized steel."
+  ],
+  "verification": {
+    "unityRuntimeAvailable": false,
+    "githubActionsWorkflowRunsAtEndOfSubstantiveWork": 0,
+    "commitStatusContextsAtEndOfSubstantiveWork": 0,
+    "native3840x2160CaptureAvailable": false,
+    "sourceMathOnly": [
+      "four symmetric stay centerlines each measure approximately 0.97696 m",
+      "each stay is approximately 35.08 degrees from vertical",
+      "stay-foot plate bottom y=0.1625 m exactly matches base-rail top y=0.1625 m in authored local coordinates"
+    ],
+    "notVerified": [
+      "Unity 6000.3.0f1 compilation",
+      "runtime LOD cross-fade",
+      "actual roof contact pixels",
+      "metallic Fresnel/highlight behavior",
+      "thin Yagi/stay aliasing",
+      "reflection consistency",
+      "native 4K hero/oblique/grazing frames and 100% crops"
+    ]
+  },
+  "implementationReadiness": {
+    "score": 93,
+    "possible": 100,
+    "reasonUnchanged": "The missing seven points remain reserved for actual Unity compile/runtime verification; source implementation and QA do not satisfy that blocker."
+  },
+  "visualFidelity": {
+    "status": "UNSCORED",
+    "pointsAwardedThisRun": 0,
+    "passClaimed": false,
+    "criticalDefectsClearedFromPixels": false,
+    "expectedScoreImpactOnly": [
+      "Geometry & construction: the rooftop mast now has a readable triangulated lateral load path instead of a tall cantilever visually terminating in a low saddle.",
+      "Period authenticity: the locked rooftop crops are now guaranteed by the authoritative packet to contain the actual period assembly rather than depending on an indirect build side effect.",
+      "Material/PBR: support hardware remains galvanized conductor material while clips/feed boxes/coax/concrete remain dielectric; actual angular response is render-only.",
+      "Weathering/context: contract aging is tied to rooftop UV, zinc dulling and runoff at clamp/foot interfaces rather than random damage.",
+      "Temporal/LOD: structural stay silhouette persists through LOD3, but actual pop/shimmer remains unverified."
+    ]
+  },
+  "nextBlocker": "Unity 6000.3.0f1 Runner/editor. On first runtime availability, stop speculative expansion and run Prepare Complete Native 4K Review Packet. Confirm the new contract/lookdev compile path, four-way support geometry, period assembly presence in hero/oblique rooftop 100% crops, ballast/rail/stay/collar contact, metallic-vs-dielectric response, sun/reflection coherence, Yagi/stay aliasing and LOD transition stability. Any floating/interpenetrating support, painted-looking highlight, severe shimmer or LOD pop is a critical defect to fix before scoring.",
+  "renderVerificationPending": true
+}

@@ -1,0 +1,90 @@
+{
+  "schemaVersion": "1.0",
+  "runId": "2026-09-09_park_furniture_microdetail",
+  "startHead": "6b6516972f34c5cfe0ead17bf99721d96e142cc5",
+  "substantiveWorkHead": "a87eb2de1111dff9ced6ce142353248fecb74208",
+  "endHeadBeforeRunRecord": "1361d137632efebc6990615d5f399785d0e9f6cb",
+  "branch": "gpt/unity-migration",
+  "baseMergePerformed": false,
+  "godotModified": false,
+  "excludedThemesObserved": false,
+  "task": "Increase expected Material/PBR and Texture/Microdetail fidelity on benchmark-visible park and street furniture by replacing scalar-only surfaces with physical-scale deterministic microtextures while preserving manufactured geometry, cause-based weathering separation and render-evidence discipline.",
+  "commits": [
+    {"sha": "93cb78cbcff9ffb39b7717fd86995e318371ea10", "message": "Add physical-scale park furniture microdetail pass", "substantive": true},
+    {"sha": "b97a726fc3c60b7954f78cd0af9e6018580599d0", "message": "Add machine-readable park furniture microdetail contract", "substantive": true},
+    {"sha": "a87eb2de1111dff9ced6ce142353248fecb74208", "message": "Gate benchmark saves on park furniture microdetail", "substantive": true},
+    {"sha": "1361d137632efebc6990615d5f399785d0e9f6cb", "message": "Record park furniture microdetail readiness without visual credit", "substantive": false}
+  ],
+  "implementation": {
+    "materialSetCount": 8,
+    "textureResolution": 1024,
+    "mapsPerMaterial": ["Albedo", "Normal", "MetallicSmoothness"],
+    "materials": {
+      "paintedSteel": {"metallic": 0.0, "roughnessRange": [0.60, 0.76], "normalAmplitudeMm": 0.055, "physicalTileMeters": 0.045, "microstructure": "orange-peel/coating variation"},
+      "slideStainless": {"metallic": 1.0, "roughnessRange": [0.18, 0.30], "normalAmplitudeMm": 0.028, "physicalTileMeters": 0.060, "microstructure": "travel-direction fine abrasion"},
+      "exposedSteel": {"metallic": 1.0, "roughnessRange": [0.26, 0.42], "normalAmplitudeMm": 0.045, "physicalTileMeters": 0.050, "microstructure": "fine machining/roughness variation"},
+      "benchTimber": {"metallic": 0.0, "roughnessRange": [0.66, 0.84], "normalAmplitudeMm": 0.28, "physicalTileMeters": 0.180, "microstructure": "lengthwise grain and restrained fine checks"},
+      "precastConcrete": {"metallic": 0.0, "roughnessRange": [0.80, 0.93], "normalAmplitudeMm": 0.48, "physicalTileMeters": 0.120, "microstructure": "fine aggregate and pinholes"},
+      "contactConcrete": {"metallic": 0.0, "roughnessRange": [0.86, 0.96], "normalAmplitudeMm": 0.62, "physicalTileMeters": 0.140, "microstructure": "coarser ground-contact mineral relief"},
+      "noticeBacking": {"metallic": 0.0, "roughnessRange": [0.72, 0.88], "normalAmplitudeMm": 0.22, "physicalTileMeters": 0.160, "microstructure": "matte fibre/coating variation"},
+      "agedDiffuser": {"metallic": 0.0, "roughnessRange": [0.36, 0.52], "normalAmplitudeMm": 0.030, "physicalTileMeters": 0.090, "microstructure": "subtle frosting/aging breakup"}
+    },
+    "uv": {
+      "general": "referenced manufactured furniture meshes are rewritten to dominant-face planar UV0 in physical metres",
+      "physicalChute": "authored path UV retained; U physical scale derives from 0.92 m width and V already tracks approximately 4.2 m run",
+      "physicalDiffuser": "lathed UV retained; scale derives from 0.43 m maximum diameter circumference and 0.255 m profile height"
+    },
+    "filtering": {"mipmaps": true, "filterMode": "Trilinear", "anisoLevel": 12},
+    "causeSeparation": "manufacturing microtextures contain no sun direction, camera highlight, runoff streak, random macro dirt, ground-splash height or broad rust. Those remain owned by physical lighting and cause-based weathering.",
+    "metallicWorkflowCorrection": "The final microdetail pass overrides early scalar bootstrap values for bare stainless/exposed steel to metallic=1.0; dielectric paint/timber/concrete/backing/diffuser remain <=0.05.",
+    "saveGate": "When the detailed-ground benchmark scene is saved, the furniture chain now executes contract validation -> manufacture rebuild -> physical chute/diffuser refinement -> four-level LOD rebind -> 4K microdetail generation/application -> structural/profile/LOD/material/UV QA.",
+    "lookdev": {
+      "contract": "Assets/QA/park_furniture_microdetail_contract.json",
+      "mode": "precise generation brief recorded because the current GitHub connector execution path cannot ingest a generated binary illustration into the repository",
+      "requiredStudies": ["stainless frontal/oblique/grazing", "timber slats and real gaps", "precast-to-contact concrete transition", "painted-vs-bare metal", "daylight aged diffuser", "notice-board frame/backing"]
+    }
+  },
+  "verification": {
+    "sourceStaticReview": "PASS_WITH_RENDER_PENDING",
+    "branchDiffAtSubstantiveHead": "3 commits ahead, 0 behind startHead; three changed files, all under UnityProject",
+    "changedFilesAtSubstantiveHead": [
+      "UnityProject/Assets/Editor/QualityBlockParkFurnitureMicrodetailUpgrade.cs",
+      "UnityProject/Assets/Editor/QualityBlockParkFurnitureSaveGate.cs",
+      "UnityProject/Assets/QA/park_furniture_microdetail_contract.json"
+    ],
+    "commitStatusContexts": 0,
+    "workflowRuns": 0,
+    "captures4KDirectory": "NOT_PRESENT",
+    "unityCompile": "NOT_RUN_NO_UNITY_RUNTIME",
+    "actual3840x2160Render": "NOT_AVAILABLE",
+    "actual100PercentCrops": "NOT_AVAILABLE",
+    "actualRuntimePerformance": "NOT_MEASURED",
+    "visualFidelityScore": null,
+    "visualFidelityStatus": "UNSCORED_NO_RENDER_EVIDENCE",
+    "visualFidelityPointsAwarded": 0
+  },
+  "implementationReadiness": {
+    "score": 93,
+    "possible": 100,
+    "changeThisRun": 0,
+    "reasonNotIncreased": "The remaining seven readiness points are Unity compile/runtime verification. Source coverage improved, but no real Unity runner evidence exists, so raising the readiness score would blur the distinction between implemented intent and executed proof."
+  },
+  "expectedVisualScoreImpact": [
+    {"category": "Material/PBR physical plausibility", "possible": 20, "expectedDirection": "positive", "reason": "material-specific roughness and strict bare-metal-vs-dielectric classification replace scalar-only surfaces; stainless response is left to real environment reflection rather than baked highlights"},
+    {"category": "Texture/microdetail/texel fidelity", "possible": 10, "expectedDirection": "positive", "reason": "physical-scale 1024px microstructure plus metre-aware UV handling targets the close-up plastic/flatness tell on slide, bench, concrete, paint and diffuser"},
+    {"category": "Geometry & construction fidelity", "possible": 20, "expectedDirection": "protected", "reason": "microtextures are forbidden from replacing 2 mm chute thickness, slat gaps, fasteners, frame rails or globe silhouette, preserving the manufactured geometry contract"},
+    {"category": "Lighting/shadows/reflections", "possible": 15, "expectedDirection": "positive if runtime confirms", "reason": "stainless roughness/normal detail modulates the existing sky/probe reflection instead of painting specular cues"},
+    {"category": "Temporal/LOD/aliasing stability", "possible": 5, "expectedDirection": "positive if runtime confirms", "reason": "mipmaps, trilinear filtering and anisotropy 12 are enforced, but shimmer/LOD behavior cannot be credited without motion/render evidence"}
+  ],
+  "criticalFailProtection": [
+    "dielectric materials fail QA if metallic exceeds 0.05",
+    "bare metal final materials fail QA if scalar metallic falls below 0.95",
+    "normal map importer and linear metallic/smoothness mask are mandatory",
+    "physical texture-scale drift fails QA",
+    "insufficient metric-UV evidence fails QA",
+    "manufacture microtextures explicitly forbid baked highlights and generic random macro dirt",
+    "Visual Fidelity remains unscored without actual Unity renders"
+  ],
+  "nextBlocker": "Unity 6000.3.0f1 editor/runner compile and native 3840x2160 evidence. When it appears, stop new speculative detail and inspect 100% crops for stainless scratch contrast/false anisotropy, wood grain repetition/orientation, concrete pinhole scale, diffuser plasticity, mip shimmer and LOD pop; fix observed render defects first.",
+  "stopDatePolicy": "Continue source-safe development only through 2026-09-18. On or after 2026-09-19, do not create new development commits unless new instructions explicitly extend the work; summarize state instead."
+}

@@ -1,0 +1,103 @@
+{
+  "version": "ground-contact-v1.0.0",
+  "runtimeRenderVerified": false,
+  "visualFidelityStatus": "UNSCORED_UNTIL_REAL_4K_RENDER",
+  "purpose": "Remove the floating-object / texture-cutout look at interfaces by reconstructing physical grade transitions rather than painting dark borders into albedo.",
+  "materials": [
+    {
+      "id": "foundation_plinth_mortar",
+      "materialFamily": "cementitious protective plinth mortar over reinforced-concrete base",
+      "finish": "trowelled mineral surface with fine aggregate, low sheen, no baked shadow",
+      "albedoLinearRgb": [0.42, 0.41, 0.38],
+      "roughnessRange": [0.82, 0.94],
+      "metallicRange": [0.0, 0.0],
+      "normalScaleMm": 1.6,
+      "microstructure": "0.5-3 mm sand/trowel variation; larger chips remain geometry only when physically justified",
+      "wetResponse": "lower roughness and modestly darken only at rain/ground-splash exposure",
+      "uvAging": "small warm/cool mineral drift; no painted sun highlights",
+      "frontLightResponse": "broad diffuse response with weak dielectric highlight",
+      "grazingLightResponse": "slightly stronger Fresnel edge response reveals trowel micro-normal without reading metallic",
+      "shadeResponse": "retains local aggregate contrast without artificial ambient glow"
+    },
+    {
+      "id": "interface_compacted_soil",
+      "materialFamily": "fine mineral soil accumulated/compacted at hardscape and vegetation edges",
+      "finish": "matte granular edge material",
+      "albedoLinearRgb": [0.28, 0.205, 0.125],
+      "roughnessRange": [0.90, 0.98],
+      "metallicRange": [0.0, 0.0],
+      "normalScaleMm": 4.0,
+      "microstructure": "1-8 mm granular breakup; no repeated painted border",
+      "wetResponse": "darkens modestly and becomes smoother only where runoff/splash reaches it",
+      "uvAging": "dry exposed grains lighten slightly, sheltered pockets stay darker",
+      "frontLightResponse": "very broad diffuse response",
+      "grazingLightResponse": "grain relief catches small broad highlights, never a continuous glossy strip",
+      "shadeResponse": "keeps granular form readable through sky fill"
+    },
+    {
+      "id": "paving_interface_joint",
+      "materialFamily": "recessed mineral joint/fines between constructed elements",
+      "finish": "recessed matte joint carrying trapped fines",
+      "albedoLinearRgb": [0.12, 0.115, 0.105],
+      "roughnessRange": [0.91, 0.99],
+      "metallicRange": [0.0, 0.0],
+      "normalScaleMm": 1.0,
+      "microstructure": "sub-millimetre to 2 mm mineral fines",
+      "wetResponse": "slightly darker with localized roughness reduction in retained moisture",
+      "uvAging": "minimal because the recess is sheltered",
+      "frontLightResponse": "low diffuse value with no fake AO painted outside the actual recess",
+      "grazingLightResponse": "physical recess/self-shadowing dominates over specular response",
+      "shadeResponse": "remains dark due to geometry and material, not baked directional lighting"
+    }
+  ],
+  "assemblies": [
+    {
+      "id": "danchi_foundation_grade_interface",
+      "components": ["continuous front plinth toe", "stair-tower return", "12 mm construction isolation joint", "narrow compacted mineral splash shoulder"],
+      "nominalDimensions": "front plinth 26.0 m long x 0.14 m high x 0.12 m projection; shoulder roughly 0.18 m wide; 12 mm isolation joint",
+      "manufacture": "reinforced-concrete building base with later protective mortar/plinth finish; exterior grade is compacted against the base after structural work",
+      "mounting": "plinth is bonded/continuous with building base; grade shoulder bears on ground and must not float above it",
+      "interfaces": "facade-to-plinth top edge, plinth-to-grade contact, stair-tower construction joint, runoff/splash zone",
+      "orientationExposure": "camera-facing south/southeast facade, rain exposed, partly sun exposed, direct ground splash at lowest band",
+      "aging": "soil splash and moisture concentrate within roughly 0.4 m of grade; the recessed isolation joint retains darker fines",
+      "geometryVsMaterial": "plinth projection, return and joint are geometry; mineral grain/roughness is material response; stains require physical sources",
+      "lookdevBrief": "4K front and grazing-light crops must show a physical toe, contact shadow, joint depth and non-metallic mineral response without a pasted dark line"
+    },
+    {
+      "id": "grass_hardscape_edge_shoulder",
+      "components": ["hardscape/curb edge", "30-80 mm mineral shoulder", "grass encroachment gap", "periodic washout pockets"],
+      "nominalDimensions": "edge shoulder varies approximately 0.03-0.08 m in visible width and 0.005-0.025 m in relief; variation is gradual rather than every identical module",
+      "manufacture": "hardscape/curb is installed first; topsoil/vegetation is graded to it, leaving a narrow compacted soil/fines transition from maintenance and runoff",
+      "mounting": "transition follows the real curb/path boundary and stays slightly below the hard edge",
+      "interfaces": "grass/soil to curb, paving to curb, runoff from hard surface to absorptive soil",
+      "orientationExposure": "upward-facing rain/sun exposure with strongest splash at curb low edge",
+      "aging": "fine soil accumulates in low spots; grass edge is not a perfectly straight painted mask; exposed sections dry faster than recesses",
+      "geometryVsMaterial": "edge relief/width changes are geometry; grain and moisture are material response",
+      "lookdevBrief": "oblique 4K crop should lose the razor-straight texture boundary while keeping drainage/curb construction readable"
+    },
+    {
+      "id": "worn_path_eroded_edge",
+      "components": ["compacted path tread", "irregular eroded shoulder", "adjacent grass/topsoil", "local low pockets"],
+      "nominalDimensions": "erosion shoulder approximately 0.05-0.16 m wide, 0.005-0.03 m vertical relief, varying over 0.35-0.80 m wavelengths",
+      "manufacture": "unsealed desire path forms by repeated foot traffic compressing vegetation/topsoil rather than by a poured edge",
+      "mounting": "the tread is continuous with grade; no artificial curb is added where the path should remain informal",
+      "interfaces": "compacted soil to grass, footfall wear zone to less disturbed verge",
+      "orientationExposure": "upward-facing, rain and sun exposed, foot-traffic concentrated",
+      "aging": "edge broadens where feet clip vegetation and narrows where growth recovers; low pockets retain moisture/fines",
+      "geometryVsMaterial": "irregular edge silhouette/relief is geometry; soil granularity and moisture variation are material response",
+      "lookdevBrief": "100% crop must read as an organically worn edge rather than a rectangular soil decal"
+    }
+  ],
+  "qa": {
+    "hardFailIf": [
+      "contract claims runtime render verification without real Unity evidence",
+      "contact strip is floating above the underlying grade",
+      "hard black border is painted into albedo to fake contact",
+      "foundation/plinth material is metallic",
+      "worn path receives a perfectly uniform rectangular shoulder",
+      "generated interface detail adds gameplay colliders",
+      "contact assembly is missing before the 4K benchmark capture"
+    ],
+    "required4KCrops": ["hero/ground_contact", "oblique/vegetation_grounding", "grazing/tree_shadow_contact"]
+  }
+}

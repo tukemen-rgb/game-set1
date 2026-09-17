@@ -1,0 +1,105 @@
+{
+  "schemaVersion": "1.0",
+  "runDate": "2026-09-12",
+  "branch": "gpt/unity-migration",
+  "startHead": "a83e029b5b6a12dd8bd3416a11c760694d841387",
+  "focus": "Eliminate a remaining critical visible_lod_pop risk in crescent-lock hardware by preserving the same manufactured curved lever envelope through LOD2 and LOD3 rather than allowing the existing broad-box/sliver far proxies to replace the curve.",
+  "constraints": {
+    "preserveGodot": true,
+    "baseMergePerformed": false,
+    "earthquakeDisasterReconstructionThemesAdded": false,
+    "actualRenderRequiredBeforeVisualScoring": true
+  },
+  "commits": [
+    {
+      "sha": "8c1e7162ed9dde42df5165374235eaec1abcf603",
+      "message": "qa: define sash latch far LOD continuity contract"
+    },
+    {
+      "sha": "81b2536af18ee3f02bd9d3bd24a0805d4e5a0b4f",
+      "message": "unity: preserve sash latch curve through far LODs"
+    },
+    {
+      "sha": "aa823b6f094096ff060407adbff771d361f6428b",
+      "message": "qa: bind sash latch far LOD continuity to reflection evidence"
+    },
+    {
+      "sha": "aaa870eae21a076d0f0e1482a23bdef766e93f76",
+      "message": "qa: require far LOD continuity in reflection binding"
+    },
+    {
+      "sha": "f48306fe49764e74c206f75338cf9fcd72669941",
+      "message": "qa: add sash latch far LOD lookdev plate"
+    }
+  ],
+  "implementation": {
+    "newEditorQa": "Assets/Editor/QualityBlockSashLatchFarLodContinuityRefinement.cs",
+    "newContract": "Assets/QA/facade_sash_latch_far_lod_continuity_contract.json",
+    "lookdevIllustration": "Assets/QA/lookdev_sash_latch_far_lod_continuity.svg",
+    "reflectionBinding": "Assets/Editor/QualityBlockReflectionMaterialPhysicalityBindingQA.cs",
+    "reflectionBindingContract": "Assets/QA/reflection_material_physicality_binding_contract.json",
+    "lod0ArcRings": 32,
+    "lod1ArcRings": 16,
+    "lod2ArcRings": 8,
+    "lod3ArcRings": 5,
+    "crescentRadiusM": 0.034,
+    "crescentSweepDegrees": 130.0,
+    "sectionWidthM": 0.010,
+    "sectionThicknessM": 0.010,
+    "cornerBreakM": 0.002,
+    "phaseBins": 8,
+    "phaseStepM": 0.011,
+    "lod1Transition": 0.0030,
+    "lod2Transition": 0.0012,
+    "lod3Cull": 0.0004,
+    "constructionReasoning": "LOD2 and LOD3 now remain decimated representations of the same manufactured crescent latch: plate, swept metal lever and keeper stay physically separate before one-renderer combination. Simplification reduces curve sampling instead of changing the product into a rectangular slab. Geometry carries the lever sweep, section, keeper clearance and product silhouette; aged-metal microstructure, roughness, Fresnel response and contact polish remain material/lighting behavior.",
+    "weatheringReasoning": "No new weathering layer was invented for distance LODs. Far proxies inherit the canonical aged sash metal and therefore cannot introduce independent rust, wetness, dirt, value shifts or painted highlight bands.",
+    "formalEvidenceBehavior": "The first reflection-lighting baseline may create/repair deterministic LOD2/LOD3 phase assets, then their dependency hashes are armed. Every later reflection fingerprint revalidates the same assets read-only and fails closed on drift. This awards zero Visual Fidelity points."
+  },
+  "staticVerification": {
+    "parentBuilderUsesExactPhaseSpecificPaths": true,
+    "parentBuilderHasFourLodLevels": true,
+    "parentThresholdsConfirmed": true,
+    "farProxyCoordinatesMatchedToExistingLod1Construction": true,
+    "perPhaseMetricUvPreserved": true,
+    "uvNormalsTangentsRequired": true,
+    "stockPrimitiveFinalMeshesForbiddenByParentQa": true,
+    "reflectionBindingSchema": "1.5",
+    "reflectionPreparationOrder": [
+      "facade formal state",
+      "LOD0 crescent curve",
+      "LOD1 curve continuity",
+      "LOD2/LOD3 far curve continuity",
+      "parent sash latch",
+      "material and scene validators"
+    ],
+    "githubActionsRunsObserved": 0,
+    "commitStatusContextsObserved": 0,
+    "unityCompileVerified": false,
+    "unityRuntimeVerified": false,
+    "native4kStillVerified": false,
+    "native4kTemporalVerified": false
+  },
+  "scores": {
+    "implementationReadiness": 93,
+    "visualFidelity": null,
+    "visualFidelityState": "UNSCORED_UNTIL_REAL_4K_RENDER",
+    "visualPointsAwardedThisRun": 0,
+    "visualPassClaimed": false
+  },
+  "expectedVisualScoreImpactNotAwarded": {
+    "temporalLodAliasingStability": "HIGH risk reduction if native-4K motion confirms that 16->8->5 ring transitions are imperceptible; specifically targets the visible_lod_pop critical-fail path.",
+    "geometryConstructionFidelity": "MEDIUM preservation benefit because distant hardware remains recognizably the same manufactured crescent assembly rather than becoming a generic slab.",
+    "materialPbrPhysicalPlausibility": "LOW-to-MEDIUM indirect benefit because the curved metal surface preserves a physically coherent specular trajectory better than a rectangular substitute; actual BRDF appearance remains unverified.",
+    "lightingShadowsReflections": "LOW-to-MEDIUM indirect benefit because reflection-probe evidence and still/temporal evidence now consume the same far-LOD asset payloads after the formal epoch is armed."
+  },
+  "unresolvedPixelRisks": [
+    "The 8-ring LOD2 curve may still facet or move its specular centroid visibly under grazing light.",
+    "The 5-ring LOD3 curve may still read as angular or shimmer at sub-pixel coverage even though it preserves the crescent envelope.",
+    "Animated cross-fade may expose density or highlight differences between 16, 8 and 5 rings.",
+    "Receiver/keeper clearance and sash/gasket separation remain unverified in actual pixels at forced LODs.",
+    "Eight deterministic UV phases may still reveal repetition across thirty windows in real camera framing.",
+    "Runtime cost, mesh serialization behavior and Unity 6000.3.0f1 compilation are not verified without a Runner."
+  ],
+  "nextBlocker": "A real Unity 6000.3.0f1 Runner or rendered screenshots. When available, stop speculative expansion and run compile/runtime first, then capture native 3840x2160 oblique temporal evidence crossing 0.003 and 0.0012, grazing-light evidence, and 100-percent sash-latch crops. Reject any visible silhouette snap, rectangular read, specular jump, shimmer, interpenetration or LOD pop before entering Visual Fidelity scores."
+}

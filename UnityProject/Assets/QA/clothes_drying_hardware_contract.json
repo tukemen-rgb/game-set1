@@ -1,0 +1,88 @@
+{
+  "schemaVersion": "1.0",
+  "assemblyId": "balcony_clothes_pole_receiver_support",
+  "researchStatus": "Period-plausible public-housing/multi-family balcony reconstruction. Contemporary Japanese balcony clothes-support product dimensions and public-housing use were used only as scale/context references; the exact original housing-complex manufacturer/model remains unverified and must not be claimed from this source contract.",
+  "manufacture": "Paired formed/pressed galvanized-steel side-wall support assemblies. Each support has a thin mounting plate, two mechanical anchor heads, a pivot, a rigid support arm and a true annular pole receiver. Manufactured dimensions repeat; visible variation must come from installation/exposure/weathering evidence rather than random deformation.",
+  "dimensionsThickness": "30 balcony bays x two supports. Pivot-to-receiver arm centerline 0.340 m, arm section 0.055 x 0.050 m, back plate 0.014 x 0.200 x 0.090 m, receiver OD 0.090 m / clear bore ID 0.038 m / axial depth 0.024 m, pivot diameter 0.028 m, two 0.012 m anchor heads on 0.110 m vertical pitch.",
+  "materialsFinish": "Weathered galvanized steel throughout the generated refinement. Approved fallback PBR authority: base sRGB about 0.30/0.31/0.30, roughness 0.48-0.72, metallic 0.75-1.00, conductor F0 about 0.68, 0.12 mm normal amplitude and 0.8 mm microstructure. No painted highlight, emission or chrome-like polish.",
+  "mounting": "Each support is mechanically anchored to the balcony side/divider substrate through a thin back plate. The pivot transfers arm load into the plate; the left/right receiver bores are coaxial on the facade X axis so a horizontal clothes pole can physically span the balcony between them.",
+  "interfacesGapsSeals": "Required interfaces are plate-to-substrate contact, two distinct anchor heads, pivot-to-arm connection, open annular pole clearance and paired receiver-axis alignment. The receiver must never revert to a solid peg or intersect the pole clearance volume.",
+  "orientationExposure": "Sheltered by balcony slab but rain-reachable and sun-reachable at the outer face. Receiver lips and upper arm faces receive more water/dust; plate recesses stay dirtier; pole-contact surfaces can be locally cleaner.",
+  "aging": "Cause-based zinc dulling/oxidation, recess grime at mounting plate and pivot, modest water spotting on exposed edges, and cleaner pole-contact zones. Ferrous rust may only appear at a coating breach/anchor source and must not be scattered randomly.",
+  "geometryVsMaterial": "Back plate, anchors, pivot, arm thickness, annular receiver bore and all air gaps are geometry. Zinc microtexture, fine scratches, oxidation, water spotting and subtle contact polish are PBR/material response. Lighting/highlights are never authored into albedo.",
+  "lodPolicy": "The DanchiHighDetail four-level LODGroup owns the source assembly. LOD0 retains every refined component; small bolts/pivot/receiver details reduce first according to physical scale, the support-arm silhouette persists farther, and sub-pixel hardware may cull at the farthest level rather than shimmer. Animated cross-fade remains mandatory at the parent Danchi LOD group.",
+  "weatheringCausality": "LOD0 source renderers carry QualityBlockWeatheringSurface metadata tied to rain/sun/recess/contact exposure. Fastener heads additionally identify a ferrous fixture source; unrelated damage narratives are prohibited.",
+  "lookdevBrief": "Use the linked technical lookdev to judge a representative left/right pair in front, 35-degree oblique and grazing midsummer sun. The 100% crop must show an actual hole through the receiver, plate seating, two anchor heads and distinct metallic edge response without baked highlights. Temporal evidence must confirm the small circular receiver does not shimmer or pop.",
+  "sourceBasis": "Conservative reconstruction from the existing generated bay datum plus period-plausible Japanese apartment/public-housing balcony clothes-support proportions. Contemporary 0.35-0.55 m balcony support products and approximately 32 mm clothes poles informed only the dimensional sanity range; the generated 0.340 m load path follows the existing fallback attachment datum and is not an exact manufacturer attribution.",
+  "geometry": {
+    "bayCount": 30,
+    "supportsPerBay": 2,
+    "armLengthM": 0.34,
+    "receiverOuterDiameterM": 0.09,
+    "receiverInnerDiameterM": 0.038,
+    "receiverAxialDepthM": 0.024,
+    "anchorPitchM": 0.11,
+    "receiverAxis": "X",
+    "poleAxisRelationship": "paired_receivers_coaxial_parallel_to_facade"
+  },
+  "material": {
+    "assetPath": "Assets/Art/GeneratedDetailMaterials/MAT_DarkGalvanizedSteel.mat",
+    "albedoSrgb": [0.30, 0.31, 0.30],
+    "roughnessMin": 0.48,
+    "roughnessMax": 0.72,
+    "metallicMin": 0.75,
+    "metallicMax": 1.0,
+    "specularF0": 0.68,
+    "normalAmplitudeMm": 0.12,
+    "microstructureScaleMm": 0.8,
+    "wetAlbedoMultiplier": 0.88,
+    "wetRoughnessMultiplier": 0.62,
+    "uvFadeMax": 0.03,
+    "wetness": 0.0,
+    "angularFresnelResponse": "Conductive edge reflection strengthens at grazing angle but is broadened by zinc oxidation and age; it must remain darker/rougher than polished aluminum or chrome."
+  },
+  "qa": {
+    "visualFidelityPointsAwarded": 0,
+    "renderVerificationPending": true,
+    "formalCameraReadOnlyValidation": true,
+    "requireAnnularReceiver": true,
+    "requireCauseBasedWeathering": true,
+    "requireMetricPhysicalUvCompatibility": true
+  },
+  "requiredEvidenceRefs": [
+    "hero/frontal_balcony_hardware",
+    "oblique/construction_depth",
+    "grazing/galvanized_edge_response",
+    "crop/clothes_receiver_100pct",
+    "temporal/oblique_lod_stability"
+  ],
+  "failureInjection": [
+    "replace one annular receiver mesh with a solid Cylinder or peg and require FAIL before formal capture",
+    "rotate one receiver bore from X axis to Z/Y and require FAIL",
+    "offset one side of a receiver pair in Y or Z by more than 4 mm and require FAIL",
+    "remove one mounting plate, pivot or anchor head and require topology FAIL",
+    "bind a dielectric/plastic/non-canonical material and require FAIL",
+    "enable emission or break canonical metallic/smoothness-map authority and require FAIL",
+    "replace an authored mesh with Cube/Cylinder/Plane/Quad and require FAIL",
+    "remove QualityBlockWeatheringSurface from any refined source renderer and require FAIL",
+    "remove the manifest or change canonical dimensions and require FAIL",
+    "after Danchi LOD generation remove one source renderer from LOD0 and require FAIL"
+  ],
+  "criticalDefectIds": [
+    "visible_primitive_placeholder",
+    "impossible_material_physics",
+    "hero_geometry_intersection",
+    "severe_aliasing_or_shimmer",
+    "visible_lod_pop",
+    "missing_construction_material_metadata",
+    "unverified_render_claim"
+  ],
+  "expectedVisualScoreImpactIfRenderedCleanly": {
+    "geometryConstructionFidelity": "medium",
+    "materialPbrPhysicalPlausibility": "small-to-medium",
+    "periodAccuracySceneAuthenticity": "small-to-medium",
+    "temporalLodAliasingStability": "small-to-medium"
+  },
+  "renderStatus": "PENDING_NATIVE_UNITY_3840x2160_RENDER_100_PERCENT_CROP_AND_TEMPORAL_EVIDENCE",
+  "forbiddenThemes": ["earthquake", "disaster", "reconstruction"]
+}

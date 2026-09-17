@@ -1,0 +1,120 @@
+{
+  "schema_version": "1.0",
+  "run_id": "2026-09-13-ac-installation-formal-build-binding",
+  "branch": "gpt/unity-migration",
+  "starting_head": "fa7f762cb8eee2f3c4fcffd00be73a10508880fc",
+  "substantive_commits": [
+    {
+      "sha": "a826757e4f1ffe02541883dbff659e862819ac15",
+      "summary": "Bind the complete outdoor-unit installation correction ahead of physical fan/guard refinement and make installation validation a direct final Danchi dependency."
+    },
+    {
+      "sha": "238acacc762788dcaed237d2a9fb774f4600c2e1",
+      "summary": "Add a machine-readable formal-build integration contract for outdoor-unit manufacture, installation, materials, LOD, failure injection and render evidence."
+    }
+  ],
+  "problem_found": [
+    "The generated outdoor-unit installation QA already reconstructed slab -> mounting plate -> support foot -> condenser chassis contact, paired refrigerant lines, wall interfaces and the drain terminal, but the formal Danchi LOD build did not invoke that correction before replacing the legacy fan face and generating LOD proxies.",
+    "QualityBlockAcOutdoorUnitInstallationQA.ApplyAndPersist translates HD_AC_FanDisc, HD_AC_FanHub and fourteen grille-bar children with the mechanically corrected chassis elevation. The physical fan refinement later replaces that legacy fan assembly, so running installation correction after fan refinement is not a safe equivalent ordering.",
+    "The final Danchi-specific validator directly required physical fan, round-wire guard and guard-mount QA but did not directly require the support/service installation QA. A visually refined condenser could therefore reach the formal path without the same fail-closed mechanical seating/service-interface validation."
+  ],
+  "change": {
+    "formal_build_order_now": [
+      "QualityBlockDetailBevelUpgrade.BuildBeveledDetailedQualityBlock",
+      "QualityBlockAcOutdoorUnitInstallationQA.ApplyAndPersist",
+      "reopen persisted benchmark scene",
+      "QualityBlockAcFanPhysicalRefinement.ApplyToOpenScene",
+      "QualityBlockAcFanGuardRoundWireRefinement.ApplyToOpenScene",
+      "QualityBlockAcFanGuardMountInterfaceRefinement.ApplyToOpenScene",
+      "QualityBlockDanchiLodUpgrade.ApplyToOpenScene",
+      "QualityBlockDanchiLodUpgrade.ValidateOpenScene"
+    ],
+    "final_validation_direct_dependencies_now": [
+      "QualityBlockAcOutdoorUnitInstallationQA.ValidateOpenScene",
+      "QualityBlockAcFanPhysicalRefinement.ValidateOpenScene",
+      "QualityBlockAcFanGuardRoundWireRefinement.ValidateOpenScene",
+      "QualityBlockAcFanGuardMountInterfaceRefinement.ValidateOpenScene"
+    ],
+    "new_contract": "Assets/QA/ac_outdoor_unit_formal_build_integration_contract.json"
+  },
+  "manufacture_installation_reasoning": {
+    "scope": "manufacturer-neutral generated late-1990s/circa-2000 Japanese balcony outdoor-unit reconstruction; existing source contracts are retained and no exact maker/model claim is introduced",
+    "load_path": "balcony slab -> 18 mm mounting plate -> 45 mm support/vibration foot -> condenser chassis with target 6 mm controlled chassis/foot overlap",
+    "service_interfaces": "paired insulated refrigerant lines reconnect moved unit outlets to the fixed wall collar with <=4 mm segment-joint tolerance; drain terminates 5-20 mm above the balcony surface with a 10 mm target",
+    "fan_interface": "after seating/service correction, the legacy fan face is replaced by the finite-depth physical rotor/shroud, 5 mm round-wire guard and four physical galvanized guard mounting feet",
+    "geometry_vs_material": "support contacts, gaps, pipe bends/joints, drain fall/clearance, fan/shroud depth, round-wire section and guard-mount seating remain geometry/interface facts; chalking, galvanized dulling, wrap texture, micro-scratches and localized cause-based wetness remain material microdetail",
+    "weathering": "support hardware uses slab-contact/splash/rain causality, service insulation uses wall-shelter versus exposed-unit UV/rain gradient, drain residue is limited to the condensate path, and no dirt/rust is added to conceal a geometry defect"
+  },
+  "material_contract_preserved": {
+    "aged_ac_plastic": "linear albedo 0.42-0.58, roughness 0.70-0.82, metallic 0, dielectric F0 0.035-0.055, normal scale 0.10-0.20; broad dielectric edge response with no painted hot edge",
+    "galvanized_hardware": "linear albedo 0.08-0.20, roughness 0.60-0.78, effective metallic 0.45-0.70, normal scale 0.10-0.18; oxidation/dulling modifies value/roughness rather than painting highlights",
+    "pipe_insulation": "linear albedo 0.30-0.46, roughness 0.78-0.88, metallic 0, F0 0.035-0.050, normal scale 0.12-0.24",
+    "drain_hose": "linear albedo 0.10-0.18, roughness 0.82-0.90, metallic 0, F0 0.035-0.050, normal scale 0.15-0.30"
+  },
+  "static_verification": {
+    "current_source_refetch": "PASS",
+    "installation_before_fan_replacement": "PASS_STATIC_SOURCE",
+    "persisted_scene_reopened_before_fan_refinement": "PASS_STATIC_SOURCE",
+    "installation_validation_direct_final_danchi_dependency": "PASS_STATIC_SOURCE",
+    "existing_installation_apply_requires_legacy_casing_mounted_fan_detail": "PASS_SOURCE_REVIEW",
+    "existing_installation_validator_remains_compatible_after_physical_fan_replacement": "PASS_SOURCE_REVIEW_SUPPORT_SERVICE_VALIDATION_DOES_NOT_REQUIRE_LEGACY_FAN_CHILDREN",
+    "machine_readable_contract_added": "PASS",
+    "branch_compare_before_run_record": "PASS_AHEAD_2_BEHIND_0_MERGE_BASE_UNCHANGED",
+    "changed_scope_before_run_record": "PASS_ONLY_UNITYPROJECT_EDITOR_AND_QA_FILES",
+    "github_actions_before_run_record": "ZERO_RUNS",
+    "commit_status_contexts_before_run_record": "ZERO_CONTEXTS",
+    "unity_6000_3_0f1_compile": "PENDING_RUNNER",
+    "unity_runtime_formal_prepare": "PENDING_RUNNER",
+    "installation_runtime_report": "PENDING_RUNNER",
+    "reflection_probe_lifecycle": "PENDING_RUNNER",
+    "3840x2160_render": "PENDING_RUNNER",
+    "100_percent_crops": "PENDING_RUNNER",
+    "temporal_lod_render_evidence": "PENDING_RUNNER",
+    "visual_fidelity_scoring": "NOT_PERMITTED_WITHOUT_ACTUAL_RENDER"
+  },
+  "implementation_readiness": {
+    "score_100": 93,
+    "delta_this_run": 0,
+    "reason": "Formal construction ordering and fail-closed validation coverage improved, but the remaining seven readiness points are reserved for Unity 6000.3.0f1 compile/runtime execution and native render evidence, which remain unavailable."
+  },
+  "visual_fidelity": {
+    "status": "UNSCORED_UNTIL_REAL_4K_RENDER",
+    "points_awarded_this_run": 0,
+    "pass_claimed": false,
+    "expected_score_impact_not_awarded": {
+      "Geometry & construction fidelity": "major positive potential because the formal candidate now receives the intended slab/plate/foot/chassis seating and physically continuous service interfaces before proxy generation",
+      "Material/PBR physical plausibility": "medium positive potential because casing, galvanized supports, insulation and drain-hose physicality are now mandatory in the same formal candidate that receives fan/guard refinement",
+      "Lighting/shadows/reflections": "medium positive potential because real support gaps, pipe occlusion and contact geometry can now participate consistently in contact shadow/reflection evidence; actual pixels remain required",
+      "Texture/microdetail/texel fidelity": "small positive potential from preserving the declared material microstructure contracts on the formally integrated service assembly; no texture point is claimed",
+      "Weathering/context causality": "medium positive potential because splash/contact, UV exposure and condensate causality are attached to the mechanically valid assembly instead of a potentially disconnected one",
+      "Period accuracy/scene authenticity": "medium positive potential because all fifteen balcony condensers are constrained to read as installed appliances with service connections rather than isolated props",
+      "Cinematic image quality/composition/color/exposure": "small-to-medium potential in balcony-service oblique/grazing frames; unobservable until native render",
+      "Temporal/LOD/aliasing stability": "medium potential because LOD proxies are now generated after the complete installation/fan assembly state is established; transition behavior still requires motion evidence"
+    }
+  },
+  "critical_defect_risk_reduced_not_cleared": [
+    "floating/interpenetrating hero geometry",
+    "missing required construction/material metadata",
+    "materially impossible metallic/specular values",
+    "visible LOD pop",
+    "severe aliasing/shimmering"
+  ],
+  "next_runtime_verification": [
+    "At first Unity Runner availability, stop speculative expansion and compile the branch with Unity 6000.3.0f1.",
+    "From a clean Editor session run the formal 4K preparation and confirm the outdoor-unit sequence executes installation correction -> scene reopen -> physical fan -> round wire -> guard mounts -> Danchi LOD.",
+    "Confirm all 15 generated units pass slab/plate, plate/foot, chassis/foot, bolt, refrigerant-joint and drain-clearance checks before reflection evidence is armed.",
+    "Failure injection: delete one support foot or plate and confirm final Danchi validation fails without repair.",
+    "Failure injection: offset one casing so chassis/foot overlap leaves the 2-10 mm range and confirm failure.",
+    "Failure injection: separate one refrigerant joint beyond 4 mm and confirm failure.",
+    "Failure injection: move one drain terminal outside 5-20 mm positive slab clearance and confirm failure.",
+    "After clean rebuild, acquire fresh reflection probes and native 3840x2160 frontal/oblique/grazing stills plus 100% oblique/balcony_services and frontal outdoor-unit support/service crops.",
+    "At 100 percent inspect support seating, pipe/collar continuity, drain fall, casing-versus-galvanized angular response, guard/shroud mounting, fifteen-unit repetition and LOD pop/shimmer before assigning any Visual Fidelity points."
+  ],
+  "constraints": {
+    "godot_preserved": true,
+    "base_merge_performed": false,
+    "excluded_theme_added": false,
+    "new_visual_points_claimed_without_render": false
+  },
+  "next_blocker": "No Unity Runner, compile result or actual benchmark render exists for the branch. Runtime failure injection, reflection lifecycle and native 4K/temporal evidence remain the gating work."
+}

@@ -1,0 +1,51 @@
+{
+  "schema": 1,
+  "batchId": "SummerBalconyProps_2026_09_16",
+  "units": "metres",
+  "historicalScope": "Original unbranded design interpretations for a circa-2000 Japanese summer balcony/utility area. Dimensions and manufacturing details are modeling assumptions, not certified engineering data or exact historical SKU replicas.",
+  "authoringSource": "UnityProject/Tools/generate_summer_balcony_props.py",
+  "sourceSHA256": "e0a391ee9a9c7eda86c500f551f92792a90c0fe3bdadc5ff7b7bd3222b6207c1",
+  "assets": [
+    {
+      "id": "BalconySlipperPair",
+      "manufacture": "Assumed molded EVA/PVC-like open-toe balcony slides. The pair is authored as soles, bridge straps, strap anchors, heel lips and real raised tread pods rather than a single primitive.",
+      "dimensionsMm": {"soleLength": 244, "soleThickness": 15, "pairSpacing": 150, "bridgeStrapThickness": 4.2},
+      "mounting": "Free-standing pair; every asset level is normalized to the lowest bearing point at y=0.",
+      "interfaces": "Bridge straps overlap molded anchor volumes. The pair is independent and not fused together. No foot deformation or wear simulation.",
+      "orientationExposure": "Ordinary dry balcony storage/use. Upper strap and sole edges receive sun/sky; tread is sheltered/contact-facing.",
+      "agingCausality": "No arbitrary mud, discoloration, disaster cue or baked contact shadow. Wear/polish must follow later placement and usage history.",
+      "geometryVsMaterial": "Sole thickness, straps, anchors, heel lips and tread pods are geometry. Fine foam/molding grain is material."
+    },
+    {
+      "id": "EnamelWashBasin280",
+      "manufacture": "Assumed press-formed thin steel basin with opaque enamel coating and a physically raised rolled rim accent. The coating is treated optically as a dielectric rather than bare metal.",
+      "dimensionsMm": {"outerDiameter": 287, "height": 64.5, "nominalSheetPlusEnamelThickness": 1.5},
+      "mounting": "Free-standing on three shallow base feet, lowest bearing point y=0.",
+      "interfaces": "Outer and inner bowl skins are a single closed shell. Raised rim accent is a separate closed surface seated around the lip.",
+      "orientationExposure": "Open top exposed to sun/sky and dust; underside and base feet sheltered.",
+      "agingCausality": "Dry intact maintained state. No enamel chips, rust, water rings or soap residue until scene history supports them.",
+      "geometryVsMaterial": "Bowl wall thickness, lip and feet are geometry. Enamel gloss/microorange-peel is material."
+    },
+    {
+      "id": "MosquitoCoilTray140",
+      "manufacture": "Assumed shallow stamped steel tray with raised centre hub and support tabs. Separate dry compressed-fibre spiral coil is supported above the tray; no smoke, ember, ash or ignition is baked into geometry/materials.",
+      "dimensionsMm": {"trayOuterDiameter": 152, "coilOuterDiameter": 116, "coilCrossSectionDiameter": 4.4, "coilTurns": 4.4},
+      "mounting": "Free-standing tray at y=0, static unlit coil pose.",
+      "interfaces": "Coil clears the tray and rests near the support hub/fork. Exhaustive contact mechanics and ash fall are not verified.",
+      "orientationExposure": "Tray top and coil are open to exterior air; underside sheltered.",
+      "agingCausality": "Unlit dry reference with intact steel and clean plant-fibre coil. Oxidation/ash/smoke staining require later causal state.",
+      "geometryVsMaterial": "Stamped tray, hub, support tabs/fork and round spiral cross-section are geometry. Fine steel and fibre granularity is material."
+    }
+  ],
+  "materials": [
+    {"id": "SkyBlueEVA", "albedoSRGB": [0.18,0.39,0.56], "roughness": 0.62, "metallic": 0, "specularF0": 0.04, "normalScale": 0, "wetness": 0, "microstructure": "subtle molded-foam/base-color and roughness variation only", "uvAging": "none baked", "angularResponse": "dielectric Fresnel; no painted highlight"},
+    {"id": "OffWhiteEnamel", "albedoSRGB": [0.78,0.77,0.70], "roughness": 0.31, "metallic": 0, "specularF0": 0.04, "normalScale": 0, "wetness": 0, "microstructure": "subtle enamel roughness variation only", "uvAging": "none baked", "angularResponse": "dielectric coated-surface response; no bare steel claim"},
+    {"id": "BlueEnamel", "albedoSRGB": [0.08,0.19,0.36], "roughness": 0.28, "metallic": 0, "specularF0": 0.04, "normalScale": 0, "wetness": 0, "microstructure": "subtle enamel roughness variation only", "uvAging": "none baked", "angularResponse": "dielectric coated-surface response"},
+    {"id": "DarkSteel", "albedoSRGB": [0.20,0.21,0.22], "roughness": 0.45, "metallic": 1, "specularF0": null, "normalScale": 0, "wetness": 0, "microstructure": "fine steel roughness proxy; no baked reflection", "uvAging": "none baked", "angularResponse": "conductor response from base reflectance"},
+    {"id": "CoilGreen", "albedoSRGB": [0.20,0.34,0.12], "roughness": 0.88, "metallic": 0, "specularF0": 0.04, "normalScale": 0, "wetness": 0, "microstructure": "dry compressed plant-fibre proxy", "uvAging": "none baked", "angularResponse": "dielectric Fresnel; unlit"}
+  ],
+  "lodPolicy": "MASTER and LOD0/1/2/3 are separate exports. All principal manufactured components remain present while angular/path sampling and tread count reduce. No Unity LODGroup execution claim.",
+  "externalVerification": {"geometryReportSHA256": "9d339a5bfa97fefdc2b5f2a95b45e3deaf6c070a5a846da72ff07a0dbba326bc", "checks": ["finite vertices/normals","no degenerate faces","closed welded component surfaces","consistent winding and positive volume","edge incidence exactly two","GLB triangle/bounds roundtrip","OBJ triangle roundtrip","strict LOD triangle reduction"], "diagnosticPreview": "actual mesh geometry only, non-Unity, no Visual Fidelity points"},
+  "unityVerification": {"compile": false, "import": false, "render": false, "temporalLod": false, "realTimePerformance": false},
+  "visualFidelity": {"status": "UNSCORED_UNTIL_REAL_4K_RENDER", "score": null, "pass": false, "pointsAwarded": 0}
+}

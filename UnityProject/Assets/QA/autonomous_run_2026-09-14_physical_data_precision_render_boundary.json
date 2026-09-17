@@ -1,0 +1,103 @@
+{
+  "schemaVersion": "1.0.0",
+  "runId": "2026-09-14_physical_data_precision_render_boundary",
+  "branch": "gpt/unity-migration",
+  "startHead": "45fb6acab4cdef12896dc8f724abbd043abb0eb4",
+  "objective": "Increase implementation readiness for the 100-point Visual Fidelity Gate by making subtle physical-data import precision a render-boundary invariant for both reflection probes and formal still/temporal evidence.",
+  "observedGap": {
+    "source": "Facade macro, balcony, ground, foliage and apartment-detail import-precision gates independently repaired during preparation and failed closed on QA4K/QATemporal/QAPreparedTemporal camera pre-cull, but there was no aggregate read-only boundary proving the same protected texture-import state before Built-in reflection-probe rendering.",
+    "risk": "A reflection cubemap can encode one normal/roughness/macro-field import state and the final camera a later repaired state. That undermines material/reflection coherence even if the final MainCamera pre-cull passes. The risk is strongest for subtle normal/smoothness fields and the low-amplitude facade macro signal.",
+    "whyPrioritized": "It closes a cross-domain evidence-integrity hole affecting Material/PBR, Lighting/Reflections, Texture/Microdetail and Temporal stability without inventing new scene content or awarding unobserved visual points."
+  },
+  "changes": [
+    {
+      "commit": "7cc670eb1565a4a167ffd8c9846a29498f5af20f",
+      "file": "UnityProject/Assets/QA/physical_data_import_precision_bundle_contract.json",
+      "summary": "Added a machine-readable aggregate contract binding five protected texture domains to read-only reflection and formal-camera render boundaries."
+    },
+    {
+      "commit": "429bd50011dbe60d4c2dcd3c67f022e1f7be8a66",
+      "file": "UnityProject/Assets/Editor/QualityBlockPhysicalDataImportPrecisionBundleQA.cs",
+      "summary": "Added aggregate preparation and read-only validation, plus fail-closed Camera.onPreCull validation for CameraType.Reflection and QA4K/QATemporal/QAPreparedTemporal targets."
+    }
+  ],
+  "protectedDomains": [
+    "facade_macro",
+    "balcony_microtexture",
+    "ground_microtexture",
+    "foliage_microtexture",
+    "detail_material_microtexture"
+  ],
+  "renderBoundaryBehavior": {
+    "reflectionCameraType": "Reflection",
+    "formalTargets": [
+      "QA4K_*",
+      "QATemporal_*",
+      "QAPreparedTemporal_*"
+    ],
+    "reflectionPreCull": "READ_ONLY_FAIL_CLOSED",
+    "formalPreCull": "READ_ONLY_FAIL_CLOSED",
+    "repairDuringRenderCallback": false,
+    "manualPreparationEntryPoint": "QualityBlockPhysicalDataImportPrecisionBundleQA.ApplyAllAndValidate"
+  },
+  "verification": {
+    "githubCompareAfterSubstantiveChanges": {
+      "base": "45fb6acab4cdef12896dc8f724abbd043abb0eb4",
+      "head": "429bd50011dbe60d4c2dcd3c67f022e1f7be8a66",
+      "status": "ahead",
+      "aheadBy": 2,
+      "behindBy": 0,
+      "mergeBase": "45fb6acab4cdef12896dc8f724abbd043abb0eb4",
+      "mergeBaseUnchanged": true,
+      "changedPaths": [
+        "UnityProject/Assets/Editor/QualityBlockPhysicalDataImportPrecisionBundleQA.cs",
+        "UnityProject/Assets/QA/physical_data_import_precision_bundle_contract.json"
+      ]
+    },
+    "commitStatusContextsAtSubstantiveHead": 0,
+    "workflowRunsAtSubstantiveHead": 0,
+    "unity6000_3_0f1Compile": "NOT_VERIFIED_NO_RUNNER",
+    "unityReflectionCameraCallback": "NOT_VERIFIED_NO_RUNNER",
+    "unityRuntime": "NOT_VERIFIED_NO_RUNNER",
+    "native4KRenderedEvidence": "NOT_AVAILABLE",
+    "godotModified": false,
+    "baseMerged": false,
+    "excludedThemesIntroduced": false
+  },
+  "failureInjectionForNextRunner": [
+    "Regress one protected normal/smoothness or facade-macro texture to block compression and require reflection-camera pre-cull failure before cubemap evidence is accepted.",
+    "Enable a Standalone platform override on one protected texture and require reflection-camera pre-cull failure.",
+    "Disable mipmaps or reduce anisotropy on one protected texture and require formal camera pre-cull failure.",
+    "Change one protected normal away from NormalMap and require reflection/formal boundary failure.",
+    "Remove smoothness input alpha on one protected mask and require reflection/formal boundary failure.",
+    "Render synchronized probes from a clean state, mutate one protected importer before QA4K capture, and require the final formal boundary to fail rather than accepting stale probe/material coherence."
+  ],
+  "scores": {
+    "implementationReadiness": 93,
+    "implementationReadinessMax": 100,
+    "visualFidelity": "UNSCORED_UNTIL_REAL_4K_RENDER",
+    "visualFidelityPointsAwardedThisRun": 0,
+    "visualPassClaimed": false,
+    "expectedImpactNotAwarded": {
+      "Geometry & construction fidelity": "none",
+      "Material/PBR physical plausibility": "medium-large",
+      "Lighting/shadows/reflections": "medium",
+      "Texture/microdetail/texel fidelity": "medium-large",
+      "Weathering/context causality": "none",
+      "Vegetation/natural complexity": "small-medium",
+      "Period accuracy/scene authenticity": "none",
+      "Cinematic image quality/composition/color/exposure": "small",
+      "Temporal/LOD/aliasing stability": "medium"
+    }
+  },
+  "nextBlocker": "A real Unity 6000.3.0f1 runner or fresh screenshots. When one appears, stop speculative expansion, prove CameraType.Reflection callbacks enforce the bundle with the listed failure injections, then run synchronized reflection probes and fresh 3840x2160 frontal/oblique/grazing plus 100% crops and temporal evidence. Score only actual rendered pixels.",
+  "constraints": {
+    "preserveGodot": true,
+    "neverMergeBaseWithoutExplicitApproval": true,
+    "excludedThemes": [
+      "earthquake",
+      "disaster",
+      "reconstruction"
+    ]
+  }
+}

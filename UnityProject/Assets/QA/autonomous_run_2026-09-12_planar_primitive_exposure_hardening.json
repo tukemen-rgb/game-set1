@@ -1,0 +1,76 @@
+{
+  "schemaVersion": "1.0",
+  "runDate": "2026-09-12",
+  "branch": "gpt/unity-migration",
+  "startingHead": "d3c04568c75ec3afb70edf113c8f78d1e51c85c7",
+  "implementationHeadBeforeRunRecord": "07366207a1b8579a5460d527c2ac9adef3879bbe",
+  "objective": "Close a source-side critical-defect enforcement gap where visibly significant untouched Unity stock Plane/Quad meshes could evade the benchmark primitive-placeholder preflight even though the canonical Visual Fidelity Gate treats visible primitive-placeholder geometry as automatic FAIL.",
+  "finding": {
+    "problem": "QualityBlockBenchmarkPrimitiveExposureQA screened Cube, Cylinder, Sphere and Capsule but explicitly exempted the built-in Plane and Quad. The exemption was broader than the canonical critical-defect intent: planar topology can be legitimate, but a large untouched stock Plane/Quad in hero, oblique or grazing framing is still primitive-placeholder risk.",
+    "whyItMatters": "A stock planar primitive could have entered reflection, still and temporal evidence without triggering the integrated source preflight. This could falsely weaken enforcement of the geometry/construction category and the automatic visible_primitive_placeholder failure condition.",
+    "decision": "Keep physically justified planar topology legal, but require legitimate thin carriers to use purpose-built authored/generated meshes with applicable construction/material metadata. Screen untouched Unity Plane and Quad under the same exact projected-bound thresholds as the other stock primitives."
+  },
+  "implementation": [
+    "Expanded the stock primitive mesh set to Cube, Cylinder, Sphere, Capsule, Plane and Quad.",
+    "Preserved the exact QualityBlock4KCapture hero/oblique/grazing framing lock, 3840x2160 source projection, near-plane fail-closed behavior and existing pixel thresholds.",
+    "Changed the contract critical-defect reference to the canonical Visual Fidelity Gate ID visible_primitive_placeholder.",
+    "Added an explicit machine-readable screenStockPlaneAndQuad=true policy while stating that planar topology itself is not forbidden.",
+    "Updated corrective actions so legitimate planar carriers must use purpose-built authored/generated meshes with applicable construction/material metadata instead of evading the gate through rename/hide/shrink/threshold exceptions.",
+    "Versioned the primitive exposure contract/runtime report shape to 1.1 and renamed the report count to inspectedStockPrimitiveRendererCount.",
+    "Retained visualFidelityPointsAwarded=0 and criticalDefectClearedBySourcePass=false; source preflight cannot claim rendered quality."
+  ],
+  "commits": [
+    {
+      "sha": "34733631154e7a60b4db8a748cfb71bfe716bda8",
+      "message": "qa: screen stock planar primitives in benchmark views"
+    },
+    {
+      "sha": "07366207a1b8579a5460d527c2ac9adef3879bbe",
+      "message": "qa: harden primitive exposure contract for planar stock meshes"
+    }
+  ],
+  "changedFilesBeforeRunRecord": [
+    "UnityProject/Assets/Editor/QualityBlockBenchmarkPrimitiveExposureQA.cs",
+    "UnityProject/Assets/QA/benchmark_primitive_exposure_contract.json"
+  ],
+  "verification": {
+    "sourceInspection": "PASS",
+    "contractSourceTokenAgreement": "PASS_BY_STATIC_INSPECTION",
+    "exactBenchmarkCameraLockPreserved": true,
+    "canonicalCriticalDefectIdUsed": "visible_primitive_placeholder",
+    "stockPrimitiveSet": ["Cube", "Cylinder", "Sphere", "Capsule", "Plane", "Quad"],
+    "planarTopologyStillAllowedViaPurposeBuiltMeshes": true,
+    "startToImplementationHeadCompare": "2 commits ahead / 0 behind; merge base remains startingHead; only two UnityProject files changed before this run record",
+    "githubActionsWorkflowRunsAtStart": 0,
+    "commitStatusContextsAtStart": 0,
+    "unity6000Compile": "PENDING_RUNTIME",
+    "unitySceneExecution": "PENDING_RUNTIME",
+    "native3840x2160Render": "PENDING_RUNTIME",
+    "actualPixelReview": "PENDING_RUNTIME"
+  },
+  "scores": {
+    "implementationReadiness": 93,
+    "implementationReadinessOutOf": 100,
+    "visualFidelityStatus": "UNSCORED_UNTIL_REAL_4K_RENDER",
+    "visualFidelityPointsAwardedThisRun": 0,
+    "visualFidelityPassClaimed": false
+  },
+  "expectedVisualScoreImpact": {
+    "geometryConstruction": "Enforcement improvement only: reduces risk that an obvious stock planar placeholder reaches formal evidence. No Geometry points awarded without rendered pixels.",
+    "criticalDefect": "Strengthens automatic FAIL coverage for visible_primitive_placeholder across all six Unity built-in primitive mesh types.",
+    "otherCategories": "No visual points claimed; this run intentionally prioritizes gate integrity over speculative art expansion while Unity runtime remains unavailable."
+  },
+  "constraints": {
+    "godotTouched": false,
+    "baseMerged": false,
+    "forbiddenDisasterThemesAdded": false,
+    "newVisualFidelityPointsWithoutRender": false
+  },
+  "nextBlocker": "Unity 6000.3.0f1 Runner or equivalent real runtime capable of executing the prepared scene and producing native 3840x2160 evidence.",
+  "nextActionWhenRuntimeAppears": [
+    "Stop speculative source expansion.",
+    "Compile/import the current branch and run the integrated benchmark primitive exposure preflight.",
+    "If a visible stock Plane/Quad or other stock primitive violation is found, reconstruct/replace it with physically justified authored/generated geometry rather than weakening the gate.",
+    "Run the complete native-4K review packet, capture hero/oblique/grazing at 3840x2160 plus 100% crops, and score only from actual rendered evidence."
+  ]
+}

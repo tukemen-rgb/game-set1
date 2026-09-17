@@ -1,0 +1,55 @@
+{
+  "runId": "2026_09_16_window_install_details",
+  "startHead": "4f5611d714e439ae0dca0d240e2b25452256b964",
+  "branch": "gpt/unity-migration",
+  "runnerOrWorkflowRunsObservedAtStart": 0,
+  "ownerInspection": [
+    "UnityProject/Tools/generate_balcony_window_set.py",
+    "BalconyWindowSet inventory/metadata",
+    "prior AC installed review reused as immutable diagnostic input"
+  ],
+  "newAssetSets": 3,
+  "actualGlbCount": 15,
+  "actualObjCount": 15,
+  "diagnosticReviewGlbCount": 2,
+  "triangles": {
+    "WindowPerimeterSealJoint1840x1840": {"MASTER":20800,"LOD0":8672,"LOD1":3680,"LOD2":1984,"LOD3":992},
+    "WindowHeadDripCap1900": {"MASTER":872,"LOD0":632,"LOD1":472,"LOD2":392,"LOD3":312},
+    "WindowSillWeepHoodPair": {"MASTER":2840,"LOD0":872,"LOD1":360,"LOD2":280,"LOD3":120}
+  },
+  "detailReview": {"path":"BalconyWindowInstallDetailReview_LOD0.glb","triangles":20088,"geometryCount":20},
+  "facadeReview": {"path":"BalconyFacadeWindowACReview_LOD0.glb","triangles":60260,"geometryCount":161,"formalBenchmarkSceneChanged":false,"unityVerified":false},
+  "verification": [
+    "finite vertices/normals",
+    "nondegenerate faces",
+    "component watertightness",
+    "consistent winding",
+    "positive volume",
+    "edge incidence 2",
+    "GLB triangle roundtrip",
+    "OBJ triangle roundtrip",
+    "strict MASTER->LOD3 reduction",
+    "repository compact geometry source separately rerun with matching per-LOD triangle counts"
+  ],
+  "notVerified": [
+    "Unity compile/import/render",
+    "3840x2160 benchmark and 100% crops",
+    "glass optics",
+    "full assembly collision/intersection",
+    "sealant aging in Unity",
+    "temporal LOD/shimmer/pop",
+    "target hardware performance"
+  ],
+  "materialsImplementedOutsideUnity": ["OffWhiteSealant","GrayBackerFoam","AnodizedAluminum","GalvanizedSteel","DarkPP","MineralResidue"],
+  "visualFidelity": {"score":null,"pass":false,"pointsAwarded":0,"expectedImpact":"Window-wall installation credibility, drainage causality, high-screen-space edge detail; no scored Unity pixels."},
+  "implementationReadiness": {"lastRecordedScore":93,"recomputed":false},
+  "executedFullExporterSHA256": "5e90186f1c0fdd40648463bc93c8a80595f182963c8c8aa5a12a063ef8873ac9",
+  "repositoryAuthoringSourceGitBlobSHA": "3a951aecb469784f42ad25f914e56b8f628720af",
+  "sourceRelationship": "Repository source was separately executed and matches the produced geometry triangle budgets, but is a compact GLB-only authoring source. The conversation package contains the exact fuller exporter used for OBJ/PBR/review outputs.",
+  "failureCorrections": ["Initial weep-hood LOD counts were equal across two transitions. Added near/mid clip-screw detail, removed far residue, reran all levels and passed strict reduction."],
+  "godotChanges": 0,
+  "baseMerge": false,
+  "formalBenchmarkSceneChanged": false,
+  "excludedThemePresent": false,
+  "nextTarget": "If no Unity render appears, add causal track/sill grime as material masks and inspect balcony handrail/parapet owners before authoring a major structural asset."
+}

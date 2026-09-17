@@ -1,0 +1,28 @@
+{
+  "schema":1,
+  "updated":"2026-09-17",
+  "ownerInspection":{
+    "morningGlory":"existing MorningGloryTrellisPlant repaired source reused and materially refined; no duplicate plant owner",
+    "potSaucer":"existing TerracottaPot240/TerracottaSaucer214 reused unchanged",
+    "hero":"existing SummerMorningGlory integrated hero used as carrier; old planter removed before refined replacement"
+  },
+  "newOrImproved":[
+    {"id":"MorningGloryTrellisPlant_BotanicalRefinement","triangles":{"MASTER":65208,"LOD0":39184,"LOD1":22516,"LOD2":8110,"LOD3":3460},"actualGLBAndOBJ":true,"unityVerified":false},
+    {"id":"BalconyMorningGloryBotanicalPlanter","triangles":{"MASTER":85176,"LOD0":49168,"LOD1":27508,"LOD2":10606,"LOD3":4708},"actualGLB":true,"unityVerified":false},
+    {"id":"BalconyExteriorHeroSummerMorningGloryBotanical3600","triangles":{"MASTER":266636,"LOD0":151100,"LOD1":76452,"LOD2":36062,"LOD3":20340},"actualGLB":true,"formalBenchmarkSceneChanged":false,"unityVerified":false}
+  ],
+  "pendingAuthoring":[
+    {
+      "id":"MorningGloryTrellisPlant_CanopyDistributionRefinement",
+      "extends":"MorningGloryTrellisPlant_BotanicalRefinement",
+      "status":"SOURCE_AUTHORED_PENDING_RUNTIME_EXECUTION",
+      "purpose":"Break the remaining stepped/horizontal leaf repetition with attachment-preserving, height/exposure-driven orientation and scale variation.",
+      "source":"UnityProject/Tools/refine_morning_glory_canopy_distribution.py",
+      "actualGeneratedMeshesThisRun":0,
+      "measuredTrianglesThisRun":null,
+      "coloredPreviewThisRun":false,
+      "unityVerified":false
+    }
+  ],
+  "nextProductionTarget":"When the geometry runtime is available, execute the canopy-distribution source on all five botanical LODs, feed its interface-compatible output to the existing botanical integration owner, validate actual meshes/LOD/clearances, then generate all-face material-colored whole and closeup previews. Use real Unity pixels first if they appear."
+}

@@ -1,0 +1,33 @@
+{
+  "schemaVersion": "1.0",
+  "purpose": "Persist the formal sash-latch evidence epoch across Unity script/assembly reloads so replacement/deleted generated lock geometry cannot be accepted as a fresh reflection baseline merely because static fields reset. The first clean-session baseline may prepare a genuinely missing generated latch through the canonical parent builder. After epoch arm, scene GUID, authored/fallback mode and the generated root stable GlobalObjectId are frozen and every reflection request/poll/completion/pre-still check is read-only. This is evidence-integrity infrastructure only and awards zero Visual Fidelity points.",
+  "scenePath": "Assets/Scenes/QualityBlock1990s.unity",
+  "parentConstructionContractPath": "Assets/QA/facade_sash_latch_contract.json",
+  "requirements": {
+    "prepareMissingGeneratedLatchOnlyBeforeFirstReflectionBaseline": true,
+    "freezeGeneratedRootGlobalObjectIdAfterFirstReflectionBaseline": true,
+    "persistEpochAcrossAssemblyReloadsWithSessionState": true,
+    "validateSceneGuidAcrossEpoch": true,
+    "authoredFallbackModeMustRemainStableAfterEpochArm": true,
+    "validationMustBeReadOnlyAfterEpochArm": true,
+    "validateParentConstructionBeforeEveryReflectionLightingFingerprint": true,
+    "rootReplacementOrDeletionMustAbortEvidence": true,
+    "actualRenderRequiredForVisualPoints": true
+  },
+  "criticalDefectRisksReduced": [
+    "hero_geometry_intersection",
+    "impossible_material_physics",
+    "visible_lod_pop",
+    "missing_construction_material_metadata"
+  ],
+  "visualFidelityPointsAwarded": 0,
+  "runtimeRenderVerified": false,
+  "limitations": [
+    "Stable root identity proves which persisted latch assembly entered the reflection evidence epoch; it does not prove that the reconstructed lock dimensions look proportionate in pixels.",
+    "The delegated parent validator proves 30 lock assemblies, canonical materials, metric UV payload, weathering metadata and four LOD levels; it cannot prove highlight smoothness, receiver contact, aliasing or repetition without rendered evidence.",
+    "SessionState survives script/assembly reloads only within the current Unity Editor session. A clean Editor restart is the conservative boundary for a new formal evidence epoch.",
+    "The binding deliberately rejects unsaved replacement roots that do not have a stable GlobalObjectId; temporary hierarchy state is not scoreable provenance.",
+    "The binding never repairs a deleted/replaced latch after epoch arm. Corrective geometry work requires a clean new evidence epoch and fresh reflection capture.",
+    "Unity 6000.3.0f1 compilation/runtime behavior and actual native 3840x2160 latch appearance remain PENDING_UNITY_RUNTIME; no Visual Fidelity PASS may be inferred from this contract."
+  ]
+}

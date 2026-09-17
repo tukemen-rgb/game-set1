@@ -1,0 +1,92 @@
+{
+  "schemaVersion": "1.0.0",
+  "date": "2026-09-14",
+  "branch": "gpt/unity-migration",
+  "startingHead": "88e576527af0adf1ffc52489b2c9870010bceaf3",
+  "headBeforeRunRecord": "44118608c88dcdfc53a8a17135941efe23c061de",
+  "substantiveCommits": [
+    {
+      "sha": "bde1fc6cedc6b826515741c14b624fffb5f88988",
+      "message": "Bind construction metadata to sealed 4K evidence"
+    },
+    {
+      "sha": "44118608c88dcdfc53a8a17135941efe23c061de",
+      "message": "Add construction evidence binding contract"
+    }
+  ],
+  "problem": "The existing strict render receipt bound native 4K pixels/crops to a capture session and the scoring path revalidated current construction/material metadata, but the exact persisted scene and metadata-contract bytes were not cryptographically tied to the same capture session. Metadata edited after capture could therefore be current-state-valid without proving it was the metadata state used by the rendered candidate.",
+  "implementation": {
+    "qaSource": "Assets/Editor/QualityBlockConstructionMaterialEvidenceBindingQA.cs",
+    "contract": "Assets/QA/construction_material_evidence_binding_contract.json",
+    "bindingReceiptRuntimePath": "Assets/QA/construction_material_capture_binding.json",
+    "renderReceiptRuntimePath": "Assets/QA/render_capture_receipt.json",
+    "protectedScene": "Assets/Scenes/QualityBlock1990s.unity",
+    "coverageContract": "Assets/QA/scene_metadata_coverage_contract.json",
+    "materialRegistry": "Assets/QA/material_construction_lookdev.json",
+    "coverageExpansion": "All domains[].contractPaths from scene_metadata_coverage_contract.json are included, de-duplicated and ordinal-sorted.",
+    "hashing": "SHA-256 per exact file byte stream plus deterministic SHA-256 of canonical path/file-hash pairs.",
+    "captureIdentity": "Binding stores captureSessionId, exact render receipt SHA-256 and capture manifest SHA-256.",
+    "temporalSafety": "A source whose filesystem last-write time is later than render-receipt sealedUtc plus 2 seconds is rejected, preventing post-capture metadata from being retroactively attached to old pixels.",
+    "mutationResponse": "Editor asset-postprocess + periodic guard invalidates the authoritative render receipt and binding if any bound scene/metadata source mutates. Rendered PNGs are preserved for diagnosis but become unscoreable through the existing provenance gate.",
+    "freshAutoBind": "A newly imported real render receipt can auto-bind only within 10 minutes, only with the canonical saved, non-dirty benchmark scene open, and only after current scene metadata coverage validation passes.",
+    "visualPointsAwarded": 0
+  },
+  "verification": {
+    "repositoryCompareBeforeRunRecord": {
+      "base": "88e576527af0adf1ffc52489b2c9870010bceaf3",
+      "head": "44118608c88dcdfc53a8a17135941efe23c061de",
+      "ahead": 2,
+      "behind": 0,
+      "mergeBase": "88e576527af0adf1ffc52489b2c9870010bceaf3",
+      "changedFiles": [
+        "UnityProject/Assets/Editor/QualityBlockConstructionMaterialEvidenceBindingQA.cs",
+        "UnityProject/Assets/QA/construction_material_evidence_binding_contract.json"
+      ]
+    },
+    "workflowRunsAtHeadBeforeRunRecord": 0,
+    "commitStatusContextsAtHeadBeforeRunRecord": 0,
+    "unityCompile": "PENDING_NO_RUNNER",
+    "unityRuntime": "PENDING_NO_RUNNER",
+    "actual4KRender": "PENDING_NO_RUNNER",
+    "failureInjectionRuntime": "PENDING_NO_RUNNER",
+    "staticChecks": [
+      "scene metadata coverage contract targets Assets/Scenes/QualityBlock1990s.unity",
+      "coverage critical defect remains missing_construction_material_metadata",
+      "material registry path remains Assets/QA/material_construction_lookdev.json",
+      "render receipt path matches existing provenance QA: Assets/QA/render_capture_receipt.json",
+      "new source/contract are Unity-only paths"
+    ]
+  },
+  "failureInjectionPlan": [
+    "capture and bind, then edit a linked contract: render receipt must be removed while PNGs remain",
+    "capture and bind, then save a changed QualityBlock1990s.unity: render receipt must be removed",
+    "mutate render_capture_receipt.json or captureSessionId: binding validation must fail",
+    "write metadata after render receipt sealedUtc and attempt manual binding: binding must reject it",
+    "delete or replace one coverage contract path: source-set/hash validation must fail",
+    "import an old unbound receipt: automatic guard must reject/invalidate it rather than retroactively blessing current metadata"
+  ],
+  "implementationReadiness": {
+    "score": 93,
+    "outOf": 100,
+    "reason": "Evidence admissibility is stronger, but no Unity 6000.3.0f1 compile/runtime execution exists at this head, so readiness is not increased."
+  },
+  "visualFidelity": {
+    "status": "UNSCORED_UNTIL_REAL_4K_RENDER",
+    "pointsAddedThisRun": 0,
+    "passClaimed": false,
+    "expectedImpactNotScore": {
+      "geometryConstruction": "medium evidence-integrity improvement",
+      "materialPbr": "medium evidence-integrity improvement",
+      "weatheringContextCausality": "medium evidence-integrity improvement",
+      "periodAccuracySceneAuthenticity": "small-to-medium evidence-integrity improvement",
+      "pixelAppearance": "none until a fresh real Unity render is observed"
+    }
+  },
+  "constraints": {
+    "godotPreserved": true,
+    "baseMerged": false,
+    "forbiddenThemeAdded": false,
+    "disasterEarthquakeReconstructionContent": "excluded"
+  },
+  "nextBlocker": "A real Unity 6000.3.0f1 runner is required to compile the new editor QA, execute the failure-injection plan, then produce fresh 3840x2160 frontal/oblique/grazing evidence and 100% crops. No Visual Fidelity points may be awarded before that render evidence exists."
+}

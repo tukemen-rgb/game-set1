@@ -1,0 +1,47 @@
+{
+  "schemaVersion": "1.0",
+  "status": "IMPLEMENTATION_READY_RENDER_PENDING",
+  "assemblyId": "apartment_sliding_sash_sill_tray_front_edge_break",
+  "manufacture": "The existing fallback sill is treated as an extruded/anodized aluminum profile. The original generated tray used mathematically sharp front corners; this refinement replaces only the two weather-facing front corners with a small physical edge break while preserving the established tray envelope and lower-frame/drainage interfaces. Hydro extrusion guidance notes that razor-sharp corners are not achievable for custom extrusions and rounded corners are more practical; the exact 2 mm benchmark break here is a conservative reconstruction assumption, not a dimension taken from an identified Japanese sash product.",
+  "dimensionsThickness": "Inherited sill width 2.460 m, tray depth 0.195 m and approximately 20 mm front thickness. Added front-top and front-bottom edge break: 0.002 m measured as a profile chamfer along the adjoining faces. Six-point convex tray profile replaces the previous four-point profile while preserving outer front/back/top/bottom extrema. No drain-slot, skirt, drip-nose or frame-seat dimension changes.",
+  "materialsFinish": "No new material is introduced. The refined faces inherit canonical MAT_AgedAluminum and its anodized-aluminum mapped response: metallic 0.82-0.94, roughness 0.43-0.55, tangent-space normal microstructure, dry wetness=0, no emission and no painted/baked edge highlight.",
+  "mounting": "The tray remains in the same SillTray transform under each of 30 facade sill assemblies. The refinement modifies the persisted phase-specific tray mesh assets before the formal reflection epoch is armed; no new renderer, collider, offset shell or coplanar overlay is added.",
+  "interfacesGapsSeals": "The 2 mm break is confined to the exposed front-top and front-bottom tray corners. The back interface to the lower sash frame, the 8 mm controlled frame seat, the approximately 23 mm recess to the segmented skirt, the two 50 mm physical drain openings and the continuous drip nose are preserved. This avoids solving a shading problem by changing drainage gaps or adding fake dark geometry.",
+  "orientationExposure": "The front corners face the exterior +Z weather side. The upper break receives midsummer sun/sky at grazing angles and should broaden the highlight over a small physical face; the lower break remains more occluded. Final acceptability must be judged from actual frontal, oblique and grazing-light pixels.",
+  "aging": "No new stain source is invented. The edge break inherits the tray's rain/UV exposure and anodized oxide state; runoff, dust and UV causality stay controlled by the parent sill metadata. Ferrous rust remains forbidden on the aluminum tray.",
+  "geometryVsMaterial": "The macroscopic 2 mm highlight-producing edge break is real geometry. Extrusion grain, oxide microtexture, hairline scratches, roughness variation and tangent-space micro-normal response remain material detail. Specular streaks, Fresnel rims and drain darkness may not be painted into albedo.",
+  "lodPolicy": "LOD0 tray geometry is refined first. The already-referenced combined LOD1/LOD2/LOD3 proxy asset for each used UV phase is then rebuilt from the complete five-piece LOD0 sill assembly, so the same tray edge-break silhouette/highlight geometry survives the existing animated cross-fades instead of appearing only at LOD0. Runtime pop/shimmer clearance still requires native-4K temporal evidence.",
+  "weatheringCausality": "Because geometry and material identity are unchanged apart from the manufactured edge break, existing RainLedge, DrainRunoff and UVExposure metadata remains authoritative. No extra grime mask is applied merely to make the chamfer visible.",
+  "lookdevBrief": "Frontal 100% crop: the sill must not read as a razor-cut CG slab and the 2 mm break must not become a decorative bright line. Oblique construction-depth crop: confirm the lower sash/tray seat and drain recess are unchanged. Grazing sash-rail crop: seek a narrow but finite physically moving anodized highlight across the front edge, with no painted rim or faceting. Temporal oblique: LOD0->1->2->3 must retain the same front-edge envelope without highlight centroid snap or shimmer.",
+  "sourceBasis": "Hydro custom-extrusion design guidance states that razor-sharp extrusion corners cannot be achieved and rounded corners are more practical. That manufacturing principle justifies removing the mathematical knife edge. It does not establish a historic product radius; therefore 2 mm is explicitly an authored benchmark assumption chosen to be visible only at close/grazing evidence scale while preserving the existing sill dimensions.",
+  "geometry": {
+    "edgeBreakM": 0.002,
+    "sillWidthM": 2.46,
+    "profilePointCount": 6,
+    "preserveOuterEnvelope": true,
+    "preserveDrainOpeningTopology": true
+  },
+  "material": {
+    "inheritCanonicalAgedAluminum": true,
+    "albedo": "Inherited MAT_AgedAluminum base color approximately (0.55, 0.57, 0.56); no illumination or edge highlight baked into base color.",
+    "roughness": "Inherited mapped roughness 0.43-0.55; the small physical face should broaden grazing response rather than act as a mirror strip.",
+    "metallicSpecular": "Inherited metallic 0.82-0.94 Standard metallic workflow; no dielectric fake rim and no impossible >1 response.",
+    "normalScale": "Inherited _BumpScale=1.0 with generated anodized source-profile normalStrength=0.52; macro edge break is not delegated to the normal map.",
+    "microstructure": "Inherited fine extrusion-oriented grain plus secondary irregularity with trilinear mipmapping/aniso from the canonical detail-material contract.",
+    "wetness": 0.0,
+    "uvAging": "Existing eight deterministic metric-UV phases at 0.017 m increments are preserved when tray meshes are rebuilt.",
+    "angularFresnelResponse": "Grazing response must arise from the Standard metallic BRDF, physical 2 mm face orientation and reflection environment; no baked or painted Fresnel line."
+  },
+  "qa": {
+    "phaseBins": 8,
+    "phaseStepM": 0.017,
+    "rebuildCombinedLodProxyFromRefinedLod0": true,
+    "freezeMeshFingerprintAfterFirstReflectionBaseline": true,
+    "postArmValidationReadOnly": true,
+    "automaticVisualPoints": 0,
+    "renderVerificationPending": true
+  },
+  "implementationReadinessScore": 93,
+  "visualFidelityStatus": "UNSCORED_UNTIL_REAL_4K_RENDER",
+  "runtimeRenderVerified": false
+}

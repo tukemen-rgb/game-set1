@@ -1,0 +1,19 @@
+{
+  "schema":1,
+  "updated":"2026-09-16",
+  "isInventoryDelta":true,
+  "ownerInspection":{
+    "recursiveBranchTreeKeywords":["soffit","ceiling","eave","gutter"],
+    "matchingExistingSoffitOwnerFound":false,
+    "existingRelatedOwner":"Assets/Art/BalconyLaundryHardware/BalconyLaundryHardware.metadata.json",
+    "decision":"Create one BalconySoffitSet; do not duplicate laundry brackets/poles."
+  },
+  "newAssets":[
+    {"id":"PaintedFiberCementSoffit3600x1200","masterTriangles":5040,"lodTriangles":[2384,712,328,72],"actualOBJGLBExports":true,"unityVerified":false},
+    {"id":"BalconySoffitAccessHatch450","masterTriangles":1080,"lodTriangles":[760,280,120,60],"actualOBJGLBExports":true,"unityVerified":false},
+    {"id":"SoffitDripEdgeFlashing3600","masterTriangles":3528,"lodTriangles":[1608,528,48,36],"actualOBJGLBExports":true,"unityVerified":false}
+  ],
+  "reviewIntegrations":[{"id":"BalconySoffitInstalledReview_LOD0","triangles":4752,"geometryCount":14,"formalBenchmarkSceneChanged":false,"unityVerified":false}],
+  "productionDeltaThisRun":{"authoredAssetSets":3,"highDetailMasters":3,"runtimeLodSets":3,"standaloneGLB":15,"standaloneOBJ":15,"reviewGLB":1},
+  "nextProductionTarget":"Inspect rainwater/downpipe ownership, then produce drainage hardware or causal interface aging if Unity remains unavailable."
+}

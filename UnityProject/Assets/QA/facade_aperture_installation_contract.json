@@ -1,0 +1,115 @@
+{
+  "schemaVersion": "1.0.0",
+  "scenePath": "Assets/Scenes/QualityBlock1990s.unity",
+  "rootName": "DanchiFacadeApertureShell",
+  "assemblyId": "generated_rc_facade_sliding_sash_apertures",
+  "policy": "The generated apartment facade may not remain a solid opaque block behind transparent glazing. The load-bearing fallback shell must expose real window apertures in benchmark framing, keep the aluminum sash/glass stack inside those apertures, and model the perimeter interface as a manufactured frame-to-RC joint. Source conformance is implementation evidence only; it cannot clear a rendered critical defect or award Visual Fidelity points.",
+  "expectedApartmentWindowCount": 30,
+  "geometry": {
+    "buildingWidthM": 26.0,
+    "buildingHeightM": 13.2,
+    "buildingDepthM": 8.4,
+    "frontFacadePlaneZ": -7.3,
+    "frontShellDepthM": 0.22,
+    "bayPitchM": 4.15,
+    "floorPitchM": 2.55,
+    "roughOpeningWidthM": 2.4,
+    "roughOpeningHeightM": 1.8,
+    "frameOuterWidthM": 2.36,
+    "frameOuterHeightM": 1.76,
+    "perimeterClearanceEachSideM": 0.02,
+    "perimeterSealVisibleWidthM": 0.014,
+    "perimeterSealDepthM": 0.012,
+    "glassMustRemainBehindFacadeFrontPlane": true,
+    "glassMustRemainAheadOfFacadeShellBackPlane": true,
+    "mainBlockRendererMustBeDisabled": true,
+    "mainBlockColliderMayRemainForGameplay": true
+  },
+  "manufacture": "The fallback represents an RC apartment facade with repeated factory-made sliding aluminum sash assemblies installed into cast/formed rectangular rough openings. The exterior coating belongs to the concrete substrate; sash extrusions, glazing, EPDM/rubber seals and interior backing are separate manufactured systems rather than colors painted on one wall slab.",
+  "dimensionsThickness": "The generated main block is 26.0 m wide, 13.2 m high and 8.4 m deep. A 0.22 m front RC shell is reconstructed as wall/spandrel/pier pieces around thirty 2.40 x 1.80 m rough openings on 4.15 m bay and 2.55 m floor pitches. The existing generated sash outer frame is 2.36 x 1.76 m, leaving a modeled nominal 20 mm frame-to-opening clearance on each side. Seal geometry occupies 14 mm of that visible perimeter interface; dimensions are conservative modeling assumptions for this fallback, not claims for one historical manufacturer product.",
+  "materialsFinish": "Painted RC, aged/anodized aluminum sash, clear dielectric float glass, dark EPDM/rubber perimeter sealing and non-emissive interior backing remain separate material classes. The aperture shell reuses the facade two-scale RC PBR material; the perimeter joint reuses the matte dielectric window-rubber material. No highlight, shadow, sky reflection or sun streak may be painted into base albedo.",
+  "mounting": "RC wall pieces define the rough opening. The aluminum frame occupies the opening with a small perimeter installation gap; the perimeter seal is seated in that gap near the exterior plane. Sliding glass leaves remain on two slightly separated depth planes within/behind the sash extrusion, while interior backing remains deeper inside. The retained MainBlock collider may preserve gameplay collision, but its renderer must be disabled so it cannot optically fill the apertures.",
+  "interfacesGapsSeals": "Required interfaces are RC reveal -> installation clearance -> dark perimeter seal -> aluminum frame -> two sliding glazing planes -> interior backing. The rough opening must remain geometrically empty through the 0.22 m facade shell except for sash/seal/optical components; no coplanar opaque facade surface may cover the glazing. The 20 mm nominal perimeter clearance may not be closed by an opaque wall patch or widened into an implausible floating frame gap.",
+  "orientationExposure": "The apartment facade faces the benchmark exterior and receives coherent midsummer Japanese sun, sky fill and rain exposure. Rough-opening reveals and perimeter seals are more recessed than the broad facade, so they should carry lower direct UV and higher local grime/moisture retention; glazing and aluminum response must remain angle-dependent under hero, oblique and grazing views.",
+  "aging": "Ordinary long-term aging only: facade coating chalking and runoff, restrained aluminum oxidation/dulling, rubber UV fade/hardening, seal-edge grime and glass water spotting. Aging must be cause-based and may not imply disaster, reconstruction or structural failure.",
+  "geometryVsMaterial": "Rough opening depth, RC reveal, sash extrusion silhouette, sliding-leaf depth separation, perimeter joint/seal and sill/drip interfaces are geometry. Concrete aggregate/pores, coating grain, aluminum micro-scratch/oxidation, rubber matte grain, glass fine spotting and tiny dirt are material or microtexture. Lighting and Fresnel response are never encoded as albedo highlights.",
+  "lodPolicy": "LOD0 preserves the full aperture/reveal, sash depth, seals and both glazing planes. LOD1 may simplify small seal/extrusion bevels while preserving the opening void and sash silhouette. LOD2 may merge sub-frame microgeometry but may not close the opening or collapse the two-layer optical read. LOD3 may simplify distant detail only if the window remains visibly inset rather than returning to a painted wall rectangle. Any visible transition pop is a temporal critical defect.",
+  "materials": [
+    {
+      "id": "painted_rc_aperture_shell",
+      "albedo": "neutral warm gray, matching generated FacadeRC albedo around sRGB 0.63/0.62/0.58 with only material-color variation",
+      "roughness": "0.79-0.93 dry",
+      "metallicOrSpecular": "metallic 0.0; dielectric F0 approximately 0.04",
+      "normalScale": "two-scale facade normal response; primary aggregate/coat relief plus finer detail normal, both physically subordinate to silhouette geometry",
+      "microstructure": "paint/coating grain, pores and fine aggregate at centimeter-to-millimeter scale",
+      "wetness": "mostly dry midsummer baseline; localized runoff/ledge moisture only where causal",
+      "uvAging": "mild chalking/fade on sun-exposed broad faces; less direct UV inside reveals",
+      "angularFresnelResponse": "broad rough dielectric response with no metallic edge flash and no baked highlight"
+    },
+    {
+      "id": "aged_anodized_aluminum_sash",
+      "albedo": "muted gray aluminum/anodized finish without painted lighting",
+      "roughness": "approximately 0.55-0.70 depending on oxidation and handling",
+      "metallicOrSpecular": "restrained metallic response consistent with the existing scene material contract; no impossible mirror-like value",
+      "normalScale": "low-amplitude extrusion/handling micro-normal; machining/extrusion grain must not deform the silhouette",
+      "microstructure": "fine extrusion direction, oxidation haze and sparse handling scratches",
+      "wetness": "dry baseline with only causal rain/water-spot variation",
+      "uvAging": "finish dulling and slight color drift, not peeling structural damage",
+      "angularFresnelResponse": "grazing highlight strengthens physically with view/light angle; highlight must come from BRDF/reflections"
+    },
+    {
+      "id": "clear_float_glass",
+      "albedo": "near-colorless dielectric transmission/tint; interior color belongs to separate backing",
+      "roughness": "approximately 0.06-0.18 dry depending on surface spotting",
+      "metallicOrSpecular": "metallic 0.0; dielectric F0 approximately 0.04",
+      "normalScale": "essentially flat at macro scale; no fake wavy normal unless physically justified",
+      "microstructure": "very sparse water spots/dust only; no painted sky or key-light streak",
+      "wetness": "dry baseline; localized rain residue only",
+      "uvAging": "glass itself remains stable; dirt/seal interfaces age instead",
+      "angularFresnelResponse": "reflection increases toward grazing angle while transmission/interior visibility changes naturally"
+    },
+    {
+      "id": "epdm_perimeter_seal",
+      "albedo": "very dark neutral gray, approximately scene rubber sRGB 0.075-0.08",
+      "roughness": "approximately 0.75-0.90",
+      "metallicOrSpecular": "metallic 0.0; dielectric F0 approximately 0.04",
+      "normalScale": "0 to low-amplitude molded-rubber micro-normal; seal geometry carries the visible joint thickness",
+      "microstructure": "fine matte molded grain and accumulated edge grime at sub-centimeter scale",
+      "wetness": "normally dry; may retain a narrow darker moisture band after rain",
+      "uvAging": "slight fade/hardening and edge dust, not cracking severe enough to imply failure",
+      "angularFresnelResponse": "weak broad dielectric grazing response; never a painted bright rim"
+    }
+  ],
+  "lookdevIllustration": "Assets/QA/facade_window_aperture_lookdev.svg",
+  "qa": {
+    "requiredFacadeCellPartCount": 120,
+    "requiredPerimeterSealPartCount": 120,
+    "requiredGlassPaneCount": 60,
+    "clearCoreInsetFromRoughOpeningEdgeM": 0.02,
+    "materialMetallicHardMaximumPaintedRc": 0.001,
+    "materialMetallicHardMaximumSeal": 0.001,
+    "automaticVisualPoints": 0,
+    "renderVerificationPending": true,
+    "automaticFailConditions": [
+      "MainBlock renderer remains enabled and optically fills apartment openings",
+      "any generated front-facade wall part intersects the interior clear core of a required apartment rough opening",
+      "missing aperture, seal, frame or glazing component in any of the thirty benchmark apartment windows",
+      "glass plane sits in front of the facade front plane or behind the reconstructed facade-shell back plane",
+      "painted RC or rubber seal becomes metallic",
+      "required manufacture/installation/material metadata or lookdev illustration is missing",
+      "source QA is used to claim Visual Fidelity PASS without native 3840x2160 rendered evidence"
+    ]
+  },
+  "renderReview": {
+    "views": ["hero", "oblique", "grazing"],
+    "priorityCrops": ["hero/facade_center", "oblique/construction_depth", "grazing/sash_rail_response"],
+    "inspectAt100Percent": [
+      "glass is visibly inset within a real opening rather than laid over an opaque wall",
+      "RC reveal depth and frame-to-wall interface remain legible at oblique/grazing angles",
+      "perimeter seal does not float, z-fight or become a repeated black graphic stripe",
+      "no opaque wall pixels cover the glazing area",
+      "aluminum/glass/rubber/concrete separate by physical angular response rather than painted highlights",
+      "repeated apartment modules remain construction-consistent without immediately obvious texture/module repetition"
+    ]
+  }
+}

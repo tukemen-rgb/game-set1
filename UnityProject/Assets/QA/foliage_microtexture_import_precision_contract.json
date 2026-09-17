@@ -1,0 +1,108 @@
+{
+  "schemaVersion": "1.0.0",
+  "contractId": "foliage-microtexture-import-precision",
+  "scope": "Generated dry midsummer leaf physical-data textures used by NewTown/FoliageTransmission",
+  "scene": "Assets/Scenes/QualityBlock1990s.unity",
+  "sourceGenerator": "QualityBlockPbrUpgrade",
+  "sourceProfiles": [
+    "PBR_LeafDark",
+    "PBR_LeafMid"
+  ],
+  "targets": [
+    {
+      "path": "Assets/Art/GeneratedPBR/PBR_LeafDark_Normal.png",
+      "semantic": "tangent-space leaf cellular/vein micro-normal",
+      "textureType": "NormalMap",
+      "sRGB": false
+    },
+    {
+      "path": "Assets/Art/GeneratedPBR/PBR_LeafDark_MetallicSmoothness.png",
+      "semantic": "non-metallic dry-leaf smoothness in alpha",
+      "textureType": "Default",
+      "sRGB": false
+    },
+    {
+      "path": "Assets/Art/GeneratedPBR/PBR_LeafMid_Normal.png",
+      "semantic": "tangent-space leaf cellular/vein micro-normal",
+      "textureType": "NormalMap",
+      "sRGB": false
+    },
+    {
+      "path": "Assets/Art/GeneratedPBR/PBR_LeafMid_MetallicSmoothness.png",
+      "semantic": "non-metallic dry-leaf smoothness in alpha",
+      "textureType": "Default",
+      "sRGB": false
+    }
+  ],
+  "canonicalImport": {
+    "textureCompression": "Uncompressed",
+    "crunchedCompression": false,
+    "standalonePlatformOverrideAllowed": false,
+    "minimumMaxTextureSize": 1024,
+    "requiredRuntimeSize": [1024, 1024],
+    "mipmapsRequired": true,
+    "filterMode": "Trilinear",
+    "wrapMode": "Repeat",
+    "minimumAnisotropy": 8,
+    "sRGB": false,
+    "normalTextureType": "NormalMap",
+    "metallicSmoothnessTextureType": "Default",
+    "alphaSource": "FromInput"
+  },
+  "physicalRationale": {
+    "normalSignal": "The generated leaf profile combines periodic cellular noise and analytic vein structure, then the foliage shader applies _NormalScale=0.72. Compression must not quantize the tangent-space direction before grazing-light evidence is captured.",
+    "smoothnessSignal": "The generator encodes dry dielectric leaf smoothness in alpha and NewTown/FoliageTransmission samples that alpha before applying a bounded 0.23-0.24 smoothness scale. Preserve alpha precision; do not infer metallic response from the red channel.",
+    "metallicModel": "Living leaves are dielectric; the custom shader uses _DielectricF0=0.03 and does not use metallic reflectance.",
+    "angularResponse": "GGX direct specular with Schlick Fresnel; no highlight may be painted into albedo.",
+    "wetness": 0.0,
+    "seasonExposure": "dry midsummer Japanese new-town canopy",
+    "albedoCompressionPolicy": "Leaf albedo remains outside this lossless physical-data gate because silhouette coverage is analytic geometry/shader coverage rather than albedo alpha. This gate intentionally targets normal and smoothness precision."
+  },
+  "formalEvidencePolicy": {
+    "prepareMayRepairImporterState": true,
+    "formalPreCullReadOnly": true,
+    "formalRenderTargets": [
+      "QA4K_*",
+      "QATemporal_*",
+      "QAPreparedTemporal_*"
+    ],
+    "requiredVisualEvidenceWhenRuntimeAvailable": [
+      "3840x2160 frontal benchmark with foliage visible",
+      "3840x2160 oblique benchmark with foliage visible",
+      "3840x2160 grazing-light foliage case",
+      "100% foliage microdetail crop",
+      "temporal subpixel/grazing sequence for leaf shimmer and mip stability"
+    ],
+    "failureInjection": [
+      "set either leaf normal or smoothness texture to CompressedHQ",
+      "enable Crunch compression",
+      "enable Standalone platform override",
+      "reduce max texture size below 1024",
+      "disable mipmaps",
+      "change filter mode to Bilinear or Point",
+      "reduce anisotropy below 8",
+      "enable sRGB on a physical-data texture",
+      "change a normal map away from NormalMap texture type",
+      "discard/ignore source alpha on a smoothness texture"
+    ]
+  },
+  "visualFidelityGate": {
+    "primaryExpectedImpact": [
+      "Vegetation/natural complexity",
+      "Texture/microdetail/texel fidelity",
+      "Temporal/LOD/aliasing stability"
+    ],
+    "secondaryExpectedImpact": [
+      "Material/PBR physical plausibility",
+      "Lighting/shadows/reflections"
+    ],
+    "visualFidelityPointsAwarded": 0,
+    "runtimeRenderVerification": "PENDING_UNITY_RUNTIME",
+    "passClaimAllowedWithoutRenderedEvidence": false
+  },
+  "forbiddenThemes": [
+    "earthquake",
+    "disaster",
+    "reconstruction"
+  ]
+}

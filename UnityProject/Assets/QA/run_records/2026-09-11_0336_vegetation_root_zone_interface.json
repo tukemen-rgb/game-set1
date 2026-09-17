@@ -1,0 +1,136 @@
+{
+  "schemaVersion": "1.0",
+  "runId": "2026-09-11_0336_vegetation_root_zone_interface",
+  "branch": "gpt/unity-migration",
+  "startHead": "74e9d3f77eaf67f839906a2869cb2f7bbff717bd",
+  "substantiveHeadBeforeRunRecord": "9d46b0104b8bb631840fff92b0f44750340fa11d",
+  "objective": "Reduce Geometry/Construction, Vegetation/Natural Complexity and Weathering deduction risk at the mature-tree root-zone interface without awarding visual points before real native Unity evidence exists.",
+  "discovery": {
+    "existingEcologyPitRadiusMeters": [0.74, 0.86],
+    "generatedRootFlareCenterlineLengthMeters": [0.72, 0.94],
+    "generatedRootFlareStartRadiusMeters": [0.16, 0.195],
+    "rootMeshNominalTipRatio": 0.58,
+    "rootMeshHasAuthoredIrregularityAndLateralOffset": true,
+    "plazaTopMeters": 0.05,
+    "lawnTopMeters": 0.0,
+    "oldCurbBottomMeters": 0.042,
+    "oldBoundaryCurbPotentialUnsupportedHeightOverLawnMeters": 0.042,
+    "oldPavedUnderstoryPlantOriginMeters": 0.072,
+    "maintainedPitSupportClassification": {
+      "tree0": "7 paving / 5 lawn modules",
+      "tree1": "12 paving / 0 lawn modules",
+      "tree2": "6 paving / 6 lawn modules",
+      "tree3": "7 paving / 5 lawn modules",
+      "boundaryRings": 3,
+      "interiorPavedRings": 1
+    },
+    "risk": "The previous decorative-scale opening could allow mature generated root flares to meet curb/paving, while three of four maintained rings placed every curb at one plaza-derived elevation even when modules were supported by lower lawn. Paved understory origins were also high relative to a near-flush root-zone surface. These are potential visible floating/interpenetration defects in oblique/grazing 4K crops."
+  },
+  "implemented": {
+    "openingRadiusMeters": 1.16,
+    "openingDiameterMeters": 2.32,
+    "conservativeSourceRootOuterRadiusMeters": 1.0648,
+    "conservativeNormalizedTipEnvelopeIncludingMeshIrregularity": 0.64,
+    "contractedMinimumRootClearanceMeters": 0.09,
+    "runtimeRootClearanceMethod": "transform and inspect every actual root-flare mesh vertex for generated fallbacks",
+    "soilTopVisualBiasAbovePlazaMeters": 0.0015,
+    "soilBottomMeters": -0.006,
+    "soilFinalThicknessMeters": 0.0575,
+    "soilCylinderLegacyScaleYPassedToMeshLibraryMeters": 0.02875,
+    "curbModuleCountPerPit": 12,
+    "curbSectionMeters": [0.15, 0.08],
+    "curbCenterlineRadiusMeters": 1.235,
+    "curbVisibleChordLengthMetersApprox": 0.627283,
+    "curbDryJointMeters": 0.012,
+    "pavingCurbCenterYMeters": 0.082,
+    "lawnCurbCenterYMeters": 0.034,
+    "pavingEmbedMeters": 0.008,
+    "lawnEmbedMeters": 0.006,
+    "pavedUnderstoryRootOffsetAboveSoilMeters": 0.001,
+    "grassUnderstoryRootOffsetAboveGroundMeters": 0.004,
+    "saveGateReappliesAndValidatesFinalRootZoneState": true,
+    "mainCameraPreCullFailClosedGuard": true,
+    "native4KPacketExplicitlyAppliesBeforeReflectionProbe": true,
+    "native4KPacketRevalidatesBeforeReflectionStillAndTemporalEvidence": true,
+    "lookdevIllustration": "Assets/QA/vegetation_tree_pit_root_interface_lookdev.svg",
+    "machineReadableContract": "Assets/QA/vegetation_root_zone_interface_contract.json"
+  },
+  "materialReasoning": {
+    "rootZoneSoil": {
+      "metallic": [0.0, 0.0],
+      "roughness": [0.90, 0.98],
+      "dielectricF0Approx": 0.04,
+      "normalScaleTarget": 1.0,
+      "wetness": "off in dry benchmark"
+    },
+    "precastCurb": {
+      "metallic": [0.0, 0.0],
+      "roughness": [0.84, 0.94],
+      "dielectricF0Approx": 0.04,
+      "normalScaleTarget": 1.0,
+      "wetness": "off in dry benchmark"
+    },
+    "rootBark": {
+      "metallic": [0.0, 0.0],
+      "roughness": [0.76, 0.94],
+      "dielectricF0Approx": 0.04,
+      "normalScaleTarget": 1.0,
+      "wetness": "off in dry benchmark"
+    },
+    "weatheringPolicy": "ordinary compaction, pedestrian pressure, runoff/dust and exposure only; no arbitrary damage narrative or baked contact lighting"
+  },
+  "selfAuditCorrections": [
+    {
+      "initialIssue": "The first draft sized the opening from the nominal 0.58 tip ratio alone.",
+      "correction": "Inspected the authored tapered-segment generator, accounted for 8 percent radial irregularity/lateral offset with a conservative normalized tip envelope of 0.64, increased opening radius from 1.15 to 1.16 m, and added exact transformed-vertex runtime QA."
+    },
+    {
+      "initialIssue": "The first root-zone refinement passed the desired final soil thickness directly into GetBeveledCylinder Y.",
+      "correction": "Inspected QualityBlockDetailMeshLibrary and confirmed its Y input mirrors Unity's legacy cylinder half-height convention. The pass now supplies half of the final 57.5 mm soil visual thickness (28.75 mm), preventing an unintended double-height soil slab."
+    }
+  ],
+  "sourceVerification": {
+    "supportClassificationRecomputed": true,
+    "boundaryRingCountExpected": 3,
+    "interiorRingCountExpected": 1,
+    "moduleChordMinusJointMetersApprox": 0.627283,
+    "conservativeRootEnvelopeClearanceMeters": 0.0952,
+    "unityCompileVerified": false,
+    "unityRuntimeVerified": false,
+    "native3840x2160EvidencePresent": false,
+    "visualPixelReviewPerformed": false,
+    "criticalDefectClearedFromPixels": false
+  },
+  "commits": [
+    "6cd5730b2bea33e049380fbbfbe9d1defcc2a8c8",
+    "4659a658dea8e9bcf4a570645e47891af1ed22f5",
+    "a2fa350e66e050210686ed0f42a6d4e5e0a113af",
+    "8ac844620313f9897fcdaf3b45e8b9767df88e82",
+    "132454576d836b09603f4bfbc4129a42825dae51",
+    "e2408a4d8f517454df2c8f0a6fe47eff4d9ac5a7",
+    "730466b46a65f44574bfa3e3446d283b4947fcaf",
+    "a81af891d9c96072a6660f2404053744ba5777c9",
+    "a7b58173747c155da43587c504847ceabba98161",
+    "9d46b0104b8bb631840fff92b0f44750340fa11d"
+  ],
+  "safeguards": {
+    "godotTouched": false,
+    "baseMergePerformed": false,
+    "excludedSceneThemesAdded": false,
+    "changesLimitedToUnityProject": true
+  },
+  "scores": {
+    "implementationReadiness": 93,
+    "implementationReadinessScale": 100,
+    "visualFidelityStatus": "UNSCORED",
+    "visualFidelityPointsAwardedThisRun": 0,
+    "visualFidelityPassClaimed": false,
+    "expectedVisualScoreImpact": "Potential deduction-risk reduction in Geometry & Construction, Vegetation/Natural Complexity, Weathering/Context Causality and Temporal/LOD stability; intentionally not converted into points without rendered evidence."
+  },
+  "runnerState": {
+    "githubWorkflowRunCountObserved": 0,
+    "commitStatusContextCountObservedBeforeRunRecord": 0,
+    "captures4KDirectoryObserved": false
+  },
+  "nextBlocker": "A Unity 6000.3.0f1 runner remains required. On first real runner/capture, stop speculative expansion and execute the complete native-4K packet; inspect oblique/vegetation_grounding, grazing/tree_shadow_contact and hero/ground_contact at 100 percent for root/curb intersection, local curb bearing, soil-lip visibility, soil underside gaps, stem grounding, dielectric material response, repeated module pattern and LOD/shimmer defects."
+}

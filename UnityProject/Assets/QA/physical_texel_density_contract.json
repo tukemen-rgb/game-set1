@@ -1,0 +1,65 @@
+{
+  "contractVersion": "physical-texel-density-v1.0.0",
+  "target": "QualityBlock1990s native 3840x2160 benchmark and real-time Unity playback",
+  "purpose": "Prevent textured generated benchmark surfaces from entering the native 4K review path with obviously inadequate source texel density. This is a source/readiness floor only: it does not prove perceived detail, absence of blur, or absence of shimmer without sealed native render evidence.",
+  "scoreCategoriesSupported": [
+    "Texture/microdetail/texel fidelity",
+    "Material/PBR physical plausibility",
+    "Temporal/LOD/aliasing stability"
+  ],
+  "criticalDefectRisksReduced": [
+    "severe_aliasing_or_shimmering",
+    "repeated_texture_module_pattern_immediately_obvious"
+  ],
+  "sceneScope": {
+    "scene": "Assets/Scenes/QualityBlock1990s.unity",
+    "root": "QualityBlock1990s",
+    "managedMaterialPathPrefix": "Assets/Art/Generated",
+    "minimumMeasuredTexturedSubmeshSamples": 6
+  },
+  "measurement": {
+    "metric": "area-weighted physical texels per metre per textured renderer submesh",
+    "formula": "sqrt((world-independent UV triangle area * abs(_MainTex_ST.x * _MainTex_ST.y) * textureWidth * textureHeight) / world triangle area)",
+    "meshUvChannel": 0,
+    "materialTextureProperty": "_MainTex",
+    "materialTilingSource": "Material.GetTextureScale(_MainTex)",
+    "worldAreaSource": "renderer localToWorldMatrix applied to triangle positions",
+    "submeshMaterialBinding": "mesh submesh index matched to renderer sharedMaterials index",
+    "degenerateTrianglePolicy": "ignore zero-world-area triangles; fail a textured submesh when no non-degenerate UV area remains",
+    "nonReadableMeshPolicy": "fail closed for managed textured benchmark geometry because the physical-density proof cannot be computed"
+  },
+  "thresholds": {
+    "hardMinimumTexelsPerMeter": 256,
+    "preferredHeroSurfaceTexelsPerMeter": 512,
+    "rationale": "The 256 texel/m floor is a conservative source-asset adequacy baseline for native 4K framing; hero surfaces should normally exceed 512 texel/m. The floor is intentionally not a Visual Fidelity score and does not replace 100% crop inspection."
+  },
+  "interpretationLimits": [
+    "A passing source density cannot prove a texture is sharp, physically authored, non-repetitive, or visually plausible.",
+    "A high texel density can still shimmer when frequency content, alpha coverage, filtering, LOD transitions, or thin geometry are unstable.",
+    "Procedural or geometry-only materials without _MainTex are outside this calculation and remain covered by their material/geometry contracts.",
+    "The native hero, oblique and grazing captures plus temporal sequences remain authoritative for perceived texel fidelity and aliasing deductions."
+  ],
+  "runtimeEvidenceRequired": {
+    "stillViews": ["hero", "oblique", "grazing"],
+    "required100PercentCrops": ["hero/facade_center", "oblique/ground_contact", "grazing/material_grazing"],
+    "temporalSequences": ["subpixel_grazing", "lod_walk_oblique"],
+    "inspection": [
+      "source-resolution blur at native 100%",
+      "obvious texture/module repetition despite adequate raw density",
+      "normal/roughness detail resolving at a visibly different physical scale from albedo",
+      "grazing sparkle, moire or crawl caused by excessive unresolved high-frequency detail"
+    ]
+  },
+  "lookdevGenerationBrief": {
+    "status": "PRECISE_BRIEF_MAINTAINED_UNTIL_A_REPOSITORY_IMAGE_ASSET_CAN_BE_GENERATED_AND_COMMITTED",
+    "deliverable": "4K-neutral material calibration sheet showing painted RC, aged aluminum, galvanized steel, PVC-U, asphalt/ground aggregate, curtain textile and foliage at orthographic, 45-degree oblique and grazing-light angles",
+    "requirements": [
+      "include a metric 10 cm / 50 cm / 1 m scale reference beside every surface",
+      "show flat diffuse illumination and midsummer directional grazing illumination as separate panels",
+      "no baked highlights, vignette, depth of field, sharpening or beauty grading",
+      "include native 100% crops so microstructure scale can be judged independently of composition"
+    ]
+  },
+  "visualFidelityPointsAwarded": 0,
+  "runtimeRenderVerification": "PENDING_UNITY_RUNTIME"
+}

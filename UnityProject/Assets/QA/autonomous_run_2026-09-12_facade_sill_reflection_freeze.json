@@ -1,0 +1,86 @@
+{
+  "schemaVersion": "1.0",
+  "runId": "2026-09-12_facade_sill_reflection_freeze",
+  "branch": "gpt/unity-migration",
+  "startHead": "90433e3ea50438fb5332dde4cd90c01cf18e715d",
+  "preRecordHead": "1a24750c889d1027be125f32222b1df461b233aa",
+  "objective": "Prevent the newly reconstructed facade sill-drainage geometry from being silently repaired or replaced after the first formal reflection-probe baseline, so cubemap evidence and final still/temporal evidence are bound to the same physical sill state.",
+  "priorityRationale": "The previous sill upgrade was validated on scene save and QA4K/QATemporal camera pre-cull, but ReflectionProbe.RenderProbe does not rely on the MainCamera pre-cull path. The central reflection fingerprint did not explicitly prepare/freeze the new sill pass. Because the sill contains metallic surfaces, real drainage recesses and LOD state that affect reflections/contact response, allowing post-baseline repair would weaken evidence integrity for lighting/reflections/material plausibility and could conceal construction drift.",
+  "commitsBeforeRunRecord": [
+    {
+      "sha": "1a24750c889d1027be125f32222b1df461b233aa",
+      "message": "qa: freeze facade sill state across reflection evidence"
+    }
+  ],
+  "changedPathsBeforeRunRecord": [
+    "UnityProject/Assets/Editor/QualityBlockFacadeSillDrainageReflectionBindingQA.cs",
+    "UnityProject/Assets/QA/facade_sill_drainage_reflection_binding_contract.json",
+    "UnityProject/Assets/Editor/QualityBlockReflectionMaterialPhysicalityBindingQA.cs",
+    "UnityProject/Assets/QA/reflection_material_physicality_binding_contract.json"
+  ],
+  "implementation": {
+    "preBaselineBehavior": "The new reflection binding may call QualityBlockFacadeSillDrainageUpgrade.EnsurePreparedForFormalEvidence only before its epoch is armed, allowing a genuinely missing fallback sill pass to be created before the first reflection baseline.",
+    "postArmBehavior": "After arming, generated-root instance identity and authored/fallback mode are frozen. Later reflection fingerprint evaluations invoke read-only QualityBlockFacadeSillDrainageUpgrade.ValidateOpenScene and fail closed on root deletion/replacement, legacy-sill re-enablement, renderer/material/mesh/LOD/weathering/topology drift or authored/fallback mode change.",
+    "centralBinding": "QualityBlockReflectionMaterialPhysicalityBindingQA schema 1.6 now prepares the sill binding before the first reflection baseline and redundantly revalidates it at the central fingerprint boundary used by reflection request/poll/completion/pre-still checks.",
+    "machineReadableContract": "Assets/QA/facade_sill_drainage_reflection_binding_contract.json",
+    "visualPointsAwardedByThisWork": 0
+  },
+  "evidencePolicy": {
+    "reflectionRequestMustSeePreparedSill": true,
+    "reflectionPollMustRemainReadOnly": true,
+    "reflectionCompletionMustRemainReadOnly": true,
+    "preStillFingerprintMustRemainReadOnly": true,
+    "rootReplacementAfterArmFails": true,
+    "authoredFallbackModeChangeAfterArmFails": true,
+    "actualNative4KRequiredForVisualScoring": true
+  },
+  "verification": {
+    "githubStaticSourceReview": "PASS",
+    "contractSourceConsistencyReview": "PASS_BY_INSPECTION",
+    "branchLinearityFromStartHead": "PASS: compare reports 1 ahead / 0 behind before this run record and merge-base equals startHead",
+    "changedPathScope": "PASS: all substantive paths are under UnityProject/Assets",
+    "godotPreserved": true,
+    "baseMerged": false,
+    "excludedThemeContentAdded": false,
+    "githubActionsRunsAtPreRecordHead": 0,
+    "commitStatusContextsAtPreRecordHead": 0,
+    "unityTargetVersion": "6000.3.0f1",
+    "unityCompile": "PENDING_RUNNER",
+    "unityEditorRuntime": "PENDING_RUNNER",
+    "reflectionRequestPollCompletionExecution": "PENDING_RUNNER",
+    "native3840x2160Hero": "PENDING_RUNNER",
+    "native3840x2160Oblique": "PENDING_RUNNER",
+    "native3840x2160Grazing": "PENDING_RUNNER",
+    "pixelExact100PercentCrops": "PENDING_RUNNER",
+    "temporalLodWalk": "PENDING_RUNNER",
+    "renderedVisualReview": "PENDING_RUNNER"
+  },
+  "currentScores": {
+    "implementationReadiness": 93,
+    "implementationReadinessMax": 100,
+    "visualFidelity": null,
+    "visualFidelityStatus": "UNSCORED_UNTIL_REAL_4K_RENDER",
+    "visualPointsAwardedThisRun": 0,
+    "visualPassClaimed": false
+  },
+  "expectedVisualScoreImpactNotAwarded": {
+    "geometry_construction_fidelity": "none directly; this protects the already-implemented sill geometry from evidence-time drift",
+    "material_pbr_physical_plausibility": "small indirect: reflection cubemap is now forced to observe the same canonical aged-aluminum sill state as the final camera evidence",
+    "lighting_shadows_reflections": "medium indirect: physical drain recesses, skirt/nose geometry and metallic sill surfaces cannot be silently rebuilt after the reflection baseline",
+    "texture_microdetail_texel_fidelity": "none directly",
+    "weathering_context_causality": "small indirect: weathering metadata is revalidated after arm instead of repaired",
+    "vegetation_natural_complexity": "none",
+    "period_accuracy_scene_authenticity": "none directly",
+    "cinematic_image_quality": "small indirect through reflection-state coherence only",
+    "temporal_lod_aliasing_stability": "small indirect: LOD state is structurally revalidated, but actual pop/shimmer still requires temporal pixels"
+  },
+  "unresolvedRisks": [
+    "Unity compile/runtime behavior of the new binding is unverified until a Unity 6000.3.0f1 Runner executes it.",
+    "The reflection binding proves state coherence, not that the sill dimensions or 50 mm drain openings look correct at benchmark distance.",
+    "It does not prove that hard tray profile edges avoid razor-thin grazing highlights; actual 4K pixels remain authoritative.",
+    "It cannot clear visible_lod_pop or severe_aliasing_or_shimmer without the required temporal render sequence.",
+    "Domain reload resets the in-memory epoch. A real Runner must verify the intended request/poll/completion sequence does not cross an unexpected reload; if it does, the next fix should persist the epoch token fail-closed across that boundary rather than loosening validation."
+  ],
+  "nextBlocker": "No Unity Runner or new benchmark screenshots are available. On runtime availability, stop speculative expansion and execute compile -> formal preparation -> first reflection fingerprint/epoch arm -> RenderProbe request -> repeated poll validation -> completion validation -> pre-still validation. Intentionally replace/delete the sill root or re-enable a legacy HD_WindowSillDrip after arm and confirm the evidence path fails instead of repairing it. Then restore a fresh candidate, recapture native 3840x2160 hero/oblique/grazing plus 100% crops and temporal oblique, and only then score the 100-point Visual Fidelity Gate.",
+  "stopPolicy": "Continue safe source-side readiness work only while no runner/render exists and the date is no later than 2026-09-18. On runner/screenshots, prioritize actual render scoring/fixes. No new commits on or after 2026-09-19 without new instructions."
+}

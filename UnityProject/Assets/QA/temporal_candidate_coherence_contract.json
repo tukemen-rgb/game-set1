@@ -1,0 +1,42 @@
+{
+  "schemaVersion": "1.0",
+  "purpose": "Prevent otherwise valid temporal/LOD/aliasing evidence from being scored after the visual candidate changes. Temporal evidence must be bound to the same current candidate SHA-256, candidate epoch and persisted scene bytes as the fresh native-4K still packet. This is provenance enforcement only and awards zero Visual Fidelity points.",
+  "temporalRuntimeReceiptPath": "Assets/QA/temporal_runtime_evidence_receipt.json",
+  "renderCandidateSealPath": "Assets/QA/render_candidate_seal.json",
+  "renderCandidateEpochPath": "Assets/QA/render_candidate_epoch.json",
+  "coherenceSealPath": "Assets/QA/temporal_candidate_coherence_seal.json",
+  "scoringIntegrationSource": "Assets/Editor/QualityBlockReviewedVisualEvidenceIntegrityQA.cs",
+  "rules": {
+    "requireCurrentStillCandidateFreshness": true,
+    "requireTemporalRuntimeReceiptFromUnity": true,
+    "requireCandidateCombinedSha256Match": true,
+    "requireCandidateEpochMatch": true,
+    "requireSceneSha256Match": true,
+    "requireTemporalReceiptHashMatch": true,
+    "requireTemporalGeneratedUtcNotBeforeCandidateMutation": true,
+    "requireTemporalGeneratedUtcNotBeforeLatestTrackedInputWrite": true,
+    "invalidateSealWhenBindingCannotBeProven": true,
+    "manualPixelReviewStillRequired": true,
+    "automaticVisualPoints": 0
+  },
+  "captureBinding": {
+    "trigger": "Import of Assets/QA/temporal_runtime_evidence_receipt.json schedules a post-import coherence seal attempt.",
+    "currentStillRequirement": "QualityBlockRenderCandidateFreshnessQA.ValidateCurrentCandidateFreshness must pass before a temporal coherence seal can be written.",
+    "candidateIdentity": "render_candidate_seal.candidateCombinedSha256 must equal render_candidate_epoch.candidateCombinedSha256 and both must share the same candidate epoch UTC.",
+    "sceneIdentity": "temporal_runtime_evidence_receipt.sceneSha256 must equal render_candidate_seal.sceneSha256.",
+    "timeFloor": "temporal runtime generatedUtc must be >= both the candidate mutation UTC and the current candidate latest tracked input write UTC.",
+    "receiptBinding": "coherence seal stores SHA-256 of the exact temporal runtime receipt bytes."
+  },
+  "staleEvidenceScenarioClosed": {
+    "scenario": "A native-4K temporal sequence is valid, then a scene/material/shader/project-render-setting/formal-capture input changes and fresh stills are later captured for the new candidate while the old temporal sequence remains on disk.",
+    "expectedResult": "FAIL_CLOSED. The still candidate freshness/epoch changes; the old temporal coherence seal no longer matches and its generatedUtc predates the new candidate epoch/latest tracked input. Fresh temporal rendering is required."
+  },
+  "visualEvidencePolicy": {
+    "mayAwardTemporalCategoryPoints": false,
+    "mayClearSevereAliasingOrShimmer": false,
+    "mayClearVisibleLodPop": false,
+    "actualNative4KTemporalPixelsRequired": true,
+    "direct100PercentPixelReviewRequired": true,
+    "visualFidelityStatusBeforeReview": "UNSCORED_REVIEW_REQUIRED"
+  }
+}

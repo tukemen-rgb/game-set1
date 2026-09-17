@@ -1,0 +1,52 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="1000" viewBox="0 0 1600 1000">
+  <rect width="1600" height="1000" fill="#f4f1e8"/>
+  <g font-family="Arial, Helvetica, sans-serif" fill="#202020">
+    <text x="70" y="70" font-size="34" font-weight="700">WornPathB — park-verge transition / construction lookdev</text>
+    <text x="70" y="108" font-size="19">Source-side design guide only · visual fidelity remains unscored until sealed native 4K evidence exists</text>
+
+    <text x="70" y="165" font-size="25" font-weight="700">PLAN — causal route and curb opening</text>
+    <rect x="90" y="205" width="350" height="530" rx="8" fill="#b8b5aa" stroke="#555" stroke-width="3"/>
+    <text x="120" y="245" font-size="20">ParkPath mineral paving</text>
+    <text x="120" y="275" font-size="17">top y = 0.060 m</text>
+
+    <line x1="455" y1="205" x2="455" y2="432" stroke="#777" stroke-width="22"/>
+    <line x1="455" y1="555" x2="455" y2="735" stroke="#777" stroke-width="22"/>
+    <text x="475" y="390" font-size="17">ParkPathEast precast curb</text>
+    <text x="475" y="416" font-size="17">588 mm visible / 600 mm pitch</text>
+    <line x1="455" y1="436" x2="455" y2="551" stroke="#d6c8a1" stroke-width="4" stroke-dasharray="10 8"/>
+    <text x="475" y="480" font-size="18" font-weight="700">modules 26 + 27 omitted</text>
+    <text x="475" y="507" font-size="17">clear opening ≈ 1.212 m</text>
+
+    <path d="M 440 493 C 560 493, 610 560, 655 630 C 710 720, 770 745, 820 760"
+          fill="none" stroke="#7d603b" stroke-width="104" stroke-linecap="round"/>
+    <path d="M 440 493 C 560 493, 610 560, 655 630 C 710 720, 770 745, 820 760"
+          fill="none" stroke="#9a7a4c" stroke-width="64" stroke-linecap="round"/>
+    <text x="630" y="570" font-size="19" font-weight="700">compacted soil/fines core</text>
+    <text x="650" y="600" font-size="17">curves NE, 1.35 m max width</text>
+    <text x="735" y="815" font-size="17">terminal taper → turf grade</text>
+
+    <rect x="880" y="205" width="650" height="250" rx="10" fill="#ffffff" stroke="#aaa" stroke-width="2"/>
+    <text x="910" y="245" font-size="24" font-weight="700">SECTION — mouth at paved path</text>
+    <line x1="920" y1="335" x2="1130" y2="335" stroke="#8f8c84" stroke-width="22"/>
+    <path d="M 1130 341 L 1240 341 L 1315 359 L 1450 359" fill="none" stroke="#8f6a40" stroke-width="18"/>
+    <line x1="1450" y1="399" x2="1510" y2="399" stroke="#6f8a46" stroke-width="10"/>
+    <text x="920" y="315" font-size="17">paving top 60 mm</text>
+    <text x="1165" y="318" font-size="17">soil mouth 57 mm (3 mm lower)</text>
+    <text x="1310" y="390" font-size="17">core ≈ 43 mm above datum</text>
+    <text x="1430" y="430" font-size="17">shoulder joins turf ≈ 3 mm</text>
+
+    <rect x="880" y="490" width="650" height="350" rx="10" fill="#ffffff" stroke="#aaa" stroke-width="2"/>
+    <text x="910" y="530" font-size="24" font-weight="700">MATERIAL + LOD RULES</text>
+    <text x="910" y="575" font-size="18">• dry dielectric soil/fines: metallic 0.00, F0 ≈ 0.04</text>
+    <text x="910" y="607" font-size="18">• roughness 0.90–0.98; normal scale 0.95; wetness 0</text>
+    <text x="910" y="639" font-size="18">• UV0 = world X/Z metres; macro 6.4 m, detail 0.30 m</text>
+    <text x="910" y="671" font-size="18">• no painted AO, contact shadow, sun highlight, wet streak or metallic glint</text>
+    <text x="910" y="715" font-size="18">• LOD0 48×7 · LOD1 28×7 · LOD2 16×5 · LOD3 8×5</text>
+    <text x="910" y="747" font-size="18">• all LODs keep mouth, taper, shoulders and route silhouette; animated cross-fade</text>
+    <text x="910" y="791" font-size="18">• weathering cause: foot traffic + midsummer UV/drying only</text>
+
+    <text x="70" y="895" font-size="23" font-weight="700">4K review rejection cues</text>
+    <text x="70" y="932" font-size="18">Reject: rectangular soil slab, vertical soil sidewall, curb/soil interpenetration, obvious UV restart, floating shoulder, baked highlight, metallic soil, LOD pop or texture shimmer.</text>
+    <text x="70" y="965" font-size="18">Primary crop: oblique/vegetation_grounding at 100%. Also inspect hero full frame, grazing response and temporal oblique/LOD walk.</text>
+  </g>
+</svg>

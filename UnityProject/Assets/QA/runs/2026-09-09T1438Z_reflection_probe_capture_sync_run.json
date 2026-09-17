@@ -1,0 +1,87 @@
+{
+  "schemaVersion": "1.0",
+  "runUtc": "2026-09-09T14:38:00Z",
+  "branch": "gpt/unity-migration",
+  "startHead": "692d488b0df05c6a4e48166c99d77deb948abefe",
+  "substantiveWorkHead": "822da769c431d6203c8022f69b44a5d5e38816e7",
+  "readinessBookkeepingHead": "df29390147380b7cdd8a25d860cb4119d7db270e",
+  "substantiveCommits": [
+    {
+      "sha": "791f0d63742ce237e9e8231c28e2fe32ebcb0184",
+      "purpose": "Change pre-capture realtime reflection refresh from fire-and-forget to RenderID completion + Cube texture readiness verification, and write a Unity runtime receipt."
+    },
+    {
+      "sha": "bcd9335b414a1c5d7077e44e8d644a484a91c5bd",
+      "purpose": "Add machine-readable reflection_probe_capture_sync_contract.json."
+    },
+    {
+      "sha": "ef26bdba6dcf1cdcfb7ed386c85d40c195f90787",
+      "purpose": "Bind environment lighting contract to verified reflection refresh completion and runtime receipt."
+    },
+    {
+      "sha": "4386ac7a9983ed6124714fddfd2da4180b1b47ce",
+      "purpose": "Add QA that validates the synchronization contract and the latest Unity-generated completion receipt."
+    },
+    {
+      "sha": "822da769c431d6203c8022f69b44a5d5e38816e7",
+      "purpose": "Require reflection synchronization contract/receipt in the complete native-4K review packet."
+    }
+  ],
+  "bookkeepingCommit": "df29390147380b7cdd8a25d860cb4119d7db270e",
+  "scopeVerification": {
+    "compareStatus": "ahead",
+    "aheadByBeforeRunRecord": 6,
+    "behindBy": 0,
+    "changedPathsBeforeRunRecord": [
+      "UnityProject/Assets/Editor/QualityBlockEnvironmentLightingUpgrade.cs",
+      "UnityProject/Assets/Editor/QualityBlockNative4KReviewPacket.cs",
+      "UnityProject/Assets/Editor/QualityBlockReflectionProbeCaptureSyncQA.cs",
+      "UnityProject/Assets/QA/environment_lighting_contract.json",
+      "UnityProject/Assets/QA/implementation_readiness.json",
+      "UnityProject/Assets/QA/reflection_probe_capture_sync_contract.json"
+    ],
+    "allChangedPathsUnderUnityProject": true,
+    "godotModified": false,
+    "baseMerged": false,
+    "excludedThemesIntroduced": false
+  },
+  "technicalFinding": {
+    "issue": "The 4K path refreshed two ViaScripting realtime reflection probes immediately before capture but discarded ReflectionProbe.RenderProbe() RenderIDs and therefore did not prove completion before Camera.Render, while the runtime manifest would mark probesRefreshedImmediatelyBeforeCapture=true.",
+    "risk": "A stale cubemap can alter dielectric glass Fresnel response and metal/specular energy, contaminating Lighting/Reflections, Material/PBR and Cinematic evidence without an obvious source-side failure.",
+    "correction": "For both registered probes force NoTimeSlicing, retain RenderID, require IsFinishedRendering(RenderID), require a created 512x512 Cube realtimeTexture, write a Unity-version/device-bound runtime receipt, and abort native-4K evidence creation if any check fails.",
+    "unityApiBasis": "Unity 6 documentation: RenderProbe returns a RenderID; IsFinishedRendering checks that RenderID; NoTimeSlicing renders the probe entirely in one frame."
+  },
+  "verification": {
+    "method": "GitHub source/static inspection plus Unity 6 API documentation review",
+    "sourceConfigurationReviewed": true,
+    "unityCompileVerified": false,
+    "runtimeProbeReceiptGenerated": false,
+    "native3840x2160Rendered": false,
+    "pixelExact100PercentCropsGenerated": false,
+    "temporalProbeRendered": false,
+    "githubCommitStatusContexts": 0,
+    "githubWorkflowRuns": 0,
+    "captures4KDirectoryPresent": false,
+    "visualEvidenceAvailable": false
+  },
+  "implementationReadiness": {
+    "score": 93,
+    "possible": 100,
+    "status": "IMPLEMENTATION_READINESS_ONLY",
+    "reasonNotIncreased": "The remaining seven points are reserved for actual Unity compile/runner verification. Source-side synchronization hardening does not substitute for execution."
+  },
+  "visualFidelity": {
+    "status": "UNSCORED",
+    "pointsAwardedThisRun": 0,
+    "passClaimed": false,
+    "reason": "No actual Unity 3840x2160 benchmark render exists. No visual category or critical defect may be cleared from source/configuration alone."
+  },
+  "expectedVisualScoreImpact": [
+    "Lighting/shadows/reflections: prevents stale local reflections from being accepted as current capture evidence.",
+    "Material/PBR physical plausibility: ensures grazing-angle glass/metal review uses the cubemap corresponding to the current midsummer sky/sun/scene state.",
+    "Cinematic image quality: makes highlight/exposure diagnostics less vulnerable to stale specular energy; still awards no automatic points.",
+    "Critical evidence integrity: native-4K capture now fails closed if reflection completion is not proven."
+  ],
+  "nextBlocker": "Unity 6000.3.0f1 editor/runner. At first availability run Prepare Complete Native 4K Review Packet. If IsFinishedRendering/realtimeTexture verification fails on the actual editor, fix synchronization before accepting any still. If it succeeds, stop speculative expansion and score/fix actual hero, oblique, grazing and temporal evidence, starting from the largest observed deduction or critical defect.",
+  "note": "This run intentionally changes only Unity-side source/data. Godot is preserved, no base merge was performed, and earthquake/disaster/reconstruction themes remain excluded."
+}

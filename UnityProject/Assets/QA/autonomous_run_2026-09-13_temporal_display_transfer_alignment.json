@@ -1,0 +1,82 @@
+{
+  "schemaVersion": "1.0",
+  "runDate": "2026-09-13",
+  "branch": "gpt/unity-migration",
+  "startHead": "ea3bf09fcd0f0aba0df213ac87721e74870ce573",
+  "workSummary": "Closed a formal-evidence mismatch where temporal shimmer/LOD frames still used a secondary RenderTexture plus Graphics.Blit after the still 4K packet had moved to a canonical in-place fixed-function MSAA resolve. Temporal frames now use the same native sRGB LDR target/readback boundary as still evidence, and stale pre-v1.1 temporal manifests/receipts are rejected for scoring.",
+  "problemFound": {
+    "severity": "HIGH_EVIDENCE_INTEGRITY",
+    "details": [
+      "QualityBlockTemporalStabilityCapture created resolveDescriptor/resolvedTarget and called Graphics.Blit(msaaTarget, resolvedTarget).",
+      "QualityBlockDisplayTransferIntegrityQA only recognized QA4K_ still targets, so QATemporal_ frames bypassed runtime sRGB/HDR/filmic-transfer validation.",
+      "Visual Fidelity temporal_lod_aliasing scoring could therefore be based on a different post-tonemap resolve/display-transfer path than hero/oblique/grazing stills.",
+      "Old temporal manifests did not identify a canonical no-shader-copy capture path and remained structurally acceptable to the temporal evidence validator."
+    ]
+  },
+  "changes": [
+    {
+      "commit": "b2a9368082ccf4c78458764fc24a1e50b84aeefd",
+      "description": "Added QualityBlockTemporalDisplayTransferIntegrityQA with source-bound and Camera.onPreCull fail-closed validation for QATemporal_subpixel_grazing and QATemporal_lod_walk_oblique targets."
+    },
+    {
+      "commit": "b4c84eafcc8ed05dc1fde481d0e895baa4f876e1",
+      "description": "Added machine-readable temporal_display_transfer_integrity_contract.json; runtime verification remains pending and this gate awards zero Visual Fidelity points."
+    },
+    {
+      "commit": "b6770def1d7684c7b7228bc7d356a370ab074000",
+      "description": "Migrated temporal capture to bindMS=false, in-place ResolveAntiAliasedSurface and direct ReadPixels from msaaTarget; removed secondary resolve target/Graphics.Blit and invalidated pre-v1.1 temporal evidence."
+    }
+  ],
+  "staticVerification": {
+    "branchComparisonFromStart": {
+      "status": "ahead",
+      "aheadByBeforeRunRecord": 3,
+      "behindBy": 0,
+      "mergeBaseUnchanged": true,
+      "changedPathsBeforeRunRecord": [
+        "UnityProject/Assets/Editor/QualityBlockTemporalDisplayTransferIntegrityQA.cs",
+        "UnityProject/Assets/Editor/QualityBlockTemporalStabilityCapture.cs",
+        "UnityProject/Assets/QA/temporal_display_transfer_integrity_contract.json"
+      ]
+    },
+    "sourceChecks": [
+      "Temporal RenderTextureDescriptor explicitly sets bindMS=false and sRGB according to Linear project color space.",
+      "Temporal capture calls ResolveAntiAliasedSurface only when msaaSamples > 1, then sets RenderTexture.active=msaaTarget and performs direct ReadPixels.",
+      "Secondary resolveDescriptor/resolvedTarget and post-tonemap Graphics.Blit were removed from the temporal capture path.",
+      "Temporal manifest/receipt schema moved to 1.1 and scoring rejects older evidence.",
+      "Temporal manifest validation requires projectColorSpace=Linear and the exact canonical capture-source declaration.",
+      "Runtime QATemporal pre-cull guard requires 3840x2160, LDR sRGB target, bindTextureMS=false, no mipmaps, HDR camera, no dynamic resolution, and exactly one enabled filmic tonemap with ImageEffectTransformsToLDR."
+    ],
+    "githubActionsRuns": 0,
+    "commitStatusContexts": 0,
+    "unityCompileRuntime": "PENDING_UNITY_RUNTIME"
+  },
+  "constraintsPreserved": {
+    "godotModified": false,
+    "baseMerged": false,
+    "earthquakeDisasterReconstructionThemesAdded": false
+  },
+  "scoring": {
+    "implementationReadiness": 93,
+    "implementationReadinessPossible": 100,
+    "visualFidelityStatus": "UNSCORED_UNTIL_REAL_4K_RENDER",
+    "visualFidelityPointsAwardedThisRun": 0,
+    "passClaimed": false,
+    "expectedVisualScoreImpactNotAwarded": {
+      "temporal_lod_aliasing": "HIGH evidence validity/stability impact",
+      "cinematic_image": "MEDIUM evidence coherence impact",
+      "texture_microdetail": "MEDIUM native-pixel integrity impact",
+      "material_pbr": "LOW_TO_MEDIUM because temporal frames now share the still display-transfer boundary"
+    }
+  },
+  "unityRuntimeFailureInjectionPlan": [
+    "Run clean Unity 6000.3.0f1 temporal capture and verify QATemporal targets pass pre-cull with sRGB=true and bindTextureMS=false.",
+    "Reintroduce Graphics.Blit(msaaTarget, resolvedTarget) and require Temporal Display Transfer config validation to fail before capture.",
+    "Set bindMS=true and require QATemporal pre-cull failure.",
+    "Set temporal target sRGB=false and require pre-cull failure.",
+    "Enable dynamic resolution or disable/duplicate the filmic tonemap and require pre-cull failure.",
+    "Attempt to validate an old schema-1.0 temporal manifest/receipt and require recapture instead of scoring.",
+    "After clean recapture, inspect every 3840x2160 sequence and 100% crop for shimmer, thin-edge contrast drift and visible LOD pop before assigning temporal_lod_aliasing points."
+  ],
+  "nextBlocker": "No Unity Runner/runtime evidence is available. GitHub Actions has no branch runs and no status contexts, so C# compile, actual RenderTexture.sRGB behavior, in-place MSAA resolve, temporal PNG output and visual temporal quality remain unverified."
+}

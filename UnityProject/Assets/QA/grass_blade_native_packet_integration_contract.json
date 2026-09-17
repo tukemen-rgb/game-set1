@@ -1,0 +1,79 @@
+{
+  "schemaVersion": "1.2.0",
+  "status": "PENDING_REAL_UNITY_4K_RENDER",
+  "scenePath": "Assets/Scenes/QualityBlock1990s.unity",
+  "nativePacketPath": "Assets/Editor/QualityBlockNative4KReviewPacket.cs",
+  "sourceGrassContractPath": "Assets/QA/grass_blade_field_contract.json",
+  "persistenceContractPath": "Assets/QA/grass_blade_formal_persistence_contract.json",
+  "visualGatePath": "Assets/QA/visual_fidelity_gate.json",
+  "sceneMetadataCoverageContractPath": "Assets/QA/scene_metadata_coverage_contract.json",
+  "constructionMaterialEvidenceBindingSourcePath": "Assets/Editor/QualityBlockConstructionMaterialEvidenceBindingQA.cs",
+  "metadataCoverageBinding": {
+    "requiredDomainId": "ground_domain",
+    "requiredRootName": "Ground",
+    "requiredContractPath": "Assets/QA/grass_blade_field_contract.json",
+    "requireExactlyOneDomainMatch": true,
+    "requireExactlyOneContractPathMatch": true,
+    "requireConstructionMaterialBundleEnumeration": true
+  },
+  "policy": "The physical GrassBladeFieldDetail must be rebuilt and persisted only before realtime reflection probes are requested, then remain read-only and explicitly revalidated before synchronized probe request, native-4K still capture, and sealed temporal capture. Its manufacture/material contract must also be linked exactly once from the Ground scene metadata domain so the construction/material evidence binder SHA-256 seals that physical specification to the same rendered pixels. Native packet integration cannot rely only on InitializeOnLoad callbacks. Critical-failure mappings must use the exact canonical IDs defined by visual_fidelity_gate.json; descriptive aliases are forbidden because they do not bind to the numeric automatic-fail gate.",
+  "requiredTokens": {
+    "selfValidation": "QualityBlockGrassBladeNativePacketQA.ValidateContractConfigOnly();",
+    "persistenceContractPreflight": "QualityBlockGrassBladeFormalPersistenceQA.ValidateContractConfigOnly();",
+    "finalPersistedBuild": "QualityBlockGrassBladeFieldUpgrade.ApplyToOpenScene(true);",
+    "sourceValidation": "QualityBlockGrassBladeFieldUpgrade.ValidateOpenScene(false);",
+    "persistedEvidenceValidation": "QualityBlockGrassBladeFormalPersistenceQA.ValidatePersistedEvidenceBinding();",
+    "reflectionRequest": "QualityBlockReflectionProbeAwaiter.Begin(FinishAfterReflectionSynchronization);",
+    "stillCapture": "QualityBlock4KCapture.CapturePreparedSceneAfterProbeSync();",
+    "temporalBegin": "QualityBlockTemporalRuntimeEvidenceGuard.Begin();"
+  },
+  "minimumOccurrences": {
+    "selfValidation": 1,
+    "persistenceContractPreflight": 1,
+    "finalPersistedBuild": 1,
+    "sourceValidation": 4,
+    "persistedEvidenceValidation": 4
+  },
+  "ordering": {
+    "finalPersistedBuildMustPrecedeReflectionRequest": true,
+    "noPersistedBuildAtOrAfterReflectionRequest": true,
+    "sourceAndPersistenceValidationRequiredBetweenFinalBuildAndReflectionRequest": true,
+    "sourceAndPersistenceValidationRequiredBetweenReflectionCompletionAndStillCapture": true,
+    "sourceAndPersistenceValidationRequiredBetweenStillSealAndTemporalBegin": true
+  },
+  "criticalFailureMappingPolicy": {
+    "requireExactCanonicalIds": true,
+    "requireMembershipInVisualFidelityGate": true,
+    "rejectLegacyAliases": true
+  },
+  "criticalFailureMappings": [
+    "missing_construction_material_metadata",
+    "visible_lod_pop",
+    "severe_aliasing_or_shimmer",
+    "unverified_render_claim"
+  ],
+  "forbiddenLegacyAliases": [
+    "severe_aliasing_or_shimmering",
+    "claiming_render_quality_without_actual_render"
+  ],
+  "failureInjection": [
+    "remove_grass_blade_field_contract_from_ground_domain_contract_paths",
+    "duplicate_grass_blade_field_contract_in_ground_domain_contract_paths",
+    "move_grass_blade_field_contract_to_wrong_metadata_domain",
+    "remove_construction_material_contract_path_enumeration_from_evidence_binder",
+    "remove_final_grass_persisted_build_from_native_packet",
+    "move_grass_build_after_reflection_request",
+    "remove_pre_reflection_grass_validation",
+    "remove_pre_still_grass_validation",
+    "remove_pre_temporal_grass_validation",
+    "remove_persisted_evidence_validation",
+    "replace_severe_aliasing_or_shimmer_with_legacy_alias_severe_aliasing_or_shimmering",
+    "replace_unverified_render_claim_with_descriptive_alias_claiming_render_quality_without_actual_render",
+    "map_grass_failure_to_unknown_visual_gate_id"
+  ],
+  "renderVerification": {
+    "runtimeRenderVerified": false,
+    "visualFidelityPointsAwarded": 0,
+    "visualFidelityStatus": "UNSCORED_UNTIL_REAL_4K_RENDER"
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "schema":1,
+  "updated":"2026-09-16",
+  "isInventoryDelta":true,
+  "ownerInspection":{"keywords":["gutter","downspout","rainwater"],"matchingExistingOwnerFound":false,"floorDrainOwnerFound":"BalconyFloorDrain100 under ServiceCorner; intentionally not duplicated"},
+  "newAssets":[
+    {"id":"RainwaterDownpipeVP75_2400","masterTriangles":1920,"lodTriangles":[1280,800,384,192],"actualOBJGLBExports":true,"unityVerified":false},
+    {"id":"RainwaterOffsetAssembly75_520","masterTriangles":14976,"lodTriangles":[6912,2880,960,320],"actualOBJGLBExports":true,"unityVerified":false},
+    {"id":"RainwaterPipeWallClamp75","masterTriangles":2028,"lodTriangles":[1388,588,396,188],"actualOBJGLBExports":true,"unityVerified":false}
+  ],
+  "reviewIntegrations":[{"id":"BalconyRainwaterInstalledReview_LOD0","triangles":12380,"geometryCount":11,"formalBenchmarkSceneChanged":false,"unityVerified":false}],
+  "productionDeltaThisRun":{"authoredAssetSets":3,"highDetailMasters":3,"runtimeLodSets":3},
+  "nextProductionTarget":"If no Unity render appears, inspect exterior wall/vent owners and add one high-coverage wall-surface construction batch."
+}

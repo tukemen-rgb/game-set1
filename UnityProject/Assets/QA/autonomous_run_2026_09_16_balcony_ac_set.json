@@ -1,0 +1,25 @@
+{
+  "runId":"2026_09_16_balcony_ac_set",
+  "branch":"gpt/unity-migration",
+  "startHead":"f994feb1c6537916d59da50eede968da8dd1665f",
+  "workflowRunsObservedAtStart":0,
+  "newAssetSets":3,
+  "generatedMeshes":{"glb":15,"obj":15,"meshBinariesCommitted":0,"deliveredInConversationPackage":true},
+  "triangles":{
+    "OutdoorACCondenser780":{"MASTER":21136,"LOD0":10544,"LOD1":5384,"LOD2":3336,"LOD3":2788},
+    "RefrigerantPipeTrunking60x55_900":{"MASTER":1732,"LOD0":1308,"LOD1":980,"LOD2":828,"LOD3":748},
+    "CondensateDrainHose16_1200":{"MASTER":22272,"LOD0":12024,"LOD1":4896,"LOD2":2420,"LOD3":1264}
+  },
+  "componentSurfacesCheckedAcrossLevels":485,
+  "reviewAssembly":{"id":"BalconyACServiceReview_LOD0","trianglesIncludingDiagnosticContext":23900,"geometryCount":128,"binaryDeliveredInConversationPackage":true},
+  "executed":["current branch/owner inspection","five complete mesh builds per asset","finite vertices/normals","nondegenerate triangles","watertight material components","edge incidence 2","consistent winding and positive volumes","GLB triangle roundtrip","OBJ triangle roundtrip","strict LOD triangle reduction","CPU depth-buffered/backface-culled actual-mesh preview","diagnostic installed grouping"],
+  "observedCorrections":["Trunking axis remap initially reversed volume orientation; face winding corrected and all levels rerun.","Trunking LOD2/LOD3 initially had equal triangle counts; elbow/tube tessellation made strictly decreasing.","Drain hose LOD2/LOD3 initially had equal triangle counts; path/radial tessellation made strictly decreasing.","Matplotlib preview produced misleading hidden-face triangles; replaced with CPU z-buffer/backface-culling renderer before visual inspection."],
+  "notVerified":["Unity compile/import/render","Unity normal-map color-space/import behavior","guard/fin temporal shimmer","LOD transition pop","target hardware performance","installed wall anchors/penetration","placement-specific weathering"],
+  "readiness":{"lastRecordedScore":93,"recomputedThisRun":false,"pointsAwarded":0},
+  "visualFidelity":{"score":null,"pass":false,"pointsAwarded":0,"expectedImpact":"Large missing balcony infrastructure, real guard/fan/fins and service detail can raise geometry, material and period-context quality after Unity integration; no score without Unity pixels."},
+  "safety":{"godotChanges":0,"baseMerged":false,"formalBenchmarkSceneChanged":false,"excludedThemeAdded":false},
+  "executedSourceSHA256":"6a47ddeb1493de5d74b66903dfc33b487d8ca6191af6c343df4080ab8ccc4f98",
+  "repositoryGeneratorGitBlobSHA":"660d70025425c3a462ce1e8573ee7c5064470105",
+  "repositoryGeneratorByteIdenticalToExecuted":false,
+  "nextTarget":"Inspect architecture owners; then add installed wall penetration/putty/service-cap detail or another camera-near balcony infrastructure asset without duplicating existing systems."
+}

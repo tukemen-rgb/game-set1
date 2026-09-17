@@ -1,0 +1,171 @@
+{
+  "schemaVersion": "1.0.0",
+  "id": "notice_board_display_case_installation",
+  "purpose": "Fail-closed manufacture/install/material contract for the benchmark-visible circa-2000 neighborhood notice board. This is implementation-readiness evidence only; no Visual Fidelity point may be awarded without sealed native Unity render evidence.",
+  "periodIntent": "Ordinary late-1990s to early-2000s Japanese neighborhood/municipal outdoor notice board: passive printed notices behind a clear weather cover, no electronic display or contemporary digital signage cue.",
+  "manufactureSequence": [
+    "two painted tubular support posts are installed into the ground/foundation interface",
+    "a rigid rectangular frame is fixed between the posts",
+    "a recessed non-metallic backing panel is installed behind the frame face",
+    "printed paper notices are pinned/tacked to the backing surface",
+    "a clear UV-stabilized acrylic weather cover is retained by a perimeter EPDM gasket and front frame",
+    "three left-side hinge knuckles and a right-side latch retain the cover",
+    "a shallow top drip hood bears directly on the upper frame to shed runoff"
+  ],
+  "dimensionsMetres": {
+    "postDiameter": 0.055,
+    "postCount": 2,
+    "outerFrameWidth": 2.42,
+    "outerFrameHeight": 1.33,
+    "frameRailFaceWidth": 0.06,
+    "frameDepth": 0.075,
+    "backingWidth": 2.28,
+    "backingHeight": 1.23,
+    "backingThickness": 0.018,
+    "clearCoverWidth": 2.20,
+    "clearCoverHeight": 1.11,
+    "clearCoverThickness": 0.003,
+    "gasketFaceWidth": 0.010,
+    "gasketDepth": 0.006,
+    "displayCavityDepth": 0.040,
+    "hingeKnuckleDiameter": 0.016,
+    "hingeKnuckleHeight": 0.080,
+    "hingeCount": 3,
+    "latchBody": [0.035, 0.055, 0.012],
+    "dripHood": [2.48, 0.025, 0.14],
+    "paperThickness": 0.0004,
+    "noticeCount": 5,
+    "pinHeadDiameter": 0.007,
+    "pinHeadHeight": 0.004
+  },
+  "installationCoordinatesLocalToHdNoticeBoard": {
+    "backingCenterY": 1.63,
+    "backingCenterZ": -0.020,
+    "paperFaceZ": -0.0106,
+    "clearCoverCenterY": 1.63,
+    "clearCoverCenterZ": 0.032,
+    "gasketCenterZ": 0.029,
+    "dripHoodCenterY": 2.3075,
+    "dripHoodCenterZ": 0.012,
+    "hingeCenterX": -1.18,
+    "hingeCenterZ": 0.036,
+    "latchCenterX": 1.18,
+    "latchCenterY": 1.63,
+    "latchCenterZ": 0.041
+  },
+  "interfacesAndHardLimits": {
+    "maximumBackingToPaperGapMetres": 0.001,
+    "minimumPaperToCoverAirGapMetres": 0.020,
+    "minimumCoverEdgeClearanceInsideFrameMetres": 0.030,
+    "maximumCoverEdgeClearanceInsideFrameMetres": 0.070,
+    "maximumDripHoodBearingGapMetres": 0.0025,
+    "maximumHingeAxisMissFromLeftFrameRailMetres": 0.020,
+    "maximumLatchAxisMissFromRightFrameRailMetres": 0.020,
+    "requiredHingeCount": 3,
+    "requiredNoticeCount": 5,
+    "minimumDistinctNoticeMaterialCount": 3,
+    "requiredLodCount": 4,
+    "generatedColliderCount": 0
+  },
+  "materials": {
+    "paintedSteelFrameAndPosts": {
+      "albedoLinearRgb": [0.105, 0.305, 0.39],
+      "roughness": [0.60, 0.76],
+      "metallic": 0.0,
+      "specularF0": 0.04,
+      "normalScale": 0.25,
+      "microstructure": "fine exterior paint orange-peel/chalking",
+      "wetness": "localized only after rain; dry benchmark default",
+      "uvAging": "slight chalking strongest on top/upward faces",
+      "angularFresnelResponse": "dielectric reflection; no metallic tint and no baked highlight"
+    },
+    "exposedHingeLatchSteel": {
+      "albedoLinearRgb": [0.34, 0.355, 0.36],
+      "roughness": [0.26, 0.42],
+      "metallic": [0.95, 1.0],
+      "normalScale": 0.22,
+      "microstructure": "fine machining/oxidation variance",
+      "wetness": "localized runoff only",
+      "uvAging": "not applicable",
+      "angularFresnelResponse": "metallic environment reflection from actual probes/sky"
+    },
+    "backingPanel": {
+      "albedoLinearRgb": [0.205, 0.16, 0.105],
+      "roughness": [0.72, 0.88],
+      "metallic": 0.0,
+      "specularF0": 0.04,
+      "normalScale": 0.40,
+      "microstructure": "fine board fibre/coating structure",
+      "wetness": "protected behind clear cover; no broad wet sheen",
+      "uvAging": "mild desaturation from long-term indirect daylight",
+      "angularFresnelResponse": "broad dielectric response"
+    },
+    "clearAcrylicCover": {
+      "albedoLinearRgb": [0.96, 0.98, 1.0],
+      "roughness": [0.08, 0.15],
+      "metallic": 0.0,
+      "specularF0": 0.04,
+      "normalScale": 0.05,
+      "microstructure": "very fine wiping haze only; macro reflections come from actual lighting/probes",
+      "wetness": "dry benchmark default",
+      "uvAging": "very slight warm/yellow cast only; must remain visibly transparent",
+      "angularFresnelResponse": "stronger reflection at grazing angle from dielectric Fresnel; no painted reflection"
+    },
+    "epdmGasket": {
+      "albedoLinearRgb": [0.025, 0.027, 0.026],
+      "roughness": [0.78, 0.90],
+      "metallic": 0.0,
+      "specularF0": 0.04,
+      "normalScale": 0.15,
+      "microstructure": "fine matte rubber",
+      "wetness": "localized edge darkening only",
+      "uvAging": "minor surface chalking without metallic/glossy conversion",
+      "angularFresnelResponse": "low-energy dielectric lobe"
+    },
+    "printedPaper": {
+      "albedoLinearRgbRange": [[0.72, 0.74, 0.69], [0.92, 0.90, 0.82]],
+      "roughness": [0.78, 0.90],
+      "metallic": 0.0,
+      "specularF0": 0.04,
+      "normalScale": 0.10,
+      "microstructure": "paper fibre plus printed ink generated in material texture, not modeled as raised geometry",
+      "wetness": "none while cover is intact",
+      "uvAging": "different sheets fade/yellow at different rates",
+      "angularFresnelResponse": "broad matte dielectric response"
+    }
+  },
+  "noticeLayout": [
+    {"id": "A4_left_upper", "sizeMetres": [0.21, 0.297], "centerXY": [-0.74, 1.86], "palette": "aged_cream_black"},
+    {"id": "A3_left_lower", "sizeMetres": [0.42, 0.297], "centerXY": [-0.42, 1.38], "palette": "faded_blue_black"},
+    {"id": "A4_center_upper", "sizeMetres": [0.21, 0.297], "centerXY": [-0.10, 1.88], "palette": "warm_white_black"},
+    {"id": "A3_right", "sizeMetres": [0.297, 0.42], "centerXY": [0.47, 1.58], "palette": "faded_green_black"},
+    {"id": "A5_right_upper", "sizeMetres": [0.148, 0.21], "centerXY": [0.84, 1.96], "palette": "faded_pink_black"}
+  ],
+  "geometryVsMaterialDetail": {
+    "geometry": ["frame depth", "recessed backing thickness", "3 mm clear cover", "perimeter gasket", "hinges", "latch", "drip hood", "individual paper sheet thickness", "LOD0 pin heads"],
+    "material": ["printed text/graphics", "paper fibre", "paint microstructure", "acrylic wiping haze", "fine oxidation", "UV fading", "minor dust/runoff"],
+    "forbidden": ["raised geometry pretending to be printed text", "painted reflection on clear cover", "single opaque dark rectangle pretending to be glazing", "floating paper", "cover intersecting papers/backing"]
+  },
+  "orientationExposureAging": {
+    "front": "faces local +Z toward the benchmark camera side",
+    "sunRain": "top hood/frame receive strongest direct UV/rain; cover receives runoff and wiping exposure; backing/papers are sheltered",
+    "causeBasedAging": ["UV chalking on upper painted frame", "minor vertical runoff at clear cover edges", "paper fading/yellowing behind the cover", "splash darkening restricted to post feet by the parent furniture contract"]
+  },
+  "lodPolicy": {
+    "LOD0": "full case, clear cover, gasket, hinges, latch, five notices and ten pin heads",
+    "LOD1": "same silhouette/case/cover/gasket/hinges/latch and five notices; pin heads omitted",
+    "LOD2": "same silhouette/case/cover/gasket/hinges/latch and five notices; no small pins",
+    "LOD3": "same outer case/cover/gasket, hinges/latch and five notice color blocks to avoid content-class pop; micro-print resolves through texture mipmapping",
+    "critical": "front-cover silhouette, notice occupancy, hinge/latch side and material class must not visibly pop"
+  },
+  "renderVerification": {
+    "status": "PENDING_UNITY_RUNTIME",
+    "visualFidelityPointsAwarded": 0,
+    "requiredEvidence": [
+      "native 3840x2160 hero or oblique frame where HD_NoticeBoard is visible",
+      "100% crop showing frame depth, acrylic/front-frame separation, backing recess, paper seating, hinges and latch",
+      "grazing-light crop showing dielectric acrylic Fresnel separately from metallic hinge/latch and rough paper/backing",
+      "temporal pass through all four notice-board LOD tiers without visible cover/content pop"
+    ]
+  }
+}

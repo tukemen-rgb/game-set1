@@ -1,0 +1,87 @@
+{
+  "schemaVersion": "1.0",
+  "branch": "gpt/unity-migration",
+  "runDate": "2026-09-09",
+  "startHead": "b126a926b251be643a00a214c50ad1f87c9cd82a",
+  "implementationHead": "51a8c31c42cd911062c9b38688b6e6badc2b1d8d",
+  "focus": "Realtime midsummer shadow density/contact integrity plus thin-geometry MSAA and LOD stability for native 4K evidence.",
+  "constraints": {
+    "godotPreserved": true,
+    "baseMerged": false,
+    "disasterThemeIntroduced": false,
+    "visualFidelityClaimedWithoutRender": false
+  },
+  "implementationCommits": [
+    {
+      "sha": "6e22ca59782635e73fa4bd9b3c7bd00f51db0d2b",
+      "message": "Add shadow and thin-geometry stability pass"
+    },
+    {
+      "sha": "ee68b8ec0dde4b4470c5f1ee41c2e8303f935c3f",
+      "message": "Add machine-readable shadow stability contract"
+    },
+    {
+      "sha": "51a8c31c42cd911062c9b38688b6e6badc2b1d8d",
+      "message": "Enforce shadow stability in cinematic capture pipeline"
+    }
+  ],
+  "configuration": {
+    "shadowProjection": "StableFit",
+    "shadowCascades": 4,
+    "shadowCascade4Split": [0.10, 0.25, 0.50],
+    "shadowDistanceMeters": 72.0,
+    "globalShadowResolution": "VeryHigh",
+    "summerSunShadowResolution": "VeryHigh",
+    "summerSunShadowBias": 0.025,
+    "summerSunShadowNormalBias": 0.38,
+    "summerSunShadowNearPlaneMeters": 0.10,
+    "configuredMsaa": 8,
+    "cameraRenderingPath": "Forward",
+    "lodBias": 2.0,
+    "multiLevelLodFade": "AnimatedCrossFade",
+    "transparentGlazingOpaqueShadow": false
+  },
+  "verification": {
+    "gitComparison": "startHead -> implementationHead is ahead by 3, behind by 0",
+    "changedPaths": [
+      "UnityProject/Assets/Editor/QualityBlockCinematicImageUpgrade.cs",
+      "UnityProject/Assets/Editor/QualityBlockShadowStabilityUpgrade.cs",
+      "UnityProject/Assets/QA/shadow_stability_contract.json"
+    ],
+    "godotPathsChanged": 0,
+    "unityVersionContract": "6000.3.0f1",
+    "staticContractChecks": "Implemented in QualityBlockShadowStabilityUpgrade.ValidateOpenScene and chained through QualityBlockCinematicImageUpgrade, which is already called by the physical environment/4K capture preparation path.",
+    "commitStatuses": 0,
+    "workflowRuns": 0,
+    "unityCompile": "UNVERIFIED_NO_RUNNER",
+    "native4KCaptures": "ABSENT",
+    "renderReview": "PENDING",
+    "visualFidelityStatus": "UNSCORED_NO_ACTUAL_RENDER",
+    "realtimePerformance": "UNVERIFIED_NO_RUNNER"
+  },
+  "implementationReadiness": {
+    "score": 93,
+    "outOf": 100,
+    "changeFromPreviousRun": 0,
+    "reason": "The code/QA contract is present and integrated, but no readiness points are awarded until Unity 6000.3.0f1 compiles/imports and executes it on a real renderer."
+  },
+  "expectedVisualScoreImpact": {
+    "pointsAwardedNow": 0,
+    "lightingShadowsReflections": "Potentially high: four StableFit cascades, VeryHigh shadow maps and a constrained 72 m shadow distance should concentrate sun-shadow precision in benchmark framing while retaining the existing coherent midsummer sun.",
+    "temporalLodAliasingStability": "Potentially high: Forward MSAA, animated LOD cross-fades and stable shadow projection target rail/sash/grating/branch edge crawl and visible LOD transitions.",
+    "geometryConstruction": "Potentially indirect: better contact shadows can expose rather than conceal floating/interpenetrating geometry, improving defect detectability but awarding no geometry points by configuration alone."
+  },
+  "criticalFailProtectionAdded": [
+    "Severe aliasing/shimmering remains an automatic FAIL and must be judged from actual render evidence.",
+    "Visible LOD pop remains an automatic FAIL; all multi-level benchmark LOD groups are required to use animated cross-fade.",
+    "Major light leak/contact detachment remains an automatic FAIL; sun bias values are bounded by QA rather than arbitrarily increased.",
+    "Transparent facade glazing is prohibited from casting opaque card shadows.",
+    "No blur, post sharpening or painted contact shadows are introduced to hide instability."
+  ],
+  "nextBlocker": "Unity 6000.3.0f1 compile/import and actual 3840x2160 hero/oblique/grazing capture. Review 100% crops for shadow acne/peter-panning, rail/sash/grating/branch stair-stepping, contact leaks and LOD stability. If runtime remains unavailable, the next safe score-oriented target is causal facade/balcony weathering and material variation rather than more post-processing.",
+  "externalTechnicalBasis": [
+    "Unity Built-in Render Pipeline exposes StableFit shadow projection, four directional shadow cascades, VeryHigh shadow resolution and per-light shadow bias controls.",
+    "Built-in Forward rendering supports multisample anti-aliasing, while 4K capture separately records the actually supported RenderTexture MSAA sample count.",
+    "Reducing shadow distance concentrates shadow-map texel density within the camera-relevant region; the 72 m handoff is aligned with the existing atmospheric fog start."
+  ]
+}

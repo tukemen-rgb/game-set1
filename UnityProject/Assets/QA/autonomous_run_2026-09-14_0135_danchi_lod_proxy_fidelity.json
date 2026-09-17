@@ -1,0 +1,87 @@
+{
+  "runDateLocal": "2026-09-14T01:35:32+07:00",
+  "branch": "gpt/unity-migration",
+  "startHead": "0129d262a26e38d3840a3d4d7993ea1d8efa895c",
+  "substantiveCommits": [
+    {
+      "sha": "3b0730259858514ff077831e309dbe100e46b9b8",
+      "message": "Fix Danchi LOD classifier and proxy state fidelity"
+    },
+    {
+      "sha": "7fd06fdc7f7c893723d348fd8c4521b6b1bc8f2e",
+      "message": "Add Danchi LOD proxy fidelity contract"
+    },
+    {
+      "sha": "d686c4fc2ab9439f7d22fa1a11698402b4bf0a13",
+      "message": "Enforce Danchi LOD proxy state continuity"
+    },
+    {
+      "sha": "1ec18951837b0b524e2d15ad8ecc2391e9034e53",
+      "message": "Synchronize clothes LOD contract with upstream classifier fix"
+    }
+  ],
+  "finding": {
+    "type": "lod_proxy_visual_state_discontinuity_risk",
+    "summary": "The parent Danchi LOD generator copied mesh/material and basic shadow/probe usage to proxies, but did not copy probeAnchor or renderer/per-material MaterialPropertyBlocks. A source renderer using an explicit probe anchor or local PBR override could therefore change reflection/light sampling, albedo, roughness, wetness or other material response at an LOD cross-fade even though the proxy mesh/material asset references were identical. The same source still contained the known generic Bracket classifier precedence defect, forcing the clothes-hardware closure to compensate after rebuild.",
+    "observedSourceEvidence": [
+      "QualityBlockDanchiLodUpgrade.CreateProxyRenderer previously copied sharedMaterials, shadowCastingMode, receiveShadows, lightProbeUsage and reflectionProbeUsage but not probeAnchor or MaterialPropertyBlocks.",
+      "RetainedThroughLod previously evaluated generic 'Bracket' before 'ClothesBracket', making the medium-detail clothes-arm rule unreachable in the parent classifier.",
+      "The clothes-hardware closure contract required a downstream LOD2 promotion fallback because of that parent classifier ordering."
+    ]
+  },
+  "implementation": {
+    "parentLodFix": [
+      "Classify ClothesBracket as retained-through LOD2 before the generic Bracket rule and assert that any HD_ClothesBracket_* source resolves to the medium-detail tier.",
+      "Copy probeAnchor, motionVectorGenerationMode, dynamic-occlusion policy and sorting state from each physical source renderer to every generated LOD proxy.",
+      "Copy renderer-wide and per-material-index MaterialPropertyBlocks so source-local albedo/PBR/wetness/texture overrides do not disappear at cross-fade."
+    ],
+    "newEditorQa": "Assets/Editor/QualityBlockDanchiLodProxyFidelityQA.cs",
+    "newContract": "Assets/QA/danchi_lod_proxy_fidelity_contract.json",
+    "formalQaBehavior": [
+      "QA4K_*, QATemporal_* and QAPreparedTemporal_* render targets trigger read-only pre-cull validation; no formal-camera repair is permitted.",
+      "LOD0 must equal the complete physical source-renderer set.",
+      "Every LOD1/2/3 proxy must resolve to exactly one physical source by canonical proxy name plus world position/rotation/lossy scale within 0.5 mm / 0.05 degree / 0.001 tolerances.",
+      "Proxy mesh and material references, layer/static state, shadow receive/cast state, light/reflection probe usage, probe anchor, motion-vector mode, occlusion policy and sorting state must match the source.",
+      "Renderer-wide and per-material-index MaterialPropertyBlock empty-state plus major PBR/color/texture override families are compared.",
+      "Declared LOD renderer sets must exactly match their HD_LOD1/2/3_Proxy hierarchy roots and no Renderer may be reused across levels.",
+      "If clothes support arms exist, the LOD2 count must equal the physical source count."
+    ],
+    "contractSynchronization": "The clothes-drying hardware LOD closure contract now records the upstream classifier as source-fixed; explicit LOD2 promotion is retained only as a compatibility repair for persisted scenes generated before the fix."
+  },
+  "verification": {
+    "githubCompare": "startHead -> 1ec18951837b0b524e2d15ad8ecc2391e9034e53 is ahead 4, behind 0; merge-base remains startHead; changed paths are UnityProject/Assets/Editor and UnityProject/Assets/QA only.",
+    "godotChanged": false,
+    "baseMerged": false,
+    "forbiddenThemeAdded": false,
+    "commitStatusContexts": 0,
+    "workflowRuns": 0,
+    "unityCompileRuntime": "PENDING",
+    "native3840x2160Render": "PENDING",
+    "actualPixelReview": "PENDING",
+    "apiSurfaceSanityCheck": "Unity scripting documentation confirms MaterialPropertyBlock.isEmpty/GetFloat/GetColor/GetTexture, per-renderer and per-material-index Renderer.GetPropertyBlock, Renderer.probeAnchor, Renderer.motionVectorGenerationMode and Renderer.allowOcclusionWhenDynamic are supported APIs; this is not a substitute for compiling in Unity 6000.3.0f1.",
+    "failureInjectionPending": [
+      "offset one declared proxy by more than 0.5 mm",
+      "swap one proxy mesh or material reference",
+      "change one proxy light/reflection probe usage or probeAnchor",
+      "clear a copied MaterialPropertyBlock while the source retains one",
+      "change proxy motion-vector, dynamic-occlusion or sorting state",
+      "place a declared proxy outside its canonical proxy root",
+      "reuse one Renderer in two LOD levels",
+      "regress generic Bracket precedence ahead of ClothesBracket and verify LOD2 closure failure"
+    ]
+  },
+  "scores": {
+    "implementationReadiness": 93,
+    "visualFidelity": "UNSCORED_UNTIL_REAL_4K_RENDER",
+    "visualFidelityPointsAwardedThisRun": 0,
+    "passClaimed": false
+  },
+  "expectedVisualScoreImpactIfRenderedCleanly": {
+    "materialPbrPhysicalPlausibility": "small-to-medium",
+    "lightingShadowsReflections": "small-to-medium",
+    "temporalLodAliasingStability": "medium-to-large",
+    "cinematicImageQuality": "small"
+  },
+  "nextBlocker": "A Unity 6000.3.0f1 Runner is required to compile the new proxy-state code/QA, rebuild DanchiHighDetail, execute the failure injections, and then capture native 3840x2160 frontal/oblique/grazing stills, 100% construction/material crops and sealed lod_walk_oblique temporal evidence. Stop speculative expansion when those pixels appear and score/fix the actual render before any further asset work.",
+  "forbiddenThemes": ["earthquake", "disaster", "reconstruction"]
+}

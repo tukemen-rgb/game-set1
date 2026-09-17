@@ -1,0 +1,134 @@
+{
+  "contractVersion": "facade-weathering-spatial-causality-v1.0.0",
+  "status": "IMPLEMENTATION_CONTRACT_RENDER_VERIFICATION_PENDING",
+  "scope": "QualityBlock1990s facade residue geometry and the physical construction/exposure sources that can cause it",
+  "visualFidelityCategoryTargets": {
+    "weathering_context_causality_weight": 10,
+    "weathering_context_causality_hardMinimum": 9,
+    "geometry_construction_fidelity_weight": 20,
+    "texture_microdetail_weight": 10
+  },
+  "principle": "Every generated weathering vertex must remain inside a physically defensible catchment from modeled construction, drainage, contact or exposure. Deterministic variation may change shape inside a catchment but may never invent a stain source.",
+  "benchmarkContext": {
+    "season": "midsummer",
+    "surfaceState": "dry",
+    "recentRain": false,
+    "forbidGenericWetLook": true,
+    "forbidUncausedRandomStains": true,
+    "forbidWeatheringAsGeometryCoverup": true
+  },
+  "sourceTopology": {
+    "windowSills": {
+      "prefix": "HD_WindowSillDrip",
+      "requiredCount": 30,
+      "cause": "rain exits discrete low points of a projecting sill/drip nose",
+      "catchment_m": {
+        "lateralFromSourceCenter": 0.78,
+        "firstResidueBelowSourceMin": 0.84,
+        "residueBelowSourceMax": 1.95,
+        "facadePlaneTolerance": 0.04
+      },
+      "minimumBoundVerticesPerSource": 8
+    },
+    "rainwaterDownpipe": {
+      "nominalFacadeX": 4.425,
+      "lateralCatchmentRadius": 0.19,
+      "verticalCatchmentMinY": 0.35,
+      "verticalCatchmentMaxY": 6.60,
+      "facadePlaneTolerance": 0.04,
+      "minimumBoundVertices": 24,
+      "cause": "concentrated repeated wetting/leakage/splash adjacent to the installed full-height drainage line"
+    },
+    "balconySlabLips": {
+      "prefix": "HD_BalconySlabLip",
+      "requiredCount": 30,
+      "cause": "rain exits one or two discrete low points on the slab drip edge",
+      "catchment_m": {
+        "lateralFromSourceCenter": 1.36,
+        "firstResidueBelowSourceMin": 0.06,
+        "residueBelowSourceMax": 0.45,
+        "outboardPlaneOffset": 0.052,
+        "planeTolerance": 0.025
+      },
+      "minimumBoundVerticesPerSource": 8
+    },
+    "railBaseFixings": {
+      "prefix": "HD_RailBasePlate_",
+      "requiredCount": 210,
+      "cause": "localized coating failure at a mechanically anchored ferrous fixture can carry oxide residue downward",
+      "catchment_m": {
+        "lateralFromFixing": 0.05,
+        "firstResidueBelowFixingMin": 0.015,
+        "residueBelowFixingMax": 0.23,
+        "outboardPlaneOffset": 0.052,
+        "planeTolerance": 0.018
+      },
+      "minimumDistinctActiveFixings": 20,
+      "maximumDistinctActiveFixings": 60,
+      "minimumBoundVerticesPerActiveFixing": 6,
+      "reasonForSparseRange": "The generator intentionally limits visible oxide runoff to a minority of the 210 physical base plates so age does not become a repeated procedural motif."
+    },
+    "acDrainHoses": {
+      "prefix": "HD_AC_DrainHose",
+      "requiredCount": 15,
+      "cause": "episodic condensate leaves a small dry mineral/dust deposit at the actual hose termination",
+      "catchment_m": {
+        "radiusX": 0.12,
+        "radiusZ": 0.10,
+        "verticalTolerance": 0.02,
+        "terminationBelowRendererBounds": 0.003
+      },
+      "minimumBoundVerticesPerSource": 12
+    },
+    "gradeInterface": {
+      "facadePlaneZ": -7.276,
+      "facadePlaneTolerance": 0.03,
+      "minX": -20.60,
+      "maxX": 5.00,
+      "minY": 0.015,
+      "maxY": 0.47,
+      "cause": "soil/paving splash energy is height-limited and increases around concentrated downpipe discharge",
+      "minimumDownpipeSideTopHeightGainOverFarFacade_m": 0.04,
+      "nearDownpipeXMin": 3.10,
+      "farFacadeXMin": -15.0,
+      "farFacadeXMax": -2.0
+    }
+  },
+  "groupBindingRules": {
+    "Weathering_GradeSplash": "Every vertex stays in the grade-interface envelope and the upper edge is measurably higher near the downpipe side than the far facade.",
+    "Weathering_RainRunoff": "Every vertex is attributable to either one modeled sill catchment or the installed downpipe catchment; every sill and the downpipe must have witnesses.",
+    "Weathering_BalconyDrip": "Every vertex is below and laterally inside a modeled slab-lip catchment; every slab lip must have witnesses.",
+    "Weathering_RailRust": "Every vertex is attributable to a modeled rail base fixing; the active fixing set must remain sparse rather than covering all fixtures.",
+    "Weathering_ACResidue": "Every vertex is within the horizontal termination patch of a modeled AC drain hose; every hose termination must have witnesses."
+  },
+  "qaRules": {
+    "requireAllWeatheringVerticesAttributed": true,
+    "requireAllMandatorySourcesWitnessed": true,
+    "requireCanonicalSourceCounts": true,
+    "requireLookdevDiagram": true,
+    "formalMainCameraPreCullFailClosed": true,
+    "sourceQaCannotClearVisualCriticalDefects": true,
+    "criticalDefectIdsReferenced": [
+      "visible_primitive_placeholder",
+      "obvious_repetition",
+      "missing_construction_material_metadata",
+      "unverified_render_claim"
+    ]
+  },
+  "renderVerification": {
+    "runtimeRenderVerification": "PENDING_UNITY_RUNTIME",
+    "nativeResolution": [3840, 2160],
+    "requiredViews": ["hero/facade_center", "hero/facade_right", "oblique/balcony_services", "grazing/material_grazing"],
+    "required100PercentCrops": ["window_sill_runoff", "balcony_drip_edge", "rail_fixing_rust", "ac_drain_termination", "grade_downpipe_transition"],
+    "manualChecks": [
+      "stains read as consequences of visible construction and exposure rather than arbitrary procedural decoration",
+      "rain streaks terminate beneath plausible drip origins and do not float beside openings",
+      "grade splash decays upward and strengthens locally near concentrated drainage without becoming a horizontal painted band",
+      "rail rust remains sparse and does not repeat at an immediately obvious cadence",
+      "AC residue remains a dry local termination deposit rather than a puddle or glossy wet patch",
+      "no catchment-compliant geometry is nevertheless visibly interpenetrating, z-fighting or compositionally implausible"
+    ],
+    "visualFidelityPointsAwarded": 0,
+    "visualFidelityStatus": "UNSCORED"
+  }
+}

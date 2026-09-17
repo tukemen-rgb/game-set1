@@ -1,0 +1,18 @@
+{
+  "runId":"2026_09_16_exterior_hero_bay",
+  "startHead":"765e3621f83485bf320181dc20cdaa5179734bcc",
+  "branch":"gpt/unity-migration",
+  "runnerEvidence":{"workflowRunsAtStart":0,"unityRuntimeAvailable":false,"actualUnityScreenshotsObserved":false},
+  "ownerInspection":{"reused":["ExteriorFacadeSet","BalconyWindowSet","WindowInstallDetails","BalconyACSet","BalconyRainwaterSet","BalconyGuardrailSet","BalconySoffitSet"],"duplicateSystemsCreated":0},
+  "actualNewAsset":{"id":"PaintedFiberCementFacadeWindowService3600x2700","triangles":{"MASTER":2896,"LOD0":2128,"LOD1":652,"LOD2":264,"LOD3":120},"glbCount":5,"objCount":5},
+  "actualIntegration":{"id":"BalconyExteriorHeroBay3600","triangles":{"MASTER":168152,"LOD0":93604,"LOD1":43532,"LOD2":22236,"LOD3":13384},"glbCount":5,"boundsMetres":[[-1.8525,-1.4,-0.173],[1.806,1.635,2.23]]},
+  "externalVerification":["GLB reload","finite bounds","finite vertices/normals","nondegenerate faces","strict aggregate triangle reduction MASTER to LOD3","new facade OBJ triangle roundtrip"],
+  "notVerified":["Unity compile/import/render","3840x2160 benchmark pixels","100 percent crops","Unity PBR/reflection/transmission","temporal LOD pop/shimmer","full cross-owner triangle-triangle intersection proof","target-hardware performance"],
+  "visualFidelity":{"score":null,"pass":false,"pointsAwarded":0,"reason":"No actual Unity pixels; diagnostic mesh preview is not render evidence."},
+  "implementationReadiness":{"lastRecorded":93,"recomputed":false},
+  "executedExternalBuildSHA256":"6ca9c171586028f19a459c8c5e8270d69797069829b0e898126ff7c3768997ef",
+  "externalBundleSHA256":"8782709b9bc9612c3be00b87c2f025bd2856f09cb944260c94edfbbd66065fd0",
+  "previewSHA256":"915ff9477dcdf1633a8b5c104772fd1e213d8724044792bf4a0c4ae3584146fd",
+  "godotChanges":0,"baseMerge":false,"formalBenchmarkSceneChanged":false,"excludedThemePresent":false,
+  "nextProductionTarget":"Fix visible interface gaps/contact logic in integrated hero bay before adding unrelated props."
+}

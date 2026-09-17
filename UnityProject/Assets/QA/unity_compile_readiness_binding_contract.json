@@ -1,0 +1,22 @@
+{
+  "schemaVersion": "1.0",
+  "guardedEvidencePath": "Assets/QA/unity_compile_verified.json",
+  "compileVerificationContractPath": "Assets/QA/unity_compile_verification_contract.json",
+  "readinessConsumer": "QualityBlockVisualFidelityGate.WriteImplementationReadinessScorecard",
+  "rules": {
+    "validateImmediatelyOnEditorDomainLoad": true,
+    "validateOnProjectChanged": true,
+    "deleteEvidenceWhenValidationFails": true,
+    "neverCreateEvidenceFromSourceSideQA": true,
+    "missingEvidenceMeansNoCompileReadinessPoints": true,
+    "staleOrForgedEvidenceMustNotSurviveToReadinessScoring": true,
+    "visualFidelityPointsAwarded": 0
+  },
+  "verification": {
+    "runtimeCompileVerified": false,
+    "implementationReadinessScoreUntilFreshEvidence": 93,
+    "visualFidelityPointsAwarded": 0,
+    "visualFidelityStatus": "UNSCORED_UNTIL_REAL_4K_RENDER",
+    "note": "The existing readiness scorer uses evidence-file presence for its 7-point compile check. This binding therefore fail-closes that presence: invalid, stale, wrong-version, wrong-mode, or forged compile evidence is removed before it can count. It never fabricates unity_compile_verified.json."
+  }
+}

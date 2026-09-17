@@ -1,0 +1,53 @@
+{
+  "schemaVersion": "1.0",
+  "purpose": "Fail closed if any automatic Visual Fidelity critical-defect decision is omitted, duplicated, ambiguous, non-terminal, or inconsistent. Unity JsonUtility defaults a missing bool to false, so absence of an explicit present field must never be interpreted as defect absence.",
+  "criticalDecisionSchemaVersion": "1.0",
+  "criticalDefectIds": [
+    "visible_primitive_placeholder",
+    "baked_or_painted_highlights",
+    "impossible_material_physics",
+    "obvious_repetition",
+    "hero_geometry_intersection",
+    "sun_shadow_inconsistency",
+    "forbidden_disaster_theme",
+    "severe_aliasing_or_shimmer",
+    "visible_lod_pop",
+    "major_light_leak",
+    "missing_construction_material_metadata",
+    "unverified_render_claim"
+  ],
+  "terminalScoreableStatuses": [
+    "absent",
+    "present"
+  ],
+  "failClosedStatuses": [
+    "uncertain",
+    "unchecked"
+  ],
+  "rules": {
+    "requireExactlyTwelveCriticalDefectObjects": true,
+    "requireCanonicalCriticalDefectIdsExactlyOnce": true,
+    "requireExplicitPresentBooleanPerDefect": true,
+    "requireExactlyOnePresentFieldPerDefect": true,
+    "requireExplicitReviewStatusPerDefect": true,
+    "requireExactlyOneReviewStatusFieldPerDefect": true,
+    "requireStatusBooleanAgreement": true,
+    "rejectUncertainOrUncheckedCriticalDecision": true,
+    "rejectUnknownReviewStatus": true,
+    "missingOrDuplicateDecisionFieldFails": true,
+    "automaticVisualFidelityUplift": 0
+  },
+  "failureInjection": [
+    "Remove present from one criticalDefects object: validation must fail rather than allowing JsonUtility default false.",
+    "Duplicate present in one criticalDefects object: validation must fail.",
+    "Remove reviewStatus from one criticalDefects object: validation must fail.",
+    "Duplicate reviewStatus in one criticalDefects object: validation must fail.",
+    "Set reviewStatus to uncertain: validation must fail closed.",
+    "Set reviewStatus to unchecked: validation must fail closed.",
+    "Set present=true with reviewStatus=absent or present=false with reviewStatus=present: validation must fail.",
+    "Use an unknown critical-defect id or omit one canonical id: validation must fail."
+  ],
+  "runtimeRenderVerified": false,
+  "visualScoreAwardedByThisQA": false,
+  "note": "This is evidence-integrity enforcement only. It awards zero Visual Fidelity points and cannot clear a critical defect. Real 3840x2160 Unity evidence, 100% crops, temporal evidence where applicable, and direct review remain mandatory."
+}

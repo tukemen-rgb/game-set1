@@ -1,0 +1,86 @@
+{
+  "runDate": "2026-09-13",
+  "branch": "gpt/unity-migration",
+  "startCommit": "bd18e908810299077aeb09e3fd070516e7e835b8",
+  "substantiveCommits": [
+    {
+      "sha": "385fd87817f5c4bd7be0b8b93748bdb95d77c3a5",
+      "message": "Add formal facade macro anti-repetition layer",
+      "note": "Initial anti-repeat implementation. During same-run verification this approach was rejected because built-in Standard shares secondary-map UVs between detail albedo and detail normal; retaining it would have stretched the intended 0.22 m detail normal to the 7.9 m anti-repeat period."
+    },
+    {
+      "sha": "948fd4c3be17743b4c76bc87e07ff67577feb614",
+      "message": "Separate facade macro and detail-normal frequencies",
+      "note": "Corrected final implementation: dedicated Standard-lighting facade surface shader gives independent transforms to 2.4 m primary coating, 0.22 m detail normal and 7.9 m neutral macro variation."
+    }
+  ],
+  "objective": "Reduce the critical immediately-obvious repeated texture/module risk on the 26 m apartment facade without sacrificing physically intended micro-normal frequency or encoding lighting/weathering into albedo.",
+  "finding": {
+    "primaryFacadeTexturePeriodMeters": 2.4,
+    "heroFacadeWidthMeters": 26.0,
+    "approxPrimaryCyclesAcrossFacade": 10.833333,
+    "existingPhysicalUvBenefit": "absolute Danchi-local UV0 already prevents every apartment module from restarting at phase zero",
+    "remainingRisk": "the generated primary texture itself is exactly periodic at 2.4 m, so absolute UV phase alone does not prevent the same coating patch from recurring roughly eleven times across the hero facade",
+    "secondaryUvHazard": "Unity built-in Standard transforms both secondary albedo and secondary normal with _DetailAlbedoMap_ST. Therefore a 7.9 m anti-repeat detail-albedo transform would also move the intended 0.22 m detail normal to 7.9 m.",
+    "resolution": "Use NewTown/FacadePaintedRC, a built-in-pipeline Surface Shader using Standard lighting, with independent 2D properties/transforms for main coating, detail normal and neutral macro variation."
+  },
+  "implemented": {
+    "editorGate": "Assets/Editor/QualityBlockFacadeMacroAntiRepetitionUpgrade.cs",
+    "shader": "Assets/Shaders/NewTownFacadePaintedRC.shader",
+    "machineReadableContract": "Assets/QA/facade_macro_anti_repetition_contract.json",
+    "lookdevIllustration": "Assets/QA/Lookdev/facade_macro_anti_repetition.svg",
+    "generatedRuntimeTexture": "Assets/Art/GeneratedFacadeOptics/FacadeRC_AntiRepeatAlbedo.png",
+    "primaryRepeatMeters": 2.4,
+    "detailNormalRepeatMeters": 0.22,
+    "antiRepeatMacroMeters": 7.9,
+    "combinedExactPrimaryMacroRepeatMeters": 189.6,
+    "automaticVisualPoints": 0
+  },
+  "enforcement": [
+    "sceneSaved hook applies the independent-frequency formal material immediately after facade physical-UV construction has persisted the formal shell",
+    "QA4K, QATemporal and QAPreparedTemporal camera pre-cull paths validate the state read-only and do not repair altered evidence",
+    "formal material must use NewTown/FacadePaintedRC",
+    "primary, detail-normal and macro-variation transforms must remain 1.0, 10.909091 and 0.30379747 respectively on the 2.4 m physical UV field",
+    "macro variation must use a dedicated texture different from primary albedo",
+    "metallic and emission remain zero",
+    "macro texture requires sRGB, mipmaps, Repeat, Trilinear and anisotropy >= 8",
+    "combined exact primary+macro recurrence must remain >= 100 m",
+    "source checks cannot clear the rendered repeated-pattern critical defect"
+  ],
+  "verification": {
+    "repositoryDiff": "start..948fd4c3 is 2 commits ahead / 0 behind and changes only UnityProject/Assets/Editor, UnityProject/Assets/Shaders and UnityProject/Assets/QA",
+    "unityStandardSourceReview": "Verified Unity built-in Standard input path: detail texcoords are transformed by _DetailAlbedoMap_ST and the same texcoords.zw are used by _DetailNormalMap. This invalidated the first same-run approach and motivated the corrected independent-frequency shader.",
+    "githubWorkflowRunsAtSubstantiveHead": 0,
+    "githubCommitStatusesAtSubstantiveHead": 0,
+    "unity6000_3_0f1Compile": "PENDING_RUNNER",
+    "actual3840x2160Render": "PENDING_RUNNER",
+    "actual100PercentCropReview": "PENDING_RUNNER",
+    "temporalReview": "PENDING_RUNNER"
+  },
+  "failureInjectionForRunner": [
+    "switch formal material back to built-in Standard after physical-UV save; formal pre-cull must fail",
+    "set detail-normal scale to the 7.9 m macro scale; must fail",
+    "set macro-variation scale to 1.0 / 2.4 m; must fail",
+    "bind primary albedo as macro variation; must fail",
+    "remove macro mipmaps or reduce anisotropy below 8; must fail",
+    "enable facade emission or nonzero scalar metallic; must fail"
+  ],
+  "scores": {
+    "implementationReadiness": 93,
+    "visualFidelity": "UNSCORED_UNTIL_REAL_4K_RENDER",
+    "visualFidelityPointsAwardedThisRun": 0,
+    "passClaimed": false
+  },
+  "expectedVisualScoreImpactNotAwarded": {
+    "textureMicrodetailTexelFidelity": "high: removes exact large-scale coating recurrence while restoring/preserving the intended independent 0.22 m detail-normal frequency",
+    "materialPbrPhysicalPlausibility": "medium-high: Standard BRDF remains authoritative while albedo variation, normals and metallic/smoothness are separated by physical role",
+    "cinematicImageQuality": "medium: reduces CG-like facade stamping in wide and grazing frames",
+    "temporalLodAliasingStability": "small-medium: independently mipmapped macro field should be more stable than visible periodic recurrence, but only actual movement can prove it"
+  },
+  "constraints": {
+    "godotModified": false,
+    "baseMerged": false,
+    "earthquakeDisasterReconstructionThemesAdded": false
+  },
+  "nextBlocker": "A real Unity 6000.3.0f1 runner must compile the new surface shader/editor gate, execute the clean review packet, run the failure injections, then produce 3840x2160 hero/oblique/grazing frames plus 100% facade crops and temporal evidence. Only those pixels may determine whether repeated-pattern, microdetail, material and cinematic Visual Fidelity deductions improve."
+}

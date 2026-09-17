@@ -1,0 +1,113 @@
+{
+  "schemaVersion": "1.0",
+  "runId": "2026-09-09_vegetation_ecology",
+  "startHead": "f5ff9b93de01aa2a63f30937e752cf24c157b4d3",
+  "endHeadBeforeRunRecord": "8ff53190e9c5327f42adac218699b3c8f9862b45",
+  "branch": "gpt/unity-migration",
+  "baseMergePerformed": false,
+  "godotModified": false,
+  "excludedThemesObserved": false,
+  "task": "Improve the Vegetation/natural complexity score path without inventing render evidence: add construction-aware plaza tree pits and cause-based low understory, machine-enforce their lookdev/LOD constraints, and persist them through the existing quality-scene save/capture chain.",
+  "commits": [
+    {
+      "sha": "2d7e5e95c850313c9e6bce8bc1e4f6942eca4002",
+      "message": "Add cause-based tree-pit and understory ecology pass",
+      "substantive": true
+    },
+    {
+      "sha": "cf79b0a133dcbddba58b095590a18b7bc63254b1",
+      "message": "Add machine-readable vegetation ecology lookdev contract",
+      "substantive": true
+    },
+    {
+      "sha": "393cc046f8468ee30b7433893c9bb80b96d9abe9",
+      "message": "Enforce vegetation ecology on benchmark scene saves",
+      "substantive": true
+    },
+    {
+      "sha": "f6a16e93f81601694324ae41392169da600532e6",
+      "message": "Machine-enforce vegetation ecology lookdev contract",
+      "substantive": true
+    },
+    {
+      "sha": "59a0dad8dfd2df57ba5a94fecea374c17b2d4e3c",
+      "message": "Gate scene saves on vegetation ecology contract QA",
+      "substantive": true
+    },
+    {
+      "sha": "8ff53190e9c5327f42adac218699b3c8f9862b45",
+      "message": "Record vegetation ecology implementation readiness",
+      "substantive": false
+    }
+  ],
+  "implementation": {
+    "treeAnchorCount": 6,
+    "maintainedPavedTreePitCount": 4,
+    "treePitEdgingModulesPerPit": 12,
+    "generatedColliders": 0,
+    "understoryLodLevels": 4,
+    "lodPolicy": "LOD0/1 retain stems plus foliage; LOD2/3 remove stems and reduce plant count; all four levels are renderer-distinct and use animated cross-fade.",
+    "densityCausality": "candidate plants are deterministically thinned toward the nearest plaza/path/worn-path circulation pressure source rather than distributed as a uniform decorative ring",
+    "geometry": "tree-pit soil uses a generated beveled-cylinder authored mesh asset; edging uses real-dimension chamfered-box mesh assets; low stems and foliage reuse the high-detail tree twig and leaf-spray mesh library; Unity Cube/Cylinder/Sphere primitives are rejected by QA",
+    "materials": {
+      "soil": "PBR_DrySoil, non-metallic rough mineral surface",
+      "edging": "PBR_WashedConcrete, non-metallic precast concrete",
+      "foliage": "PBR_LeafMid_Transmission / PBR_LeafDark_Transmission using NewTown/FoliageTransmission"
+    },
+    "persistence": "sceneSaving gate runs only after both HD_TreeMaster_* and GroundHighDetail exist, then validates the machine-readable ecology contract, rebuilds the ecology layer and runs structural QA before the benchmark save is allowed to complete"
+  },
+  "verification": {
+    "sourceStaticReview": "PASS_WITH_RENDER_PENDING",
+    "branchDiffAtSubstantiveHead": "5 commits ahead, 0 behind startHead; four new UnityProject files before readiness bookkeeping; no Godot path touched",
+    "commitStatusContexts": 0,
+    "workflowRuns": 0,
+    "unityCompile": "NOT_RUN_NO_UNITY_RUNTIME",
+    "actual3840x2160Render": "NOT_AVAILABLE",
+    "actual100PercentCrops": "NOT_AVAILABLE",
+    "visualFidelityScore": null,
+    "visualFidelityStatus": "UNSCORED_NO_RENDER_EVIDENCE"
+  },
+  "implementationReadiness": {
+    "score": 93,
+    "possible": 100,
+    "changeThisRun": 0,
+    "reasonNotIncreased": "The remaining seven points are reserved for real Unity 6000.3.0f1 compile/runtime verification. Additional source coverage is not allowed to substitute for actual editor execution or native 4K evidence."
+  },
+  "expectedVisualScoreImpact": [
+    {
+      "category": "Vegetation/natural complexity",
+      "direction": "positive expected",
+      "evidenceNeeded": "oblique/vegetation_grounding must show independent low plants, non-uniform density and credible root-zone layering without a stamped circular pattern"
+    },
+    {
+      "category": "Geometry/construction fidelity",
+      "direction": "positive expected",
+      "evidenceNeeded": "hero/ground_contact and grazing/tree_shadow_contact must show plaza trees entering maintained planting openings rather than uninterrupted pavement, with edging depth and no floating/interpenetrating hero geometry"
+    },
+    {
+      "category": "Material/PBR physical plausibility",
+      "direction": "positive expected",
+      "evidenceNeeded": "soil/concrete must remain rough non-metallic dielectrics; understory foliage must retain coherent two-sided transmitted-light response under the midsummer sun"
+    },
+    {
+      "category": "Temporal/LOD/aliasing stability",
+      "direction": "positive expected",
+      "evidenceNeeded": "camera motion must not expose plant shimmer or visible population pop at the four understory LOD transitions"
+    },
+    {
+      "category": "Period accuracy/scene authenticity",
+      "direction": "positive expected",
+      "evidenceNeeded": "tree-pit maintenance and summer undergrowth must read as ordinary lived-in residential landscaping, not decorative fantasy or damage narrative"
+    }
+  ],
+  "criticalDefectRiskAddressed": [
+    "tree trunks intersecting hero paving without a construction interface",
+    "visible primitive-placeholder geometry",
+    "obvious repeated vegetation module pattern",
+    "floating vegetation",
+    "materially impossible metallic soil/concrete",
+    "visible LOD pop"
+  ],
+  "nextBlocker": "Unity 6000.3.0f1 editor/runner. On first available native render, stop speculative expansion and inspect oblique/vegetation_grounding, grazing/tree_shadow_contact and hero/ground_contact at 100 percent. Verify tree-pit depth, root contact, plant density, repeated leaf sprays, contact shadows, aliasing/shimmer and LOD transitions, then fix observed defects before adding further detail.",
+  "note": "Visual Fidelity points awarded this run: 0. This record is implementation/readiness evidence only and must never be interpreted as a Visual Fidelity PASS."
+}

@@ -1,0 +1,163 @@
+{
+  "authority": "Assets/QA/visual_fidelity_gate.json",
+  "status": "UNSCORED_UNTIL_REAL_4K_RENDER",
+  "total": null,
+  "pass": false,
+  "threshold": 92,
+  "notSubmittableToFormalEvaluator": true,
+  "categories": [
+    {
+      "id": "geometry_construction",
+      "weight": 20,
+      "hardMinimum": 18,
+      "score": null,
+      "renderEvidence": [],
+      "correctiveActions": [
+        "Inspect clip pivot holes/springs, sock cuff cavities, cloth hems and garment-to-clip contacts from native Unity frontal/oblique/grazing views."
+      ]
+    },
+    {
+      "id": "material_pbr",
+      "weight": 20,
+      "hardMinimum": 18,
+      "score": null,
+      "renderEvidence": [],
+      "correctiveActions": [
+        "Verify PP dielectric, spring-steel conductor and cotton fiber response under grazing-angle Unity lighting."
+      ]
+    },
+    {
+      "id": "lighting_shadows_reflections",
+      "weight": 15,
+      "hardMinimum": 13,
+      "score": null,
+      "renderEvidence": [],
+      "correctiveActions": [
+        "Confirm coherent midsummer sun, sky fill and contact shadows around clip jaws, springs, cuffs and hanging folds."
+      ]
+    },
+    {
+      "id": "texture_microdetail",
+      "weight": 10,
+      "hardMinimum": 9,
+      "score": null,
+      "renderEvidence": [],
+      "correctiveActions": [
+        "Replace proxy textile/molding microtextures with nonrepeating measured maps and verify texel density; add stitch/end detail only where visible."
+      ]
+    },
+    {
+      "id": "weathering_causality",
+      "weight": 10,
+      "hardMinimum": 9,
+      "score": null,
+      "renderEvidence": [],
+      "correctiveActions": [
+        "Add any yellowing, wear or laundry handling marks only after final placement/use history is established."
+      ]
+    },
+    {
+      "id": "vegetation_natural_complexity",
+      "weight": 8,
+      "hardMinimum": 7,
+      "score": null,
+      "renderEvidence": [],
+      "correctiveActions": [
+        "No points from this batch; evaluate whole scene with existing repaired morning glory."
+      ]
+    },
+    {
+      "id": "period_authenticity",
+      "weight": 7,
+      "hardMinimum": 6,
+      "score": null,
+      "renderEvidence": [],
+      "correctiveActions": [
+        "Review final around-2000 scene context; these are unbranded interpretations rather than verified historical products."
+      ]
+    },
+    {
+      "id": "cinematic_image",
+      "weight": 5,
+      "hardMinimum": 4,
+      "score": null,
+      "renderEvidence": [],
+      "correctiveActions": [
+        "Judge silhouette/composition/exposure only from native 3840x2160 Unity evidence."
+      ]
+    },
+    {
+      "id": "temporal_lod_aliasing",
+      "weight": 5,
+      "hardMinimum": 4,
+      "score": null,
+      "renderEvidence": [],
+      "correctiveActions": [
+        "Move camera/cloth in Unity; inspect 24 thin clips/springs, cuff rims and cloth hems for shimmer or LOD pop."
+      ]
+    }
+  ],
+  "criticalDefects": [
+    {
+      "id": "visible_primitive_placeholder",
+      "present": null,
+      "reviewStatus": "unchecked"
+    },
+    {
+      "id": "baked_or_painted_highlights",
+      "present": null,
+      "reviewStatus": "unchecked"
+    },
+    {
+      "id": "impossible_material_physics",
+      "present": null,
+      "reviewStatus": "unchecked"
+    },
+    {
+      "id": "obvious_repetition",
+      "present": null,
+      "reviewStatus": "unchecked"
+    },
+    {
+      "id": "hero_geometry_intersection",
+      "present": null,
+      "reviewStatus": "unchecked"
+    },
+    {
+      "id": "sun_shadow_inconsistency",
+      "present": null,
+      "reviewStatus": "unchecked"
+    },
+    {
+      "id": "forbidden_disaster_theme",
+      "present": null,
+      "reviewStatus": "unchecked"
+    },
+    {
+      "id": "severe_aliasing_or_shimmer",
+      "present": null,
+      "reviewStatus": "unchecked"
+    },
+    {
+      "id": "visible_lod_pop",
+      "present": null,
+      "reviewStatus": "unchecked"
+    },
+    {
+      "id": "major_light_leak",
+      "present": null,
+      "reviewStatus": "unchecked"
+    },
+    {
+      "id": "missing_construction_material_metadata",
+      "present": null,
+      "reviewStatus": "unchecked"
+    },
+    {
+      "id": "unverified_render_claim",
+      "present": null,
+      "reviewStatus": "unchecked"
+    }
+  ],
+  "comment": "Unknown is not absent. Actual GLB/OBJ topology and diagnostic previews award zero Visual Fidelity points."
+}

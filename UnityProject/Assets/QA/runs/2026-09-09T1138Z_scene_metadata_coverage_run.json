@@ -1,0 +1,57 @@
+{
+  "schemaVersion": "1.0.0",
+  "generatedUtc": "2026-09-09T11:38:08Z",
+  "branch": "gpt/unity-migration",
+  "startHead": "245cbd03576cfdfe01e852702f6e9e79d9a26f9e",
+  "substantiveWorkHead": "16e8f03ecae6505c486836ddebf0a091f693ca59",
+  "substantiveCommits": [
+    "9a8334fe67ab1b17d7b99ec1e101772761ec4306",
+    "70f64fc1125df4e703a507850df7f96a5daef0c4",
+    "f0fe62f1babb58f950a3bd9bd623be9eaf2d4774",
+    "94c19657fd4a12bcb14155aef0cf5199d0ea27c9",
+    "16e8f03ecae6505c486836ddebf0a091f693ca59"
+  ],
+  "changeSummary": [
+    "Added a machine-readable scene-wide metadata coverage contract for Ground, Danchi, ParkEntrance, Trees, StreetFurniture and optional ArtSlots replacement content.",
+    "Each domain now records manufacture, dimensions/thickness, materials/finish, mounting, interfaces/gaps/seals, orientation/exposure, causal aging, geometry-vs-material responsibility, LOD policy and links to detailed QA contracts.",
+    "Added active-renderer coverage QA: every enabled renderer beneath QualityBlock1990s must inherit exactly one registered direct scene-domain scope; unregistered renderer roots, missing/null materials or missing shaders fail validation.",
+    "Added a persisted scene-save gate so later saves of the canonical quality scene cannot introduce unregistered rendered content. Initial unsaved-scene creation is deliberately exempt to avoid sceneSaving re-entry; the subsequent persisted quality-chain saves are gated.",
+    "Bound metadata contract validation and active-renderer coverage validation into the Complete Native 4K Review Packet before any visual score can be reviewed."
+  ],
+  "verification": {
+    "repositoryStaticInspection": "PASS",
+    "branchComparison": "Start head to substantive head is ahead 5 / behind 0. All changed files are under UnityProject; no Godot files were modified and no base merge was performed.",
+    "githubCommitStatus": "No status contexts exist on substantiveWorkHead (total_count=0).",
+    "githubWorkflowRuns": "No workflow runs exist for gpt/unity-migration at this run.",
+    "unityCompile": "PENDING_UNITY_6000_3_0F1_RUNNER",
+    "native4KStillEvidence": "MISSING",
+    "native100PercentCrops": "MISSING",
+    "temporalEvidence": "MISSING",
+    "visualFidelityScoring": "UNSCORED"
+  },
+  "implementationReadiness": {
+    "score": 93,
+    "possible": 100,
+    "status": "UNCHANGED",
+    "reason": "The only existing weighted readiness blocker remains actual Unity compile verification. This run closes a critical metadata-coverage loophole but does not fabricate runner evidence or visual points."
+  },
+  "expectedVisualScoreImpact": [
+    "Geometry & construction fidelity: reduces the risk that newly introduced rendered assemblies bypass manufacture, thickness, mounting and interface reasoning required for the 18/20 hard minimum.",
+    "Material/PBR physical plausibility: every active renderer is now forced into a domain whose linked contracts define physical material families and angular response; missing/null material bindings are rejected before review.",
+    "Weathering/context causality: each rendered domain explicitly records exposure and aging causes, reducing future arbitrary grime/damage additions that would threaten the 9/10 hard minimum.",
+    "Vegetation/natural complexity: tree/understory renderers inherit biological construction, root-ground interfaces and ordinary maintenance/exposure metadata instead of being able to enter as unregistered decorative geometry.",
+    "Period accuracy/scene authenticity: replacement-slot content cannot bypass period/construction contracts merely by being parented under ArtSlots.",
+    "Critical-defect risk: directly addresses missing required construction/material metadata by making an uncovered active benchmark renderer a save/review-packet failure. This source-side closure does not clear the critical defect visually without a real render."
+  ],
+  "visualFidelity": {
+    "status": "UNSCORED",
+    "scoreAwardedThisRun": 0,
+    "reason": "No Unity-generated 3840x2160 stills, pixel-exact 100% crops or sealed temporal sequences exist. Source metadata coverage cannot be converted into visual points."
+  },
+  "nextBlocker": "Unity 6000.3.0f1 editor/runner. On first runner availability, execute the Complete Native 4K Review Packet; the new metadata gate should enumerate actual active renderer counts per scene domain and fail immediately if any generated/replacement renderer escaped Ground/Danchi/ParkEntrance/Trees/StreetFurniture/ArtSlots coverage. If coverage passes, stop speculative expansion and fix the largest deductions observed in sealed hero/oblique/grazing stills and temporal probes.",
+  "constraintsPreserved": {
+    "godotPreserved": true,
+    "baseMerged": false,
+    "earthquakeDisasterReconstructionThemeAdded": false
+  }
+}

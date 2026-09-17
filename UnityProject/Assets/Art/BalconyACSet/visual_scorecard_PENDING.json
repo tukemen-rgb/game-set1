@@ -1,0 +1,33 @@
+{
+  "authority": "Assets/QA/visual_fidelity_gate.json",
+  "status": "UNSCORED_UNTIL_REAL_4K_RENDER",
+  "total": null,
+  "pass": false,
+  "threshold": 92,
+  "categories": [
+    {"id":"geometry_construction","weight":20,"hardMinimum":18,"score":null,"renderEvidence":[],"correctiveActions":["Inspect guard/fan/fin construction and all installed interfaces from Unity 4K views."]},
+    {"id":"material_pbr","weight":20,"hardMinimum":18,"score":null,"renderEvidence":[],"correctiveActions":["Verify Unity import of powder coat, plastic, aluminum, copper, rubber and generated normal maps."]},
+    {"id":"lighting_shadows_reflections","weight":15,"hardMinimum":13,"score":null,"renderEvidence":[],"correctiveActions":["Use coherent midsummer sun/sky, contact shadow under pads and correct metal reflections."]},
+    {"id":"texture_microdetail","weight":10,"hardMinimum":9,"score":null,"renderEvidence":[],"correctiveActions":["Inspect normal-map scale, texel density, UV seams and fin/guard frequency at 100% crops."]},
+    {"id":"weathering_causality","weight":10,"hardMinimum":9,"score":null,"renderEvidence":[],"correctiveActions":["Add only placement-causal UV chalking, lower splash dust and coil dirt after installed orientation is fixed."]},
+    {"id":"vegetation_natural_complexity","weight":8,"hardMinimum":7,"score":null,"renderEvidence":[],"correctiveActions":["Whole-scene category; AC assets award no standalone vegetation points."]},
+    {"id":"period_authenticity","weight":7,"hardMinimum":6,"score":null,"renderEvidence":[],"correctiveActions":["Judge unbranded around-2000 silhouette and adjacent service installation in the scene; do not claim a specific SKU."]},
+    {"id":"cinematic_image","weight":5,"hardMinimum":4,"score":null,"renderEvidence":[],"correctiveActions":["Evaluate composition/exposure only from actual Unity 3840x2160 stills."]},
+    {"id":"temporal_lod_aliasing","weight":5,"hardMinimum":4,"score":null,"renderEvidence":[],"correctiveActions":["Move camera past guard, fins, corrugated hose and LOD transitions; inspect shimmer and pop."]}
+  ],
+  "criticalDefects": [
+    {"id":"visible_primitive_placeholder","present":null},
+    {"id":"baked_or_painted_highlights","present":null},
+    {"id":"impossible_material_physics","present":null},
+    {"id":"obvious_repetition","present":null},
+    {"id":"hero_geometry_intersection","present":null},
+    {"id":"sun_shadow_inconsistency","present":null},
+    {"id":"forbidden_disaster_theme","present":false,"evidence":"No excluded theme authored in this batch."},
+    {"id":"severe_aliasing_or_shimmer","present":null},
+    {"id":"visible_lod_pop","present":null},
+    {"id":"major_light_leak","present":null},
+    {"id":"missing_construction_material_metadata","present":false,"evidence":"BalconyACSet.metadata.json records construction/material assumptions."},
+    {"id":"unverified_render_claim","present":false,"evidence":"All preview/report text explicitly says non-Unity and unscored."}
+  ],
+  "comment": "Null means unverified, not absent. No self-awarded visual points. CPU preview is geometry evidence only."
+}

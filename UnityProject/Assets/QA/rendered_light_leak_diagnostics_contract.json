@@ -1,0 +1,50 @@
+{
+  "schemaVersion": "1.0",
+  "id": "native_4k_rendered_light_leak_diagnostics",
+  "status": "PENDING_UNITY_RUNTIME",
+  "nativeWidth": 3840,
+  "nativeHeight": 2160,
+  "actualUnityRenderRequired": true,
+  "analyzePixelExact100PercentCrops": true,
+  "visualFidelityPointsAwarded": 0,
+  "automaticallyClearsCriticalDefect": false,
+  "automaticallyAssertsCriticalDefect": false,
+  "criticalDefectId": "major_light_leak",
+  "sampleStridePx": 2,
+  "borderExclusionPx": 24,
+  "innerRadiusPx": 2,
+  "outerRadiusPx": 14,
+  "brightCodeMinimum": 176,
+  "darkRingMedianMaximum": 96,
+  "minimumBrightDarkContrastCode": 88,
+  "minimumDarkRingFraction": 0.62,
+  "darkNeighborCodeMaximum": 112,
+  "blockSizePx": 32,
+  "minimumCandidatePixelsPerBlock": 6,
+  "candidatePercentWarning": 0.025,
+  "requiredCropRefs": [
+    "hero/facade_center",
+    "hero/ground_contact",
+    "oblique/construction_depth",
+    "oblique/balcony_services",
+    "grazing/material_grazing"
+  ],
+  "measurement": {
+    "signal": "Display-luma bright-on-dark discontinuity measured from exact post-tonemap PNG pixels.",
+    "candidateDefinition": "A sampled center pixel is a candidate only when it is bright, exceeds the median luma of a surrounding annulus by minimumBrightDarkContrastCode, and at least minimumDarkRingFraction of annulus samples are at or below darkNeighborCodeMaximum.",
+    "spatialClustering": "Candidates are accumulated into fixed pixel blocks. Blocks with at least minimumCandidatePixelsPerBlock are surfaced as suspicious clusters so isolated legitimate sparkle is less influential than spatially persistent bright seams or holes.",
+    "warningOnly": "The diagnostic is triage evidence, not an automatic defect finding. Legitimate sun glints, sky apertures and high-contrast edges can trigger it; the exact sealed pixels and construction context remain authoritative.",
+    "noClearanceByMetric": "Zero warnings cannot clear major_light_leak. The reviewer must explicitly inspect the required crops and record direct evidence in visual_fidelity_evidence.json."
+  },
+  "hardRules": [
+    "Diagnostics may run only after an actual Unity-produced native 3840x2160 manifest exists.",
+    "Every analyzed crop must be a canonical pixel-exact 100% capture record and its current SHA-256 must be bound into the report.",
+    "The report must bind the current 4k_capture_manifest.json SHA-256 before Visual Fidelity scoring is allowed.",
+    "The diagnostic may not award Visual Fidelity points, automatically clear major_light_leak, or automatically assert major_light_leak.",
+    "Bright-on-dark warnings must never be hidden with blur, bloom, depth of field, exposure manipulation or crop substitution.",
+    "A warning is a prompt to inspect geometry closure, shadowing, normal orientation, depth precision, transparent sorting and reflection behavior in the actual crop.",
+    "No excluded thematic content may be introduced by this diagnostic or its corrective actions."
+  ],
+  "runtimeRenderVerified": false,
+  "verification": "PENDING_UNITY_RUNTIME"
+}

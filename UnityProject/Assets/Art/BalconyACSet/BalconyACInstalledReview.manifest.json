@@ -1,0 +1,24 @@
+{
+  "id": "BalconyACInstalledReview_LOD0",
+  "trianglesIncludingDiagnosticContext": 40172,
+  "geometryCount": 141,
+  "formalBenchmarkSceneChanged": false,
+  "unityVerified": false,
+  "wallDiagnosticThicknessMm": 140,
+  "placementPurpose": "external assembly review only; condenser, flush wall trunking, actual refrigerant line pair, top wall elbow, wall sleeve/putty seal and condensate hose",
+  "designContactChecks": {
+    "largeLineEndpointToTrunkStartMm": 0.500000000000056,
+    "smallLineEndpointToTrunkStartMm": 0.500000000000056,
+    "trunkBackToWallExteriorMm": 0.029900000000027127,
+    "topElbowStartOverlapIntoTrunkMm": 2.0,
+    "wallSealPuttyStraddlesExteriorSurface": true
+  },
+  "intentionalContacts": [
+    "line set flare-side contacts existing condenser copper-stub ends",
+    "line set opposite ends contact existing trunking insulated-line starts",
+    "top elbow overlaps trunking top 2 mm under molded snap band",
+    "wall elbow enters sleeve volume",
+    "putty collar straddles diagnostic wall exterior plane"
+  ],
+  "aabbOverlapValidation": "Not used as a physical collision proof; contact checks above are coordinate constraints, not Unity physics."
+}

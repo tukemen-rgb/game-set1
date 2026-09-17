@@ -1,0 +1,96 @@
+{
+  "schemaVersion": "1.0.0",
+  "scenePath": "Assets/Scenes/QualityBlock1990s.unity",
+  "purpose": "Machine-readable formal-build integration contract ensuring the corrected woody geometry/metric bark-UV pass is actually present in the candidate that proceeds through foliage optics and native-4K capture. This contract awards zero Visual Fidelity points; rendered evidence remains authoritative.",
+  "formalBuildChain": {
+    "captureEntry": "QualityBlock4KCapture.PrepareAndValidateScene",
+    "groundEntry": "QualityBlockGroundDetailUpgrade.BuildDetailedGround",
+    "foliageEntry": "QualityBlockFoliageOpticsUpgrade.BuildFoliageOptics",
+    "requiredOrder": [
+      "QualityBlockTreeDetailUpgrade.BuildDetailedTrees",
+      "EditorSceneManager.OpenScene(Assets/Scenes/QualityBlock1990s.unity, Single)",
+      "QualityBlockTreeWoodyContinuityQA.ApplyToOpenScene",
+      "QualityBlockFoliageMorphologyVariationUpgrade.ApplyToOpenScene",
+      "foliage transmission material/optical property application",
+      "QualityBlockFoliageOpticsUpgrade.ValidateOpenScene",
+      "QualityBlockTreeWoodyContinuityQA.ValidateOpenScene"
+    ],
+    "reason": "The tree-detail rebuild regenerates the generated woody hierarchy. Woody continuity therefore must run after that rebuild and before morphology/foliage optics are sealed into the formal scene. Validation must transitively re-check woody continuity whenever foliage optics is validated by the formal capture chain."
+  },
+  "requiredGeneratedTreeState": {
+    "treeCount": 6,
+    "sourceGeometry": {
+      "rootFlaresPerTree": 7,
+      "trunkSectionsPerTree": 7,
+      "primaryBranchSegmentsPerTree": 14,
+      "secondaryBranchesPerTree": 14,
+      "twigsPerTree": 28
+    },
+    "woodyConstruction": [
+      "root flare remains physically visible at grade",
+      "trunk taper remains continuous across section joints",
+      "primary A/B branch chains do not reverse-taper at their interface",
+      "secondary/twig diameter remains subordinate to the parent branch",
+      "stock primitive woody renderers are not accepted as final visible benchmark art"
+    ],
+    "material": {
+      "name": "PBR_Bark",
+      "class": "dry dielectric bark",
+      "metallicMax": 0.02,
+      "normalScale": 0.85,
+      "wetness": 0.0,
+      "angularResponse": "dielectric Fresnel only; no painted/baked edge highlights"
+    },
+    "textureMapping": {
+      "mode": "metric cylindrical UV",
+      "barkCyclesPerMeter": 0.55,
+      "channelScaleSynchronizationRequired": true,
+      "minimumDistinctTrunkStartPhasesAcrossSixTrees": 5
+    },
+    "lod": {
+      "levels": 4,
+      "crossFadeRequired": true,
+      "correctedWoodyIdentityMustPersistIntoRetainedProxyTiers": true
+    }
+  },
+  "failClosedRules": [
+    "formal foliage build omits QualityBlockTreeWoodyContinuityQA.ApplyToOpenScene after the tree-detail rebuild",
+    "formal foliage validation omits QualityBlockTreeWoodyContinuityQA.ValidateOpenScene",
+    "any later formal-build pass regenerates tree woody geometry after woody-continuity correction without reapplying and revalidating the correction",
+    "visible stock primitive woody geometry survives into a benchmark candidate",
+    "metric bark UV continuity or the five-phase anti-repeat minimum is lost",
+    "woody material violates the dry-dielectric bark contract",
+    "required construction/material metadata is absent",
+    "any disaster, earthquake or reconstruction theme is introduced",
+    "source/runtime checks are represented as rendered Visual Fidelity evidence"
+  ],
+  "visualGateImpact": {
+    "candidateCategories": [
+      "Geometry & construction fidelity",
+      "Texture/microdetail/texel fidelity",
+      "Vegetation/natural complexity",
+      "Material/PBR physical plausibility",
+      "Temporal/LOD/aliasing stability"
+    ],
+    "criticalDefectRiskAddressed": "visible primitive-placeholder geometry in benchmark framing",
+    "autoVisualPoints": 0,
+    "visualFidelityStatusUntilRenderedReview": "UNSCORED"
+  },
+  "renderVerification": {
+    "status": "PENDING_UNITY_RUNTIME",
+    "requiredEvidence": [
+      "3840x2160 hero frame with 100% crop covering at least one generated tree trunk/canopy",
+      "3840x2160 oblique vegetation-grounding frame with 100% root-flare/trunk crop",
+      "3840x2160 grazing-light tree crop showing bark roughness/Fresnel and branch unions",
+      "temporal LOD walk checking trunk/branch silhouette, bark phase and shimmer continuity"
+    ],
+    "manualRejectConditions": [
+      "telephone-pole or stock-cylinder woody read",
+      "visible modular trunk rings",
+      "obvious bark UV restart/repetition",
+      "floating root flare",
+      "metallic/polished bark flash",
+      "severe shimmer or visible LOD pop"
+    ]
+  }
+}

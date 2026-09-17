@@ -138,6 +138,29 @@ def facade_uv(vertices: np.ndarray) -> np.ndarray:
                             (vertices[:, 1] + FACADE_H / 2) / FACADE_H))
 
 
+def create_context_weathered_facade(out_dir, context, size=2048):
+    """Material-only dry runoff at measured vent/clamp and floor interfaces.
+
+    Use the existing shared facade UV field; leave all real openings, bevels,
+    seals and fixtures intact. Formal Unity weathering owners are not replaced.
+    """
+    import balcony_context_materials as weather
+    x=np.linspace(-FACADE_W/2,FACADE_W/2,size)
+    y=np.linspace(FACADE_H/2,-FACADE_H/2,size)
+    xx,yy=np.meshgrid(x,y)
+    p=np.dstack((xx,yy,np.zeros_like(xx)))
+    n=np.zeros_like(p);n[:,:,2]=1
+    color,rough,height,masks=weather.material_values('facade',p,n,context)
+    gy,gx=np.gradient(height,FACADE_H/(size-1),FACADE_W/(size-1))
+    normal=np.dstack((-gx,gy,np.ones_like(gx)))
+    normal/=np.linalg.norm(normal,axis=2)[:,:,None]
+    mr=np.zeros((size,size,3),np.uint8);mr[:,:,1]=np.uint8(np.round(rough*255))
+    material=weather.write_material(out_dir,'PaintedFiberCement_OccupiedDry',np.uint8(np.round(color*255)),mr,np.uint8(np.round((normal*.5+.5)*255)))
+    return material,{'resolution':[size,size],'coverageMetres':[FACADE_W,FACADE_H],
+        'roughnessRange':[float(rough.min()),float(rough.max())],'metallic':0.,'wetness':0.,'bakedLighting':False,
+        'maskMax':{key:float(value.max()) for key,value in masks.items()},'sourceCount':len(context['wall_runoff_sources'])}
+
+
 def bevel_box_from_bounds(bounds: np.ndarray, bevel_width: float, bevel_depth: float,
                            name: str, material) -> trimesh.Trimesh:
     b = np.asarray(bounds, dtype=float)

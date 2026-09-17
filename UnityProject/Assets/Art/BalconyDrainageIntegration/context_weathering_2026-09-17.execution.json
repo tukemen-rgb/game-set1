@@ -1,0 +1,1182 @@
+{
+  "schema": 1,
+  "scope": "existing building-component surface ageing pass; preserve complete input scene",
+  "context": {
+    "units": "metres",
+    "frame": "existing hero local frame",
+    "surfaceState": "dry",
+    "recentRain": false,
+    "front_plates": [
+      {
+        "x": -1.7199999690055847,
+        "y": -1.165499985218048,
+        "z": 1.030000001192093,
+        "half_x": 0.06000000238418579,
+        "half_z": 0.052499979734420776,
+        "bounds": [
+          [
+            -1.7799999713897705,
+            -1.1699999570846558,
+            0.9775000214576721
+          ],
+          [
+            -1.659999966621399,
+            -1.1610000133514404,
+            1.0824999809265137
+          ]
+        ]
+      },
+      {
+        "x": -0.8600000143051147,
+        "y": -1.165499985218048,
+        "z": 1.030000001192093,
+        "half_x": 0.06000000238418579,
+        "half_z": 0.052499979734420776,
+        "bounds": [
+          [
+            -0.9200000166893005,
+            -1.1699999570846558,
+            0.9775000214576721
+          ],
+          [
+            -0.800000011920929,
+            -1.1610000133514404,
+            1.0824999809265137
+          ]
+        ]
+      },
+      {
+        "x": 0.0,
+        "y": -1.165499985218048,
+        "z": 1.030000001192093,
+        "half_x": 0.05999999865889549,
+        "half_z": 0.052499979734420776,
+        "bounds": [
+          [
+            -0.05999999865889549,
+            -1.1699999570846558,
+            0.9775000214576721
+          ],
+          [
+            0.05999999865889549,
+            -1.1610000133514404,
+            1.0824999809265137
+          ]
+        ]
+      },
+      {
+        "x": 0.8600000143051147,
+        "y": -1.165499985218048,
+        "z": 1.030000001192093,
+        "half_x": 0.06000000238418579,
+        "half_z": 0.052499979734420776,
+        "bounds": [
+          [
+            0.800000011920929,
+            -1.1699999570846558,
+            0.9775000214576721
+          ],
+          [
+            0.9200000166893005,
+            -1.1610000133514404,
+            1.0824999809265137
+          ]
+        ]
+      },
+      {
+        "x": 1.7199999690055847,
+        "y": -1.165499985218048,
+        "z": 1.030000001192093,
+        "half_x": 0.06000000238418579,
+        "half_z": 0.052499979734420776,
+        "bounds": [
+          [
+            1.659999966621399,
+            -1.1699999570846558,
+            0.9775000214576721
+          ],
+          [
+            1.7799999713897705,
+            -1.1610000133514404,
+            1.0824999809265137
+          ]
+        ]
+      }
+    ],
+    "return_plates": [
+      {
+        "x": -1.7200000286102295,
+        "y": -1.2378000020980835,
+        "z": 0.14000000059604645,
+        "half_x": 0.052500009536743164,
+        "half_z": 0.06000000238418579,
+        "bounds": [
+          [
+            -1.7725000381469727,
+            -1.242300033569336,
+            0.07999999821186066
+          ],
+          [
+            -1.6675000190734863,
+            -1.233299970626831,
+            0.20000000298023224
+          ]
+        ]
+      },
+      {
+        "x": -1.7200000286102295,
+        "y": -1.2438750267028809,
+        "z": 0.5450000166893005,
+        "half_x": 0.052500009536743164,
+        "half_z": 0.06000000238418579,
+        "bounds": [
+          [
+            -1.7725000381469727,
+            -1.2483750581741333,
+            0.48500001430511475
+          ],
+          [
+            -1.6675000190734863,
+            -1.2393749952316284,
+            0.6050000190734863
+          ]
+        ]
+      }
+    ],
+    "drain_center": [
+      0.44999998807907104,
+      0.8199999928474426
+    ],
+    "oxide_fixing": {
+      "mesh": "ExistingHero_Rail_PowderCoatedSteel",
+      "plate_index": 1,
+      "x": -0.8260000143051147,
+      "z": 1.076000001192093,
+      "cause": "authored sparse coating damage at one measured steel base-plate corner"
+    },
+    "wall_runoff_sources": [
+      {
+        "mesh": "ExistingHero_Vent_PaintedMetal",
+        "cause": "dry dust washed from lower mounting flange",
+        "x": 0.762999979019165,
+        "y": 0.5960000157356262,
+        "length": 0.3,
+        "width": 0.031,
+        "amount": 0.4,
+        "seed": 3
+      },
+      {
+        "mesh": "ExistingHero_Vent_PaintedMetal",
+        "cause": "dry dust washed from lower mounting flange",
+        "x": 0.9970000114440918,
+        "y": 0.5960000157356262,
+        "length": 0.2,
+        "width": 0.022,
+        "amount": 0.29,
+        "seed": 11
+      },
+      {
+        "mesh": "ExistingHero_RainClamp0_GalvanizedSteel",
+        "cause": "dry dust runoff at exposed clamp wall fixture, no assumed pipe leak",
+        "x": 1.7580000324249268,
+        "y": -0.8659999966621399,
+        "length": 0.12,
+        "width": 0.018,
+        "amount": 0.23,
+        "seed": 31
+      },
+      {
+        "mesh": "ExistingHero_RainClamp1_GalvanizedSteel",
+        "cause": "dry dust runoff at exposed clamp wall fixture, no assumed pipe leak",
+        "x": 1.7580000324249268,
+        "y": -0.11600001156330109,
+        "length": 0.141,
+        "width": 0.018,
+        "amount": 0.20500000000000002,
+        "seed": 32
+      },
+      {
+        "mesh": "ExistingHero_RainClamp2_GalvanizedSteel",
+        "cause": "dry dust runoff at exposed clamp wall fixture, no assumed pipe leak",
+        "x": 1.7580000324249268,
+        "y": 0.6840000152587891,
+        "length": 0.162,
+        "width": 0.018,
+        "amount": 0.18,
+        "seed": 33
+      }
+    ],
+    "rustAffectedMainPlates": 1,
+    "mainPlateCount": 5,
+    "limits": [
+      "Stylized dry ageing hypothesis; no claim of measured historical maintenance condition.",
+      "Projected chart positions approximate small bevels; error is reported for every changed mesh.",
+      "No standing water, active leakage, thick corrosion or added structural damage."
+    ]
+  },
+  "negativeWitnesses": {
+    "clearFloorNoDeposits": true,
+    "aboveEverySourceNoRunoff": true,
+    "fourOtherMainPlatesNoRust": true,
+    "authoredDryContext": true,
+    "stainsAreMaterialPropertiesNotShadowMaps": true
+  },
+  "facade": {
+    "resolution": [
+      2048,
+      2048
+    ],
+    "coverageMetres": [
+      3.6,
+      2.7
+    ],
+    "roughnessRange": [
+      0.6776440143585205,
+      0.7991852231030926
+    ],
+    "metallic": 0.0,
+    "wetness": 0.0,
+    "bakedLighting": false,
+    "maskMax": {
+      "runoff": 0.33516883460768504,
+      "dust": 0.2341056615114212
+    },
+    "sourceCount": 5
+  },
+  "levels": [
+    {
+      "level": "LOD0",
+      "input": "BalconyExteriorHeroDrainedStructuralRepairFacadeRefined3600_LOD0_SurfaceRefined.glb",
+      "inputSHA256": "7dcc12ef8c4a429ae1470a662637da23c6c0328d0f0d4c63bc14fb6b290ccee5",
+      "output": "BalconyOccupiedDryWeathering3600_LOD0.glb",
+      "outputSHA256": "59fbefa556467b0d7e7454e122cc016e41af3e1372d47a762a8f098d27395303",
+      "triangles": 101392,
+      "geometryCount": 272,
+      "nodeCount": 272,
+      "changedNames": [
+        "DrainIntegratedFloor_WaterproofSkinWithRealDrainCutout",
+        "ExistingHero_Facade_Panel_00",
+        "ExistingHero_Facade_Panel_01",
+        "ExistingHero_Facade_Panel_02",
+        "ExistingHero_Facade_Panel_03",
+        "ExistingHero_Facade_Panel_04",
+        "ExistingHero_Facade_Panel_05",
+        "ExistingHero_Facade_Panel_06",
+        "ExistingHero_Facade_Panel_07",
+        "ExistingHero_Facade_Panel_08",
+        "ExistingHero_Facade_Panel_09",
+        "ExistingHero_Kerb_WeatheredConcrete",
+        "ExistingHero_Rail_PowderCoatedSteel",
+        "ExistingHero_Return_PowderCoatedSteel"
+      ],
+      "materialReports": {
+        "DrainIntegratedFloor_WaterproofSkinWithRealDrainCutout": {
+          "substrate": "floor",
+          "resolution": [
+            4096,
+            2048
+          ],
+          "densityPixelsPerMetre": 850,
+          "chartCount": 81,
+          "paddingPixels": 8,
+          "projectionMaxErrorM": 7.523439293777301e-08,
+          "roughnessRange": [
+            0.6783601641654968,
+            0.8705768060879346
+          ],
+          "normalTiltMaxDegrees": 4.140233993530273,
+          "maskMax": {
+            "dust": 0.5823691415786744,
+            "mineral": 0.5510848888487287,
+            "sediment": 0.26631549138379956
+          },
+          "chartTexelsAbove002": {
+            "dust": 475061,
+            "mineral": 17649,
+            "sediment": 29243
+          },
+          "metallic": 0.0,
+          "wetness": 0.0,
+          "bakedLighting": false,
+          "geometryTriangleCornersPreserved": true,
+          "originalCornerNormalsPreserved": true
+        },
+        "ExistingHero_Kerb_WeatheredConcrete": {
+          "substrate": "curb",
+          "resolution": [
+            4096,
+            1024
+          ],
+          "densityPixelsPerMetre": 850,
+          "chartCount": 54,
+          "paddingPixels": 8,
+          "projectionMaxErrorM": 0.0013316766019898507,
+          "roughnessRange": [
+            0.7981318235397339,
+            0.9150891304016113
+          ],
+          "normalTiltMaxDegrees": 16.0313777923584,
+          "maskMax": {
+            "dust": 0.3764169709743278,
+            "oxide": 0.29983441329052457,
+            "runoff": 0.14756010743295814
+          },
+          "chartTexelsAbove002": {
+            "dust": 124817,
+            "oxide": 5743,
+            "runoff": 1102
+          },
+          "metallic": 0.0,
+          "wetness": 0.0,
+          "bakedLighting": false,
+          "geometryTriangleCornersPreserved": true,
+          "originalCornerNormalsPreserved": true
+        },
+        "ExistingHero_Rail_PowderCoatedSteel": {
+          "substrate": "steel",
+          "resolution": [
+            4096,
+            2048
+          ],
+          "densityPixelsPerMetre": 700,
+          "chartCount": 366,
+          "paddingPixels": 8,
+          "projectionMaxErrorM": 0.0035548930252626842,
+          "roughnessRange": [
+            0.4448843813721708,
+            0.828414012567946
+          ],
+          "normalTiltMaxDegrees": 0.9981880187988281,
+          "maskMax": {
+            "dust": 0.1599386978149414,
+            "oxide": 0.753863395403822,
+            "wear": 0.6314773785494878
+          },
+          "chartTexelsAbove002": {
+            "dust": 386284,
+            "oxide": 1303,
+            "wear": 12148
+          },
+          "metallic": 0.0,
+          "wetness": 0.0,
+          "bakedLighting": false,
+          "geometryTriangleCornersPreserved": true,
+          "originalCornerNormalsPreserved": true
+        },
+        "ExistingHero_Return_PowderCoatedSteel": {
+          "substrate": "steel",
+          "resolution": [
+            4096,
+            1024
+          ],
+          "densityPixelsPerMetre": 700,
+          "chartCount": 90,
+          "paddingPixels": 8,
+          "projectionMaxErrorM": 0.0035515976815310157,
+          "roughnessRange": [
+            0.4796726405620575,
+            0.6082378290521367
+          ],
+          "normalTiltMaxDegrees": 0.9333510398864746,
+          "maskMax": {
+            "dust": 0.15966211318969728,
+            "oxide": 0,
+            "wear": 0
+          },
+          "chartTexelsAbove002": {
+            "dust": 106084,
+            "oxide": 0,
+            "wear": 0
+          },
+          "metallic": 0.0,
+          "wetness": 0.0,
+          "bakedLighting": false,
+          "geometryTriangleCornersPreserved": true,
+          "originalCornerNormalsPreserved": true
+        }
+      },
+      "allTransformsAndTrianglesPreserved": true,
+      "allUntargetedMeshesNormalsUVMaterialsPreserved": true,
+      "glbRoundtripVerified": true,
+      "objTrianglesVerified": true
+    },
+    {
+      "level": "MASTER",
+      "input": "BalconyExteriorHeroDrainedStructuralRepairFacadeRefined3600_MASTER_SurfaceRefined.glb",
+      "inputSHA256": "85d4a5b33276bfd53b9125b5c7e24f3702e626e7e66058c49d52220b9585f0b5",
+      "output": "BalconyOccupiedDryWeathering3600_MASTER.glb",
+      "outputSHA256": "0e86b66cd56c47ad715c5859a76c93550c01bf8ae292c53b51323f46c42738e6",
+      "triangles": 180792,
+      "geometryCount": 308,
+      "nodeCount": 308,
+      "changedNames": [
+        "DrainIntegratedFloor_WaterproofSkinWithRealDrainCutout",
+        "ExistingHero_Facade_Panel_00",
+        "ExistingHero_Facade_Panel_01",
+        "ExistingHero_Facade_Panel_02",
+        "ExistingHero_Facade_Panel_03",
+        "ExistingHero_Facade_Panel_04",
+        "ExistingHero_Facade_Panel_05",
+        "ExistingHero_Facade_Panel_06",
+        "ExistingHero_Facade_Panel_07",
+        "ExistingHero_Facade_Panel_08",
+        "ExistingHero_Facade_Panel_09",
+        "ExistingHero_Kerb_WeatheredConcrete",
+        "ExistingHero_Rail_PowderCoatedSteel",
+        "ExistingHero_Return_PowderCoatedSteel"
+      ],
+      "materialReports": {
+        "DrainIntegratedFloor_WaterproofSkinWithRealDrainCutout": {
+          "substrate": "floor",
+          "resolution": [
+            4096,
+            2048
+          ],
+          "densityPixelsPerMetre": 850,
+          "chartCount": 105,
+          "paddingPixels": 8,
+          "projectionMaxErrorM": 7.580576366628122e-08,
+          "roughnessRange": [
+            0.6783601641654968,
+            0.8705768178776143
+          ],
+          "normalTiltMaxDegrees": 4.140233993530273,
+          "maskMax": {
+            "dust": 0.5823691415786744,
+            "mineral": 0.5510848542882513,
+            "sediment": 0.266315474795369
+          },
+          "chartTexelsAbove002": {
+            "dust": 475061,
+            "mineral": 17649,
+            "sediment": 29243
+          },
+          "metallic": 0.0,
+          "wetness": 0.0,
+          "bakedLighting": false,
+          "geometryTriangleCornersPreserved": true,
+          "originalCornerNormalsPreserved": true
+        },
+        "ExistingHero_Kerb_WeatheredConcrete": {
+          "substrate": "curb",
+          "resolution": [
+            4096,
+            1024
+          ],
+          "densityPixelsPerMetre": 850,
+          "chartCount": 54,
+          "paddingPixels": 8,
+          "projectionMaxErrorM": 0.0013316766019898507,
+          "roughnessRange": [
+            0.7981318235397339,
+            0.9150891304016113
+          ],
+          "normalTiltMaxDegrees": 16.0313777923584,
+          "maskMax": {
+            "dust": 0.3764169709743278,
+            "oxide": 0.29983441329052457,
+            "runoff": 0.14756010743295814
+          },
+          "chartTexelsAbove002": {
+            "dust": 124817,
+            "oxide": 5743,
+            "runoff": 1102
+          },
+          "metallic": 0.0,
+          "wetness": 0.0,
+          "bakedLighting": false,
+          "geometryTriangleCornersPreserved": true,
+          "originalCornerNormalsPreserved": true
+        },
+        "ExistingHero_Rail_PowderCoatedSteel": {
+          "substrate": "steel",
+          "resolution": [
+            4096,
+            2048
+          ],
+          "densityPixelsPerMetre": 700,
+          "chartCount": 366,
+          "paddingPixels": 8,
+          "projectionMaxErrorM": 0.0035548930252626842,
+          "roughnessRange": [
+            0.4448843813721708,
+            0.828414012567946
+          ],
+          "normalTiltMaxDegrees": 0.9981880187988281,
+          "maskMax": {
+            "dust": 0.1599386978149414,
+            "oxide": 0.753863395403822,
+            "wear": 0.6314773785494878
+          },
+          "chartTexelsAbove002": {
+            "dust": 386284,
+            "oxide": 1303,
+            "wear": 12148
+          },
+          "metallic": 0.0,
+          "wetness": 0.0,
+          "bakedLighting": false,
+          "geometryTriangleCornersPreserved": true,
+          "originalCornerNormalsPreserved": true
+        },
+        "ExistingHero_Return_PowderCoatedSteel": {
+          "substrate": "steel",
+          "resolution": [
+            4096,
+            1024
+          ],
+          "densityPixelsPerMetre": 700,
+          "chartCount": 90,
+          "paddingPixels": 8,
+          "projectionMaxErrorM": 0.0035515976815310157,
+          "roughnessRange": [
+            0.4796726405620575,
+            0.6082378290521367
+          ],
+          "normalTiltMaxDegrees": 0.9333510398864746,
+          "maskMax": {
+            "dust": 0.15966211318969728,
+            "oxide": 0,
+            "wear": 0
+          },
+          "chartTexelsAbove002": {
+            "dust": 106084,
+            "oxide": 0,
+            "wear": 0
+          },
+          "metallic": 0.0,
+          "wetness": 0.0,
+          "bakedLighting": false,
+          "geometryTriangleCornersPreserved": true,
+          "originalCornerNormalsPreserved": true
+        }
+      },
+      "allTransformsAndTrianglesPreserved": true,
+      "allUntargetedMeshesNormalsUVMaterialsPreserved": true,
+      "glbRoundtripVerified": true,
+      "objTrianglesVerified": true
+    },
+    {
+      "level": "LOD1",
+      "input": "BalconyExteriorHeroDrainedStructuralRepairFacadeRefined3600_LOD1_SurfaceRefined.glb",
+      "inputSHA256": "6d101509a3a9fc2005748d197b62594e53c7ab11aed6d4637afb7ff77f0f7b93",
+      "output": "BalconyOccupiedDryWeathering3600_LOD1.glb",
+      "outputSHA256": "0156d67774167773a39a3a4c295614cdd2eced1a272473ed36d1b6616bef9ad7",
+      "triangles": 48872,
+      "geometryCount": 212,
+      "nodeCount": 212,
+      "changedNames": [
+        "DrainIntegratedFloor_WaterproofSkinWithRealDrainCutout",
+        "ExistingHero_Facade_Panel_00",
+        "ExistingHero_Facade_Panel_01",
+        "ExistingHero_Facade_Panel_02",
+        "ExistingHero_Facade_Panel_03",
+        "ExistingHero_Facade_Panel_04",
+        "ExistingHero_Facade_Panel_05",
+        "ExistingHero_Facade_Panel_06",
+        "ExistingHero_Facade_Panel_07",
+        "ExistingHero_Facade_Panel_08",
+        "ExistingHero_Facade_Panel_09",
+        "ExistingHero_Kerb_WeatheredConcrete",
+        "ExistingHero_Rail_PowderCoatedSteel",
+        "ExistingHero_Return_PowderCoatedSteel"
+      ],
+      "materialReports": {
+        "DrainIntegratedFloor_WaterproofSkinWithRealDrainCutout": {
+          "substrate": "floor",
+          "resolution": [
+            4096,
+            2048
+          ],
+          "densityPixelsPerMetre": 850,
+          "chartCount": 57,
+          "paddingPixels": 8,
+          "projectionMaxErrorM": 7.831009907199871e-08,
+          "roughnessRange": [
+            0.6783601641654968,
+            0.8705768130182833
+          ],
+          "normalTiltMaxDegrees": 4.140233993530273,
+          "maskMax": {
+            "dust": 0.5823691415786744,
+            "mineral": 0.5510848888487287,
+            "sediment": 0.26631550797223014
+          },
+          "chartTexelsAbove002": {
+            "dust": 475061,
+            "mineral": 17649,
+            "sediment": 29243
+          },
+          "metallic": 0.0,
+          "wetness": 0.0,
+          "bakedLighting": false,
+          "geometryTriangleCornersPreserved": true,
+          "originalCornerNormalsPreserved": true
+        },
+        "ExistingHero_Kerb_WeatheredConcrete": {
+          "substrate": "curb",
+          "resolution": [
+            4096,
+            1024
+          ],
+          "densityPixelsPerMetre": 850,
+          "chartCount": 54,
+          "paddingPixels": 8,
+          "projectionMaxErrorM": 0.0013316766019898507,
+          "roughnessRange": [
+            0.7981318235397339,
+            0.9150891304016113
+          ],
+          "normalTiltMaxDegrees": 16.0313777923584,
+          "maskMax": {
+            "dust": 0.3764169709743278,
+            "oxide": 0.29983441329052457,
+            "runoff": 0.14756010743295814
+          },
+          "chartTexelsAbove002": {
+            "dust": 124817,
+            "oxide": 5743,
+            "runoff": 1102
+          },
+          "metallic": 0.0,
+          "wetness": 0.0,
+          "bakedLighting": false,
+          "geometryTriangleCornersPreserved": true,
+          "originalCornerNormalsPreserved": true
+        },
+        "ExistingHero_Rail_PowderCoatedSteel": {
+          "substrate": "steel",
+          "resolution": [
+            4096,
+            2048
+          ],
+          "densityPixelsPerMetre": 700,
+          "chartCount": 246,
+          "paddingPixels": 8,
+          "projectionMaxErrorM": 0.0035548930252626842,
+          "roughnessRange": [
+            0.4448843813721708,
+            0.828414012567946
+          ],
+          "normalTiltMaxDegrees": 0.9981880187988281,
+          "maskMax": {
+            "dust": 0.1599386978149414,
+            "oxide": 0.753863395403822,
+            "wear": 0.6314773785494878
+          },
+          "chartTexelsAbove002": {
+            "dust": 361204,
+            "oxide": 916,
+            "wear": 12148
+          },
+          "metallic": 0.0,
+          "wetness": 0.0,
+          "bakedLighting": false,
+          "geometryTriangleCornersPreserved": true,
+          "originalCornerNormalsPreserved": true
+        },
+        "ExistingHero_Return_PowderCoatedSteel": {
+          "substrate": "steel",
+          "resolution": [
+            4096,
+            1024
+          ],
+          "densityPixelsPerMetre": 700,
+          "chartCount": 66,
+          "paddingPixels": 8,
+          "projectionMaxErrorM": 0.0035515976815310157,
+          "roughnessRange": [
+            0.4796726405620575,
+            0.6082378290521367
+          ],
+          "normalTiltMaxDegrees": 0.9333510398864746,
+          "maskMax": {
+            "dust": 0.15966211318969728,
+            "oxide": 0,
+            "wear": 0
+          },
+          "chartTexelsAbove002": {
+            "dust": 101068,
+            "oxide": 0,
+            "wear": 0
+          },
+          "metallic": 0.0,
+          "wetness": 0.0,
+          "bakedLighting": false,
+          "geometryTriangleCornersPreserved": true,
+          "originalCornerNormalsPreserved": true
+        }
+      },
+      "allTransformsAndTrianglesPreserved": true,
+      "allUntargetedMeshesNormalsUVMaterialsPreserved": true,
+      "glbRoundtripVerified": true,
+      "objTrianglesVerified": true
+    },
+    {
+      "level": "LOD2",
+      "input": "BalconyExteriorHeroDrainedStructuralRepairFacadeRefined3600_LOD2_SurfaceRefined.glb",
+      "inputSHA256": "29fb35df7d78eb5bcbaef46a9ab825dd29ca43d2a02f3fe2228849a53f7ce031",
+      "output": "BalconyOccupiedDryWeathering3600_LOD2.glb",
+      "outputSHA256": "42d0a3d94781c55d38b8d0dc9fae283c8cca758e9ffaa82842d57e6565b69b9c",
+      "triangles": 25824,
+      "geometryCount": 165,
+      "nodeCount": 165,
+      "changedNames": [
+        "DrainIntegratedFloor_WaterproofSkinWithRealDrainCutout",
+        "ExistingHero_Facade_Panel_00",
+        "ExistingHero_Facade_Panel_01",
+        "ExistingHero_Facade_Panel_02",
+        "ExistingHero_Facade_Panel_03",
+        "ExistingHero_Facade_Panel_04",
+        "ExistingHero_Facade_Panel_05",
+        "ExistingHero_Facade_Panel_06",
+        "ExistingHero_Facade_Panel_07",
+        "ExistingHero_Facade_Panel_08",
+        "ExistingHero_Facade_Panel_09",
+        "ExistingHero_Kerb_WeatheredConcrete",
+        "ExistingHero_Rail_PowderCoatedSteel",
+        "ExistingHero_Return_PowderCoatedSteel"
+      ],
+      "materialReports": {
+        "DrainIntegratedFloor_WaterproofSkinWithRealDrainCutout": {
+          "substrate": "floor",
+          "resolution": [
+            4096,
+            2048
+          ],
+          "densityPixelsPerMetre": 850,
+          "chartCount": 41,
+          "paddingPixels": 8,
+          "projectionMaxErrorM": 7.453306349880506e-08,
+          "roughnessRange": [
+            0.6783601641654968,
+            0.8705768095502042
+          ],
+          "normalTiltMaxDegrees": 4.140233993530273,
+          "maskMax": {
+            "dust": 0.5823691415786744,
+            "mineral": 0.5510848542882513,
+            "sediment": 0.26631549138379956
+          },
+          "chartTexelsAbove002": {
+            "dust": 475061,
+            "mineral": 17649,
+            "sediment": 29243
+          },
+          "metallic": 0.0,
+          "wetness": 0.0,
+          "bakedLighting": false,
+          "geometryTriangleCornersPreserved": true,
+          "originalCornerNormalsPreserved": true
+        },
+        "ExistingHero_Kerb_WeatheredConcrete": {
+          "substrate": "curb",
+          "resolution": [
+            4096,
+            1024
+          ],
+          "densityPixelsPerMetre": 850,
+          "chartCount": 48,
+          "paddingPixels": 8,
+          "projectionMaxErrorM": 2.4424906541753444e-15,
+          "roughnessRange": [
+            0.7981318235397339,
+            0.9150891304016113
+          ],
+          "normalTiltMaxDegrees": 15.175272941589355,
+          "maskMax": {
+            "dust": 0.3764169709743278,
+            "oxide": 0.29983441329052457,
+            "runoff": 0.14756010743295814
+          },
+          "chartTexelsAbove002": {
+            "dust": 101243,
+            "oxide": 5399,
+            "runoff": 801
+          },
+          "metallic": 0.0,
+          "wetness": 0.0,
+          "bakedLighting": false,
+          "geometryTriangleCornersPreserved": true,
+          "originalCornerNormalsPreserved": true
+        },
+        "ExistingHero_Rail_PowderCoatedSteel": {
+          "substrate": "steel",
+          "resolution": [
+            4096,
+            2048
+          ],
+          "densityPixelsPerMetre": 700,
+          "chartCount": 234,
+          "paddingPixels": 8,
+          "projectionMaxErrorM": 1.0880185641326534e-14,
+          "roughnessRange": [
+            0.4448843813721708,
+            0.8268746709855492
+          ],
+          "normalTiltMaxDegrees": 0.9412842392921448,
+          "maskMax": {
+            "dust": 0.1599386978149414,
+            "oxide": 0.7492352217127891,
+            "wear": 0.6314773785494878
+          },
+          "chartTexelsAbove002": {
+            "dust": 358476,
+            "oxide": 916,
+            "wear": 12148
+          },
+          "metallic": 0.0,
+          "wetness": 0.0,
+          "bakedLighting": false,
+          "geometryTriangleCornersPreserved": true,
+          "originalCornerNormalsPreserved": true
+        },
+        "ExistingHero_Return_PowderCoatedSteel": {
+          "substrate": "steel",
+          "resolution": [
+            4096,
+            1024
+          ],
+          "densityPixelsPerMetre": 700,
+          "chartCount": 66,
+          "paddingPixels": 8,
+          "projectionMaxErrorM": 2.886579864025407e-15,
+          "roughnessRange": [
+            0.4785606861114502,
+            0.6092585645518724
+          ],
+          "normalTiltMaxDegrees": 0.9333510398864746,
+          "maskMax": {
+            "dust": 0.1596634006500244,
+            "oxide": 0,
+            "wear": 0
+          },
+          "chartTexelsAbove002": {
+            "dust": 101068,
+            "oxide": 0,
+            "wear": 0
+          },
+          "metallic": 0.0,
+          "wetness": 0.0,
+          "bakedLighting": false,
+          "geometryTriangleCornersPreserved": true,
+          "originalCornerNormalsPreserved": true
+        }
+      },
+      "allTransformsAndTrianglesPreserved": true,
+      "allUntargetedMeshesNormalsUVMaterialsPreserved": true,
+      "glbRoundtripVerified": true,
+      "objTrianglesVerified": true
+    },
+    {
+      "level": "LOD3",
+      "input": "BalconyExteriorHeroDrainedStructuralRepairFacadeRefined3600_LOD3_SurfaceRefined.glb",
+      "inputSHA256": "604811f99c5ccc59d11124ea87e5262384ee1af06974b0eff37b9ac489013287",
+      "output": "BalconyOccupiedDryWeathering3600_LOD3.glb",
+      "outputSHA256": "55059a97950d04fb596b245c35cd8ebe5149215b5f5fa1254f174c53a67d6327",
+      "triangles": 16136,
+      "geometryCount": 135,
+      "nodeCount": 135,
+      "changedNames": [
+        "DrainIntegratedFloor_WaterproofSkinWithRealDrainCutout",
+        "ExistingHero_Facade_Panel_00",
+        "ExistingHero_Facade_Panel_01",
+        "ExistingHero_Facade_Panel_02",
+        "ExistingHero_Facade_Panel_03",
+        "ExistingHero_Facade_Panel_04",
+        "ExistingHero_Facade_Panel_05",
+        "ExistingHero_Facade_Panel_06",
+        "ExistingHero_Facade_Panel_07",
+        "ExistingHero_Facade_Panel_08",
+        "ExistingHero_Facade_Panel_09",
+        "ExistingHero_Kerb_WeatheredConcrete",
+        "ExistingHero_Rail_PowderCoatedSteel",
+        "ExistingHero_Return_PowderCoatedSteel"
+      ],
+      "materialReports": {
+        "DrainIntegratedFloor_WaterproofSkinWithRealDrainCutout": {
+          "substrate": "floor",
+          "resolution": [
+            4096,
+            2048
+          ],
+          "densityPixelsPerMetre": 850,
+          "chartCount": 29,
+          "paddingPixels": 8,
+          "projectionMaxErrorM": 6.818626485660673e-08,
+          "roughnessRange": [
+            0.6783601641654968,
+            0.8705768109472671
+          ],
+          "normalTiltMaxDegrees": 4.1944661140441895,
+          "maskMax": {
+            "dust": 0.5823691785335541,
+            "mineral": 0.5510848197277738,
+            "sediment": 0.266315474795369
+          },
+          "chartTexelsAbove002": {
+            "dust": 475061,
+            "mineral": 17649,
+            "sediment": 29243
+          },
+          "metallic": 0.0,
+          "wetness": 0.0,
+          "bakedLighting": false,
+          "geometryTriangleCornersPreserved": true,
+          "originalCornerNormalsPreserved": true
+        },
+        "ExistingHero_Kerb_WeatheredConcrete": {
+          "substrate": "curb",
+          "resolution": [
+            4096,
+            1024
+          ],
+          "densityPixelsPerMetre": 850,
+          "chartCount": 48,
+          "paddingPixels": 8,
+          "projectionMaxErrorM": 2.4424906541753444e-15,
+          "roughnessRange": [
+            0.7981318235397339,
+            0.9150891304016113
+          ],
+          "normalTiltMaxDegrees": 15.175272941589355,
+          "maskMax": {
+            "dust": 0.3764169709743278,
+            "oxide": 0.29983441329052457,
+            "runoff": 0.14756010743295814
+          },
+          "chartTexelsAbove002": {
+            "dust": 101243,
+            "oxide": 5399,
+            "runoff": 801
+          },
+          "metallic": 0.0,
+          "wetness": 0.0,
+          "bakedLighting": false,
+          "geometryTriangleCornersPreserved": true,
+          "originalCornerNormalsPreserved": true
+        },
+        "ExistingHero_Rail_PowderCoatedSteel": {
+          "substrate": "steel",
+          "resolution": [
+            4096,
+            2048
+          ],
+          "densityPixelsPerMetre": 700,
+          "chartCount": 234,
+          "paddingPixels": 8,
+          "projectionMaxErrorM": 1.0880185641326534e-14,
+          "roughnessRange": [
+            0.4448843813721708,
+            0.8268746709855492
+          ],
+          "normalTiltMaxDegrees": 0.9412842392921448,
+          "maskMax": {
+            "dust": 0.1599386978149414,
+            "oxide": 0.7492352217127891,
+            "wear": 0.6314773785494878
+          },
+          "chartTexelsAbove002": {
+            "dust": 358476,
+            "oxide": 916,
+            "wear": 12148
+          },
+          "metallic": 0.0,
+          "wetness": 0.0,
+          "bakedLighting": false,
+          "geometryTriangleCornersPreserved": true,
+          "originalCornerNormalsPreserved": true
+        },
+        "ExistingHero_Return_PowderCoatedSteel": {
+          "substrate": "steel",
+          "resolution": [
+            4096,
+            1024
+          ],
+          "densityPixelsPerMetre": 700,
+          "chartCount": 66,
+          "paddingPixels": 8,
+          "projectionMaxErrorM": 2.886579864025407e-15,
+          "roughnessRange": [
+            0.4785606861114502,
+            0.6092585645518724
+          ],
+          "normalTiltMaxDegrees": 0.9333510398864746,
+          "maskMax": {
+            "dust": 0.1596634006500244,
+            "oxide": 0,
+            "wear": 0
+          },
+          "chartTexelsAbove002": {
+            "dust": 101068,
+            "oxide": 0,
+            "wear": 0
+          },
+          "metallic": 0.0,
+          "wetness": 0.0,
+          "bakedLighting": false,
+          "geometryTriangleCornersPreserved": true,
+          "originalCornerNormalsPreserved": true
+        }
+      },
+      "allTransformsAndTrianglesPreserved": true,
+      "allUntargetedMeshesNormalsUVMaterialsPreserved": true,
+      "glbRoundtripVerified": true,
+      "objTrianglesVerified": true
+    }
+  ],
+  "runtime": {
+    "python": "3.12.14",
+    "trimesh": "5.1.0",
+    "numpy": "2.3.5",
+    "Pillow": "12.3.0",
+    "scipy": "1.17.0",
+    "numba": "0.67.0",
+    "shapely": "2.1.2"
+  },
+  "sourceSHA256": {
+    "balcony_context_materials.py": "30b8ffd872f0658fbb9a21951f47a2c1c46508e681dd79a00d61cc9a0db40281",
+    "build_balcony_drainage_integration.py": "d086288f9f9110daf1bde3e612c37ee178cbf66a783989bba882ca0a5d1afa3a",
+    "refine_window_service_facade_surface.py": "b2903d77d2612ce7bd31646787492c814de23f2ed90d6f7eea14b252904b2479",
+    "render_material_preview.py": "5b4b0b4bb6654dd29b993fed9e502c35a637e8aeaa8bb6fac9f984bae3ebb4a6"
+  },
+  "assemblerSHA256": "067aabb22cd0fb33a3719a86e557e3e249a3292bc1dbb4160837e1f8ce568f3e",
+  "unityCompile": false,
+  "unityImport": false,
+  "unityRender": false,
+  "visualFidelity": {
+    "score": null,
+    "pass": false
+  },
+  "limits": [
+    "External CPU preview; no Unity reflection/GI/refraction parity or temporal/performance validation.",
+    "This delivered run uses the restored building component. Later plants/laundry were not supplied.",
+    "Do not replace a later complete hero with these building-only GLBs.",
+    "GLB carries metallic/roughness/normal; OBJ/MTL is a geometry/base-colour interchange copy."
+  ],
+  "baseCommit": "18d12fdc7f2b04fb5a20bf180468ebef2f2a6f9f",
+  "deliveryArchive": "balcony_weathering_2026-09-17.zip",
+  "previewReview": {
+    "scope": "external material-coloured actual-mesh review",
+    "visualFidelityScore": null,
+    "unityRender": false,
+    "acceptedChanges": [
+      "Fine dry runoff below measured vent/clamp origins; no broad uncaused dirty bands.",
+      "Sparse oxide at one main steel base plate and a short descending trace on its concrete support.",
+      "Concrete pores and coating microtexture remain distinct; no blue clay replacement.",
+      "Second light direction changes real cast shadows while keeping the same dry material."
+    ],
+    "limits": [
+      "floor_side_view is an occlusion diagnostic: the real railing blocks much of the drain. Use floor_drain for the primary floor view.",
+      "Existing vent/AC texture projection and CPU shadow aliasing remain visible in close-ups.",
+      "These are building-component previews, not a complete planted/laundry scene or Unity game capture."
+    ],
+    "images": {
+      "floor_side_light": {
+        "trianglesSubmitted": 101392,
+        "allSourceFacesSubmitted": true,
+        "geometrySHA256": "0a86b5d081186c5397e9bcb7eb949afecba8bd24f4e2983261ddece02d4581a3",
+        "size": [
+          1700,
+          1200
+        ],
+        "lightDirection": [
+          0.5766831975986553,
+          0.3844554650657702,
+          0.7208539969983192
+        ],
+        "textureResolutionCap": 4096
+      },
+      "floor_side_view": {
+        "trianglesSubmitted": 101392,
+        "allSourceFacesSubmitted": true,
+        "geometrySHA256": "0a86b5d081186c5397e9bcb7eb949afecba8bd24f4e2983261ddece02d4581a3",
+        "size": [
+          1700,
+          1200
+        ],
+        "lightDirection": [
+          -0.279108277990115,
+          0.6379617782631201,
+          0.71770700054601
+        ],
+        "textureResolutionCap": 4096
+      },
+      "overall": {
+        "trianglesSubmitted": 101392,
+        "allSourceFacesSubmitted": true,
+        "geometrySHA256": "0a86b5d081186c5397e9bcb7eb949afecba8bd24f4e2983261ddece02d4581a3",
+        "size": [
+          1800,
+          1260
+        ],
+        "lightDirection": [
+          -0.279108277990115,
+          0.6379617782631201,
+          0.71770700054601
+        ],
+        "textureResolutionCap": 4096
+      },
+      "floor_before": {
+        "trianglesSubmitted": 101392,
+        "allSourceFacesSubmitted": true,
+        "geometrySHA256": "ac219107930a68834b9822fc7e41d8b176eab7731ff1b0331c223748a2296a3c",
+        "size": [
+          1700,
+          1200
+        ],
+        "lightDirection": [
+          -0.279108277990115,
+          0.6379617782631201,
+          0.71770700054601
+        ],
+        "textureResolutionCap": 4096
+      },
+      "floor_drain": {
+        "trianglesSubmitted": 101392,
+        "allSourceFacesSubmitted": true,
+        "geometrySHA256": "0a86b5d081186c5397e9bcb7eb949afecba8bd24f4e2983261ddece02d4581a3",
+        "size": [
+          1700,
+          1200
+        ],
+        "lightDirection": [
+          -0.279108277990115,
+          0.6379617782631201,
+          0.71770700054601
+        ],
+        "textureResolutionCap": 4096
+      },
+      "steel_fixing": {
+        "trianglesSubmitted": 101392,
+        "allSourceFacesSubmitted": true,
+        "geometrySHA256": "0a86b5d081186c5397e9bcb7eb949afecba8bd24f4e2983261ddece02d4581a3",
+        "size": [
+          1650,
+          1200
+        ],
+        "lightDirection": [
+          -0.279108277990115,
+          0.6379617782631201,
+          0.71770700054601
+        ],
+        "textureResolutionCap": 4096
+      },
+      "vent_wall": {
+        "trianglesSubmitted": 101392,
+        "allSourceFacesSubmitted": true,
+        "geometrySHA256": "0a86b5d081186c5397e9bcb7eb949afecba8bd24f4e2983261ddece02d4581a3",
+        "size": [
+          1600,
+          1200
+        ],
+        "lightDirection": [
+          -0.279108277990115,
+          0.6379617782631201,
+          0.71770700054601
+        ],
+        "textureResolutionCap": 4096
+      }
+    }
+  }
+}

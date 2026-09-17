@@ -175,3 +175,22 @@ def apply_surface_materials(source,materials):
             'beforeDegenerateUVTriangles':uv_degenerate_count(old),'afterDegenerateUVTriangles':0,
             'triangleCornersAndWindingPreserved':True,'weldedWatertight':True,'hardFaceNormals':True})
     return target,records
+
+
+def apply_context_weathering(source, context, output, density=850):
+    """Dry edge/deposit pass on this owner's existing floor and curb only.
+
+    The clean material stage remains available. No geometry, drain hole, water
+    slope or unrelated prop is reconstructed by the weathering pass.
+    """
+    import balcony_context_materials as weather
+    target=weather.copy_scene(source)
+    records={}
+    names={
+        'DrainIntegratedFloor_WaterproofSkinWithRealDrainCutout':'floor',
+        'ExistingHero_Kerb_WeatheredConcrete':'curb',
+    }
+    for name,kind in names.items():
+        if name not in source.geometry:raise ValueError('Missing weathering substrate: '+name)
+        target.geometry[name],records[name]=weather.bake_atlas(source.geometry[name],kind,context,output,kind+'_OccupiedDry',density)
+    return target,records

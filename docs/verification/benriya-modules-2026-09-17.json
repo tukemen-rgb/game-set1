@@ -1,0 +1,23 @@
+{
+  "base_commit": "2a380a3b561d31e6f6a9f8713783dfa188844da7",
+  "godot": "4.4.stable.mono.official.4c311cbee",
+  "dotnet_sdk": "8.0.425",
+  "build": {
+    "warnings": 0,
+    "errors": 0
+  },
+  "headless_acceptance": {
+    "assertions": 55,
+    "dayclock_month_selftest": true,
+    "result": "passed"
+  },
+  "game_scene_integration": "not_performed",
+  "visual_capture": "not_performed",
+  "file_sha256": {
+    "scripts/RequestBook.cs": "a461fd85618f6fa97869e2f1203aaf7148012f2275e190d2383235c0601813a0",
+    "scripts/DayClock.cs": "b111dc701e19d006369769762096ea63e4de3c010bd9af8fbb68461f5e7a8480",
+    "scripts/Routine.cs": "7b806e122dc60fcbe4654e1fdec6b3b0518cebab9ee50e4d9cbd85a977c5a958",
+    "data/requests.json": "94240be5db0fcd2bdfe5d6c7379c2838663bd15e17ebaacf8bea75bc149c5bc2",
+    "test/BenriyaModules.cs": "08bf36f5b3276ee44eff16ed00709618267e0e455e849983d98c3c7537975e0e"
+  }
+}

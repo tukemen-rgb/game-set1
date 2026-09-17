@@ -1,0 +1,73 @@
+BUILD
+
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+
+Time Elapsed 00:00:03.61
+
+GODOT MODULE ACCEPTANCE
+Godot Engine v4.4.stable.mono.official.4c311cbee - https://godotengine.org
+
+[requests] 5 件
+[requests] 5 件
+[requests] 0 件
+WARNING: [requests] user://benriya-module-f5596733e74c454990893dce263951ac.json: line 0: Expected key
+     at: System.Collections.Generic.IReadOnlyList`1[RequestDef] RequestBook.Failed(string, string) (res://scripts/RequestBook.cs:120)
+[requests] 0 件
+WARNING: [requests] user://benriya-module-f5596733e74c454990893dce263951ac.json: root must be an array
+     at: System.Collections.Generic.IReadOnlyList`1[RequestDef] RequestBook.Failed(string, string) (res://scripts/RequestBook.cs:120)
+[requests] 0 件
+WARNING: [requests] user://benriya-module-f5596733e74c454990893dce263951ac.json: row 1: expected an object
+     at: System.Collections.Generic.IReadOnlyList`1[RequestDef] RequestBook.Failed(string, string) (res://scripts/RequestBook.cs:120)
+[requests] 0 件
+WARNING: [requests] user://benriya-module-f5596733e74c454990893dce263951ac.json.missing: cannot open file (FileNotFound)
+     at: System.Collections.Generic.IReadOnlyList`1[RequestDef] RequestBook.Failed(string, string) (res://scripts/RequestBook.cs:120)
+[requests] 0 件
+WARNING: [requests] : empty path
+     at: System.Collections.Generic.IReadOnlyList`1[RequestDef] RequestBook.Failed(string, string) (res://scripts/RequestBook.cs:120)
+[requests] 0 件
+WARNING: [requests] user://benriya-module-f5596733e74c454990893dce263951ac.json: row 5: Id must be positive and unique
+     at: System.Collections.Generic.IReadOnlyList`1[RequestDef] RequestBook.Failed(string, string) (res://scripts/RequestBook.cs:120)
+[requests] 0 件
+WARNING: [requests] user://benriya-module-f5596733e74c454990893dce263951ac.json: row 5: Id must be a 32-bit integer
+     at: System.Collections.Generic.IReadOnlyList`1[RequestDef] RequestBook.Failed(string, string) (res://scripts/RequestBook.cs:120)
+[requests] 0 件
+WARNING: [requests] user://benriya-module-f5596733e74c454990893dce263951ac.json: row 5: unknown Kind 'Teleport'
+     at: System.Collections.Generic.IReadOnlyList`1[RequestDef] RequestBook.Failed(string, string) (res://scripts/RequestBook.cs:120)
+[requests] 0 件
+WARNING: [requests] user://benriya-module-f5596733e74c454990893dce263951ac.json: row 5: unknown Kind '0'
+     at: System.Collections.Generic.IReadOnlyList`1[RequestDef] RequestBook.Failed(string, string) (res://scripts/RequestBook.cs:120)
+[requests] 0 件
+WARNING: [requests] user://benriya-module-f5596733e74c454990893dce263951ac.json: row 5: ClientPos must be [x, z]
+     at: System.Collections.Generic.IReadOnlyList`1[RequestDef] RequestBook.Failed(string, string) (res://scripts/RequestBook.cs:120)
+[requests] 0 件
+WARNING: [requests] user://benriya-module-f5596733e74c454990893dce263951ac.json: row 5: Target must contain exactly two numbers
+     at: System.Collections.Generic.IReadOnlyList`1[RequestDef] RequestBook.Failed(string, string) (res://scripts/RequestBook.cs:120)
+[requests] 0 件
+WARNING: [requests] user://benriya-module-f5596733e74c454990893dce263951ac.json: row 5: Target[0] must be a number
+     at: System.Collections.Generic.IReadOnlyList`1[RequestDef] RequestBook.Failed(string, string) (res://scripts/RequestBook.cs:120)
+[requests] 0 件
+WARNING: [requests] user://benriya-module-f5596733e74c454990893dce263951ac.json: row 5: Target is outside Vector2 range
+     at: System.Collections.Generic.IReadOnlyList`1[RequestDef] RequestBook.Failed(string, string) (res://scripts/RequestBook.cs:120)
+[requests] 0 件
+WARNING: [requests] user://benriya-module-f5596733e74c454990893dce263951ac.json: Id 5: Unlocks refers to missing Id 999
+     at: System.Collections.Generic.IReadOnlyList`1[RequestDef] RequestBook.Failed(string, string) (res://scripts/RequestBook.cs:120)
+[requests] 0 件
+WARNING: [requests] user://benriya-module-f5596733e74c454990893dce263951ac.json: row 5: NeedTool must be a string
+     at: System.Collections.Generic.IReadOnlyList`1[RequestDef] RequestBook.Failed(string, string) (res://scripts/RequestBook.cs:120)
+[requests] 0 件
+WARNING: [requests] user://benriya-module-f5596733e74c454990893dce263951ac.json: row 5: missing Title
+     at: System.Collections.Generic.IReadOnlyList`1[RequestDef] RequestBook.Failed(string, string) (res://scripts/RequestBook.cs:120)
+[requests] 0 件
+[requests] 5 件
+[requests-test] ok
+[dayclock] ok
+[routine] ModuleTestResident → 8
+[routine] ModuleTestResident → 12
+[routine] ModuleTestResident → 17
+[routine] ModuleTestResident → 8
+[routine] ModuleTestResident → 8
+[routine] ModuleTestResident → 8
+[routine-test] ok
+[benriya-modules] ok (55 assertions)

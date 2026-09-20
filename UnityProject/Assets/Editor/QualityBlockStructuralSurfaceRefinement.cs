@@ -147,18 +147,19 @@ public static class QualityBlockStructuralSurfaceRefinement
         if (Mathf.Abs(scale.x - scale.z) > Mathf.Max(0.0001f, Mathf.Max(scale.x, scale.z) * 0.01f))
             throw new InvalidOperationException(
                 $"Structural cylinder {filter.gameObject.name} is elliptically scaled ({scale}); explicit authored geometry is required.");
-        EnsureOnlyColliderType<CylinderCollider>(filter.gameObject);
-        foreach (CylinderCollider collider in filter.GetComponents<CylinderCollider>())
+        // Unity's built-in cylinder uses a capsule for its default collision shape.
+        EnsureOnlyColliderType<CapsuleCollider>(filter.gameObject);
+        foreach (CapsuleCollider collider in filter.GetComponents<CapsuleCollider>())
             if (collider.direction != 1)
                 throw new InvalidOperationException(
-                    $"Structural cylinder {filter.gameObject.name} uses a non-Y CylinderCollider; automatic footprint preservation is unsafe.");
+                    $"Structural cylinder {filter.gameObject.name} uses a non-Y CapsuleCollider; automatic footprint preservation is unsafe.");
 
         Bounds rendererBefore = renderer.bounds;
         List<Bounds> colliderBefore = filter.GetComponents<Collider>().Select(x => x.bounds).ToList();
-        CylinderCollider[] colliders = filter.GetComponents<CylinderCollider>();
+        CapsuleCollider[] colliders = filter.GetComponents<CapsuleCollider>();
 
         filter.sharedMesh = QualityBlockDetailMeshLibrary.GetBeveledCylinder(scale, false);
-        foreach (CylinderCollider collider in colliders)
+        foreach (CapsuleCollider collider in colliders)
         {
             collider.center = Vector3.Scale(collider.center, scale);
             collider.radius *= Mathf.Max(scale.x, scale.z);

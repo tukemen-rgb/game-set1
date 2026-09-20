@@ -197,7 +197,7 @@ public static class QualityBlockRainwaterDownpipeInstallationQA
         pipe.transform.localScale = Vector3.one; pipe.transform.rotation = Quaternion.identity;
         pipe.transform.position = new Vector3(PipeX, (PipeTop + PipeBottom) * 0.5f, PipeZ);
         r.sharedMaterial = pvc;
-        if (pipe.GetComponent<CylinderCollider>() is CylinderCollider c)
+        if (pipe.GetComponent<CapsuleCollider>() is CapsuleCollider c)
         { c.direction = 1; c.center = Vector3.zero; c.radius = PipeOd * 0.5f; c.height = h; }
         Weather(pipe, NewTownSurfaceExposure.RainExposed | NewTownSurfaceExposure.SunExposed,
             NewTownStainSource.DrainRunoff | NewTownStainSource.UVExposure | NewTownStainSource.GroundSplash,

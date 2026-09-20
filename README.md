@@ -1,17 +1,27 @@
 # game-set1 — ニュータウンの夏
 
-## Unity 起動時のコンパイル修正（2026-09-20）
+## Unity 起動時のコンパイル修正（2026-09-21 JST）
 
-Unity 6000.3.0f1 の初回起動で Safe Mode に入ったという実機報告を受け、
-`UnityProject/Assets/Editor/QualityBlockTreeDetailUpgrade.cs` の親オブジェクト4か所を
-明示的な `Transform` に修正した。根・幹・枝の生成呼び出し8か所にあった
-`GameObject` → `Transform` の型不一致を解消する変更。形状の数値、材質、LOD、検証条件は変更しない。
+Unity 6000.3.0f1 の初回起動で22件のエラーとSafe Modeが報告された。
+樹木の親オブジェクト4か所を `Transform` に修正した後、ユーザーPCの再コンパイルで
+エラー数が22件から14件に減少したことを画面で確認した。
 
-対象の型不一致は、限定したUnity型宣言を使うRoslynのソース間型チェックで
-修正前8件・修正後0件。これはUnity Editorでのコンパイル成功を証明しない。
-報告画面の全22件のうち、残りの診断内容は未取得。実機でファイル差し替え後に再コンパイルし、
-残るエラーを確認する。Safe Mode解除、シーン生成、4K実レンダー、画質合格は未確認。
+残る原因として、次の変更を追加した。対象のC#は前回分を含め7ファイル。
 
+- `QualityBlockStructuralSurfaceRefinement` / `QualityBlockRainwaterDownpipeInstallationQA`:
+  存在しない `CylinderCollider` を、Unityの円柱プリミティブが実際に持つ `CapsuleCollider` に修正（8診断）。
+  Y軸・正スケール・衝突範囲保存の検査と寸法計算は維持。
+- `QualityBlockPeriodAuthenticityUpgrade`: `UnityEngine.SceneManagement` の参照を追加（3診断）。
+- `QualityBlockCameraEvidencePurityQA` / `QualityBlockLightEvidencePurityQA`:
+  out引数をラムダで直接参照せず、検証済みのターゲット名をローカル変数に保持（2診断）。
+- `QualityBlockRenderCandidateFreshnessQA`: 日時の欠落・不正値を明示的な例外で拒否し、
+  未代入の日時変数を参照する経路を解消（1診断）。不正な証拠を受け入れる変更ではない。
+
+検証: C#182ファイルの構文エラー0。補助的なRoslyn解析で対象の14診断を修正前14件・修正後0件と確認。
+この解析は旧版UnityEngine参照アセンブリ（NuGet UnityEngine.Modules 2021.3.33）を使用し、
+UnityEditor参照やUnity6000.3のAPI全体は網羅しない。Unity実コンパイル成功の証拠ではない。
+ソースから抽出した実際のParseUtcメソッドは、欠落・不正値6ケースの拒否とUTC変換3ケースを実行確認した。
+Unity6000.3.0f1での全エラー解消、Safe Mode解除、衝突範囲の実機確認、シーン生成、4K実レンダーは未確認。
 
 **Unity版の最新制作前提（2026-09-16）:** 1990年代の大阪・千里中央。具体的な年は未確定。
 現在の3D制作差分は [Drained3600の床・天井・手すり修正](UnityProject/Assets/Art/BalconyStructuralContactRepair/README.md) を参照。

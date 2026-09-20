@@ -208,7 +208,8 @@ public static class QualityBlockCameraEvidencePurityQA
         if (target == null || target.width != Width || target.height != Height || string.IsNullOrEmpty(target.name))
             return false;
 
-        return FormalTargetPrefixes.Any(prefix => target.name.StartsWith(prefix, StringComparison.Ordinal));
+        string targetName = target.name;
+        return FormalTargetPrefixes.Any(prefix => targetName.StartsWith(prefix, StringComparison.Ordinal));
     }
 
     private static void ValidateCameraCore(Camera camera, RenderTexture target, bool requireFormalTarget, string phase)

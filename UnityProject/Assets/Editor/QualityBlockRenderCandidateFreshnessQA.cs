@@ -539,9 +539,9 @@ public static class QualityBlockRenderCandidateFreshnessQA
 
     private static DateTime ParseUtc(string value, string label)
     {
-        Require(!string.IsNullOrWhiteSpace(value) &&
-                DateTime.TryParse(value, CultureInfo.InvariantCulture, DateTimeStyles.RoundtripKind, out DateTime parsed),
-            $"{label} is missing or invalid: '{value}'.");
+        if (string.IsNullOrWhiteSpace(value) ||
+            !DateTime.TryParse(value, CultureInfo.InvariantCulture, DateTimeStyles.RoundtripKind, out DateTime parsed))
+            throw new InvalidOperationException($"{label} is missing or invalid: '{value}'.");
         return parsed.ToUniversalTime();
     }
 

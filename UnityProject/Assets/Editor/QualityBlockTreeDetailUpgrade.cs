@@ -191,7 +191,7 @@ public static class QualityBlockTreeDetailUpgrade
 
     private static void BuildTreeMaster(Transform root, int treeIndex, float height, Material bark, Material leafDark, Material leafMid)
     {
-        var rootAssembly = NewAssembly("RootFlareAssembly", root);
+        Transform rootAssembly = NewAssembly("RootFlareAssembly", root).transform;
         for (int r = 0; r < 7; r++)
         {
             float angle = (treeIndex * 31f + r * (360f / 7f)) * Mathf.Deg2Rad;
@@ -201,7 +201,7 @@ public static class QualityBlockTreeDetailUpgrade
             CreateSegment($"RootFlare_{r}", rootAssembly, start, end, 0.16f + 0.035f * Hash01(treeIndex, r, 3), "GM_TreeRootFlare", bark);
         }
 
-        var trunkAssembly = NewAssembly("TrunkAssembly", root);
+        Transform trunkAssembly = NewAssembly("TrunkAssembly", root).transform;
         Vector3[] trunkPoints = new Vector3[8];
         for (int p = 0; p < trunkPoints.Length; p++)
         {
@@ -218,7 +218,7 @@ public static class QualityBlockTreeDetailUpgrade
             CreateSegment($"TrunkSection_{p}", trunkAssembly, trunkPoints[p], trunkPoints[p + 1], radius, "GM_TreeTrunkSegment", bark);
         }
 
-        var crownAssembly = NewAssembly("BranchCrownAssembly", root);
+        Transform crownAssembly = NewAssembly("BranchCrownAssembly", root).transform;
         int clusterOrdinal = 0;
         const int primaryBranches = 7;
         for (int p = 0; p < primaryBranches; p++)
@@ -231,7 +231,7 @@ public static class QualityBlockTreeDetailUpgrade
             Vector3 mid = origin + radial * (primaryLength * 0.48f) + Vector3.up * (0.42f + 0.24f * Hash01(treeIndex, p, 6));
             Vector3 tip = origin + radial * primaryLength + Vector3.up * (0.78f + 0.48f * Hash01(treeIndex, p, 7));
 
-            var primaryAssembly = NewAssembly($"PrimaryAssembly_{p}", crownAssembly);
+            Transform primaryAssembly = NewAssembly($"PrimaryAssembly_{p}", crownAssembly).transform;
             CreateSegment($"PrimaryBranch_{p}_A", primaryAssembly, origin, mid, 0.13f, "GM_TreePrimaryBranch", bark);
             CreateSegment($"PrimaryBranch_{p}_B", primaryAssembly, mid, tip, 0.095f, "GM_TreePrimaryBranch", bark);
 

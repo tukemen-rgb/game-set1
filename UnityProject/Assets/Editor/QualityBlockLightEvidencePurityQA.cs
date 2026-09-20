@@ -188,7 +188,8 @@ public static class QualityBlockLightEvidencePurityQA
         if (target == null || target.width != Width || target.height != Height || string.IsNullOrEmpty(target.name))
             return false;
 
-        return FormalTargetPrefixes.Any(prefix => target.name.StartsWith(prefix, StringComparison.Ordinal));
+        string targetName = target.name;
+        return FormalTargetPrefixes.Any(prefix => targetName.StartsWith(prefix, StringComparison.Ordinal));
     }
 
     private static void ValidateLightCore(string phase)

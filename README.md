@@ -1,5 +1,18 @@
 # game-set1 — ニュータウンの夏
 
+## Unity 起動時のコンパイル修正（2026-09-20）
+
+Unity 6000.3.0f1 の初回起動で Safe Mode に入ったという実機報告を受け、
+`UnityProject/Assets/Editor/QualityBlockTreeDetailUpgrade.cs` の親オブジェクト4か所を
+明示的な `Transform` に修正した。根・幹・枝の生成呼び出し8か所にあった
+`GameObject` → `Transform` の型不一致を解消する変更。形状の数値、材質、LOD、検証条件は変更しない。
+
+対象の型不一致は、限定したUnity型宣言を使うRoslynのソース間型チェックで
+修正前8件・修正後0件。これはUnity Editorでのコンパイル成功を証明しない。
+報告画面の全22件のうち、残りの診断内容は未取得。実機でファイル差し替え後に再コンパイルし、
+残るエラーを確認する。Safe Mode解除、シーン生成、4K実レンダー、画質合格は未確認。
+
+
 **Unity版の最新制作前提（2026-09-16）:** 1990年代の大阪・千里中央。具体的な年は未確定。
 現在の3D制作差分は [Drained3600の床・天井・手すり修正](UnityProject/Assets/Art/BalconyStructuralContactRepair/README.md) を参照。
 追加更新（2026-09-17）: [床・コンクリート材質とプレビューの影](UnityProject/Assets/Art/BalconyDrainageIntegration/SURFACE_REFINEMENT_JA.md)。植栽・洗濯物付き全体モデルへの適用は未検証。
